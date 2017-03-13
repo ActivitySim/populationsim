@@ -1,0 +1,8 @@
+Description,Total HH Control,Geography,Seed Table,Importance,Control Field,Expression
+Num HHs,TRUE,low,households,10000,HHBASE,(WGTP > 0) & (WGTP < np.inf)
+Num HHs by persons per HH,FALSE,low,households,5000,HHSIZE1,NP==1
+Num HHs by persons per HH,FALSE,low,households,5000,HHSIZE1,NP==1
+Num HHs by persons per HH,FALSE,low,households,5000,HHSIZE1,NP >= 4
+Num students by housing type,FALSE,low,persons,10000,OSUfam,OSUTag==1
+Num HH by household type,FALSE,mid,households,100,SF,htype==1
+Num persons by occupation category,FALSE,meta,households,100,OCCP1,occp==1
