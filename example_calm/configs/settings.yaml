@@ -11,6 +11,8 @@ seed_persons:
   filename : pums_pers.csv
   hh_id : SERIALNO
 
+lower_level_geographies: mid,low
+
 geographic_crosswalk:
   filename : geocwalk.csv
   seed_id : puma

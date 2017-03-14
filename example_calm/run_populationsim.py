@@ -21,11 +21,11 @@ orca.run(['initial_seed_balancing'])
 #low and mid-level controls and distributed meta-level controls
 orca.run(['final_seed_balancing'])
 
-#iteratively loop through zones and list balance on each 
-#mid-level zone within a meta zone and then each low-level
-#zone within a mid-level zone. This is the current procedure, 
-#which will likely be revised.
-orca.run(['mid_and_low_level_allocation'])
+#iteratively loop through zones and list balance each 
+#lower-level zone within a meta zone and then each next-lower-level
+#zone within a lower-level zone, etc.  This is the current procedure, 
+#which is being revised.
+orca.run(['lower_geography_allocation'])
 
 #expand household and person records with final weights 
 #to one household and one person record per weight with unique IDs
