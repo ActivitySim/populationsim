@@ -35,7 +35,7 @@ initial_weights = [1,1,1,1,1,1,1,1]
 # column totals which the final weighted incidence table sums must satisfy
 constraints = [35,65,91,65,104]
 
-control_importance_weights = 1
+control_importance_weights = 100000
 
 list_balancer(incidence_table=incidence_table,
               constraints=constraints,

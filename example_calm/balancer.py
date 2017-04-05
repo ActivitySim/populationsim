@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-MAX_ITERATIONS = 1
+MAX_ITERATIONS = 10000
 
 MAX_GAP = 1.0e-9
 IMPORTANCE_ADJUST = 2
@@ -68,7 +68,7 @@ def list_balancer(incidence_table,
 
     for iter in range(MAX_ITERATIONS):
 
-        print "### iter", iter
+        #print "### iter", iter
 
         current = str(iter)
         weights.final = weights.previous
@@ -102,6 +102,9 @@ def list_balancer(incidence_table,
                 relaxed_constraint = controls.constraint[c] * relaxation_factor[c]
                 gamma[c] = 1.0 - (xx - relaxed_constraint) / (yy + relaxed_constraint / importance)
 
+                # constraint = controls.constraint[c]
+                # gamma[c] = 1.0 - (xx - constraint) / (yy + constraint)
+
             # adjust weights of incident rows by gamma
             weights.ix[incidence > 0, 'final'] *= gamma[c]
 
@@ -113,6 +116,7 @@ def list_balancer(incidence_table,
             assert not (weights.final <= 0.0).any()
 
             relaxation_factor[c] *= pow(1.0 / gamma[c], 1.0 / importance)
+            #print "gamma %s importance %s relation_factor %s" % (gamma[c], importance, relaxation_factor[c])
 
         # clip relaxation_factors
         controls.relaxation_factor = np.minimum(relaxation_factor, MAXIMUM_RELAXATION_FACTOR)
@@ -132,10 +136,20 @@ def list_balancer(incidence_table,
     print "final iter", iter
     print "final delta", delta
 
-    print "\nweights\n", weights
 
-    print "\ncontrols", controls
-    for c in control_cols:
-        weighted_value = round((incidence_table.ix[:, c] * weights.final).sum(), 2)
-        print "%s: %s %s" % (incidence_table.columns[c], weighted_value, controls.constraint[c])
+    print "\nweights\n", weights[['initial', 'final']]
+
+    s = pd.DataFrame(index=controls.index)
+    s['name'] = incidence_table.columns.tolist()
+    s['constraint'] = controls.constraint
+    #s['relaxation_factor'] = controls.relaxation_factor
+    s['relaxed_constraint'] = controls.constraint * controls.relaxation_factor
+    s['weighted_sum'] = [round((incidence_table.ix[:, c] * weights.final).sum(), 2) for c in s.index]
+
+    published_final_weights = [1.36,25.66,7.98,27.79, 18.45,8.64,1.47,8.64]
+    s['pub_weighted_sum'] = [round((incidence_table.ix[:, c] * published_final_weights).sum(), 2) for c in
+                         s.index]
+
+    print s
+
 
