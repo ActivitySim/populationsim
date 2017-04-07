@@ -1,3 +1,6 @@
+# PopulationSim
+# See full license in LICENSE.txt.
+
 import numpy as np
 import pandas as pd
 
@@ -18,21 +21,32 @@ def list_balancer(incidence_table,
                   constraints,
                   initial_weights,
                   control_importance_weights=None,
-                  lb_weights = None,
-                  ub_weights = None,
-                  master_control_index = None
+                  lb_weights=None,
+                  ub_weights=None,
+                  master_control_index=None,
+                  max_iterations=MAX_ITERATIONS
                   ):
-
-    # initial_weights, importance_weights, incidence_table, constraint_totals
-
     """
 
-    Params
-    incidence_table : pandas.DataFrame
+    Parameters
+    ----------
+    incidence_table
+    constraints
+    initial_weights
+    control_importance_weights
+    lb_weights : scalar or array[float]
+        arraw of len sample_count
+    ub_weights : scalar or array[float]
+    master_control_index : int or None
+    max_iterations : int
 
-    initial_weights :
-
+    Returns
+    -------
+    weights : pandas.DataFrame
+    controls : pandas.DataFrame
+    status : dict
     """
+
     sample_count = len(incidence_table.index)
     control_count = len(incidence_table.columns)
 
@@ -43,6 +57,9 @@ def list_balancer(incidence_table,
 
     # one row for every column in incidenceTable
     controls = pd.DataFrame(index=range(control_count))
+
+    # assign incidence_table column names to corresponding control rows (informational)
+    controls['name'] = incidence_table.columns.tolist()
 
     controls['constraint'] = constraints
     controls.constraint = np.maximum(controls.constraint, MIN_CONTROL_VALUE)
@@ -64,13 +81,10 @@ def list_balancer(incidence_table,
     weights['final'] = weights['initial']
     weights['previous'] = weights['initial']
 
-    importance_adjustment  = 1.0
+    importance_adjustment = 1.0
 
-    for iter in range(MAX_ITERATIONS):
+    for iter in range(max_iterations):
 
-        #print "### iter", iter
-
-        current = str(iter)
         weights.final = weights.previous
 
         # reset gamma every iteration
@@ -90,33 +104,25 @@ def list_balancer(incidence_table,
             xx = (weights.final * incidence).sum()
             yy = (weights.final * incidence * incidence).sum()
 
+            # adjust importance (unless this is master_control)
             if c == master_control_index:
-                # don't adjust importance of master_control
                 importance = controls.importance[c]
             else:
-                # importance of this constraint, clipped
                 importance = max(controls.importance[c] * importance_adjustment, MINIMUM_IMPORTANCE)
 
             # calculate constraint balancing factors, gamma
             if xx > 0:
                 relaxed_constraint = controls.constraint[c] * relaxation_factor[c]
+                relaxed_constraint = max(relaxed_constraint, MIN_CONTROL_VALUE)
                 gamma[c] = 1.0 - (xx - relaxed_constraint) / (yy + relaxed_constraint / importance)
 
-                # constraint = controls.constraint[c]
-                # gamma[c] = 1.0 - (xx - constraint) / (yy + constraint)
-
-            # adjust weights of incident rows by gamma
+            # update HH weights
             weights.ix[incidence > 0, 'final'] *= gamma[c]
 
             # clip weights to upper and lower bounds
             weights.final = np.clip(weights.final, weights.lower_bound, weights.upper_bound)
 
-            weights[str(c)] = weights.final
-
-            assert not (weights.final <= 0.0).any()
-
             relaxation_factor[c] *= pow(1.0 / gamma[c], 1.0 / importance)
-            #print "gamma %s importance %s relation_factor %s" % (gamma[c], importance, relaxation_factor[c])
 
         # clip relaxation_factors
         controls.relaxation_factor = np.minimum(relaxation_factor, MAXIMUM_RELAXATION_FACTOR)
@@ -128,28 +134,26 @@ def list_balancer(incidence_table,
         weights.previous = weights.final
 
         # for debugging
-        #weights[str(iter)] = weights.final
+        # weights[str(iter)] = weights.final
 
-        if delta < MAX_GAP and max_gamma_dif < MAX_GAP:
+        converged = delta < MAX_GAP and max_gamma_dif < MAX_GAP
+
+        if converged:
             break
 
-    print "final iter", iter
-    print "final delta", delta
+    weights = weights[['initial', 'final']]
+    controls = controls[['name', 'constraint', 'relaxation_factor']]
 
+    # convenient
+    controls['relaxed_constraint'] = controls.constraint * controls.relaxation_factor
+    controls['weighted_sum'] = \
+        [round((incidence_table.ix[:, c] * weights.final).sum(), 2) for c in controls.index]
 
-    print "\nweights\n", weights[['initial', 'final']]
+    status = {
+        'converged': converged,
+        'iter': iter,
+        'delta': delta,
+        'max_gamma_dif': max_gamma_dif,
+    }
 
-    s = pd.DataFrame(index=controls.index)
-    s['name'] = incidence_table.columns.tolist()
-    s['constraint'] = controls.constraint
-    #s['relaxation_factor'] = controls.relaxation_factor
-    s['relaxed_constraint'] = controls.constraint * controls.relaxation_factor
-    s['weighted_sum'] = [round((incidence_table.ix[:, c] * weights.final).sum(), 2) for c in s.index]
-
-    published_final_weights = [1.36,25.66,7.98,27.79, 18.45,8.64,1.47,8.64]
-    s['pub_weighted_sum'] = [round((incidence_table.ix[:, c] * published_final_weights).sum(), 2) for c in
-                         s.index]
-
-    print s
-
-
+    return weights, controls, status
