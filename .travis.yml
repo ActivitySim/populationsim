@@ -22,7 +22,7 @@ install:
 - pip install .
 script:
 - pep8 populationsim
-- py.test --boxed --cov activitysim --cov-report term-missing
+- py.test --boxed --cov populationsim --cov-report term-missing
 after_success:
 - coveralls
 #- bin/build_docs.sh
