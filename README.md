@@ -1,6 +1,8 @@
-
 PopulationSim
 =============
+
+[![Build Status](https://travis-ci.org/RSGInc/populationsim.svg?branch=master)](https://travis-ci.org/RSGInc/populationsim) [![Coverage Status](https://coveralls.io/repos/RSGInc/populationsim/badge.png?branch=master)](https://coveralls.io/r/RSGInc/populationsim?branch=master)
+
 
 PopulationSim is an open platform for population synthesis.  It emerged
 from Oregon DOT's desire to build a shared, open, platform that could be 

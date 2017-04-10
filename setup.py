@@ -13,7 +13,7 @@ setup(
     author='contributing authors',
     author_email='ben.stabler@rsginc.com',
     license='BSD-3',
-    url='https://github.com/rsg/populationsim',
+    url='https://github.com/RSGInc/populationsim',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Programming Language :: Python :: 2.7',
