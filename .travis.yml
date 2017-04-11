@@ -1,0 +1,35 @@
+language: python
+sudo: false
+python:
+- '2.7'
+install:
+- if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh
+  -O miniconda.sh; else wget http://repo.continuum.io/miniconda/Miniconda3-3.7.0-Linux-x86_64.sh
+  -O miniconda.sh; fi
+- bash miniconda.sh -b -p $HOME/miniconda
+- export PATH="$HOME/miniconda/bin:$PATH"
+- hash -r
+- conda config --set always_yes yes --set changeps1 no
+- conda update -q conda
+- conda info -a
+- |
+  conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION cytoolz numpy pandas pip pytables pyyaml toolz
+- source activate test-environment
+- pip install orca openmatrix zbox
+- pip install pytest pytest-cov coveralls pep8 pytest-xdist
+- pip install sphinx numpydoc
+- pip install psutil
+- pip install .
+script:
+- pep8 populationsim
+- py.test --boxed --cov populationsim --cov-report term-missing
+after_success:
+- coveralls
+#- bin/build_docs.sh
+notifications:
+  slack:
+    secure: l7FunH4QsSrIumeyfAlihCOCv8MwPBv8UbPKYQWghAkaIcxQaS6YZ5MTPDX9Lx7eIax0vXRl090Or3QqCD/Ap/hLdZS3WaHC0111UjSMi96nyjeQouvW2NYxFuqBLfKJVLWjIVzDsLlMDS7a3Q25YvhnY/s5xjUsUY34fEEFRdKqRM5sUcCEARSXCAJeTVV/OQIgvraKqypmvYFX5LMlxfzhfE5U1H1Qg4vGkHkc42ZS/lSa5ow4nerpurHcLTq5zPLWCTU0XS6ikMhn98Qi8l0z/4mX8DV6Aka79tN0uZit1K3TS/uK1sDN1uoFFEVseu9y2yycJszb4PSBU5hTaurqc4Ui1OTfXN171MVC37WzpltsCyRoGKIm/50/1lWQPJijsszaYXSr6qXuOX7TjmdXZclhkxZCTDXPW0CHSFn+7ShDWMiODcBNeVQKEWlpOVATQDRRLzMnd7TvIYV8yEa3cpMtI2W2v/LxFPKygHynBoq5FY4l4rOvHaPkilUI48vfx/6AP+BuX4PAseyuuqAlLwWwXhSnNE1HHQzjwvhHx9PQ+S/GiCj3oLnxIDUE8t2hQHrD4yYXOUxjfFrjQNF6SiiNWi0+bfI/ZjpiLpFyVxDJBQovXaWRLPAM61LwqRZmoXGyUg3UWDKuEZ8Fs2Dnz5cZx05+ePb8AroaWyI=
+env:
+  global:
+    # GH_TOKEN
+    secure: IjVfvlQqAhryvf14wFhQ9hPVfT/an2bn152wax9ZKsvo5u6OyWk9GOWEbPujGCf1l/tXeDXmYzxQJb2Yedr2BMDF1399ssSVr1fFaka0S8WhftqKf2UN8uDe9IztxoARNHxPJjecHv6bJiXQFFXREsMa6bGlM8b17GzdDiIFME2WVoBw6eb7WZNRYfJeS66ObBHxjUTpAxNaWvhF7LAt6Mcu9kHhLggaAa21zPJPJ2d2AAZpFSUpmTIfFhTAI+JFwpbH1d8M3toDQpUmVYYDjHfhBxZ9QTd/C17FOcSwAU6HnQjOxHnsJX78dl0cYacEAVngEPcYgsfwE8b13uTGVLwbRoU73FJrBQvVjK4udJA5CDd5eEk5bpAl2NPmV223RFW5ZAwMuUKpQMAQNN8nswnzYQ+XfxdgR7wopNa6ZJ9JPd2EZ5ZNrBB9cRQUS8oY016SKuOs+C93PJZmPgJBHH9WUoZlaRX5x4XIXST0v6+B+oyPvdQrKb8t8r0RA7nvg9hq4B0o9OI5boDOiVlC1akjD0XWRUxa6arWGip7g5UBxtosbg9LeUG0XuQZpHpSsJj5BJPT0xtN4wdlSOBwXOUIi/HJT8jjxukMRkEwajWaMZsfseHN9zcI7j9wsFQ7lqkWodIOtRiXprkUljfvD+aWDeBk7JidT/ksZaIAJPk=
