@@ -61,4 +61,3 @@ def test_config_logger(capsys):
         print content
     assert 'log_warn1' in content
     assert 'log_info' in content
-
