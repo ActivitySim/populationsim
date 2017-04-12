@@ -10,9 +10,10 @@ import pandas as pd, numpy as np
 pd.options.mode.chained_assignment = None #turn off SettingWithCopyWarning
 
 # settings
-folder = "C:/projects/odot-popsyn/test_case/data/"
-output_folder = "C:/projects/odot-popsyn/test_case/"
-output_datastore_fname = "populationsim.h5"
+input_folder = "./raw_data/"
+output_folder = "./data/"
+output_datastore_fname = "./data/populationsim.h5"
+
 
 if __name__ == "__main__":
 
@@ -24,14 +25,14 @@ if __name__ == "__main__":
 
     print("read input CSVs")
 
-    seed_households = pd.read_csv(folder + "ss10hor.csv")
-    seed_persons = pd.read_csv(folder + "ss10por.csv", low_memory=False)
+    seed_households = pd.read_csv(input_folder + "ss10hor.csv")
+    seed_persons = pd.read_csv(input_folder + "ss10por.csv", low_memory=False)
 
-    mid_control_data = pd.read_csv(folder + "CALMtractData.csv")
-    low_control_data = pd.read_csv(folder + "CALMtazData.csv")
-    osu_low_data = pd.read_csv(folder + "OSU.csv")
+    mid_control_data = pd.read_csv(input_folder + "CALMtractData.csv")
+    low_control_data = pd.read_csv(input_folder + "CALMtazData.csv")
+    osu_low_data = pd.read_csv(input_folder + "OSU.csv")
 
-    gwalk = pd.read_csv(folder + "geographicCwalk.csv")
+    gwalk = pd.read_csv(input_folder + "geographicCwalk.csv")
     
     print("seed household data processing")
 

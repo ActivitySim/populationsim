@@ -1,0 +1,52 @@
+
+store: calm_psim.h5
+
+seed_households:
+  filename : pums_hhs.csv
+  id : hhnum
+  seed_zone_id : puma
+  weight : wgtp
+
+seed_persons: 
+  filename : pums_pers.csv
+  hh_id : SERIALNO
+
+lower_level_geographies: mid,low
+
+geographic_crosswalk:
+  filename : geocwalk.csv
+  seed_id : puma
+  meta_id : district
+  mid_id : taz
+  low_id : maz
+
+meta_control_data :
+  filename : districts.csv
+  id : district
+
+mid_control_data :
+  filename : tazs.csv
+  id : taz
+
+low_control_data :
+  filename :  mazs.csv
+  id : maz
+
+input_pre_processor: 
+  seed_households : seed_households_expressions.csv 
+  seed_persons : seed_persons_expressions.csv 
+  meta_control_data : meta_control_data_expressions.csv 
+  mid_control_data : mid_control_data_expressions.csv 
+  low_control_data : low_control_data_expressions.csv 
+
+controls : controls.csv
+
+maxExpansionFactor : 15
+
+expanded_households :
+  filename : households.csv
+  output_fields : serialno, np, nwrkrs_esr, hincp
+
+expanded_persons :
+  filename : persons.csv
+  output_fields : sporder, agep, relp, employed

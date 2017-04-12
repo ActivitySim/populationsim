@@ -30,6 +30,7 @@ setup(
         'tables >= 3.3.0',
         'toolz >= 0.7',
         'zbox >= 1.2',
-        'psutil >= 4.1'
+        'psutil >= 4.1',
+        'ortools >= 5.1'
     ]
 )

@@ -6,13 +6,10 @@ import pandas as pd
 import numpy.testing as npt
 import pytest
 
-from ..balancer import list_balancer
+from ..integerizer import do_integerizing
 
 
-def test_Konduri():
-
-    # example from Konduri et al. "Enhanced Synthetic Population Generator..."
-    # Journal of the Transportation Research Board, No. 2563
+def test_integerizer():
 
     # rows are elements for which factors are calculated, columns are constraints to be satisfied
     incidence_table = pd.DataFrame({
@@ -23,6 +20,9 @@ def test_Konduri():
         'p3': [1, 1, 0, 2, 1, 0, 2, 0],
     })
 
+    household_based_controls = [True, True, True, False, False, False]
+    master_control_index = 0
+
     # one weight per row in incidence table
     initial_weights = [1, 1, 1, 1, 1, 1, 1, 1]
 
@@ -31,21 +31,21 @@ def test_Konduri():
 
     control_importance_weights = 100000
 
-    weights, controls, status = list_balancer(
+    final_weights = \
+        [1.362893, 25.658290, 7.978812, 27.789651, 18.451021, 8.641589, 1.476104, 8.641589]
+
+    relaxation_factors = \
+        [0.999999, 1.000000, 0.999999, 1.000042, 1.000047, 1.000036]
+
+    zot = do_integerizing(
+        label='label',
+        id=42,
         incidence_table=incidence_table,
         control_totals=control_totals,
-        initial_weights=initial_weights,
         control_importance_weights=control_importance_weights,
-        master_control_index=None)
-
-    weighted_sum = \
-        [round((incidence_table.ix[:, c] * weights.final).sum(), 2) for c in controls.index]
-
-    published_final_weights = [1.36, 25.66, 7.98, 27.79, 18.45, 8.64, 1.47, 8.64]
-    published_weighted_sum = [
-        round((incidence_table.ix[:, c] * published_final_weights).sum(), 2)
-        for c in controls.index]
-    npt.assert_almost_equal(weighted_sum, published_weighted_sum, decimal=1)
-
-    npt.assert_almost_equal(weighted_sum, controls.constraint, decimal=1)
-    assert status['converged']
+        initial_weights=initial_weights,
+        final_weights=final_weights,
+        relaxation_factors=relaxation_factors,
+        household_based_controls=household_based_controls,
+        total_households_control_index=master_control_index,
+        debug_control_set=True)
