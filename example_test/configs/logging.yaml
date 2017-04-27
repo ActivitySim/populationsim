@@ -9,23 +9,23 @@ logging:
 
   # Configuring the default (root) logger is highly recommended
   root:
-    level: !!python/name:logging.INFO
-    handlers: [console, logfile]
+    level: !!python/name:logging.NOTSET
+    handlers: [console]
 
   loggers:
 
-    popsim:
-      level: !!python/name:logging.DEBUG
+    populationsim:
+      level: !!python/name:logging.INFO
       handlers: [console, logfile]
       propagate: false
 
     activitysim:
-      level: !!python/name:logging.DEBUG
+      level: !!python/name:logging.INFO
       handlers: [console, logfile]
       propagate: false
 
     orca:
-      level: !!python/name:logging.INFO
+      level: !!python/name:logging.WARN
       handlers: [console, logfile]
       propagate: false
 
@@ -33,9 +33,9 @@ logging:
 
     logfile:
       class: logging.FileHandler
-      filename: !!python/object/apply:activitysim.core.tracing.log_file_path ['popsim.log']
+      filename: !!python/object/apply:activitysim.core.tracing.log_file_path ['asim.log']
       mode: w
-      formatter: simpleFormatter
+      formatter: fileFormatter
       level: !!python/name:logging.NOTSET
 
     console:
@@ -43,13 +43,14 @@ logging:
       stream: ext://sys.stdout
       formatter: simpleFormatter
       #level: !!python/name:logging.NOTSET
-      level: !!python/name:logging.WARN
+      level: !!python/name:logging.DEBUG
 
   formatters:
 
     simpleFormatter:
       class: !!python/name:logging.Formatter
-      format: '%(levelname)s - %(name)s - %(message)s'
+      # format: '%(levelname)s - %(name)s - %(message)s'
+      format: '%(levelname)s - %(message)s'
       datefmt: '%d/%m/%Y %H:%M:%S'
 
     fileFormatter:

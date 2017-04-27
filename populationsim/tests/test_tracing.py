@@ -9,11 +9,11 @@ import pytest
 import orca
 import pandas as pd
 
-import simca.tracing as tracing
+import activitysim.core.tracing as tracing
 
 
 def close_handlers():
-    for logger_name in ['simca', 'orca']:
+    for logger_name in ['activitysim', 'orca']:
         logger = logging.getLogger(logger_name)
         logger.handlers = []
         logger.propagate = True

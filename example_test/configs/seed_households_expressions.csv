@@ -1,2 +1,3 @@
 Description,Target,Expression
-HH is a family,FAMTAG,pd.notnull( NPF ) * 1
+HH is a family,FAMTAG,households.TYPE
+,x,households.TYPE/0.0
