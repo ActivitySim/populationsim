@@ -27,13 +27,14 @@ def test_Konduri():
     initial_weights = [1, 1, 1, 1, 1, 1, 1, 1]
 
     # column totals which the final weighted incidence table sums must satisfy
-    constraints = [35, 65, 91, 65, 104]
+    control_totals = [35, 65, 91, 65, 104]
 
+    # one for every column in incidence_table
     control_importance_weights = 100000
 
     weights, controls, status = list_balancer(
         incidence_table=incidence_table,
-        constraints=constraints,
+        control_totals=control_totals,
         initial_weights=initial_weights,
         control_importance_weights=control_importance_weights,
         master_control_index=None)

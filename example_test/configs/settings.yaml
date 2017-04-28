@@ -1,0 +1,24 @@
+
+#store: calm_psim.h5
+
+# ordered list
+input_pre_processor:
+  - seed_households
+  - seed_persons
+
+seed_households:
+  expression_filename: seed_households_expressions.csv
+  df_alias: households
+  filename : hh_sample.csv
+  index_col: hh_id
+  column_map:
+    SERIALNO: hh_id
+    WGTP: weight
+
+seed_persons:
+  # expression_filename: seed_persons_expressions.csv
+  filename : per_sample.csv
+  column_map:
+    SERIALNO: hh_id
+    SPORDER: per_num
+
