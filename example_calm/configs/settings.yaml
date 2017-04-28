@@ -1,52 +1,112 @@
 
-store: calm_psim.h5
+#store: calm_psim.h5
 
-seed_households:
-  filename : pums_hhs.csv
-  id : hhnum
-  seed_zone_id : puma
-  weight : wgtp
 
-seed_persons: 
-  filename : pums_pers.csv
-  hh_id : SERIALNO
+household_weight_col: WGTP
+household_id_col: hh_id
 
-lower_level_geographies: mid,low
+# ordered list
+input_pre_processor:
+  - households
+  - persons
+  - geo_cross_walk
+  # the following will eventually be created by setup_data_structures step
+  - low_control_data
+  - mid_control_data
+  - meta_control_data
 
-geographic_crosswalk:
-  filename : geocwalk.csv
-  seed_id : puma
-  meta_id : district
-  mid_id : taz
-  low_id : maz
+households:
+  filename : seed_households.csv
+  index_col: hh_id
+  column_map:
+    SERIALNO: hh_id
 
-meta_control_data :
-  filename : districts.csv
-  id : district
+persons:
+  # expression_filename: seed_persons_expressions.csv
+  filename : seed_persons.csv
+  column_map:
+    SERIALNO: hh_id
+    SPORDER: per_num
 
-mid_control_data :
-  filename : tazs.csv
-  id : taz
+geo_cross_walk:
+  filename : geo_cross_walk.csv
+  column_map:
+    TRACTCE: TRACT
 
-low_control_data :
-  filename :  mazs.csv
-  id : maz
+low_control_data:
+  filename : low_control_data.csv
 
-input_pre_processor: 
-  seed_households : seed_households_expressions.csv 
-  seed_persons : seed_persons_expressions.csv 
-  meta_control_data : meta_control_data_expressions.csv 
-  mid_control_data : mid_control_data_expressions.csv 
-  low_control_data : low_control_data_expressions.csv 
+mid_control_data:
+  filename : mid_control_data.csv
 
-controls : controls.csv
+meta_control_data:
+  filename : meta_control_data.csv
 
-maxExpansionFactor : 15
+geographies:
+  seed:
+    id_column: PUMA
+  meta:
+    id_column: irrelevant
+  mid:
+    control_data_table: mid_control_data
+    id_column: TRACT
+  low:
+    control_data_table: low_control_data
+    id_column: TAZ
+  lower_level_geographies: [mid,low]
 
-expanded_households :
-  filename : households.csv
-  output_fields : serialno, np, nwrkrs_esr, hincp
 
-expanded_persons :
-  filename : persons.csv
-  output_fields : sporder, agep, relp, employed
+#####
+
+#store: calm_psim.h5
+#
+#seed_households:
+#  filename : pums_hhs.csv
+#  id : hhnum
+#  seed_zone_id : puma
+#  weight : wgtp
+#
+#seed_persons:
+#  filename : pums_pers.csv
+#  hh_id : SERIALNO
+#
+#lower_level_geographies: mid,low
+#
+#geographic_crosswalk:
+#  filename : geocwalk.csv
+#  seed_id : puma
+#  meta_id : district
+#  mid_id : taz
+#  low_id : maz
+#
+#meta_control_data :
+#  filename : districts.csv
+#  id : district
+#
+#mid_control_data :
+#  filename : tazs.csv
+#  id : taz
+#
+#low_control_data :
+#  filename :  mazs.csv
+#  id : maz
+#
+#input_pre_processor:
+#  seed_households : seed_households_expressions.csv
+#  seed_persons : seed_persons_expressions.csv
+#  meta_control_data : meta_control_data_expressions.csv
+#  mid_control_data : mid_control_data_expressions.csv
+#  low_control_data : low_control_data_expressions.csv
+#
+#controls : controls.csv
+#
+#maxExpansionFactor : 15
+#
+#expanded_households :
+#  filename : households.csv
+#  output_fields : serialno, np, nwrkrs_esr, hincp
+#
+#expanded_persons :
+#  filename : persons.csv
+#  output_fields : sporder, agep, relp, employed
+

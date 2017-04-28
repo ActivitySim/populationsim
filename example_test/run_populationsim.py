@@ -10,16 +10,48 @@ from activitysim.core import pipeline
 
 from activitysim.core.tracing import print_elapsed_time
 
-import extensions
-
+from populationsim import steps
 
 tracing.config_logger()
 
 t0 = print_elapsed_time()
 
+# setup geographic correspondence, seeds, control sets,
+# weights, expansion factors, and incidence tables
+orca.run(['setup_data_structures'])
+
+
 _MODELS = [
-    'input_pre_processor'
+    # read input tables, processes with pandas expressions,
+    # and creates tables in the datastore
+    'input_pre_processor',
+
+    # setup geographic correspondence, seeds, control sets,
+    # weights, expansion factors, and incidence tables
+    'setup_data_structures',
+
+    # seed (puma) balancing, meta level balancing, meta
+    # control factoring, and meta final balancing
+    # 'initial_seed_balancing',
+
+    # final balancing for each seed (puma) zone with aggregated
+    # low and mid-level controls and distributed meta-level controls
+    # 'final_seed_balancing',
+
+    # iteratively loop through zones and list balance each
+    # lower-level zone within a meta zone and then each next-lower-level
+    # zone within a lower-level zone, etc.  This is the current procedure,
+    # which is being revised.
+    # 'lower_geography_allocation',
+
+    # expand household and person records with final weights
+    # to one household and one person record per weight with unique IDs
+    # 'expand_population',
+
+    # write the household and person files to CSV files
+    # 'write_results'
 ]
+
 
 # If you provide a resume_after argument to pipeline.run
 # the pipeline manager will attempt to load checkpointed tables from the checkpoint store

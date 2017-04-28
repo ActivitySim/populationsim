@@ -359,6 +359,6 @@ if __name__ == "__main__":
 
     seed_households.to_csv(output_folder + "seed_households.csv", index=False)
     seed_persons.to_csv(output_folder + "seed_persons.csv", index=False)
-    low_control_data.to_csv(output_folder + "low_control_data.csv", index=False)
-    mid_control_data.to_csv(output_folder + "mid_control_data.csv", index=False)
-    meta_control_data.to_csv(output_folder + "meta_control_data.csv", index=False)
+    low_control_data.to_csv(output_folder + "low_control_data.csv", index=True)
+    mid_control_data.to_csv(output_folder + "mid_control_data.csv", index=True)
+    meta_control_data.to_csv(output_folder + "meta_control_data.csv", index=True)

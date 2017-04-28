@@ -1,9 +1,12 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
+import logging
 import numpy as np
 
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 MAX_ITERATIONS = 10000
 
@@ -14,6 +17,69 @@ MINIMUM_IMPORTANCE = 1.0
 MAXIMUM_RELAXATION_FACTOR = 1000000
 MIN_CONTROL_VALUE = 0.1
 MAX_INT = (1 << 31)
+
+
+class ListBalancer(object):
+
+    def __init__(self,
+                 incidence_table,
+                 initial_weights=[],
+                 control_totals=[],
+                 control_importance_weights=[],
+                 lb_weights=None,
+                 ub_weights=None,
+                 master_control_index=None,
+                 max_iterations=MAX_ITERATIONS):
+
+        if isinstance(incidence_table, pd.DataFrame):
+            self.incidence_table = incidence_table
+        elif isinstance(incidence_table, pd.Index):
+            self.incidence_table = pd.DataFrame(index=incidence_table)
+        else:
+            raise RuntimeError("ListBalancer incidence_table unknown type")
+
+        assert len(initial_weights == len(self.incidence_table.index))
+
+        self.control_totals = control_totals
+        self.initial_weights = initial_weights
+        self.control_importance_weights = control_importance_weights
+        self.lb_weights = lb_weights
+        self.ub_weights = ub_weights
+        self.master_control_index = master_control_index
+        self.max_iterations = max_iterations
+
+    def dump(self):
+        print "control_totals", self.control_totals
+        print "control_importance_weights", self.control_importance_weights
+        print "initial_weights\n", self.initial_weights.head()
+        print "incidence_table\n", self.incidence_table.head()
+
+    def add_control_column(self, target, incidence, control_total, control_importance_weight):
+
+        assert len(self.incidence_table.columns) == len(self.control_totals)
+        assert len(self.incidence_table.columns) == len(self.control_importance_weights)
+
+        self.incidence_table[target] = incidence
+        self.control_totals.append(control_total)
+        self.control_importance_weights.append(control_importance_weight)
+
+    def balance(self):
+
+        assert len(self.incidence_table.columns) == len(self.control_totals)
+        assert len(self.incidence_table.columns) == len(self.control_importance_weights)
+
+        self.weights, self.controls, self.status = list_balancer(
+            self.incidence_table,
+            self.control_totals,
+            self.initial_weights,
+            self.control_importance_weights,
+            self.lb_weights,
+            self.ub_weights,
+            self.master_control_index,
+            self.max_iterations
+        )
+
+        return self.status
 
 
 def list_balancer(incidence_table,
@@ -34,7 +100,7 @@ def list_balancer(incidence_table,
     weights['lower_bound'] = lb_weights if lb_weights is not None else 0.0
     weights['upper_bound'] = ub_weights if ub_weights is not None else MAX_INT
 
-    # one row for every column in incidenceTable
+    # one row for every column in incidence_table
     controls = pd.DataFrame(index=range(control_count))
 
     # assign incidence_table column names to corresponding control rows (informational)
@@ -109,6 +175,8 @@ def list_balancer(incidence_table,
         delta = (weights_final - weights_previous).abs().sum() / sample_count
 
         converged = delta < MAX_GAP and max_gamma_dif < MAX_GAP
+
+        logger.debug("iter %s delta %s max_gamma_dif %s" % (iter, delta, max_gamma_dif))
 
         if converged:
             break

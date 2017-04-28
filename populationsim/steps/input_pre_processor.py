@@ -24,17 +24,19 @@ def input_pre_processor(settings, configs_dir, data_dir):
         return
 
     for table in table_list:
-        print "input_pre_processor processing %s" % table
+        logger.info("input_pre_processor processing %s" % table)
 
         table_info = settings.get(table, None)
-
 
         # read the csv file
         data_filename = table_info.get('filename', None)
         data_file_path = os.path.join(data_dir, data_filename)
         if not os.path.exists(data_file_path):
-            raise RuntimeError("input_pre_processor %s - input file not found: %" % (table, data_file_path, ))
-        df = pd.read_csv(data_file_path, comment='#')
+            raise RuntimeError("input_pre_processor %s - input file not found: %s"
+                               % (table, data_file_path, ))
+
+        logger.info("Reading csv file %s" % data_file_path)
+        df = pd.read_csv(data_file_path)
 
         # rename columns
         column_map = table_info.get('column_map', None)
@@ -54,7 +56,8 @@ def input_pre_processor(settings, configs_dir, data_dir):
         if expression_filename:
             expression_file_path = os.path.join(configs_dir, expression_filename)
             if not os.path.exists(expression_file_path):
-                raise RuntimeError("input_pre_processor %s - expression file not found: %" % (table, expression_file_path, ))
+                raise RuntimeError("input_pre_processor %s - expression file not found: %s"
+                                   % (table, expression_file_path, ))
             spec = assign.read_assignment_spec(expression_file_path)
 
             df_alias = table_info.get('df_alias', table)
