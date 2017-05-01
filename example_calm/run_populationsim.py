@@ -16,11 +16,6 @@ tracing.config_logger()
 
 t0 = print_elapsed_time()
 
-# setup geographic correspondence, seeds, control sets,
-# weights, expansion factors, and incidence tables
-orca.run(['setup_data_structures'])
-
-
 _MODELS = [
     # read input tables, processes with pandas expressions,
     # and creates tables in the datastore

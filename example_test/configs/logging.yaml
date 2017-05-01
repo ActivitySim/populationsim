@@ -15,12 +15,12 @@ logging:
   loggers:
 
     populationsim:
-      level: !!python/name:logging.INFO
+      level: !!python/name:logging.DEBUG
       handlers: [console, logfile]
       propagate: false
 
     activitysim:
-      level: !!python/name:logging.INFO
+      level: !!python/name:logging.DEBUG
       handlers: [console, logfile]
       propagate: false
 
