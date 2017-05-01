@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 MAX_ITERATIONS = 10000
 
 MAX_GAP = 1.0e-9
+
 IMPORTANCE_ADJUST = 2
 IMPORTANCE_ADJUST_COUNT = 100
 MINIMUM_IMPORTANCE = 1.0
@@ -23,9 +24,9 @@ class ListBalancer(object):
 
     def __init__(self,
                  incidence_table,
-                 initial_weights=[],
-                 control_totals=[],
-                 control_importance_weights=[],
+                 initial_weights=None,
+                 control_totals=None,
+                 control_importance_weights=None,
                  lb_weights=None,
                  ub_weights=None,
                  master_control_index=None,
@@ -40,13 +41,17 @@ class ListBalancer(object):
 
         assert len(initial_weights == len(self.incidence_table.index))
 
-        self.control_totals = control_totals
-        self.initial_weights = initial_weights
-        self.control_importance_weights = control_importance_weights
+        self.control_totals = control_totals if control_totals is not None else []
+        self.initial_weights = initial_weights if initial_weights is not None else []
+
+        self.control_importance_weights \
+            = control_importance_weights if control_importance_weights is not None else []
         self.lb_weights = lb_weights
         self.ub_weights = ub_weights
         self.master_control_index = master_control_index
         self.max_iterations = max_iterations
+
+        assert len(self.incidence_table.columns) == len(self.control_totals)
 
     def dump(self):
         print "control_totals", self.control_totals
@@ -55,6 +60,11 @@ class ListBalancer(object):
         print "incidence_table\n", self.incidence_table.head()
 
     def add_control_column(self, target, incidence, control_total, control_importance_weight):
+
+        logger.info("add_control_column %s control_total %s control_importance_weight %s"
+                    % (target, control_total, control_importance_weight))
+        logger.info("len(self.incidence_table.columns) %s len(self.control_totals) %s"
+                    % (len(self.incidence_table.columns), len(self.control_totals)))
 
         assert len(self.incidence_table.columns) == len(self.control_totals)
         assert len(self.incidence_table.columns) == len(self.control_importance_weights)

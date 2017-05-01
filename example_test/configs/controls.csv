@@ -1,8 +1,9 @@
-Description,Total HH Control,Geography,Seed Table,Importance,Control Field,Expression
-Num HHs,TRUE,low,households,10000,HHBASE,(WGTP > 0) & (WGTP < np.inf)
-Num HHs by persons per HH,FALSE,low,households,5000,HHSIZE1,NP == 1
-Num HHs by persons per HH,FALSE,low,households,5000,HHSIZE1,NP == 1
-Num HHs by persons per HH,FALSE,low,households,5000,HHSIZE1,NP >= 4
-Num students by housing type,FALSE,low,persons,10000,OSUFAM,OSUTAG == 1
-Num HH by household type,FALSE,mid,households,100,SF,HTYPE == 1
-Num persons by occupation category,FALSE,meta,households,100,OCCP1,OCCP == 1
+target,Total HH Control,geography,seed_table,importance,control_field,expression
+num_hh,TRUE,low,households,10000,HHBASE,(households.WGTP > 0) & (households.WGTP < np.inf)
+hh_size_1,FALSE,low,households,5000,HHSIZE1,households.NP == 1
+hh_size_2,FALSE,low,households,5000,HHSIZE2,households.NP == 2
+hh_size_3,FALSE,low,households,5000,HHSIZE3,households.NP == 3
+hh_size_4_plus,FALSE,low,households,5000,HHSIZE4,households.NP >= 4
+students_by_housing_type,FALSE,low,persons,10000,OSUFAM,persons.OSUTAG == 1
+hh_by_type,FALSE,mid,households,100,SF,households.HTYPE == 1
+persons_by_occupation,FALSE,meta,persons,100,OCCP1,persons.OCCP == 1

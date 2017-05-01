@@ -1,24 +1,56 @@
 
 #store: calm_psim.h5
 
+
+household_weight_col: WGTP
+household_id_col: hh_id
+
 # ordered list
 input_pre_processor:
-  - seed_households
-  - seed_persons
+  - households
+  - persons
+  - geo_cross_walk
+  # the following will eventually be created by setup_data_structures step
+  - low_control_data
+  - mid_control_data
+  - meta_control_data
 
-seed_households:
-  expression_filename: seed_households_expressions.csv
-  df_alias: households
-  filename : hh_sample.csv
+households:
+  filename : seed_households.csv
   index_col: hh_id
   column_map:
     SERIALNO: hh_id
-    WGTP: weight
 
-seed_persons:
+persons:
   # expression_filename: seed_persons_expressions.csv
-  filename : per_sample.csv
+  filename : seed_persons.csv
   column_map:
     SERIALNO: hh_id
     SPORDER: per_num
 
+geo_cross_walk:
+  filename : geo_cross_walk.csv
+  column_map:
+    TRACTCE: TRACT
+
+low_control_data:
+  filename : low_control_data.csv
+
+mid_control_data:
+  filename : mid_control_data.csv
+
+meta_control_data:
+  filename : meta_control_data.csv
+
+geographies:
+  seed:
+    id_column: PUMA
+  meta:
+    id_column: irrelevant
+  mid:
+    control_data_table: mid_control_data
+    id_column: TRACT
+  low:
+    control_data_table: low_control_data
+    id_column: TAZ
+  lower_level_geographies: [mid,low]

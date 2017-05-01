@@ -16,11 +16,6 @@ tracing.config_logger()
 
 t0 = print_elapsed_time()
 
-# setup geographic correspondence, seeds, control sets,
-# weights, expansion factors, and incidence tables
-orca.run(['setup_data_structures'])
-
-
 _MODELS = [
     # read input tables, processes with pandas expressions,
     # and creates tables in the datastore
@@ -32,7 +27,7 @@ _MODELS = [
 
     # seed (puma) balancing, meta level balancing, meta
     # control factoring, and meta final balancing
-    # 'initial_seed_balancing',
+    'initial_seed_balancing',
 
     # final balancing for each seed (puma) zone with aggregated
     # low and mid-level controls and distributed meta-level controls
@@ -57,17 +52,19 @@ _MODELS = [
 # the pipeline manager will attempt to load checkpointed tables from the checkpoint store
 # and resume pipeline processing on the next submodel step after the specified checkpoint
 resume_after = None
-# resume_after = 'input_pre_processor'
+resume_after = 'setup_data_structures'
 
 pipeline.run(models=_MODELS, resume_after=resume_after)
 
 
 # write final versions of all checkpointed dataframes to CSV files to review results
-for table_name in pipeline.checkpointed_tables():
-    file_name = "final_%s_table.csv" % table_name
-    file_path = os.path.join(orca.get_injectable("output_dir"), file_name)
-    pipeline.get_table(table_name).to_csv(file_path)
-
+if True:
+    t0 = print_elapsed_time()
+    for table_name in pipeline.checkpointed_tables():
+        file_name = "final_%s_table.csv" % table_name
+        file_path = os.path.join(orca.get_injectable("output_dir"), file_name)
+        pipeline.get_table(table_name).to_csv(file_path)
+    t0 = print_elapsed_time("write final versions of all checkpointed dataframes to CSV", t0)
 
 # tables will no longer be available after pipeline is closed
 pipeline.close()
