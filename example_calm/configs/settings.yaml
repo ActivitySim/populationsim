@@ -46,7 +46,7 @@ geographies:
   seed:
     id_column: PUMA
   meta:
-    id_column: irrelevant
+    id_column: district
   mid:
     control_data_table: mid_control_data
     id_column: TRACT

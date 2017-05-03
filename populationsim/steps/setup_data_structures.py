@@ -9,13 +9,12 @@ import orca
 import pandas as pd
 import numpy as np
 
-from activitysim.core import assign
-
+from ..assign import assign_variable
 
 logger = logging.getLogger(__name__)
 
 
-@orca.injectable()
+@orca.injectable(cache=True)
 def control_spec(settings, configs_dir):
 
     # read the csv file
@@ -28,89 +27,32 @@ def control_spec(settings, configs_dir):
     logger.info("Reading control file %s" % data_file_path)
     df = pd.read_csv(data_file_path)
 
+    validate_geography_settings(settings, df)
+
     return df
 
 
-def assign_variable(target, expression, df, locals_dict, df_alias=None, trace_rows=None):
-    """
-    Evaluate an expression of a given data table.
+def validate_geography_settings(settings, control_spec):
 
-    Expressions are evaluated using Python's eval function.
-    Python expressions have access to variables in locals_d (and df being
-    accessible as variable df.) They also have access to previously assigned
-    targets as the assigned target name.
+    if 'lower_level_geographies' not in settings:
+        raise RuntimeError("lower_level_geographies not specified in settings")
 
-    Users should take care that expressions should result in
-    a Pandas Series (scalars will be automatically promoted to series.)
+    if 'geographies' not in settings:
+        raise RuntimeError("'geographies' not found in settings")
 
-    Parameters
-    ----------
-    assignment_expressions : pandas.DataFrame of target assignment expressions
-        target: target column names
-        expression: pandas or python expression to evaluate
-    df : pandas.DataFrame
-    locals_d : Dict
-        This is a dictionary of local variables that will be the environment
-        for an evaluation of "python" expression.
-    trace_rows: series or array of bools to use as mask to select target rows to trace
+    sub_geographies = settings['lower_level_geographies']
+    geographies = settings['geographies']
 
-    Returns
-    -------
-    result : pandas.Series
-        Will have the index of `df` and columns named by target and containing
-        the result of evaluating expression
-    trace_df : pandas.Series or None
-        a series containing the eval result values for the assignment expression
-    """
+    for g in sub_geographies:
+        if g not in geographies:
+            raise RuntimeError("lower_level_geography '%s' not found in geographies" % g)
 
-    np_logger = assign.NumpyLogger(logger)
+    if 'geography' not in control_spec.columns:
+        raise RuntimeError("missing geography column in controls file")
 
-    def to_series(x, target=None):
-        if x is None or np.isscalar(x):
-            if target:
-                logger.warn("WARNING: assign_variables promoting scalar %s to series" % target)
-            return pd.Series([x] * len(df.index), index=df.index)
-        return x
-
-    trace_results = None
-
-    # avoid touching caller's passed-in locals_d parameter (they may be looping)
-    locals_dict = locals_dict.copy() if locals_dict is not None else {}
-    if df_alias:
-        locals_dict[df_alias] = df
-    else:
-        locals_dict['df'] = df
-
-    try:
-
-        # FIXME - log any numpy warnings/errors but don't raise
-        np_logger.target = str(target)
-        np_logger.expression = str(expression)
-        saved_handler = np.seterrcall(np_logger)
-        save_err = np.seterr(all='log')
-
-        values = to_series(eval(expression, globals(), locals_dict), target=target)
-
-        # if expression.startswith('@'):
-        #     values = to_series(eval(expression, globals(), locals_dict), target=target)
-        # else:
-        #     values = df.eval(expression)
-
-        np.seterr(**save_err)
-        np.seterrcall(saved_handler)
-
-    except Exception as err:
-        logger.error("assign_variables error: %s: %s" % (type(err).__name__, str(err)))
-        logger.error("assign_variables expression: %s = %s"
-                     % (str(target), str(expression)))
-
-        # values = to_series(None, target=target)
-        raise err
-
-    if trace_rows is not None:
-        trace_results = values[trace_rows]
-
-    return values, trace_results
+    for g in control_spec.geography.unique():
+        if g not in geographies:
+            raise RuntimeError("unknown geography column '%s' in control file" % g)
 
 
 def build_incidence_table(control_spec, settings, households_df, persons_df):
@@ -158,11 +100,55 @@ def build_incidence_table(control_spec, settings, households_df, persons_df):
     return incidence_table
 
 
+def build_control_table(control_spec, geographies, settings, geo_cross_walk_df):
+
+    sub_geographies = settings['lower_level_geographies']
+    seed_col = geographies['seed'].get('id_column')
+
+    # only want controls for sub_geographies
+    control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
+    seed_controls = []
+
+
+    for g in sub_geographies:
+
+        # control spec rows for this geography
+        spec = control_spec[ control_spec['geography'] == g ]
+
+        # control_data for this geography
+        geography = geographies[g]
+        control_data_table_name = geography['control_data_table']
+        control_data_df = orca.get_table(control_data_table_name).to_frame()
+
+        # add seed_col to control_data table
+        if seed_col not in control_data_df.columns:
+            geog_col = geography['id_column']
+            geog_to_seed = geo_cross_walk_df[[geog_col, seed_col]].groupby(geog_col, as_index=True).min()[seed_col]
+            control_data_df[seed_col] = control_data_df[geog_col].map(geog_to_seed)
+
+        # sum controls to seed level
+        cols = [seed_col] + spec.control_field.tolist()
+        controls = control_data_df[cols].groupby(seed_col, as_index=True).sum()
+
+        seed_controls.append(controls)
+
+    # concat geography columns
+    seed_controls = pd.concat(seed_controls, axis=1)
+
+    # rename columns from seed_col to target
+    columns = { column: target for column, target in zip(control_spec.control_field, control_spec.target)}
+    seed_controls.rename(columns=columns, inplace=True)
+
+    # reorder columns to match order of control_spec rows
+    seed_controls = seed_controls[ control_spec.target ]
+
+    return seed_controls
+
 @orca.step()
-def setup_data_structures(settings, households, persons, control_spec):
+def setup_data_structures(settings, households, persons, control_spec, geo_cross_walk):
 
     geographies = settings.get('geographies')
-    seed_col = geographies['seed'].get('id_column')
+
     hh_weight_col = settings['household_weight_col']
 
     households_df = households.to_frame()
@@ -170,13 +156,22 @@ def setup_data_structures(settings, households, persons, control_spec):
 
     incidence_table = build_incidence_table(control_spec, settings, households_df, persons_df)
 
-    # remember these before we add in geog selection cols
-    incidence_cols = incidence_table.columns.values
-    orca.add_injectable('incidence_cols', incidence_cols)
-
+    # add seed_col to incidence table
+    seed_col = geographies['seed'].get('id_column')
     incidence_table[seed_col] = households_df[seed_col]
+
+    # add meta_col to incidence table
+    meta_col = geographies['meta'].get('id_column')
+    geo_cross_walk_df = geo_cross_walk.to_frame()
+    seed_to_meta = geo_cross_walk_df[[seed_col, meta_col]].groupby(seed_col, as_index=True).min()[meta_col]
+    incidence_table[meta_col] = incidence_table[seed_col].map(seed_to_meta)
+
     incidence_table['initial_weight'] = households_df[hh_weight_col]
 
-    print "incidence_table\n", incidence_table
+    #print "incidence_table\n", incidence_table
 
     orca.add_table('incidence_table', incidence_table)
+
+    seed_controls = build_control_table(control_spec, geographies, settings, geo_cross_walk_df)
+    orca.add_table('seed_controls', seed_controls)
+

@@ -8,73 +8,43 @@ import orca
 import pandas as pd
 import numpy as np
 
-from activitysim.core import assign
 from ..balancer import ListBalancer
 
 
 logger = logging.getLogger(__name__)
 
 
-def load_control_data_tables(geographies, seed_id, sub_geographies, geo_cross_walk_df):
+def seed_balancer(seed_control_spec, seed_id, seed_col, master_control_col,
+                  incidence_df, seed_controls_df):
 
-    seed_col = geographies['seed'].get('id_column')
+    # slice incidence rows for this seed geography
+    incidence_df = incidence_df[incidence_df[seed_col] == seed_id]
 
-    # subset of crosswalk table for this seed geography
-    seed_crosswalk_df = geo_cross_walk_df[geo_cross_walk_df[seed_col] == seed_id]
+    # initial hh weights
+    initial_weights = incidence_df['initial_weight']
 
-    # preload control_data tables for sub_geographies
-    control_data_tables = {}
-    for g in sub_geographies:
+    # incidence table should only have control columns
+    incidence_df = incidence_df[seed_control_spec.target]
 
-        geography = geographies[g]
-        control_data_table_name = geography['control_data_table']
-        control_data_df = orca.get_table(control_data_table_name).to_frame()
+    control_totals = seed_controls_df.loc[seed_id].values
 
-        if seed_col in control_data_df.columns:
-            logger.info("seed_col %s in control_data_df" % seed_col)
-            control_data_df = control_data_df[control_data_df[seed_col] == seed_id]
-        else:
-            # FIXME - perhaps we should add seed_col if necessary in setup_data_structures?
-            logger.info("seed_col %s not in control_data_df" % seed_col)
-            # unique ids for this geography level in current seed_geography
-            geog_col = geography['id_column']
-            geog_ids = seed_crosswalk_df[geog_col].unique()
-            control_data_df = control_data_df[control_data_df[geog_col].isin(geog_ids)]
+    control_importance_weights = seed_control_spec.importance
 
-        control_data_tables[g] = control_data_df
-
-    return control_data_tables
-
-
-def seed_balancer(control_spec, seed_id, geographies, settings,
-                  geo_cross_walk_df,
-                  incidence_df, incidence_cols):
-
-    sub_geographies = geographies['lower_level_geographies']
-
-    # preload dict of control_data tables for sub_geographies
-    control_data_tables \
-        = load_control_data_tables(geographies, seed_id, sub_geographies, geo_cross_walk_df)
-
-    # only want controls for sub_geographies
-    control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
-
-    # control total is sum of control_field of control_data_table for specified geography
-    control_totals \
-        = [control_data_tables.get(geography)[control_field].sum()
-           for geography, control_field in zip(control_spec.geography, control_spec.control_field)]
-
-    control_importance_weights = control_spec.importance
-    initial_weights = incidence_df['initial_weight']+1
-
-    # we only want the controls for sub_geographies
-    incidence_df = incidence_df[control_spec.target]
+    # determine master_control_index if specified in settings
+    master_control_index = None
+    if master_control_col:
+        if master_control_col not in incidence_df.columns:
+            print incidence_df.columns
+            raise RuntimeError("total_hh_control column '%s' not found in incidence table"
+                               % master_control_col)
+        master_control_index = incidence_df.columns.get_loc(master_control_col)
 
     balancer = ListBalancer(
         incidence_table=incidence_df,
         initial_weights=initial_weights,
         control_totals=control_totals,
-        control_importance_weights=control_importance_weights
+        control_importance_weights=control_importance_weights,
+        master_control_index=master_control_index
     )
 
     return balancer
@@ -82,18 +52,23 @@ def seed_balancer(control_spec, seed_id, geographies, settings,
 
 @orca.step()
 def initial_seed_balancing(settings, geo_cross_walk, control_spec,
-                           incidence_table, incidence_cols):
+                           incidence_table, seed_controls):
 
-    # seed (puma) balancing, meta level balancing, meta
-    # control factoring, and meta final balancing
+    geo_cross_walk_df = geo_cross_walk.to_frame()
+    incidence_df = incidence_table.to_frame()
+    seed_controls_df = seed_controls.to_frame()
 
     geographies = settings.get('geographies')
-
     seed_col = geographies['seed'].get('id_column')
-    geo_cross_walk_df = geo_cross_walk.to_frame()
 
-    incidence_df = incidence_table.to_frame()
+    # only want control_spec rows for sub_geographies
+    sub_geographies = settings['lower_level_geographies']
+    seed_control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
 
+    # determine master_control_index if specified in settings
+    master_control_col = settings.get('total_hh_control', None)
+
+    # run balancer for each seed geography
     weight_list = []
     seed_ids = geo_cross_walk_df[seed_col].unique()
     for seed_id in seed_ids:
@@ -101,23 +76,22 @@ def initial_seed_balancing(settings, geo_cross_walk, control_spec,
         logger.info("initial_seed_balancing seed id %s" % seed_id)
 
         balancer = seed_balancer(
-            control_spec,
+            seed_control_spec,
             seed_id,
-            geographies,
-            settings,
-            geo_cross_walk_df,
-            incidence_df=incidence_df[incidence_df[seed_col] == seed_id],
-            incidence_cols=incidence_cols)
+            seed_col,
+            master_control_col,
+            incidence_df=incidence_df,
+            seed_controls_df=seed_controls_df)
 
         # balancer.dump()
-
         status = balancer.balance()
 
+        # FIXME - what to do if it fails to converge?
         logger.info("seed_balancer status: %s" % status)
 
-        weights = balancer.weights['final']
+        weight_list.append(balancer.weights['final'])
 
-        weight_list.append(weights)
-
+    # bulk concat all seed level results
     weights = pd.concat(weight_list)
+
     orca.add_column('incidence_table', 'seed_weight', weights)
