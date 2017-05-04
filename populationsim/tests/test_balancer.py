@@ -6,7 +6,7 @@ import pandas as pd
 import numpy.testing as npt
 import pytest
 
-from ..balancer import list_balancer
+from ..balancer import ListBalancer
 
 
 def test_Konduri():
@@ -32,12 +32,18 @@ def test_Konduri():
     # one for every column in incidence_table
     control_importance_weights = 100000
 
-    weights, controls, status = list_balancer(
+    balancer = ListBalancer(
         incidence_table=incidence_table,
-        control_totals=control_totals,
         initial_weights=initial_weights,
+        control_totals=control_totals,
         control_importance_weights=control_importance_weights,
-        master_control_index=None)
+        master_control_index=None
+        )
+
+    status = balancer.balance()
+
+    weights = balancer.weights
+    controls = balancer.controls
 
     weighted_sum = \
         [round((incidence_table.ix[:, c] * weights.final).sum(), 2) for c in controls.index]

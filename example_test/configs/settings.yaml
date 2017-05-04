@@ -4,6 +4,8 @@
 
 household_weight_col: WGTP
 household_id_col: hh_id
+total_hh_control: num_hh
+max_expansion_factor: 5
 
 # ordered list
 input_pre_processor:
@@ -11,9 +13,9 @@ input_pre_processor:
   - persons
   - geo_cross_walk
   # the following will eventually be created by setup_data_structures step
-  - low_control_data
-  - mid_control_data
-  - meta_control_data
+  - low_controls
+  - mid_controls
+  - meta_controls
 
 households:
   filename : seed_households.csv
@@ -33,24 +35,26 @@ geo_cross_walk:
   column_map:
     TRACTCE: TRACT
 
-low_control_data:
-  filename : low_control_data.csv
+low_controls:
+  filename : low_controls.csv
 
-mid_control_data:
-  filename : mid_control_data.csv
+mid_controls:
+  filename : mid_controls.csv
 
-meta_control_data:
-  filename : meta_control_data.csv
+meta_controls:
+  filename : meta_controls.csv
 
 geographies:
   seed:
     id_column: PUMA
   meta:
-    id_column: irrelevant
+    control_data_table: meta_controls
+    id_column: DISTRICT
   mid:
-    control_data_table: mid_control_data
+    control_data_table: mid_controls
     id_column: TRACT
   low:
-    control_data_table: low_control_data
+    control_data_table: low_controls
     id_column: TAZ
-  lower_level_geographies: [mid,low]
+
+lower_level_geographies: [mid,low]
