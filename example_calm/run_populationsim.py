@@ -17,21 +17,11 @@ tracing.config_logger()
 t0 = print_elapsed_time()
 
 _MODELS = [
-    # read input tables, processes with pandas expressions,
-    # and creates tables in the datastore
     'input_pre_processor',
-
-    # setup geographic correspondence, seeds, control sets,
-    # weights, expansion factors, and incidence tables
     'setup_data_structures',
-
-    # seed (puma) balancing, meta level balancing, meta
-    # control factoring, and meta final balancing
     'initial_seed_balancing',
-
-    # final balancing for each seed (puma) zone with aggregated
-    # low and mid-level controls and distributed meta-level controls
-    # 'final_seed_balancing',
+    'meta_control_factoring',
+    'final_seed_balancing',
 
     # iteratively loop through zones and list balance each
     # lower-level zone within a meta zone and then each next-lower-level
@@ -47,12 +37,11 @@ _MODELS = [
     # 'write_results'
 ]
 
-
 # If you provide a resume_after argument to pipeline.run
 # the pipeline manager will attempt to load checkpointed tables from the checkpoint store
 # and resume pipeline processing on the next submodel step after the specified checkpoint
 resume_after = None
-resume_after = 'setup_data_structures'
+# resume_after = 'setup_data_structures'
 
 pipeline.run(models=_MODELS, resume_after=resume_after)
 
