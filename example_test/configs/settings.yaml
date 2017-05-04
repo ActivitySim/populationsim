@@ -5,6 +5,7 @@
 household_weight_col: WGTP
 household_id_col: hh_id
 total_hh_control: num_hh
+max_expansion_factor: 5
 
 # ordered list
 input_pre_processor:

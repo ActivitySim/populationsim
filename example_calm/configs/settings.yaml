@@ -4,6 +4,8 @@
 
 household_weight_col: WGTP
 household_id_col: hh_id
+total_hh_control: num_hh
+max_expansion_factor: 30
 
 # ordered list
 input_pre_processor:
@@ -46,14 +48,15 @@ geographies:
   seed:
     id_column: PUMA
   meta:
-    id_column: district
+    id_column: REGION
   mid:
     control_data_table: mid_control_data
     id_column: TRACT
   low:
     control_data_table: low_control_data
     id_column: TAZ
-  lower_level_geographies: [mid,low]
+
+lower_level_geographies: [mid,low]
 
 
 #####

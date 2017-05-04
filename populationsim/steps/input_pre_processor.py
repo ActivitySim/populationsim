@@ -73,4 +73,3 @@ def input_pre_processor(settings, configs_dir, data_dir):
 
         logger.info("adding table %s" % table)
         orca.add_table(table, df)
-

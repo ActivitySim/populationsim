@@ -25,7 +25,7 @@ def control_spec(settings, configs_dir):
             "initial_seed_balancing - control file not found: %s" % (data_file_path,))
 
     logger.info("Reading control file %s" % data_file_path)
-    df = pd.read_csv(data_file_path)
+    df = pd.read_csv(data_file_path, comment='#')
 
     validate_geography_settings(settings, df)
 
@@ -109,11 +109,10 @@ def build_control_table(control_spec, geographies, settings, geo_cross_walk_df):
     control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
     seed_controls = []
 
-
     for g in sub_geographies:
 
         # control spec rows for this geography
-        spec = control_spec[ control_spec['geography'] == g ]
+        spec = control_spec[control_spec['geography'] == g]
 
         # control_data for this geography
         geography = geographies[g]
@@ -123,7 +122,9 @@ def build_control_table(control_spec, geographies, settings, geo_cross_walk_df):
         # add seed_col to control_data table
         if seed_col not in control_data_df.columns:
             geog_col = geography['id_column']
-            geog_to_seed = geo_cross_walk_df[[geog_col, seed_col]].groupby(geog_col, as_index=True).min()[seed_col]
+            # create series mapping geog_col id to seed geography id
+            geog_to_seed = geo_cross_walk_df[[geog_col, seed_col]]\
+                .groupby(geog_col, as_index=True).min()[seed_col]
             control_data_df[seed_col] = control_data_df[geog_col].map(geog_to_seed)
 
         # sum controls to seed level
@@ -136,13 +137,14 @@ def build_control_table(control_spec, geographies, settings, geo_cross_walk_df):
     seed_controls = pd.concat(seed_controls, axis=1)
 
     # rename columns from seed_col to target
-    columns = { column: target for column, target in zip(control_spec.control_field, control_spec.target)}
+    columns = {c: t for c, t in zip(control_spec.control_field, control_spec.target)}
     seed_controls.rename(columns=columns, inplace=True)
 
     # reorder columns to match order of control_spec rows
-    seed_controls = seed_controls[ control_spec.target ]
+    seed_controls = seed_controls[control_spec.target]
 
     return seed_controls
+
 
 @orca.step()
 def setup_data_structures(settings, households, persons, control_spec, geo_cross_walk):
@@ -153,8 +155,10 @@ def setup_data_structures(settings, households, persons, control_spec, geo_cross
 
     households_df = households.to_frame()
     persons_df = persons.to_frame()
+    geo_cross_walk_df = geo_cross_walk.to_frame()
 
     incidence_table = build_incidence_table(control_spec, settings, households_df, persons_df)
+    incidence_table['initial_weight'] = households_df[hh_weight_col]
 
     # add seed_col to incidence table
     seed_col = geographies['seed'].get('id_column')
@@ -162,16 +166,12 @@ def setup_data_structures(settings, households, persons, control_spec, geo_cross
 
     # add meta_col to incidence table
     meta_col = geographies['meta'].get('id_column')
-    geo_cross_walk_df = geo_cross_walk.to_frame()
-    seed_to_meta = geo_cross_walk_df[[seed_col, meta_col]].groupby(seed_col, as_index=True).min()[meta_col]
+    # create series mapping seed id to meta geography id
+    seed_to_meta \
+        = geo_cross_walk_df[[seed_col, meta_col]].groupby(seed_col, as_index=True).min()[meta_col]
     incidence_table[meta_col] = incidence_table[seed_col].map(seed_to_meta)
-
-    incidence_table['initial_weight'] = households_df[hh_weight_col]
-
-    #print "incidence_table\n", incidence_table
 
     orca.add_table('incidence_table', incidence_table)
 
     seed_controls = build_control_table(control_spec, geographies, settings, geo_cross_walk_df)
     orca.add_table('seed_controls', seed_controls)
-

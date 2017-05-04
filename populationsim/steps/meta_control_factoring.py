@@ -13,9 +13,10 @@ from ..balancer import ListBalancer
 
 logger = logging.getLogger(__name__)
 
+
 def dump_table(table_name, table):
 
-    print "\ntable_name\n", table
+    print "\n%s\n" % table_name, table
 
 
 @orca.step()
@@ -38,36 +39,41 @@ def meta_control_factoring(settings, geo_cross_walk, control_spec, incidence_tab
         hh_level_weights[target] = incidence_df[target] * incidence_df['seed_weight']
 
     # weights of meta targets at seed level
-    seed_level_weights = hh_level_weights.groupby([seed_col, meta_col], as_index=False).sum()
-    seed_level_weights.set_index(seed_col, inplace=True)
-    dump_table("seed_level_weights", seed_level_weights)
+    factored_seed_weights = hh_level_weights.groupby([seed_col, meta_col], as_index=False).sum()
+    factored_seed_weights.set_index(seed_col, inplace=True)
+    dump_table("factored_seed_weights", factored_seed_weights)
 
-    # weights of meta targets at meta level
-    meta_level_weights = seed_level_weights.groupby(meta_col, as_index=True).sum()
-    dump_table("meta_level_weights", meta_level_weights)
+    # weights of meta targets summed from seed level to  meta level
+    factored_meta_weights = factored_seed_weights.groupby(meta_col, as_index=True).sum()
+    dump_table("factored_meta_weights", factored_meta_weights)
 
-    # meta level controls
-    geography = geographies['meta']
-    control_data_table_name = geography['control_data_table']
+    # meta_controls table
+    control_data_table_name = geographies['meta'].get('control_data_table')
     control_data_df = orca.get_table(control_data_table_name).to_frame()
     meta_controls = control_data_df[[meta_col] + meta_control_fields]
     meta_controls.set_index(meta_col, inplace=True)
     dump_table("meta_controls", meta_controls)
 
+    # compute the scaling factors to be applied to the seed-level totals:
     meta_factors = pd.DataFrame(index=meta_controls.index)
     for target, control_field in zip(meta_control_targets, meta_control_fields):
-        meta_factors[target] = meta_controls[control_field] / meta_level_weights[target]
+        meta_factors[target] = meta_controls[control_field] / factored_meta_weights[target]
     dump_table("meta_factors", meta_factors)
 
-    new_meta_controls = pd.DataFrame(index=seed_level_weights.index)
+    # compute seed-level controls from meta-level controls
+    seed_level_meta_controls = pd.DataFrame(index=factored_seed_weights.index)
     for target in meta_control_targets:
-        new_meta_controls[target] = seed_level_weights[target] * seed_level_weights[meta_col].map(meta_factors[target])
-        new_meta_controls[target] = new_meta_controls[target].round().astype(int)
-    dump_table("new_meta_controls", new_meta_controls)
+        #  meta level scaling_factor for this meta_control
+        scaling_factor = factored_seed_weights[meta_col].map(meta_factors[target])
+        # scale the seed_level_meta_controls by meta_level scaling_factor
+        seed_level_meta_controls[target] = factored_seed_weights[target] * scaling_factor
+        # FIXME - not clear why we need to round to int?
+        seed_level_meta_controls[target] = seed_level_meta_controls[target].round().astype(int)
+    dump_table("seed_level_meta_controls", seed_level_meta_controls)
 
-    dump_table("nseed_controls_df", seed_controls_df)
-
-    final_seed_controls = pd.concat([seed_controls_df, new_meta_controls], axis=1)
+    # create final balancing controls
+    # add newly created meta-to-seed level to the existing set of seed level controls
+    final_seed_controls = pd.concat([seed_controls_df, seed_level_meta_controls], axis=1)
     dump_table("final_seed_controls", final_seed_controls)
 
     orca.add_table('final_seed_controls', final_seed_controls)
