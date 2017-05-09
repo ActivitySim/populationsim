@@ -34,18 +34,18 @@ def control_spec(settings, configs_dir):
 
 def validate_geography_settings(settings, control_spec):
 
-    if 'lower_level_geographies' not in settings:
-        raise RuntimeError("lower_level_geographies not specified in settings")
-
     if 'geographies' not in settings:
-        raise RuntimeError("'geographies' not found in settings")
+        raise RuntimeError("geographies not specified in settings")
 
-    sub_geographies = settings['lower_level_geographies']
+    if 'geography_settings' not in settings:
+        raise RuntimeError("'geography_settings' not found in settings")
+
     geographies = settings['geographies']
+    geography_settings = settings['geography_settings']
 
-    for g in sub_geographies:
-        if g not in geographies:
-            raise RuntimeError("lower_level_geography '%s' not found in geographies" % g)
+    for g in geographies:
+        if g not in geography_settings:
+            raise RuntimeError("geography '%s' not found in geography_settings" % g)
 
     if 'geography' not in control_spec.columns:
         raise RuntimeError("missing geography column in controls file")
@@ -65,9 +65,6 @@ def build_incidence_table(control_spec, settings, households_df, persons_df):
         'households': households_df,
         'persons': persons_df,
     }
-
-    print "households index len %s" % len(households_df.index)
-    print "persons index len %s" % len(persons_df.index)
 
     for control_row in control_spec.itertuples():
 
@@ -100,56 +97,75 @@ def build_incidence_table(control_spec, settings, households_df, persons_df):
     return incidence_table
 
 
-def build_control_table(control_spec, geographies, settings, geo_cross_walk_df):
+def build_control_table(geo, control_spec, settings, geo_cross_walk_df):
 
-    sub_geographies = settings['lower_level_geographies']
-    seed_col = geographies['seed'].get('id_column')
+    geography_settings = settings.get('geography_settings')
 
-    # only want controls for sub_geographies
-    control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
-    seed_controls = []
+    control_geographies = settings['geographies']
+    assert geo in control_geographies
+    control_geographies = control_geographies[control_geographies.index(geo):]
 
-    for g in sub_geographies:
+    geo_col = geography_settings[geo].get('id_column')
+
+    # only want controls for control_geographies
+    control_spec = control_spec[control_spec['geography'].isin(control_geographies)]
+    controls_list = []
+
+    for g in control_geographies:
+
+        print "processing g", g
 
         # control spec rows for this geography
         spec = control_spec[control_spec['geography'] == g]
 
+        # are there any controls specified for this geography? (e.g. seed has none)
+        if len(spec.index)==0:
+            continue
+
         # control_data for this geography
-        geography = geographies[g]
-        control_data_table_name = geography['control_data_table']
+        control_data_table_name = geography_settings[g].get('control_data_table')
         control_data_df = orca.get_table(control_data_table_name).to_frame()
 
-        # add seed_col to control_data table
-        if seed_col not in control_data_df.columns:
-            geog_col = geography['id_column']
-            # create series mapping geog_col id to seed geography id
-            geog_to_seed = geo_cross_walk_df[[geog_col, seed_col]]\
-                .groupby(geog_col, as_index=True).min()[seed_col]
-            control_data_df[seed_col] = control_data_df[geog_col].map(geog_to_seed)
+        control_data_columns = [geo_col] + spec.control_field.tolist()
 
-        # sum controls to seed level
-        cols = [seed_col] + spec.control_field.tolist()
-        controls = control_data_df[cols].groupby(seed_col, as_index=True).sum()
+        if g == geo:
+            # for top level, we expect geo_col, and need to group and sum
+            assert geo_col in control_data_df.columns
+            controls = control_data_df[control_data_columns]
+            controls.set_index(geo_col, inplace=True)
+        else:
+            # sum controls to geo level
 
-        seed_controls.append(controls)
+            # add geo_col to control_data table
+            if geo_col not in control_data_df.columns:
+                sub_geo_col = geography_settings[g].get('id_column')
+                # create series mapping sub_geo id to geo id
+                sub_to_geog = geo_cross_walk_df[[sub_geo_col, geo_col]]\
+                    .groupby(sub_geo_col, as_index=True).min()[geo_col]
+                control_data_df[geo_col] = control_data_df[sub_geo_col].map(sub_to_geog)
+
+            # sum controls to geo level
+            controls = control_data_df[control_data_columns].groupby(geo_col, as_index=True).sum()
+
+        controls_list.append(controls)
 
     # concat geography columns
-    seed_controls = pd.concat(seed_controls, axis=1)
+    controls = pd.concat(controls_list, axis=1)
 
     # rename columns from seed_col to target
     columns = {c: t for c, t in zip(control_spec.control_field, control_spec.target)}
-    seed_controls.rename(columns=columns, inplace=True)
+    controls.rename(columns=columns, inplace=True)
 
     # reorder columns to match order of control_spec rows
-    seed_controls = seed_controls[control_spec.target]
+    controls = controls[control_spec.target]
 
-    return seed_controls
+    return controls
 
 
 @orca.step()
 def setup_data_structures(settings, households, persons, control_spec, geo_cross_walk):
 
-    geographies = settings.get('geographies')
+    geography_settings = settings.get('geography_settings')
 
     hh_weight_col = settings['household_weight_col']
 
@@ -161,11 +177,11 @@ def setup_data_structures(settings, households, persons, control_spec, geo_cross
     incidence_table['initial_weight'] = households_df[hh_weight_col]
 
     # add seed_col to incidence table
-    seed_col = geographies['seed'].get('id_column')
+    seed_col = geography_settings['seed'].get('id_column')
     incidence_table[seed_col] = households_df[seed_col]
 
     # add meta_col to incidence table
-    meta_col = geographies['meta'].get('id_column')
+    meta_col = geography_settings['meta'].get('id_column')
     # create series mapping seed id to meta geography id
     seed_to_meta \
         = geo_cross_walk_df[[seed_col, meta_col]].groupby(seed_col, as_index=True).min()[meta_col]
@@ -173,5 +189,11 @@ def setup_data_structures(settings, households, persons, control_spec, geo_cross
 
     orca.add_table('incidence_table', incidence_table)
 
-    seed_controls = build_control_table(control_spec, geographies, settings, geo_cross_walk_df)
-    orca.add_table('seed_controls', seed_controls)
+    geographies = settings['geographies']
+    for g in geographies:
+        controls = build_control_table(g, control_spec, settings, geo_cross_walk_df)
+        control_table_name = '%s_controls' % g
+        orca.add_table(control_table_name, controls)
+
+        print "\n", control_table_name
+        print controls

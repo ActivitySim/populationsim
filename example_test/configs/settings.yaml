@@ -13,9 +13,9 @@ input_pre_processor:
   - persons
   - geo_cross_walk
   # the following will eventually be created by setup_data_structures step
-  - low_controls
-  - mid_controls
-  - meta_controls
+  - low_control_data
+  - mid_control_data
+  - meta_control_data
 
 households:
   filename : seed_households.csv
@@ -35,26 +35,30 @@ geo_cross_walk:
   column_map:
     TRACTCE: TRACT
 
-low_controls:
+low_control_data:
   filename : low_controls.csv
 
-mid_controls:
+mid_control_data:
   filename : mid_controls.csv
 
-meta_controls:
+meta_control_data:
   filename : meta_controls.csv
 
-geographies:
-  seed:
-    id_column: PUMA
+geographies: [meta, seed, mid, low]
+
+geography_settings:
   meta:
-    control_data_table: meta_controls
+    control_data_table: meta_control_data
+    controls_table: meta_controls
     id_column: DISTRICT
+  seed:
+    controls_table: seed_controls
+    id_column: PUMA
   mid:
-    control_data_table: mid_controls
+    control_data_table: mid_control_data
+    controls_table: mid_controls
     id_column: TRACT
   low:
-    control_data_table: low_controls
+    control_data_table: low_control_data
+    controls_table: low_controls
     id_column: TAZ
-
-lower_level_geographies: [mid,low]

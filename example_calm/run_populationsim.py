@@ -23,11 +23,7 @@ _MODELS = [
     'meta_control_factoring',
     'final_seed_balancing',
 
-    # iteratively loop through zones and list balance each
-    # lower-level zone within a meta zone and then each next-lower-level
-    # zone within a lower-level zone, etc.  This is the current procedure,
-    # which is being revised.
-    # 'lower_geography_allocation',
+    'simultaneous_sub_balancing',
 
     # expand household and person records with final weights
     # to one household and one person record per weight with unique IDs
@@ -41,16 +37,16 @@ _MODELS = [
 # the pipeline manager will attempt to load checkpointed tables from the checkpoint store
 # and resume pipeline processing on the next submodel step after the specified checkpoint
 resume_after = None
-# resume_after = 'setup_data_structures'
+resume_after = 'final_seed_balancing'
 
 pipeline.run(models=_MODELS, resume_after=resume_after)
 
 
 # write final versions of all checkpointed dataframes to CSV files to review results
-if False:
+if True:
     t0 = print_elapsed_time()
     for table_name in pipeline.checkpointed_tables():
-        file_name = "final_%s_table.csv" % table_name
+        file_name = "%s.csv" % table_name
         file_path = os.path.join(orca.get_injectable("output_dir"), file_name)
         pipeline.get_table(table_name).to_csv(file_path)
     t0 = print_elapsed_time("write final versions of all checkpointed dataframes to CSV", t0)

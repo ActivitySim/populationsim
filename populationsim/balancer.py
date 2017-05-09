@@ -57,20 +57,6 @@ class ListBalancer(object):
         print "initial_weights\n", self.initial_weights.head()
         print "incidence_table\n", self.incidence_table.head()
 
-    def add_control_column(self, target, incidence, control_total, control_importance_weight):
-
-        logger.info("add_control_column %s control_total %s control_importance_weight %s"
-                    % (target, control_total, control_importance_weight))
-        logger.info("len(self.incidence_table.columns) %s len(self.control_totals) %s"
-                    % (len(self.incidence_table.columns), len(self.control_totals)))
-
-        assert len(self.incidence_table.columns) == len(self.control_totals)
-        assert np.isscalar(self.control_importance_weight)
-
-        self.incidence_table[target] = incidence
-        self.control_totals.append(control_total)
-        self.control_importance_weights.append(control_importance_weight)
-
     def balance(self):
 
         assert len(self.incidence_table.columns) == len(self.control_totals)
