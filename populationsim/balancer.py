@@ -219,7 +219,7 @@ def seed_balancer(seed_control_spec, seed_id, seed_col, total_hh_control_col, ma
     incidence_df = incidence_df[incidence_df[seed_col] == seed_id]
 
     # initial hh weights
-    initial_weights = incidence_df['initial_weight']
+    initial_weights = incidence_df['sample_weight']
 
     # incidence table should only have control columns
     incidence_df = incidence_df[seed_control_spec.target]

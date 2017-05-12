@@ -23,6 +23,8 @@ _MODELS = [
     'meta_control_factoring',
     'final_seed_balancing',
 
+    'integerize_final_seed_weights',
+
     'simultaneous_sub_balancing',
 
     # expand household and person records with final weights

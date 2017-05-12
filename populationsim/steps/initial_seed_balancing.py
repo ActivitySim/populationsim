@@ -105,4 +105,4 @@ def initial_seed_balancing(settings, geo_cross_walk, control_spec,
     # bulk concat all seed level results
     weights = pd.concat(weight_list)
 
-    orca.add_column('incidence_table', 'seed_weight', weights)
+    orca.add_column('incidence_table', 'initial_seed_weight', weights)

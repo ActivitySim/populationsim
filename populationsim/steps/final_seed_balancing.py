@@ -17,11 +17,11 @@ logger = logging.getLogger(__name__)
 
 @orca.step()
 def final_seed_balancing(settings, geo_cross_walk, control_spec,
-                         incidence_table, final_seed_controls):
+                         incidence_table, seed_controls):
 
     geo_cross_walk_df = geo_cross_walk.to_frame()
     incidence_df = incidence_table.to_frame()
-    seed_controls_df = final_seed_controls.to_frame()
+    seed_controls_df = seed_controls.to_frame()
 
     seed_col = settings.get('geography_settings')['seed'].get('id_column')
 

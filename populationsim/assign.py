@@ -65,7 +65,7 @@ def assign_variable(target, expression, df, locals_dict, df_alias=None, trace_ro
 
     try:
 
-        # FIXME - log any numpy warnings/errors but don't raise
+        # log any numpy warnings/errors but don't raise
         np_logger.target = str(target)
         np_logger.expression = str(expression)
         saved_handler = np.seterrcall(np_logger)

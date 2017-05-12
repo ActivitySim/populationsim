@@ -119,7 +119,7 @@ def build_control_table(geo, control_spec, settings, geo_cross_walk_df):
         spec = control_spec[control_spec['geography'] == g]
 
         # are there any controls specified for this geography? (e.g. seed has none)
-        if len(spec.index)==0:
+        if len(spec.index) == 0:
             continue
 
         # control_data for this geography
@@ -174,7 +174,7 @@ def setup_data_structures(settings, households, persons, control_spec, geo_cross
     geo_cross_walk_df = geo_cross_walk.to_frame()
 
     incidence_table = build_incidence_table(control_spec, settings, households_df, persons_df)
-    incidence_table['initial_weight'] = households_df[hh_weight_col]
+    incidence_table['sample_weight'] = households_df[hh_weight_col]
 
     # add seed_col to incidence table
     seed_col = geography_settings['seed'].get('id_column')

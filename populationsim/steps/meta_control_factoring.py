@@ -36,7 +36,7 @@ def meta_control_factoring(settings, control_spec, incidence_table, seed_control
     # weights of meta targets at hh (incidence table) level
     hh_level_weights = incidence_df[[seed_col, meta_col]].copy()
     for target in meta_control_targets:
-        hh_level_weights[target] = incidence_df[target] * incidence_df['seed_weight']
+        hh_level_weights[target] = incidence_df[target] * incidence_df['initial_seed_weight']
 
     # weights of meta targets at seed level
     factored_seed_weights = hh_level_weights.groupby([seed_col, meta_col], as_index=False).sum()
@@ -64,13 +64,11 @@ def meta_control_factoring(settings, control_spec, incidence_table, seed_control
         scaling_factor = factored_seed_weights[meta_col].map(meta_factors[target])
         # scale the seed_level_meta_controls by meta_level scaling_factor
         seed_level_meta_controls[target] = factored_seed_weights[target] * scaling_factor
-        # FIXME - not clear why we need to round to int?
+        # FIXME - why round scaled factored seed_weights to int prior to final seed balancing?
         seed_level_meta_controls[target] = seed_level_meta_controls[target].round().astype(int)
     dump_table("seed_level_meta_controls", seed_level_meta_controls)
 
     # create final balancing controls
-    # add newly created meta-to-seed level to the existing set of seed level controls
-    final_seed_controls = pd.concat([seed_controls_df, seed_level_meta_controls], axis=1)
-    dump_table("final_seed_controls", final_seed_controls)
-
-    orca.add_table('final_seed_controls', final_seed_controls)
+    # add newly created seed_level_meta_controls to the existing set of seed level controls
+    for column_name in seed_level_meta_controls.columns:
+        orca.add_column("seed_controls", column_name, seed_level_meta_controls[column_name])
