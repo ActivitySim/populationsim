@@ -15,7 +15,7 @@ logging:
   loggers:
 
     populationsim:
-      level: !!python/name:logging.DEBUG
+      level: !!python/name:logging.INFO
       handlers: [console, logfile]
       propagate: false
 

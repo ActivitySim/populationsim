@@ -8,7 +8,6 @@ import orca
 import pandas as pd
 import numpy as np
 
-from ..balancer import ListBalancer
 from ..balancer import seed_balancer
 
 logger = logging.getLogger(__name__)
@@ -58,11 +57,11 @@ def initial_seed_balancing(settings, geo_cross_walk, control_spec,
     incidence_df = incidence_table.to_frame()
     seed_controls_df = seed_controls.to_frame()
 
-    geographies = settings.get('geographies')
-    seed_col = geographies['seed'].get('id_column')
+    seed_col = settings.get('geography_settings')['seed'].get('id_column')
 
     # only want control_spec rows for sub_geographies
-    sub_geographies = settings['lower_level_geographies']
+    geographies = settings['geographies']
+    sub_geographies = geographies[geographies.index('seed')+1:]
     seed_control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
 
     # determine master_control_index if specified in settings
@@ -106,4 +105,4 @@ def initial_seed_balancing(settings, geo_cross_walk, control_spec,
     # bulk concat all seed level results
     weights = pd.concat(weight_list)
 
-    orca.add_column('incidence_table', 'seed_weight', weights)
+    orca.add_column('incidence_table', 'initial_seed_weight', weights)
