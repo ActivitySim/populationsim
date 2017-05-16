@@ -16,14 +16,18 @@ def bucket_round(weights):
     rounded = []
     residue = 0.0
     for w in weights.tolist():
+        ACCUMULATE_RESIDUES = False
         # max prevents -0.5 from rounding to -1
         r = max(int(round(w + residue)), 0)
-        residue = w - r
+        if ACCUMULATE_RESIDUES:
+            residue += w - r
+        else:
+            residue = w - r
         rounded.append(r)
 
-        #print "w %s r %s residue %s" % (w, r, residue)
-
+    rounded = pd.Series(rounded, index=weights.index)
     return rounded
+
 
 @orca.step()
 def integerize_sub_weights(settings, geo_cross_walk, seed_controls, incidence_table):
@@ -39,41 +43,30 @@ def integerize_sub_weights(settings, geo_cross_walk, seed_controls, incidence_ta
     lowest_geography = geographies[-1]
     low_col = geography_settings[lowest_geography].get('id_column')
 
+    results_df = orca.get_table('sub_results').to_frame()
+
     # run balancer for each seed geography
-    seed_ids = geo_cross_walk_df[seed_col].unique()
-    for seed_id in seed_ids:
-        logger.info("integerize_final_seed_weights seed id %s" % seed_id)
+    zone_ids = geo_cross_walk_df[low_col].unique()
 
-        sub_balanced_weights_table_name = 'sub_weights_%s' % seed_id
+    for zone_id in zone_ids:
+        logger.info("integerize_final_seed_weights zone_id %s" % zone_id)
 
+        zone_row_map = results_df[low_col] == zone_id
+        zone_weights = results_df[zone_row_map]
 
-        sub_balanced_weights = orca.get_table(sub_balanced_weights_table_name).to_frame()
+        weights = zone_weights['final_weight']
 
-        rounded_weights = pd.DataFrame(index=sub_balanced_weights.index)
-        bucket_rounded_weights = pd.DataFrame(index=sub_balanced_weights.index)
+        rounded_weights = weights.round().astype(int)
+        results_df.ix[zone_row_map, 'rounded_weights'] = rounded_weights
 
-        low_geography_ids = geo_cross_walk_df.loc[geo_cross_walk_df[seed_col] == seed_id, low_col].tolist()
-        for low_id in low_geography_ids:
+        bucket_rounded_weights = bucket_round(weights)
+        results_df.ix[zone_row_map, 'bucket_rounded_weights'] = bucket_rounded_weights
 
-            weight_col = '%s_%s' % (low_col, low_id)
+    orca.add_column('sub_results', 'rounded_weights', results_df['rounded_weights'])
+    orca.add_column('sub_results', 'bucket_rounded_weights', results_df['bucket_rounded_weights'])
 
-            weights = sub_balanced_weights[weight_col]
-
-            rounded_weights[weight_col] = weights.round()
-
-            bucket_rounded_weights[weight_col] = bucket_round(weights)
-
-            # print "weights\n", weights
-            # print "sum weights", weights.sum()
-            # print "bucket_rounded_weights\n", bucket_rounded_weights[weight_col]
-            # print "sum bucket_rounded_weights\n", bucket_rounded_weights[weight_col].sum()
-
-            # print "weight_cols", weight_col
-            # print "weights\n", weights
-            # print "\n"
-
-        rounded_weights_table_name = 'rounded_sub_weights_%s' % seed_id
-        orca.add_table(rounded_weights_table_name, rounded_weights)
-
-        bucket_rounded_sub_weights_table_name = 'bucket_rounded_sub_weights_%s' % seed_id
-        orca.add_table(bucket_rounded_sub_weights_table_name, bucket_rounded_weights)
+    # print "rounded_weights\n", results_df['rounded_weights']
+    # print "sum rounded_weights\n", results_df['rounded_weights'].sum()
+    #
+    # print "bucket_rounded_weights\n", results_df['bucket_rounded_weights']
+    # print "sum bucket_rounded_weights\n", results_df['bucket_rounded_weights'].sum()

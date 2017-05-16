@@ -39,7 +39,7 @@ _MODELS = [
 # the pipeline manager will attempt to load checkpointed tables from the checkpoint store
 # and resume pipeline processing on the next submodel step after the specified checkpoint
 resume_after = None
-resume_after = 'simultaneous_sub_balancing'
+# resume_after = 'simultaneous_sub_balancing'
 
 pipeline.run(models=_MODELS, resume_after=resume_after)
 

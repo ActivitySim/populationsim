@@ -24,7 +24,7 @@ _MODELS = [
     'final_seed_balancing',
     'integerize_final_seed_weights',
     'simultaneous_sub_balancing',
-    'integerize_final_weights'
+    'integerize_sub_weights'
 
     # expand household and person records with final weights
     # to one household and one person record per weight with unique IDs
@@ -38,7 +38,7 @@ _MODELS = [
 # the pipeline manager will attempt to load checkpointed tables from the checkpoint store
 # and resume pipeline processing on the next submodel step after the specified checkpoint
 resume_after = None
-#resume_after = 'final_seed_balancing'
+# resume_after = 'simultaneous_sub_balancing'
 
 pipeline.run(models=_MODELS, resume_after=resume_after)
 
