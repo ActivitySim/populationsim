@@ -126,6 +126,9 @@ def simultaneous_sub_balancing(settings, geo_cross_walk, control_spec, incidence
     max_expansion_factor = settings.get('max_expansion_factor', None)
     geographies = settings.get('geographies')
 
+    USE_INTEGER_SEED_WEIGHT = settings.get('USE_INTEGER_SEED_WEIGHT', True)
+
+    # FIXME - should do this up front and save sanitized geo_cross_walk table
     # filter geo_cross_walk_df to only include geo_ids with lowest_geography controls
     # (just in case geo_cross_walk_df table contains rows for unused geographies)
     lowest_geography = geographies[-1]
@@ -197,7 +200,6 @@ def simultaneous_sub_balancing(settings, geo_cross_walk, control_spec, incidence
 
         # FIXME - do we need to use integerized weights?
         # FIXME - or can we use final_seed_weight and wait until the end to integerize?
-        USE_INTEGER_SEED_WEIGHT = False
         if USE_INTEGER_SEED_WEIGHT:
             initial_weights = seed_incidence_df['integer_seed_weight']
         else:
@@ -234,10 +236,10 @@ def simultaneous_sub_balancing(settings, geo_cross_walk, control_spec, incidence
         # concat reorders columns because columns don't match exactly (sub zones lack some columns)
         summary_table = summary_table[seed_summary_table.columns]
 
-        seed_table_name = "final_seed_weights_%s" % seed_id
+        seed_table_name = "sub_weights_%s" % seed_id
         orca.add_table(seed_table_name, final_weights)
 
-        summary_table_name = "summary_seed_%s" % seed_id
+        summary_table_name = "sub_summary_%s" % seed_id
         orca.add_table(summary_table_name, summary_table)
 
         # print "summary_table\n", summary_table
