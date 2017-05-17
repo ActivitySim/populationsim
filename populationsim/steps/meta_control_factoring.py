@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 
 def dump_table(table_name, table):
 
+    return
+
     print "\n%s\n" % table_name, table
 
 

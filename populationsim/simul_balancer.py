@@ -32,6 +32,8 @@ class SimultaneousListBalancer(object):
                  weights,
                  controls,
                  sub_control_zones,
+                 seed_id,
+                 sub_zone,
                  master_control_index):
 
         assert isinstance(incidence_table, pd.DataFrame)
@@ -42,6 +44,10 @@ class SimultaneousListBalancer(object):
         self.weights = weights
         self.controls = controls
         self.sub_control_zones = sub_control_zones
+
+        # these are all just to label result
+        self.seed_id = seed_id
+        self.sub_zone = sub_zone
         self.master_control_index = master_control_index
 
         assert 'total' in self.controls
@@ -103,25 +109,25 @@ class SimultaneousListBalancer(object):
             controls_importance,
             sub_controls)
 
-        # save results
-        self.weights_initial = pd.DataFrame(
-            data=sub_weights.transpose(),
-            columns=self.sub_control_zones,
-            index=self.incidence_table.index
-        )
-        self.weights_final = pd.DataFrame(
+        # save results in convenient form for sub_zone balancing and debugging
+        self.sub_zone_weights = pd.DataFrame(
             data=weights_final.transpose(),
             columns=self.sub_control_zones,
             index=self.incidence_table.index
         )
 
-        self.results = self.controls[['name']].copy()
-        for zone, zone_name in self.sub_control_zones.iteritems():
-            x = [(self.incidence_table.ix[:, c] * self.weights_final[zone_name]).sum()
-                 for c in self.controls.index]
-            self.results[zone_name] = x
-        self.results['total'] = self.results[self.sub_control_zones.values].sum(axis=1)
-        self.results = self.results[['name', 'total'] + self.sub_control_zones.tolist()]
+        # save results in convenient form for final result processing
+        sub_zone_col_name = self.sub_zone
+        self.results = pd.DataFrame(
+            {'seed_id': self.seed_id,
+             sub_zone_col_name: np.repeat(self.sub_control_zones.index.tolist(), sample_count),
+             'hh_id': np.tile(np.asanyarray(self.incidence_table.index), zone_count),
+             'initial_weight': np.asanyarray(sub_weights).flatten(),
+             'final_weight': np.asanyarray(weights_final).flatten()
+             }
+        )
+        cols = ['seed_id', sub_zone_col_name, 'hh_id', 'initial_weight', 'final_weight']
+        self.results = self.results[cols]
 
         self.relaxation_factors = relaxation_factors
         self.status = status
@@ -135,7 +141,12 @@ class SimultaneousListBalancer(object):
         controls.columns = control_labels
 
         result_labels = ['%s_result' % c for c in self.controls['name']]
-        results = self.results[self.sub_control_zones.tolist()].transpose()
+        results = pd.DataFrame(index=self.controls.index)
+        for zone, zone_name in self.sub_control_zones.iteritems():
+            x = [(self.incidence_table.ix[:, c] * self.sub_zone_weights[zone_name]).sum()
+                 for c in self.controls.index]
+            results[zone_name] = x
+        results = results.transpose()
         results.columns = result_labels
 
         summary = pd.concat([controls, results], axis=1)
@@ -149,21 +160,6 @@ class SimultaneousListBalancer(object):
             summary[key] = value
 
         return summary
-
-    def print_status(self):
-
-        print "status", self.status
-        # print "weights_initial\n", self.weights_initial
-        # print "weights_final\n", self.weights_final
-        #
-        # print "weights['final_seed']\n", self.weights['final_seed']
-        # print "row sum sub_weights\n", self.weights_final.sum(axis=1)
-        #
-        # print "weights['final_seed']", self.weights['final_seed'].sum()
-        # print "sum sub_weights", self.weights_final.values.sum()
-
-        print "controls\n", self.controls[['name', 'total'] + self.sub_control_zones.tolist()]
-        print "results\n", self.results[['name', 'total'] + self.sub_control_zones.tolist()]
 
 
 def np_simul_balancer(
