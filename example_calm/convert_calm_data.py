@@ -70,6 +70,12 @@ if __name__ == "__main__":
     seed_households.HHINCADJ[seed_households.ADJINC == 1015979] = ((seed_households.HINCP[seed_households.ADJINC == 1015979]/1.0)*1.999480*1.01651 *  0.704342)
     seed_households.HHINCADJ[seed_households.ADJINC == 1007624] = ((seed_households.HINCP[seed_households.ADJINC == 1007624]/1.0)*1.007624*1.00000 *  0.704342)
 
+    #Setting age of head based on PUMS Person File
+    agehoh = seed_persons[seed_persons.SPORDER==1].groupby(seed_persons.SERIALNO).AGEP.min()
+    agehoh.name = "AGEHOH"
+    seed_households = seed_households.join(agehoh)
+    seed_households.AGEHOH[pd.isnull(seed_households.AGEHOH)] = 0 
+    
     print("seed person data processing")
 
     #Deleting all GQ person records (i.e. have no household record)
@@ -354,6 +360,7 @@ if __name__ == "__main__":
     low_control_data.to_hdf(output_datastore_fname, "low_control_data")
     mid_control_data.to_hdf(output_datastore_fname, "mid_control_data")
     meta_control_data.to_hdf(output_datastore_fname, "meta_control_data")
+    gwalk.to_hdf(output_datastore_fname, "geo_cross_walk")
 
     print("write output CSVs")
 
@@ -362,3 +369,4 @@ if __name__ == "__main__":
     low_control_data.to_csv(output_folder + "low_control_data.csv", index=True)
     mid_control_data.to_csv(output_folder + "mid_control_data.csv", index=True)
     meta_control_data.to_csv(output_folder + "meta_control_data.csv", index=True)
+    gwalk.to_csv(output_folder + "geo_cross_walk.csv", index=True)
