@@ -130,6 +130,11 @@ def simultaneous_sub_balancing(settings, geo_cross_walk, control_spec, incidence
 
     USE_INTEGER_SEED_WEIGHT = settings.get('USE_INTEGER_SEED_WEIGHT', True)
 
+    def log_status(geography, geo_col, geo_id, status):
+
+        logger.info("%s %s converged %s iter %s"
+                    % (geography, geo_id, status['converged'], status['iter']))
+
     # FIXME - should do this up front and save sanitized geo_cross_walk table
     # filter geo_cross_walk_df to only include geo_ids with lowest_geography controls
     # (just in case geo_cross_walk_df table contains rows for unused geographies)
@@ -150,7 +155,6 @@ def simultaneous_sub_balancing(settings, geo_cross_walk, control_spec, incidence
 
         geo_col = geography_settings[geography].get('id_column')
         result_list = []
-        summary_list = []
 
         geo_ids = geo_cross_walk_df[geo_col].unique()
         for geo_id in geo_ids:
@@ -173,10 +177,7 @@ def simultaneous_sub_balancing(settings, geo_cross_walk, control_spec, incidence
 
             status = balancer.balance()
 
-            logger.info("%s %s converged %s iter %s"
-                        % (geography, geo_id, status['converged'], status['iter']))
-
-            summary_list.append(balancer.summary_table())
+            log_status(geography, geo_col, geo_id, status)
 
             INCLUDE_INTERMEDIATE_ZONE_RESULTS = True
             if INCLUDE_INTERMEDIATE_ZONE_RESULTS or len(sub_geographies) == 1:
@@ -185,7 +186,7 @@ def simultaneous_sub_balancing(settings, geo_cross_walk, control_spec, incidence
             # FIXME - untested as we don't have that many geographies
             if len(sub_geographies) > 1:
                 assert False
-                sub_summaries, sub_results = sub_balance(
+                sub_results = sub_balance(
                     target_geographies=sub_geographies,
                     geo_cross_walk_df=geo_cross_walk_df[geo_cross_walk_df[geo_col] == geo_id],
                     sub_zone_weights=balancer.weights_final,
@@ -193,12 +194,10 @@ def simultaneous_sub_balancing(settings, geo_cross_walk, control_spec, incidence
                 )
 
                 result_table_list.extend(sub_results)
-                summary_table_list.append(sub_summaries)
 
-        return summary_list, result_list
+        return result_list
 
     result_table_list = []
-    summary_table_list = []
 
     sub_geographies = geographies[geographies.index('seed') + 1:]
     seed_col = geography_settings['seed'].get('id_column')
@@ -229,26 +228,20 @@ def simultaneous_sub_balancing(settings, geo_cross_walk, control_spec, incidence
 
         status = balancer.balance()
 
-        print "status", status
+        log_status('seed', seed_col, seed_id, status)
 
-        seed_summary_table = balancer.summary_table()
+        seed_results = balancer.results
 
-        sub_summaries, sub_results = sub_balance(
+        sub_results = sub_balance(
             target_geographies=sub_geographies,
             geo_cross_walk_df=geo_cross_walk_df[geo_cross_walk_df[seed_col] == seed_id],
             sub_zone_weights=balancer.sub_zone_weights,
             sub_control_zones=balancer.sub_control_zones,
             )
 
-        summary_table = pd.concat([seed_summary_table] + sub_summaries, axis=0)
-        # concat reorders columns because columns don't match exactly (sub zones lack some columns)
-        summary_table = summary_table[seed_summary_table.columns]
-
         result_table_list.extend(sub_results)
-        summary_table_list.append(summary_table)
+        # add seed level results
+        result_table_list.append(seed_results)
 
     results_df = pd.concat(result_table_list, axis=0)
     orca.add_table('sub_results', results_df)
-
-    summary_table_df = pd.concat(summary_table_list, axis=0)
-    orca.add_table('sub_summary', summary_table_df)

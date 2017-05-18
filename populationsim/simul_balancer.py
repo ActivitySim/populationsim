@@ -134,33 +134,6 @@ class SimultaneousListBalancer(object):
 
         return self.status
 
-    def summary_table(self):
-
-        control_labels = ['%s_control' % c for c in self.controls['name']]
-        controls = self.controls[self.sub_control_zones.tolist()].transpose()
-        controls.columns = control_labels
-
-        result_labels = ['%s_result' % c for c in self.controls['name']]
-        results = pd.DataFrame(index=self.controls.index)
-        for zone, zone_name in self.sub_control_zones.iteritems():
-            x = [(self.incidence_table.ix[:, c] * self.sub_zone_weights[zone_name]).sum()
-                 for c in self.controls.index]
-            results[zone_name] = x
-        results = results.transpose()
-        results.columns = result_labels
-
-        summary = pd.concat([controls, results], axis=1)
-        # summary.reset_index(drop=True, inplace=True)
-
-        summary['id'] = self.sub_control_zones.index
-        summary['geography'] = self.sub_control_zones.index.name
-        summary = summary[['geography', 'id'] + control_labels + result_labels]
-
-        for key, value in self.status.iteritems():
-            summary[key] = value
-
-        return summary
-
 
 def np_simul_balancer(
         sample_count,

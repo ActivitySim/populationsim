@@ -34,7 +34,8 @@ def test_full_run1():
         'final_seed_balancing',
         'integerize_final_seed_weights',
         'simultaneous_sub_balancing',
-        'integerize_sub_weights'
+        'integerize_sub_weights',
+        'summarize'
     ]
 
     pipeline.run(models=_MODELS, resume_after=None)
