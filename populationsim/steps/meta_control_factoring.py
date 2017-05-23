@@ -22,11 +22,11 @@ def dump_table(table_name, table):
 
 
 @orca.step()
-def meta_control_factoring(settings, control_spec, incidence_table, seed_controls, meta_controls):
+def meta_control_factoring(settings, control_spec, incidence_table, meta_controls):
 
     incidence_df = incidence_table.to_frame()
-    seed_controls_df = seed_controls.to_frame()
     meta_controls_df = meta_controls.to_frame()
+    control_spec = control_spec.to_frame()
 
     geography_settings = settings.get('geography_settings')
     seed_col = geography_settings['seed'].get('id_column')

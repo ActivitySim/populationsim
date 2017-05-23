@@ -14,26 +14,7 @@ from ..assign import assign_variable
 logger = logging.getLogger(__name__)
 
 
-@orca.injectable(cache=True)
-def control_spec(settings, configs_dir):
-
-    # read the csv file
-    data_filename = settings.get('control_file_name', 'controls.csv')
-    data_file_path = os.path.join(configs_dir, data_filename)
-    if not os.path.exists(data_file_path):
-        raise RuntimeError(
-            "initial_seed_balancing - control file not found: %s" % (data_file_path,))
-
-    logger.info("Reading control file %s" % data_file_path)
-    df = pd.read_csv(data_file_path, comment='#')
-
-    validate_geography_settings(settings, df)
-
-    return df
-
-
-def validate_geography_settings(settings, control_spec):
-
+def validate_geography_settings(settings):
     if 'geographies' not in settings:
         raise RuntimeError("geographies not specified in settings")
 
@@ -47,12 +28,28 @@ def validate_geography_settings(settings, control_spec):
         if g not in geography_settings:
             raise RuntimeError("geography '%s' not found in geography_settings" % g)
 
+
+def read_control_spec(settings, configs_dir):
+    # read the csv file
+    data_filename = settings.get('control_file_name', 'controls.csv')
+    data_file_path = os.path.join(configs_dir, data_filename)
+    if not os.path.exists(data_file_path):
+        raise RuntimeError(
+            "initial_seed_balancing - control file not found: %s" % (data_file_path,))
+
+    logger.info("Reading control file %s" % data_file_path)
+    control_spec = pd.read_csv(data_file_path, comment='#')
+
+    geographies = settings['geographies']
+
     if 'geography' not in control_spec.columns:
         raise RuntimeError("missing geography column in controls file")
 
     for g in control_spec.geography.unique():
         if g not in geographies:
             raise RuntimeError("unknown geography column '%s' in control file" % g)
+
+    return control_spec
 
 
 def build_incidence_table(control_spec, settings, households_df, persons_df):
@@ -163,18 +160,20 @@ def build_control_table(geo, control_spec, settings, geo_cross_walk_df):
 
 
 @orca.step()
-def setup_data_structures(settings, households, persons, control_spec, geo_cross_walk):
+def setup_data_structures(settings, configs_dir, households, persons, geo_cross_walk):
 
+    validate_geography_settings(settings)
     geography_settings = settings.get('geography_settings')
-
-    hh_weight_col = settings['household_weight_col']
 
     households_df = households.to_frame()
     persons_df = persons.to_frame()
     geo_cross_walk_df = geo_cross_walk.to_frame()
 
+    # FIXME - adding as a table (instead of a
+    control_spec = read_control_spec(settings, configs_dir)
+    orca.add_table('control_spec', control_spec)
+
     incidence_table = build_incidence_table(control_spec, settings, households_df, persons_df)
-    incidence_table['sample_weight'] = households_df[hh_weight_col]
 
     # add seed_col to incidence table
     seed_col = geography_settings['seed'].get('id_column')
@@ -187,7 +186,9 @@ def setup_data_structures(settings, households, persons, control_spec, geo_cross
         = geo_cross_walk_df[[seed_col, meta_col]].groupby(seed_col, as_index=True).min()[meta_col]
     incidence_table[meta_col] = incidence_table[seed_col].map(seed_to_meta)
 
-    orca.add_table('incidence_table', incidence_table)
+    # add sample_weight col to incidence table
+    hh_weight_col = settings['household_weight_col']
+    incidence_table['sample_weight'] = households_df[hh_weight_col]
 
     geographies = settings['geographies']
     for g in geographies:
@@ -197,3 +198,15 @@ def setup_data_structures(settings, households, persons, control_spec, geo_cross
 
         print "\n", control_table_name
         print controls
+
+    # remove any rows in incidence table not in seed zones
+    # FIXME - assumes geo_cross_walk_df has extra rows
+    seed_ids = geo_cross_walk_df[seed_col].unique()
+    rows_in_seed_zones = incidence_table[seed_col].isin(seed_ids)
+    if len(rows_in_seed_zones) != rows_in_seed_zones.sum():
+        incidence_table = incidence_table[rows_in_seed_zones]
+        rows_dropped = len(rows_in_seed_zones) - len(incidence_table)
+        logger.info("dropped %s rows from incidence table" % rows_dropped)
+        logger.info("kept %s rows in incidence table" % len(incidence_table))
+
+    orca.add_table('incidence_table', incidence_table)

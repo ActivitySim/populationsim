@@ -128,8 +128,6 @@ def simultaneous_sub_balancing(settings, geo_cross_walk, control_spec, incidence
     max_expansion_factor = settings.get('max_expansion_factor', None)
     geographies = settings.get('geographies')
 
-    USE_INTEGER_SEED_WEIGHT = settings.get('USE_INTEGER_SEED_WEIGHT', True)
-
     def log_status(geography, geo_col, geo_id, status):
 
         logger.info("%s %s converged %s iter %s"
@@ -210,6 +208,7 @@ def simultaneous_sub_balancing(settings, geo_cross_walk, control_spec, incidence
 
         # FIXME - do we need to use integerized weights?
         # FIXME - or can we use final_seed_weight and wait until the end to integerize?
+        USE_INTEGER_SEED_WEIGHT = True
         if USE_INTEGER_SEED_WEIGHT:
             initial_weights = seed_incidence_df['integer_seed_weight']
         else:

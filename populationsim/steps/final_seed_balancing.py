@@ -3,12 +3,9 @@
 
 import logging
 import os
-
 import orca
 import pandas as pd
-import numpy as np
 
-from ..balancer import ListBalancer
 from ..balancer import seed_balancer
 
 
@@ -22,6 +19,7 @@ def final_seed_balancing(settings, geo_cross_walk, control_spec,
     geo_cross_walk_df = geo_cross_walk.to_frame()
     incidence_df = incidence_table.to_frame()
     seed_controls_df = seed_controls.to_frame()
+    control_spec = control_spec.to_frame()
 
     seed_col = settings.get('geography_settings')['seed'].get('id_column')
 
@@ -31,6 +29,8 @@ def final_seed_balancing(settings, geo_cross_walk, control_spec,
     total_hh_control_col = settings.get('total_hh_control')
 
     max_expansion_factor = settings.get('max_expansion_factor', None)
+
+    relaxation_factors = pd.DataFrame(index = seed_controls_df.columns.tolist())
 
     # run balancer for each seed geography
     weight_list = []
@@ -57,11 +57,17 @@ def final_seed_balancing(settings, geo_cross_walk, control_spec,
 
         weight_list.append(balancer.weights['final'])
 
+        relaxation_factors[seed_id] = balancer.controls['relaxation_factor']
+
         # print "balancer.initial_weights\n", balancer.initial_weights
         # print "balancer.ub_weights\n", balancer.ub_weights
         # print "balancer.weights\n", balancer.weights
 
     # bulk concat all seed level results
     final_seed_weights = pd.concat(weight_list)
+
+    relaxation_factors = relaxation_factors.transpose()
+
+    orca.add_table('seed_control_relaxation_factors', relaxation_factors)
 
     orca.add_column('incidence_table', 'final_seed_weight', final_seed_weights)

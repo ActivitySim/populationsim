@@ -24,12 +24,12 @@ class ListBalancer(object):
 
     def __init__(self,
                  incidence_table,
-                 initial_weights=None,
-                 control_totals=None,
-                 control_importance_weights=None,
-                 lb_weights=None,
-                 ub_weights=None,
-                 master_control_index=None):
+                 initial_weights,
+                 control_totals,
+                 control_importance_weights,
+                 lb_weights,
+                 ub_weights,
+                 master_control_index):
 
         if isinstance(incidence_table, pd.DataFrame):
             self.incidence_table = incidence_table
@@ -40,11 +40,10 @@ class ListBalancer(object):
 
         assert len(initial_weights) == len(self.incidence_table.index)
 
-        self.control_totals = control_totals if control_totals is not None else []
-        self.initial_weights = initial_weights if initial_weights is not None else []
+        self.control_totals = control_totals
+        self.initial_weights = initial_weights
 
-        self.control_importance_weights \
-            = control_importance_weights if control_importance_weights is not None else []
+        self.control_importance_weights = control_importance_weights
         self.lb_weights = lb_weights
         self.ub_weights = ub_weights
         self.master_control_index = master_control_index
@@ -80,6 +79,7 @@ class ListBalancer(object):
 
         # controls dataframe
         self.controls = pd.DataFrame({'name': self.incidence_table.columns.tolist()})
+
         self.controls['constraint'] = np.maximum(self.control_totals, MIN_CONTROL_VALUE)
         # control relaxation importance weights (higher weights result in lower relaxation factor)
         self.controls['importance'] = np.maximum(self.control_importance_weights, MIN_IMPORTANCE)
@@ -111,6 +111,9 @@ class ListBalancer(object):
         self.weights['final'] = weights_final
         self.controls['relaxation_factor'] = relaxation_factors
         self.status = status
+
+        # set index so all columns are controls
+        self.controls.set_index('name', inplace=True)
 
         # add some gratuitous but convenient values
         self.controls['relaxed_constraint'] = self.controls.constraint * relaxation_factors

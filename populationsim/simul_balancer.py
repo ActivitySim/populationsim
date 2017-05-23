@@ -210,6 +210,10 @@ def np_simul_balancer(
                 # clip relaxation_factors
                 relaxation_factors[z] = np.minimum(relaxation_factors[z], MAX_RELAXATION_FACTOR)
 
+        bug
+        # FIXME - can't rescale weights and expect to converge
+        # FIXME - also zero weight hh should have been sliced out?
+
         # rescale weights to sum to weights_seed
         scale = weights_aggregate_target / np.sum(weights_final, axis=0)
         # FIXME - what to do for rows where sum(weights_final) are zero?

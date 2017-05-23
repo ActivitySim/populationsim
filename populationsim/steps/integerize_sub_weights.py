@@ -41,7 +41,6 @@ def integerize_weights(geography, settings, geo_cross_walk_df, results_df):
     logger.info("integerize_final_seed_weights geography %s" % (geography,))
 
     for zone_id in zone_ids:
-        logger.info("integerize_final_seed_weights geography %s zone_id %s" % (geography, zone_id,))
 
         zone_row_map = results_df[id_col] == zone_id
         zone_weights = results_df[zone_row_map]

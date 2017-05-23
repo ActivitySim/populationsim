@@ -67,12 +67,11 @@ def summarize_geography(geography, weight_col,
 
 
 @orca.step()
-def summarize(settings, geo_cross_walk, control_spec, incidence_table):
+def summarize(settings, geo_cross_walk, incidence_table):
 
     geographies = settings.get('geographies')
 
     sub_geographies = geographies[geographies.index('seed') + 1:]
-    low_geography = geographies[-1]
 
     geo_cross_walk_df = geo_cross_walk.to_frame()
     incidence_df = incidence_table.to_frame()
@@ -83,11 +82,13 @@ def summarize(settings, geo_cross_walk, control_spec, incidence_table):
                                          settings, geo_cross_walk_df, results_df, incidence_df)
         orca.add_table('summarize_final_weight_%s' % geography, summary_df)
 
-    summary_df = summarize_geography(low_geography, 'rounded_weights',
-                                     settings, geo_cross_walk_df, results_df, incidence_df)
-    orca.add_table('summarize_rounded_weights', summary_df)
+    for geography in sub_geographies:
+        summary_df = summarize_geography(geography, 'rounded_weights',
+                                         settings, geo_cross_walk_df, results_df, incidence_df)
+        orca.add_table('summarize_rounded_weights_%s' % geography, summary_df)
 
-    summary_df = summarize_geography(low_geography, 'bucket_rounded_weights',
-                                     settings, geo_cross_walk_df, results_df, incidence_df)
+    for geography in sub_geographies:
+        summary_df = summarize_geography(geography, 'bucket_rounded_weights',
+                                         settings, geo_cross_walk_df, results_df, incidence_df)
+        orca.add_table('summarize_bucket_rounded_weights_%s' % geography, summary_df)
 
-    orca.add_table('summarize_bucket_rounded_weights', summary_df)

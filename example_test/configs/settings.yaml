@@ -1,8 +1,6 @@
 
 #store: calm_psim.h5
 
-USE_INTEGER_SEED_WEIGHT: TRUE
-
 household_weight_col: WGTP
 household_id_col: hh_id
 total_hh_control: num_hh
