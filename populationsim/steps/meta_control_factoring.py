@@ -74,3 +74,4 @@ def meta_control_factoring(settings, control_spec, incidence_table, meta_control
     # add newly created seed_level_meta_controls to the existing set of seed level controls
     for column_name in seed_level_meta_controls.columns:
         orca.add_column("seed_controls", column_name, seed_level_meta_controls[column_name])
+        logger.info("adding column %s" % column_name)

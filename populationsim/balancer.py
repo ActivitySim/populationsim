@@ -31,18 +31,14 @@ class ListBalancer(object):
                  ub_weights,
                  master_control_index):
 
-        if isinstance(incidence_table, pd.DataFrame):
-            self.incidence_table = incidence_table
-        elif isinstance(incidence_table, pd.Index):
-            self.incidence_table = pd.DataFrame(index=incidence_table)
-        else:
-            raise RuntimeError("ListBalancer incidence_table unknown type")
+        assert isinstance(incidence_table, pd.DataFrame)
+
+        self.incidence_table = incidence_table
 
         assert len(initial_weights) == len(self.incidence_table.index)
 
         self.control_totals = control_totals
         self.initial_weights = initial_weights
-
         self.control_importance_weights = control_importance_weights
         self.lb_weights = lb_weights
         self.ub_weights = ub_weights
@@ -71,29 +67,16 @@ class ListBalancer(object):
         if self.ub_weights is None:
             self.ub_weights = MAX_INT
 
-        # weights dataframe
-        self.weights = pd.DataFrame(index=self.incidence_table.index)
-        self.weights['initial'] = self.initial_weights
-        self.weights['lower_bound'] = self.lb_weights
-        self.weights['upper_bound'] = self.ub_weights
-
-        # controls dataframe
-        self.controls = pd.DataFrame({'name': self.incidence_table.columns.tolist()})
-
-        self.controls['constraint'] = np.maximum(self.control_totals, MIN_CONTROL_VALUE)
-        # control relaxation importance weights (higher weights result in lower relaxation factor)
-        self.controls['importance'] = np.maximum(self.control_importance_weights, MIN_IMPORTANCE)
-
-        # prepare inputs as numpy  (no pandas)
+        # prepare inputs as numpy (no pandas)
         sample_count = len(self.incidence_table.index)
         control_count = len(self.incidence_table.columns)
         master_control_index = self.master_control_index
         incidence = self.incidence_table.as_matrix().transpose()
-        weights_initial = np.asanyarray(self.weights['initial']).astype(np.float64)
-        weights_lower_bound = np.asanyarray(self.weights['lower_bound']).astype(np.float64)
-        weights_upper_bound = np.asanyarray(self.weights['upper_bound']).astype(np.float64)
-        controls_constraint = np.asanyarray(self.controls['constraint']).astype(np.float64)
-        controls_importance = np.asanyarray(self.controls['importance']).astype(np.float64)
+        weights_initial = np.asanyarray(self.initial_weights).astype(np.float64)
+        weights_lower_bound = np.asanyarray(self.lb_weights).astype(np.float64)
+        weights_upper_bound = np.asanyarray(self.ub_weights).astype(np.float64)
+        controls_constraint = np.maximum(self.control_totals, MIN_CONTROL_VALUE)
+        controls_importance = np.maximum(self.control_importance_weights, MIN_IMPORTANCE)
 
         # balance
         weights_final, relaxation_factors, status = np_balancer(
@@ -107,21 +90,24 @@ class ListBalancer(object):
             controls_constraint,
             controls_importance)
 
-        # save results
-        self.weights['final'] = weights_final
-        self.controls['relaxation_factor'] = relaxation_factors
-        self.status = status
+        # weights dataframe
+        weights = pd.DataFrame(index=self.incidence_table.index)
+        weights['initial'] = self.initial_weights
+        # weights['lower_bound'] = self.lb_weights
+        # weights['upper_bound'] = self.ub_weights
+        weights['final'] = weights_final
 
-        # set index so all columns are controls
-        self.controls.set_index('name', inplace=True)
+        # controls dataframe
+        controls = pd.DataFrame(index=self.incidence_table.columns.tolist())
+        controls['control'] = np.maximum(self.control_totals, MIN_CONTROL_VALUE)
+        #controls['importance'] = np.maximum(self.control_importance_weights, MIN_IMPORTANCE)
+        controls['relaxation_factor'] = relaxation_factors
+        controls['relaxed_control'] = controls.control * relaxation_factors
+        controls['weight_totals'] = \
+            [round((self.incidence_table.ix[:, c] * weights['final']).sum(), 2)
+             for c in controls.index]
 
-        # add some gratuitous but convenient values
-        self.controls['relaxed_constraint'] = self.controls.constraint * relaxation_factors
-        self.controls['weighted_sum'] = \
-            [round((self.incidence_table.ix[:, c] * self.weights['final']).sum(), 2)
-             for c in self.controls.index]
-
-        return self.status
+        return status, weights, controls
 
 
 def np_balancer(
@@ -215,7 +201,7 @@ def np_balancer(
     return weights_final, relaxation_factors, status
 
 
-def seed_balancer(seed_control_spec, seed_id, seed_col, total_hh_control_col, max_expansion_factor,
+def do_seed_balancing(seed_control_spec, seed_id, seed_col, total_hh_control_col, max_expansion_factor,
                   incidence_df, seed_controls_df):
 
     # slice incidence rows for this seed geography
@@ -250,14 +236,6 @@ def seed_balancer(seed_control_spec, seed_id, seed_col, total_hh_control_col, ma
         ub_weights = initial_weights * ub_ratio
         ub_weights = ub_weights.round().clip(lower=1).astype(int)
 
-        # print "number_of_households", number_of_households
-        # print "total_weights", total_weights
-        # print "number_of_households/total_weights", number_of_households/total_weights
-        # print "ub_ratio", ub_ratio
-        # print "ub_weights\n", ub_weights
-        # print "initial_weights\n", initial_weights
-        # assert False
-
     else:
         ub_weights = None
 
@@ -271,4 +249,6 @@ def seed_balancer(seed_control_spec, seed_id, seed_col, total_hh_control_col, ma
         master_control_index=total_hh_control_index
     )
 
-    return balancer
+    status, weights, controls = balancer.balance()
+
+    return status, weights, controls

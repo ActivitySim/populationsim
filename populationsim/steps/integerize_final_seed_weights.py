@@ -25,12 +25,18 @@ def integerize_final_seed_weights(settings, geo_cross_walk, control_spec, seed_c
 
     seed_col = settings.get('geography_settings')['seed'].get('id_column')
 
-    # only want control_spec rows for sub_geographies
-    geographies = settings['geographies']
-    sub_geographies = geographies[geographies.index('seed')+1:]
-    seed_control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
+    # # only want control_spec rows for sub_geographies
+    # geographies = settings['geographies']
+    # sub_geographies = geographies[geographies.index('seed')+1:]
+    # seed_control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
+
+    # FIXME - I assume we want to integerize using meta controls too?
+    seed_control_spec = control_spec
 
     control_labels = seed_control_spec.target
+
+    # FIXME - ensure columns are in right order for orca-extended table
+    seed_controls_df = seed_controls_df[control_labels]
 
     # only want columns for controls we are using
     seed_controls_df = seed_controls_df[control_labels]
@@ -50,7 +56,6 @@ def integerize_final_seed_weights(settings, geo_cross_walk, control_spec, seed_c
         seed_incidence = incidence_df[incidence_df[seed_col] == seed_id]
 
         # initial hh weights
-        sample_weights = seed_incidence['sample_weight']
         final_weights = seed_incidence['final_seed_weight']
 
         # incidence table should only have control columns
@@ -66,7 +71,6 @@ def integerize_final_seed_weights(settings, geo_cross_walk, control_spec, seed_c
             control_spec=seed_control_spec,
             control_totals=control_totals,
             incidence_table=seed_incidence,
-            initial_weights=sample_weights,
             final_weights=final_weights,
             relaxation_factors=relaxation_factors,
             total_hh_control_col=total_hh_control_col
@@ -84,5 +88,6 @@ def integerize_final_seed_weights(settings, geo_cross_walk, control_spec, seed_c
     integer_seed_weights = pd.concat(weight_list)
 
     orca.add_column('incidence_table', 'integer_seed_weight', integer_seed_weights)
+
 
 

@@ -6,7 +6,7 @@ import os
 import orca
 import pandas as pd
 
-from ..balancer import seed_balancer
+from ..balancer import do_seed_balancing
 
 
 logger = logging.getLogger(__name__)
@@ -20,6 +20,9 @@ def final_seed_balancing(settings, geo_cross_walk, control_spec,
     incidence_df = incidence_table.to_frame()
     seed_controls_df = seed_controls.to_frame()
     control_spec = control_spec.to_frame()
+
+    # FIXME - ensure columns are in right order for orca-extended table
+    seed_controls_df = seed_controls_df[control_spec.target]
 
     seed_col = settings.get('geography_settings')['seed'].get('id_column')
 
@@ -39,7 +42,7 @@ def final_seed_balancing(settings, geo_cross_walk, control_spec,
 
         logger.info("initial_seed_balancing seed id %s" % seed_id)
 
-        balancer = seed_balancer(
+        status, weights_df, controls_df = do_seed_balancing(
             seed_control_spec=control_spec,
             seed_id=seed_id,
             seed_col=seed_col,
@@ -48,20 +51,13 @@ def final_seed_balancing(settings, geo_cross_walk, control_spec,
             incidence_df=incidence_df,
             seed_controls_df=seed_controls_df)
 
-        # balancer.dump()
-        status = balancer.balance()
-
         logger.info("seed_balancer status: %s" % status)
         if not status['converged']:
             raise RuntimeError("final_seed_balancing for seed_id %s did not converge" % seed_id)
 
-        weight_list.append(balancer.weights['final'])
+        weight_list.append(weights_df['final'])
 
-        relaxation_factors[seed_id] = balancer.controls['relaxation_factor']
-
-        # print "balancer.initial_weights\n", balancer.initial_weights
-        # print "balancer.ub_weights\n", balancer.ub_weights
-        # print "balancer.weights\n", balancer.weights
+        relaxation_factors[seed_id] = controls_df['relaxation_factor']
 
     # bulk concat all seed level results
     final_seed_weights = pd.concat(weight_list)
@@ -71,3 +67,5 @@ def final_seed_balancing(settings, geo_cross_walk, control_spec,
     orca.add_table('seed_control_relaxation_factors', relaxation_factors)
 
     orca.add_column('incidence_table', 'final_seed_weight', final_seed_weights)
+
+    print "controls_df\n", controls_df

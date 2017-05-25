@@ -7,6 +7,15 @@ import numpy as np
 import pandas as pd
 from ortools.linear_solver import pywraplp
 
+SOLVER_STATUS_STRINGS = {
+    pywraplp.Solver.OPTIMAL: 'OPTIMAL',
+    pywraplp.Solver.FEASIBLE: 'FEASIBLE',
+    pywraplp.Solver.INFEASIBLE: 'INFEASIBLE',
+    pywraplp.Solver.UNBOUNDED: 'UNBOUNDED',
+    pywraplp.Solver.ABNORMAL: 'ABNORMAL',
+    pywraplp.Solver.NOT_SOLVED: 'NOT_SOLVED',
+}
+
 logger = logging.getLogger(__name__)
 
 class Integerizer(object):
@@ -14,7 +23,6 @@ class Integerizer(object):
     def __init__(self,
                  control_totals,
                  incidence_table,
-                 initial_weights,
                  control_importance_weights,
                  final_weights,
                  relaxation_factors,
@@ -23,7 +31,6 @@ class Integerizer(object):
 
         self.control_totals = control_totals
         self.incidence_table = incidence_table
-        self.initial_weights = initial_weights
         self.control_importance_weights = control_importance_weights
         self.final_weights = final_weights
         self.relaxation_factors = relaxation_factors
@@ -51,7 +58,7 @@ class Integerizer(object):
         # print self.incidence_table
         # print incidence
 
-        integerized_weights \
+        integerized_weights, status \
             = np_integerizer_cbc(
             sample_count=sample_count,
             control_count=control_count,
@@ -68,7 +75,7 @@ class Integerizer(object):
         self.weights = pd.DataFrame(index=self.incidence_table.index)
         self.weights['integerized_weight'] = integerized_weights
 
-        return 'status'
+        return status
 
 
 
@@ -83,9 +90,9 @@ def np_integerizer_cbc(sample_count,
                        control_is_hh_based,
                        timeout_in_seconds):
 
-    # FIXME - any reason we can't use GLOP? This is not mixed-integer programming
     # Instantiate a mixed-integer solver
     solver = pywraplp.Solver('IntegerizeCbc', pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
+    #solver = pywraplp.Solver('IntegerizeGlop', pywraplp.Solver.GLOP_LINEAR_PROGRAMMING)
 
     # Create binary integer variables
     x = [[]] * sample_count
@@ -97,80 +104,92 @@ def np_integerizer_cbc(sample_count,
         else:
             x[hh] = solver.NumVar(0.0, 1.0, 'x_' + str(hh))
 
-    lp_right_hand_side = np.round(control_totals * relaxation_factors)
+    lp_right_hand_side = [0] * control_count
+
+
+    # lp_right_hand_side
+    relaxed_control_total = np.round(control_totals * relaxation_factors)
+    # FIXME - an reason we can't do this?
+    logger.warn("using unrrelaxed control total in lp_right_hand_side")
+    relaxed_control_total = control_totals
+
     for c in range(0, control_count):
-        lp_right_hand_side[c] -= (np.trunc(final_weights) * incidence[c]).sum()
-    lp_right_hand_side = np.clip(lp_right_hand_side, a_min=0.0, a_max=np.inf)
+        weighted_incidence = (np.trunc(final_weights) * incidence[c]).sum()
+        lp_right_hand_side[c] = relaxed_control_total[c] - weighted_incidence
+    lp_right_hand_side = np.maximum(lp_right_hand_side, 0.0)
 
     # max_incidence_value of each control
     max_incidence_value = np.amax(incidence, axis=1)
 
     # create the inequality constraint upper bounds
-    num_households = int(round(control_totals[total_hh_control_index] * relaxation_factors[total_hh_control_index]))
-    max_gt_constraint_upper_bound = [0] * control_count
+    num_households = round(control_totals[total_hh_control_index] * relaxation_factors[total_hh_control_index])
+    relax_ge_upper_bound = [0] * control_count
     for c in range(0, control_count):
         if control_is_hh_based[c]:
             # for household controls only
-            max_gt_constraint_upper_bound[c] = max(num_households - lp_right_hand_side[c], 0)
+            relax_ge_upper_bound[c] = max(num_households - lp_right_hand_side[c], 0)
         else:
             # for person controls only
-            max_gt_constraint_upper_bound[c] = max(max_incidence_value[c] * num_households - lp_right_hand_side[c], 0)
+            relax_ge_upper_bound[c] = max(max_incidence_value[c] * num_households - lp_right_hand_side[c], 0)
 
     # Create positive continuous constraint relaxation variables
-    y = [[]] * control_count
-    z = [[]] * control_count
+    relax_le = [[]] * control_count
+    relax_ge = [[]] * control_count
     for c in range(0, control_count):
-        #don't create variables for total households control
+        # no relaxation for total households control
         if c != total_hh_control_index:
-            y[c] = solver.NumVar(0.0, lp_right_hand_side[c], 'y_' + str(c))
-            z[c] = solver.NumVar(0.0, max_gt_constraint_upper_bound[c], 'z_' + str(c))
+            relax_le[c] = solver.NumVar(0.0, lp_right_hand_side[c], 'relax_le_' + str(c))
+            relax_ge[c] = solver.NumVar(0.0, relax_ge_upper_bound[c], 'relax_ge_' + str(c))
 
     # Set objective: min sum{c(n)*x(n)} + 999*y(i) - 999*z(i)}
     objective = solver.Objective()
     resid_weights = final_weights % 1.0
-    objective_function_coefficients = np.log(resid_weights)
-    objective_function_coefficients[(resid_weights <= np.exp( -999 ))] = 999
+    # use negative for coefficients since solver is minimizing
+    PENALTY = 999
+    objective_function_coefficients = -1.0 * np.log(resid_weights)
+    objective_function_coefficients[(resid_weights <= np.exp( -PENALTY ))] = PENALTY
+
     for hh in range(0, sample_count):
         objective.SetCoefficient(x[hh], objective_function_coefficients[hh])
 
     for c in range(0, control_count):
         if c != total_hh_control_index:
-            objective.SetCoefficient(y[c], control_importance_weights[c])
-            objective.SetCoefficient(z[c], control_importance_weights[c])
+            objective.SetCoefficient(relax_le[c], control_importance_weights[c])
+            objective.SetCoefficient(relax_ge[c], control_importance_weights[c])
 
     # inequality constraints
-    constraint_ge_bound = np.maximum(control_totals * max_incidence_value, lp_right_hand_side)
-
-    constraint_ge = [[]] * control_count
-    constraint_le = [[]] * control_count
+    hh_constraint_ge = [[]] * control_count
+    hh_constraint_le = [[]] * control_count
+    hh_constraint_ge_bound = np.maximum(control_totals * max_incidence_value, lp_right_hand_side)
     for c in range(0, control_count):
-
         # don't add inequality constraints for total households control
         if c == total_hh_control_index:
             continue
-
         # add the lower bound relaxation inequality constraint
-        constraint_ge[c] = solver.Constraint(lp_right_hand_side[c], constraint_ge_bound[c])
+        hh_constraint_le[c] = solver.Constraint(0, lp_right_hand_side[c])
         for hh in range(0, sample_count):
-            constraint_ge[c].SetCoefficient(x[hh], incidence[c, hh])
-        constraint_ge[c].SetCoefficient(y[c], 1.0)
-
+            hh_constraint_le[c].SetCoefficient(x[hh], incidence[c, hh])
+            hh_constraint_le[c].SetCoefficient(relax_ge[c], -1.0)
+        logger.debug("Set hh_constraint_le to %s, %s" % (0, lp_right_hand_side[c]))
         # add the upper bound relaxation inequality constraint
-        constraint_le[c] = solver.Constraint(0, lp_right_hand_side[c])
+        hh_constraint_ge[c] = solver.Constraint(lp_right_hand_side[c], hh_constraint_ge_bound[c])
         for hh in range(0, sample_count):
-            constraint_le[c].SetCoefficient(x[hh], incidence[c, hh])
-        constraint_le[c].SetCoefficient(z[c], -1.0)
+            hh_constraint_ge[c].SetCoefficient(x[hh], incidence[c, hh])
+            hh_constraint_ge[c].SetCoefficient(relax_le[c], 1.0)
+        logger.debug("Set hh_constraint_ge to %s, %s" % (lp_right_hand_side[c], hh_constraint_ge_bound[c]))
 
     # add an equality constraint for the total households control
-    constraint_eq = solver.Constraint(lp_right_hand_side[total_hh_control_index], lp_right_hand_side[total_hh_control_index])
+    total_hh_constraint = lp_right_hand_side[total_hh_control_index]
+    constraint_eq = solver.Constraint(total_hh_constraint, total_hh_constraint)
     for hh in range(0, sample_count):
         constraint_eq.SetCoefficient(x[hh], incidence[total_hh_control_index, hh])
+    logger.debug("Set total_hh_control constraint to %s" % total_hh_constraint)
 
     solver.set_time_limit(timeout_in_seconds * 1000)
 
     result_status = solver.Solve()
 
-    continuous_solution = map(lambda x: x.solution_value(), x)
+    continuous_solution = np.asanyarray(map(lambda x: x.solution_value(), x)).astype(np.float64)
     lp_solution = np.round(continuous_solution)
 
     integerized_weights = np.trunc(final_weights) + lp_solution
@@ -182,18 +201,32 @@ def np_integerizer_cbc(sample_count,
     # print "simple rounding    ", np.round(final_weights)
 
     if result_status != pywraplp.Solver.OPTIMAL:
-        logger.error("did not find optimal solution")
+        logger.error("did not find optimal solution result_status: %s %s" % result_status, SOLVER_STATUS_STRINGS[result_status])
 
-    return integerized_weights
+    logger.debug("Solver result_status = %s" % result_status)
+    logger.debug("Optimal objective value = %s" % solver.Objective().Value())
+    logger.debug('Number of variables = %s' % solver.NumVariables())
+    logger.debug('Number of constraints = %s' % solver.NumConstraints())
+
+    # for variable in x:
+    #     print('%s = %d' % (variable.name(), variable.solution_value()))
+    #
+    # for variable in y:
+    #     if variable:
+    #         print('%s = %d' % (variable.name(), variable.solution_value()))
+    #
+    # for variable in z:
+    #     if variable:
+    #         print('%s = %d' % (variable.name(), variable.solution_value()))
+
+    return integerized_weights, result_status
 
 def do_integerizing(
         # label,
         # id,
-        #hh_based_controls,
         control_spec,
         control_totals,
         incidence_table,
-        initial_weights,
         final_weights,
         relaxation_factors,
         total_hh_control_col):
@@ -203,10 +236,8 @@ def do_integerizing(
     ----------
     label : str
     id : int
-    hh_based_controls : DataFrame
     control_totals : int array
     incidence_table : DataFrame
-    initial_weights : Series, index hh_id
     control_importance_weights : Series int
     final_weights : Series, index hh_id
     relaxation_factors : Series, index control column names
@@ -233,13 +264,12 @@ def do_integerizing(
     # should be just an array with 1 element equal to the total number of households;
     assert len(incidence_table.index) > 1
 
-    print "################################# do_integerizing"
+    # print "################################# do_integerizing"
     # print "label", label
     # print "id", id
     # print "control_spec\n", control_spec
     # print "control_totals\n", control_totals
     # print "incidence_table\n", incidence_table
-    # print "initial_weights\n", initial_weights
     # print "control_importance_weights\n", control_importance_weights
     # print "final_weights\n", final_weights
     # print "relaxation_factors\n", relaxation_factors
@@ -250,7 +280,6 @@ def do_integerizing(
     integerizer = Integerizer(
         control_totals,
         incidence_table,
-        initial_weights,
         control_importance_weights,
         final_weights,
         relaxation_factors,
@@ -261,6 +290,6 @@ def do_integerizing(
     # otherwise, solve for the integer weights using the Mixed Integer Programming solver.
     status = integerizer.integerize()
 
-    #assert False
+    logger.info("integerizer status %s" % status)
 
     return integerizer.weights['integerized_weight']

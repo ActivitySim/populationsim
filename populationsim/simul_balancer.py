@@ -29,45 +29,50 @@ class SimultaneousListBalancer(object):
 
     def __init__(self,
                  incidence_table,
-                 weights,
+                 initial_weights,
                  controls,
                  sub_control_zones,
-                 seed_id,
-                 sub_zone,
-                 master_control_index):
+                 total_hh_control_col):
 
         assert isinstance(incidence_table, pd.DataFrame)
-        assert len(weights.index) == len(incidence_table.index)
+        assert len(initial_weights.index) == len(incidence_table.index)
         assert len(incidence_table.columns) == len(controls.index)
 
-        self.incidence_table = incidence_table
-        self.weights = weights
+        assert 'total' in controls
+        assert 'importance' in controls
+
+        # remove zero weight rows
+        # remember series so we can add zero weight rows back into result after balancing
+        self.positive_weight_rows = initial_weights > 0
+        self.incidence_table = incidence_table[self.positive_weight_rows]
+
+        initial_weights = initial_weights[self.positive_weight_rows]
+        self.weights = pd.DataFrame({'aggregate_target': initial_weights})
+
         self.controls = controls
         self.sub_control_zones = sub_control_zones
 
-        # these are all just to label result
-        self.seed_id = seed_id
-        self.sub_zone = sub_zone
-        self.master_control_index = master_control_index
+        self.total_hh_control_col = total_hh_control_col
+        self.master_control_index = self.incidence_table.columns.get_loc(total_hh_control_col)
 
-        assert 'total' in self.controls
-        assert 'aggregate_target' in self.weights
-        # FIXME - do we also need sample_weights? (as the spec suggests?)
 
     def balance(self):
 
         assert len(self.incidence_table.columns) == len(self.controls.index)
         assert len(self.weights.index) == len(self.incidence_table.index)
 
-        # default values
-        if 'importance' not in self.controls:
-            self.controls['importance]'] = min(1, MIN_IMPORTANCE)
+        self.weights['upper_bound'] = self.weights['aggregate_target']
         if 'lower_bound' not in self.weights:
             self.weights['lower_bound'] = 0.0
-        if 'upper_bound' not in self.weights:
-            self.weights['upper_bound'] = MAX_INT
 
-        assert 'total' in self.controls
+        # set initial sub zone weights proportionate to number of households
+        total_hh_controls = self.controls.iloc[self.master_control_index]
+        total_hh = int(total_hh_controls['total'])
+        sub_zone_hh_fractions = total_hh_controls[self.sub_control_zones] / total_hh
+        for zone, zone_name in self.sub_control_zones.iteritems():
+            self.weights[zone_name] = self.weights['aggregate_target'] * sub_zone_hh_fractions[zone_name]
+
+        #print "weights\n", self.weights
 
         self.controls['total'] = np.maximum(self.controls['total'], MIN_CONTROL_VALUE)
 
@@ -109,27 +114,34 @@ class SimultaneousListBalancer(object):
             controls_importance,
             sub_controls)
 
-        # save results in convenient form for sub_zone balancing and debugging
-        self.sub_zone_weights = pd.DataFrame(
-            data=weights_final.transpose(),
-            columns=self.sub_control_zones,
-            index=self.incidence_table.index
-        )
+        # dataframe with sub_zone_weights in columns, and zero weight rows restored
+        self.sub_zone_weights = pd.DataFrame(index = self.positive_weight_rows.index)
+        for i, c in zip(range(len(self.sub_control_zones)), self.sub_control_zones):
+            self.sub_zone_weights[c] = pd.Series(weights_final[i], self.weights.index)
+        self.sub_zone_weights.fillna(value=0.0, inplace=True)
 
-        # save results in convenient form for final result processing
-        sub_zone_col_name = self.sub_zone
-        self.results = pd.DataFrame(
-            {'seed_id': self.seed_id,
-             sub_zone_col_name: np.repeat(self.sub_control_zones.index.tolist(), sample_count),
-             'hh_id': np.tile(np.asanyarray(self.incidence_table.index), zone_count),
-             'initial_weight': np.asanyarray(sub_weights).flatten(),
-             'final_weight': np.asanyarray(weights_final).flatten()
-             }
-        )
-        cols = ['seed_id', sub_zone_col_name, 'hh_id', 'initial_weight', 'final_weight']
-        self.results = self.results[cols]
+        # series mapping zone_id to column names
+        self.sub_zone_ids = self.sub_control_zones.index.values
 
-        self.relaxation_factors = relaxation_factors
+        # dataframe with relaxation factors for each control in columns and one row per subzone
+        self.relaxation_factors = pd.DataFrame(
+            data=relaxation_factors,
+            columns=self.controls.name,
+            index=self.sub_control_zones.index)
+
+        # # save results in convenient form for final result processing
+        # sub_zone_col_name = self.sub_zone
+        # self.results = pd.DataFrame(
+        #     {'seed_id': self.seed_id,
+        #      sub_zone_col_name: np.repeat(self.sub_control_zones.index.tolist(), sample_count),
+        #      'hh_id': np.tile(np.asanyarray(self.incidence_table.index), zone_count),
+        #      'initial_weight': np.asanyarray(sub_weights).flatten(),
+        #      'final_weight': np.asanyarray(weights_final).flatten()
+        #      }
+        # )
+        # cols = ['seed_id', sub_zone_col_name, 'hh_id', 'initial_weight', 'final_weight']
+        # self.results = self.results[cols]
+
         self.status = status
 
         return self.status
@@ -210,7 +222,6 @@ def np_simul_balancer(
                 # clip relaxation_factors
                 relaxation_factors[z] = np.minimum(relaxation_factors[z], MAX_RELAXATION_FACTOR)
 
-        bug
         # FIXME - can't rescale weights and expect to converge
         # FIXME - also zero weight hh should have been sliced out?
 

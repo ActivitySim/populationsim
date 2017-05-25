@@ -6,7 +6,7 @@ import os
 import orca
 import pandas as pd
 
-from ..balancer import seed_balancer
+from ..balancer import do_seed_balancing
 
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ def initial_seed_balancing(settings, geo_cross_walk, control_spec,
 
         logger.info("initial_seed_balancing seed id %s" % seed_id)
 
-        balancer = seed_balancer(
+        status, weights_df, controls_df = do_seed_balancing(
             seed_control_spec=seed_control_spec,
             seed_id=seed_id,
             seed_col=seed_col,
@@ -49,21 +49,14 @@ def initial_seed_balancing(settings, geo_cross_walk, control_spec,
             incidence_df=incidence_df,
             seed_controls_df=seed_controls_df)
 
-        # print "balancer.initial_weights\n", balancer.initial_weights
-        # print "balancer.ub_weights\n", balancer.ub_weights
-        # assert False
-
-        # balancer.dump()
-        status = balancer.balance()
-
         logger.info("seed_balancer status: %s" % status)
         if not status['converged']:
             raise RuntimeError("initial_seed_balancing for seed_id %s did not converge" % seed_id)
 
-        weight_list.append(balancer.weights['final'])
+        weight_list.append(weights_df['final'])
 
-        # print "balancer.weights\n", balancer.weights
-        # print "balancer.controls\n", balancer.controls
+        # print "weights\n", weights
+        # print "controls\n", controls
         # assert False
 
     # bulk concat all seed level results

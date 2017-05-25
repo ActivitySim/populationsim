@@ -23,10 +23,8 @@ _MODELS = [
     'meta_control_factoring',
     'final_seed_balancing',
     'integerize_final_seed_weights',
-    # 'simultaneous_sub_balancing',
-    # 'integerize_sub_weights',
-    # 'summarize'
-
+    'sub_balancing',
+    'summarize'
     # expand household and person records with final weights
     # to one household and one person record per weight with unique IDs
     # 'expand_population',
@@ -47,9 +45,12 @@ pipeline.run(models=_MODELS, resume_after=resume_after)
 # write final versions of all checkpointed dataframes to CSV files to review results
 if True:
     for table_name in pipeline.checkpointed_tables():
+        if table_name in ['households', 'persons']:
+            continue
         file_name = "%s.csv" % table_name
+        print "writing", file_name
         file_path = os.path.join(orca.get_injectable("output_dir"), file_name)
-        pipeline.get_table(table_name).to_csv(file_path)
+        pipeline.get_table(table_name).to_csv(file_path, index=True)
 
 # tables will no longer be available after pipeline is closed
 pipeline.close()
