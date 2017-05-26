@@ -43,21 +43,22 @@ mid_control_data:
 meta_control_data:
   filename : meta_controls.csv
 
-geographies: [meta, seed, mid, low]
+#geographies: [meta, seed, mid, low]
+#seed_geography: seed
+geographies: [DISTRICT, PUMA, TRACT, TAZ]
+seed_geography: PUMA
+crosswalk_data_table: geo_cross_walk
 
 geography_settings:
-  meta:
+  DISTRICT:
     control_data_table: meta_control_data
-    controls_table: meta_controls
     id_column: DISTRICT
-  seed:
-    controls_table: seed_controls
+  PUMA:
     id_column: PUMA
-  mid:
+  TRACT:
     control_data_table: mid_control_data
-    controls_table: mid_controls
     id_column: TRACT
-  low:
+  TAZ:
     control_data_table: low_control_data
-    controls_table: low_controls
     id_column: TAZ
+

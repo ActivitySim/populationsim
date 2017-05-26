@@ -9,26 +9,22 @@ import pandas as pd
 import numpy as np
 
 from ..integerizer import do_integerizing
+from helper import get_control_table
 
 logger = logging.getLogger(__name__)
 
 
 
 @orca.step()
-def integerize_final_seed_weights(settings, geo_cross_walk, control_spec, seed_controls, seed_control_relaxation_factors, incidence_table):
+def integerize_final_seed_weights(settings, crosswalk, control_spec, seed_control_relaxation_factors, incidence_table):
 
-    geo_cross_walk_df = geo_cross_walk.to_frame()
+    crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()
-    seed_controls_df = seed_controls.to_frame()
     seed_control_relaxation_factors_df = seed_control_relaxation_factors.to_frame()
     control_spec = control_spec.to_frame()
 
-    seed_col = settings.get('geography_settings')['seed'].get('id_column')
-
-    # # only want control_spec rows for sub_geographies
-    # geographies = settings['geographies']
-    # sub_geographies = geographies[geographies.index('seed')+1:]
-    # seed_control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
+    seed_geography = settings.get('seed_geography')
+    seed_controls_df = get_control_table(seed_geography)
 
     # FIXME - I assume we want to integerize using meta controls too?
     seed_control_spec = control_spec
@@ -47,13 +43,13 @@ def integerize_final_seed_weights(settings, geo_cross_walk, control_spec, seed_c
 
     # run balancer for each seed geography
     weight_list = []
-    seed_ids = geo_cross_walk_df[seed_col].unique()
+    seed_ids = crosswalk_df[seed_geography].unique()
     for seed_id in seed_ids:
 
         logger.info("integerize_final_seed_weights seed id %s" % seed_id)
 
         # slice incidence rows for this seed geography
-        seed_incidence = incidence_df[incidence_df[seed_col] == seed_id]
+        seed_incidence = incidence_df[incidence_df[seed_geography] == seed_id]
 
         # initial hh weights
         final_weights = seed_incidence['final_seed_weight']

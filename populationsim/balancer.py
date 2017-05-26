@@ -201,11 +201,11 @@ def np_balancer(
     return weights_final, relaxation_factors, status
 
 
-def do_seed_balancing(seed_control_spec, seed_id, seed_col, total_hh_control_col, max_expansion_factor,
+def do_seed_balancing(seed_geography, seed_control_spec, seed_id, total_hh_control_col, max_expansion_factor,
                   incidence_df, seed_controls_df):
 
     # slice incidence rows for this seed geography
-    incidence_df = incidence_df[incidence_df[seed_col] == seed_id]
+    incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
 
     # initial hh weights
     initial_weights = incidence_df['sample_weight']
