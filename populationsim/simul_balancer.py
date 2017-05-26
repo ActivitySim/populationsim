@@ -9,7 +9,7 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-MAX_ITERATIONS = 10000
+MAX_ITERATIONS = 1000
 
 MAX_DELTA = 1.0e-9
 MAX_GAMMA = 1.0e-7
@@ -45,6 +45,8 @@ class SimultaneousListBalancer(object):
         # remember series so we can add zero weight rows back into result after balancing
         self.positive_weight_rows = initial_weights > 0
         self.incidence_table = incidence_table[self.positive_weight_rows]
+
+        logger.info("%s positive weight rows out of %s" % (self.positive_weight_rows.sum(), len(incidence_table.index)))
 
         initial_weights = initial_weights[self.positive_weight_rows]
         self.weights = pd.DataFrame({'aggregate_target': initial_weights})
@@ -85,7 +87,7 @@ class SimultaneousListBalancer(object):
         zone_count = len(self.sub_control_zones)
 
         master_control_index = self.master_control_index
-        incidence = self.incidence_table.as_matrix().transpose()
+        incidence = self.incidence_table.as_matrix().transpose().astype(np.float64)
 
         # FIXME - do we also need sample_weights? (as the spec suggests?)
         weights_agg_target = np.asanyarray(self.weights['aggregate_target']).astype(np.float64)
@@ -128,19 +130,6 @@ class SimultaneousListBalancer(object):
             data=relaxation_factors,
             columns=self.controls.name,
             index=self.sub_control_zones.index)
-
-        # # save results in convenient form for final result processing
-        # sub_zone_col_name = self.sub_zone
-        # self.results = pd.DataFrame(
-        #     {'seed_id': self.seed_id,
-        #      sub_zone_col_name: np.repeat(self.sub_control_zones.index.tolist(), sample_count),
-        #      'hh_id': np.tile(np.asanyarray(self.incidence_table.index), zone_count),
-        #      'initial_weight': np.asanyarray(sub_weights).flatten(),
-        #      'final_weight': np.asanyarray(weights_final).flatten()
-        #      }
-        # )
-        # cols = ['seed_id', sub_zone_col_name, 'hh_id', 'initial_weight', 'final_weight']
-        # self.results = self.results[cols]
 
         self.status = status
 
@@ -237,7 +226,7 @@ def np_simul_balancer(
         delta = np.absolute(weights_final - weights_previous).sum() / sample_count
         assert not np.isnan(delta)
 
-        logger.debug("iter %s delta %s max_gamma_dif %s" % (iter, delta, max_gamma_dif))
+        #logger.info("iter %s delta %s max_gamma_dif %s" % (iter, delta, max_gamma_dif))
 
         # standard convergence criteria
         converged = delta < MAX_DELTA and max_gamma_dif < MAX_GAMMA

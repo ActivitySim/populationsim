@@ -28,7 +28,6 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, seed_contro
 
     # FIXME - I assume we want to integerize using meta controls too?
     seed_control_spec = control_spec
-
     control_labels = seed_control_spec.target
 
     # FIXME - ensure columns are in right order for orca-extended table
@@ -61,9 +60,7 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, seed_contro
 
         relaxation_factors = seed_control_relaxation_factors_df.loc[seed_id]
 
-        integer_weights = do_integerizing(
-            # label=seed_col,
-            # id=seed_id,
+        integer_weights, status = do_integerizing(
             control_spec=seed_control_spec,
             control_totals=control_totals,
             incidence_table=seed_incidence,

@@ -4,13 +4,43 @@ hh_size_1,TAZ,households,5000,HHSIZE1,households.NP == 1
 hh_size_2,TAZ,households,5000,HHSIZE2,households.NP == 2
 hh_size_3,TAZ,households,5000,HHSIZE3,households.NP == 3
 hh_size_4_plus,TAZ,households,5000,HHSIZE4,households.NP >= 4
-students_by_housing_type,TAZ,persons,1000000,OSUFAM,persons.OSUTAG == 1
-hh_by_type,TRACT,households,100,SF,households.HTYPE == 1
+hh_age_1,TAZ,households,500,HHAGE1,(households.AGEHOH) >= 15 & (households.AGEHOH < 25)
+hh_age_2,TAZ,households,500,HHAGE2,(households.AGEHOH) >= 25 & (households.AGEHOH < 55)
+hh_age_3,TAZ,households,500,HHAGE3,(households.AGEHOH) >= 55 & (households.AGEHOH < 65)
+hh_age_4,TAZ,households,500,HHAGE4,(households.AGEHOH) >= 65 & (households.AGEHOH <= 1000)
+hh_inc_1,TAZ,households,500,HHINC1,(households.HHINCADJ) >= -999999999 & (households.HHINCADJ < 21297)
+hh_inc_2,TAZ,households,500,HHINC2,(households.HHINCADJ) >= 21297 & (households.HHINCADJ < 42593)
+hh_inc_3,TAZ,households,500,HHINC3,(households.HHINCADJ) >= 42593 & (households.HHINCADJ < 85185)
+hh_inc_4,TAZ,households,500,HHINC4,(households.HHINCADJ) >= 85185 & (households.HHINCADJ <= 999999999)
+students_by_family,TAZ,persons,1000000,OSUFAM,persons.OSUTAG == 1
+students_by_non_family,TAZ,persons,1000000,OSUNFAM,persons.OSUTAG == 2
+workers_0,TRACT,households,1000,HHWORK0,households.NWESR == 0
+workers_1,TRACT,households,1000,HHWORK1,households.NWESR == 1
+workers_2,TRACT,households,1000,HHWORK2,households.NWESR == 2
+workers_3_plus,TRACT,households,1000,HHWORK3,households.NWESR >= 3
+sf,TRACT,households,100,SF,households.HTYPE == 1
+mf,TRACT,households,100,MF,households.HTYPE == 2
+mh,TRACT,households,100,MH,households.HTYPE == 3
+dup,TRACT,households,100,DUP,households.HTYPE == 4
 persons_occ_1,REGION,persons,100,OCCP1,persons.OCCP == 1
 persons_occ_2,REGION,persons,100,OCCP2,persons.OCCP == 2
 persons_occ_3,REGION,persons,100,OCCP3,persons.OCCP == 3
-# persons_occ_4,REGION,persons,100,OCCP4,persons.OCCP == 4
-# persons_occ_5,REGION,persons,100,OCCP5,persons.OCCP == 5
-# persons_occ_6,REGION,persons,100,OCCP6,persons.OCCP == 6
-# persons_occ_7,REGION,persons,100,OCCP7,persons.OCCP == 7
-# persons_occ_8,REGION,persons,100,OCCP8,persons.OCCP == 8
+persons_occ_4,REGION,persons,100,OCCP4,persons.OCCP == 4
+persons_occ_5,REGION,persons,100,OCCP5,persons.OCCP == 5
+persons_occ_6,REGION,persons,100,OCCP6,persons.OCCP == 6
+persons_occ_7,REGION,persons,100,OCCP7,persons.OCCP == 7
+persons_occ_8,REGION,persons,100,OCCP8,persons.OCCP == 8
+##
+#target,geography,seed_table,importance,control_field,expression
+#num_hh,TAZ,households,1000000000,HHBASE,(households.WGTP > 0) & (households.WGTP < np.inf)
+#hh_size_1,TAZ,households,5000,HHSIZE1,households.NP == 1
+#hh_size_2,TAZ,households,5000,HHSIZE2,households.NP == 2
+#hh_size_3,TAZ,households,5000,HHSIZE3,households.NP == 3
+#hh_size_4_plus,TAZ,households,5000,HHSIZE4,households.NP >= 4
+#students_by_housing_type,TAZ,persons,1000000,OSUFAM,persons.OSUTAG == 1
+#hh_by_type,TRACT,households,100,SF,households.HTYPE == 1
+#persons_occ_1,REGION,persons,100,OCCP1,persons.OCCP == 1
+#persons_occ_2,REGION,persons,100,OCCP2,persons.OCCP == 2
+#persons_occ_3,REGION,persons,100,OCCP3,persons.OCCP == 3
+
+

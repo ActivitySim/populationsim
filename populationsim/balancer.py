@@ -46,12 +46,6 @@ class ListBalancer(object):
 
         assert len(self.incidence_table.columns) == len(self.control_totals)
 
-    def dump(self):
-        print "control_totals", self.control_totals
-        print "control_importance_weights", self.control_importance_weights
-        print "initial_weights\n", self.initial_weights.head()
-        print "incidence_table\n", self.incidence_table.head()
-
     def balance(self):
 
         assert len(self.incidence_table.columns) == len(self.control_totals)
@@ -93,14 +87,11 @@ class ListBalancer(object):
         # weights dataframe
         weights = pd.DataFrame(index=self.incidence_table.index)
         weights['initial'] = self.initial_weights
-        # weights['lower_bound'] = self.lb_weights
-        # weights['upper_bound'] = self.ub_weights
         weights['final'] = weights_final
 
         # controls dataframe
         controls = pd.DataFrame(index=self.incidence_table.columns.tolist())
         controls['control'] = np.maximum(self.control_totals, MIN_CONTROL_VALUE)
-        #controls['importance'] = np.maximum(self.control_importance_weights, MIN_IMPORTANCE)
         controls['relaxation_factor'] = relaxation_factors
         controls['relaxed_control'] = controls.control * relaxation_factors
         controls['weight_totals'] = \
@@ -186,7 +177,7 @@ def np_balancer(
 
         converged = delta < MAX_GAP and max_gamma_dif < MAX_GAP
 
-        logger.debug("iter %s delta %s max_gamma_dif %s" % (iter, delta, max_gamma_dif))
+        #logger.debug("iter %s delta %s max_gamma_dif %s" % (iter, delta, max_gamma_dif))
 
         if converged:
             break

@@ -109,8 +109,7 @@ def np_integerizer_cbc(sample_count,
 
     # lp_right_hand_side
     relaxed_control_total = np.round(control_totals * relaxation_factors)
-    # FIXME - an reason we can't do this?
-    logger.warn("using unrrelaxed control total in lp_right_hand_side")
+    # FIXME - any reason we can't use unrelaxed control total?
     relaxed_control_total = control_totals
 
     for c in range(0, control_count):
@@ -200,9 +199,6 @@ def np_integerizer_cbc(sample_count,
     # print "integerized_weights", integerized_weights
     # print "simple rounding    ", np.round(final_weights)
 
-    if result_status != pywraplp.Solver.OPTIMAL:
-        logger.error("did not find optimal solution result_status: %s %s" % result_status, SOLVER_STATUS_STRINGS[result_status])
-
     logger.debug("Solver result_status = %s" % result_status)
     logger.debug("Optimal objective value = %s" % solver.Objective().Value())
     logger.debug('Number of variables = %s' % solver.NumVariables())
@@ -290,6 +286,8 @@ def do_integerizing(
     # otherwise, solve for the integer weights using the Mixed Integer Programming solver.
     status = integerizer.integerize()
 
-    logger.info("integerizer status %s" % status)
+    if status != pywraplp.Solver.OPTIMAL:
+        logger.warn("Integerizer did not find optimal solution: %s %s"
+                    % (status, SOLVER_STATUS_STRINGS[status]))
 
-    return integerizer.weights['integerized_weight']
+    return integerizer.weights['integerized_weight'], status

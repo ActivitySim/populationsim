@@ -26,8 +26,6 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
     # we use all control_spec rows, so no need to filter on geography as for initial_seed_balancing
 
-    print seed_controls_df
-
     # FIXME - ensure columns are in right order for orca-extended table
     seed_controls_df = seed_controls_df[control_spec.target]
 
@@ -70,5 +68,3 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     orca.add_table('seed_control_relaxation_factors', relaxation_factors)
 
     orca.add_column('incidence_table', 'final_seed_weight', final_seed_weights)
-
-    print "controls_df\n", controls_df

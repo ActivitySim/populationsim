@@ -141,8 +141,6 @@ def build_control_table(geo, control_spec, settings, crosswalk_df):
                 # create series mapping sub_geo id to geo id
                 sub_to_geog = crosswalk_df[[g, geo]].groupby(g, as_index=True).min()[geo]
 
-                print control_data_df
-
                 control_data_df[geo] = control_data_df[g].map(sub_to_geog)
 
             # sum controls to geo level
