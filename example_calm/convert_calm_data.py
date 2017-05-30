@@ -82,6 +82,12 @@ if __name__ == "__main__":
     seed_households = seed_households.join(agehoh)
     seed_households.AGEHOH[pd.isnull(seed_households.AGEHOH)] = 0
 
+    #Setting age of head based on PUMS Person File
+    agehoh = seed_persons[seed_persons.SPORDER==1].groupby(seed_persons.SERIALNO).AGEP.min()
+    agehoh.name = "AGEHOH"
+    seed_households = seed_households.join(agehoh)
+    seed_households.AGEHOH[pd.isnull(seed_households.AGEHOH)] = 0 
+    
     print("seed person data processing")
 
     # Deleting all GQ person records (i.e. have no household record)
