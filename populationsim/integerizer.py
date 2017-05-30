@@ -247,7 +247,7 @@ def do_integerizing(
 
     # master_control_index is column index in incidence table of total_hh_control_col
     if total_hh_control_col not in incidence_table.columns:
-        print incidence_table.columns
+        #print incidence_table.columns
         raise RuntimeError("total_hh_control column '%s' not found in incidence table"
                            % total_hh_control_col)
     total_hh_control_index = incidence_table.columns.get_loc(total_hh_control_col)

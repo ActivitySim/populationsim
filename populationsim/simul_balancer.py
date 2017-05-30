@@ -6,6 +6,8 @@ import numpy as np
 
 import pandas as pd
 
+from doppel import balance_multi_cvx
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +35,19 @@ class SimultaneousListBalancer(object):
                  controls,
                  sub_control_zones,
                  total_hh_control_col):
+        """
 
+        Parameters
+        ----------
+        incidence_table : pandas DataFrame
+        initial_weights :
+        controls : pandas DataFrame
+            parent zone controls
+            one row per control,
+            columns : name, importance, total + one column per sub_zone
+        sub_control_zones
+        total_hh_control_col
+        """
         assert isinstance(incidence_table, pd.DataFrame)
         assert len(initial_weights.index) == len(incidence_table.index)
         assert len(incidence_table.columns) == len(controls.index)
@@ -124,6 +138,101 @@ class SimultaneousListBalancer(object):
 
         # series mapping zone_id to column names
         self.sub_zone_ids = self.sub_control_zones.index.values
+
+        # dataframe with relaxation factors for each control in columns and one row per subzone
+        self.relaxation_factors = pd.DataFrame(
+            data=relaxation_factors,
+            columns=self.controls.name,
+            index=self.sub_control_zones.index)
+
+        self.status = status
+
+        return self.status
+
+
+    def xbalance(self):
+
+        assert len(self.incidence_table.columns) == len(self.controls.index)
+        assert len(self.weights.index) == len(self.incidence_table.index)
+
+        self.weights['upper_bound'] = self.weights['aggregate_target']
+        if 'lower_bound' not in self.weights:
+            self.weights['lower_bound'] = 0.0
+
+        # set initial sub zone weights proportionate to number of households
+        total_hh_controls = self.controls.iloc[self.master_control_index]
+        total_hh = int(total_hh_controls['total'])
+        sub_zone_hh_fractions = total_hh_controls[self.sub_control_zones] / total_hh
+        for zone, zone_name in self.sub_control_zones.iteritems():
+            self.weights[zone_name] = self.weights['aggregate_target'] * sub_zone_hh_fractions[zone_name]
+
+        #print "weights\n", self.weights
+
+        self.controls['total'] = np.maximum(self.controls['total'], MIN_CONTROL_VALUE)
+
+        # control relaxation importance weights (higher weights result in lower relaxation factor)
+        self.controls['importance'] = np.maximum(self.controls['importance'], MIN_IMPORTANCE)
+
+
+        zone_count = len(self.sub_control_zones)
+
+        incidence = self.incidence_table.as_matrix()
+
+        # sub_zone marginals
+        A = self.controls[self.sub_control_zones].as_matrix().astype('float').transpose()
+
+
+        # meta marginals
+        B = np.mat(np.dot(np.ones((1, zone_count)), A)[0])
+
+        # Control importance weights
+        # < 1 means not important (thus relaxing the contraint in the solver)
+        #mu = np.mat([1] * control_count)
+        meta_mu = np.asanyarray(self.controls['importance']).astype(np.float64)
+
+        meta_mu = meta_mu / 10.0
+
+        # Initial weights from PUMS
+        sample_weights = np.asanyarray(self.weights['aggregate_target']).astype(np.float64)
+        w = sample_weights.T
+        w_extend = np.tile(w, (zone_count, 1))
+
+        mu_extend = np.mat(np.tile(meta_mu, (zone_count, 1))).T
+
+
+        # print "incidence\n", incidence
+        # print "A\n", A
+        # print "B\n", B
+        # print "w_extend\n", w_extend
+        # print "mu_extend\n", mu_extend
+        # print "meta_mu\n", meta_mu
+        #assert False
+
+
+        # weights_out, zs_out, qs_out
+        weights_final, relaxation_factors, relax_meta = balance_multi_cvx(
+            hh_table=incidence,
+            A=A,
+            B=B,
+            w=w_extend,
+            mu=mu_extend,
+            meta_mu=meta_mu
+        )
+
+        relaxation_factors = relaxation_factors.T
+
+        # print "weights_final\n", weights_final
+        # print "weights_final.shape", weights_final.shape
+        # print "relaxation_factors\n", relaxation_factors.T
+        # print "relax_meta\n", relax_meta
+
+        status = 0
+
+        # dataframe with sub_zone_weights in columns, and zero weight rows restored
+        self.sub_zone_weights = pd.DataFrame(index = self.positive_weight_rows.index)
+        for i, c in zip(range(len(self.sub_control_zones)), self.sub_control_zones):
+            self.sub_zone_weights[c] = pd.Series(weights_final[i].A1, self.weights.index)
+        self.sub_zone_weights.fillna(value=0.0, inplace=True)
 
         # dataframe with relaxation factors for each control in columns and one row per subzone
         self.relaxation_factors = pd.DataFrame(

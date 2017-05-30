@@ -54,6 +54,7 @@ def input_pre_processor(settings, configs_dir, data_dir):
         # read expression file
         expression_filename = table_info.get('expression_filename', None)
         if expression_filename:
+            assert False
             expression_file_path = os.path.join(configs_dir, expression_filename)
             if not os.path.exists(expression_file_path):
                 raise RuntimeError("input_pre_processor %s - expression file not found: %s"
@@ -73,3 +74,4 @@ def input_pre_processor(settings, configs_dir, data_dir):
 
         logger.info("adding table %s" % table)
         orca.add_table(table, df)
+

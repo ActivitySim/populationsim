@@ -18,12 +18,6 @@ from helper import get_weight_table
 logger = logging.getLogger(__name__)
 
 
-def dump_table(table_name, table):
-
-    print "\n%s\n" % table_name, table.head(100)
-
-
-
 def balance(parent_geography, parent_id, sub_geographies, control_spec, sub_controls_df, initial_weights, incidence_df, crosswalk_df, total_hh_control_col):
 
     sub_geography = sub_geographies[0]
@@ -56,10 +50,10 @@ def balance(parent_geography, parent_id, sub_geographies, control_spec, sub_cont
         total_hh_control_col=total_hh_control_col
     )
 
-    status = balancer.balance()
+    status = balancer.xbalance()
 
-    logger.debug("%s %s converged %s iter %s"
-                % (parent_geography, parent_id, status['converged'], status['iter']))
+    # logger.debug("%s %s converged %s iter %s"
+    #             % (parent_geography, parent_id, status['converged'], status['iter']))
 
     # integerize the sub_zone weights
     integer_weights_list = []

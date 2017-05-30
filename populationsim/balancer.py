@@ -210,7 +210,7 @@ def do_seed_balancing(seed_geography, seed_control_spec, seed_id, total_hh_contr
 
     # master_control_index is total_hh_control_col
     if total_hh_control_col not in incidence_df.columns:
-        print incidence_df.columns
+        #print incidence_df.columns
         raise RuntimeError("total_hh_control column '%s' not found in incidence table"
                            % total_hh_control_col)
     total_hh_control_index = incidence_df.columns.get_loc(total_hh_control_col)
