@@ -76,12 +76,6 @@ if __name__ == "__main__":
     seed_households.HHINCADJ[seed_households.ADJINC == 1007624] = ((seed_households.HINCP[
                                                                         seed_households.ADJINC == 1007624] / 1.0) * 1.007624 * 1.00000 * 0.704342)
 
-    # Setting age of head based on PUMS Person File
-    agehoh = seed_persons[seed_persons.SPORDER == 1].groupby(seed_persons.SERIALNO).AGEP.min()
-    agehoh.name = "AGEHOH"
-    seed_households = seed_households.join(agehoh)
-    seed_households.AGEHOH[pd.isnull(seed_households.AGEHOH)] = 0
-
     #Setting age of head based on PUMS Person File
     agehoh = seed_persons[seed_persons.SPORDER==1].groupby(seed_persons.SERIALNO).AGEP.min()
     agehoh.name = "AGEHOH"
@@ -420,6 +414,12 @@ if __name__ == "__main__":
     gwalk.to_hdf(output_datastore_fname, "geo_cross_walk")
 
     print("write output CSVs")
+
+    seed_households = seed_households[seed_households.PUMA==600]
+
+    hh_ids = seed_households.SERIALNO.values
+    seed_persons = seed_persons[seed_persons.SERIALNO.isin(hh_ids)]
+
 
     seed_households.to_csv(output_folder + "seed_households.csv", index=False)
     seed_persons.to_csv(output_folder + "seed_persons.csv", index=False)

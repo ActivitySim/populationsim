@@ -18,4 +18,7 @@ def weight_table_name(geography, sparse=False):
         return '%s_weights' % geography
 
 def get_weight_table(geography, sparse=False):
-    return orca.get_table(weight_table_name(geography, sparse)).to_frame()
+    if orca.is_table:
+        return orca.get_table(weight_table_name(geography, sparse)).to_frame()
+    else:
+        return None

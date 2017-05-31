@@ -23,6 +23,25 @@ def dump_table(table_name, table):
 
 @orca.step()
 def meta_control_factoring(settings, control_spec, incidence_table):
+    """
+    Apply simple factoring to summed household fractional weights based on original
+    meta control values relative to summed household fractional weights by meta zone.
+
+    The resulting factored meta control weights will be new meta controls, to be
+    appended to the original controls, for final balancing.
+
+    Parameters
+    ----------
+    settings
+    control_spec
+    incidence_table
+
+    Returns
+    -------
+
+    """
+
+    # FIXME - if there is only one seed zone in the meta zone, just copy meta control values?
 
     incidence_df = incidence_table.to_frame()
     control_spec = control_spec.to_frame()

@@ -50,10 +50,10 @@ def balance(parent_geography, parent_id, sub_geographies, control_spec, sub_cont
         total_hh_control_col=total_hh_control_col
     )
 
-    status = balancer.xbalance()
+    status = balancer.balance()
 
-    # logger.debug("%s %s converged %s iter %s"
-    #             % (parent_geography, parent_id, status['converged'], status['iter']))
+    logger.debug("%s %s converged %s iter %s"
+                % (parent_geography, parent_id, status['converged'], status['iter']))
 
     # integerize the sub_zone weights
     integer_weights_list = []
@@ -63,6 +63,8 @@ def balance(parent_geography, parent_id, sub_geographies, control_spec, sub_cont
         relaxation_factors = balancer.relaxation_factors.loc[zone_id]
 
         integer_weights, status = do_integerizing(
+            label=sub_geography,
+            id=zone_id,
             control_spec=control_spec,
             control_totals=control_totals,
             incidence_table=incidence_df,
@@ -135,6 +137,13 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
     orca.add_table(weight_table_name(sub_geography), integer_weights_df)
     orca.add_table(weight_table_name(sub_geography, sparse=True), integer_weights_df[integer_weights_df['integer_weight'] > 0])
 
+    if 'trace_geography' in settings and sub_geography in settings['trace_geography']:
+        sub_geography_id = settings.get('trace_geography')[sub_geography]
+        df = integer_weights_df[ integer_weights_df[sub_geography] ==  sub_geography_id]
+        orca.add_table('trace_%s' % weight_table_name(sub_geography), df)
+
+
+
 
 @orca.step()
 def low_balancing(settings, crosswalk, control_spec, incidence_table):
@@ -169,7 +178,7 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
         parent_ids = seed_crosswalk_df[parent_geography].unique()
         for parent_id in parent_ids:
 
-            logger.info("balancing seed %s %s parent_id %s" % (seed_id, parent_geography, parent_id))
+            logger.info("balancing seed %s, %s %s" % (seed_id, parent_geography, parent_id))
 
             initial_weights = weights_df[weights_df[parent_geography] == parent_id]
             initial_weights = initial_weights.set_index(settings.get('household_id_col'))
@@ -203,3 +212,8 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
     integer_weights_df = pd.concat(integer_weights_list)
     orca.add_table(weight_table_name(sub_geography), integer_weights_df)
     orca.add_table(weight_table_name(sub_geography, sparse=True), integer_weights_df[integer_weights_df['integer_weight'] > 0])
+
+    if 'trace_geography' in settings and sub_geography in settings['trace_geography']:
+        sub_geography_id = settings.get('trace_geography')[sub_geography]
+        df = integer_weights_df[ integer_weights_df[sub_geography] ==  sub_geography_id]
+        orca.add_table('trace_%s' % weight_table_name(sub_geography), df)

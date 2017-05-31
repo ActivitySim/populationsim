@@ -27,15 +27,12 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, seed_contro
     seed_controls_df = get_control_table(seed_geography)
 
     # FIXME - I assume we want to integerize using meta controls too?
-    seed_control_spec = control_spec
-    control_labels = seed_control_spec.target
+    control_cols = control_spec.target
 
     # FIXME - ensure columns are in right order for orca-extended table
-    seed_controls_df = seed_controls_df[control_labels]
-
     # only want columns for controls we are using
-    seed_controls_df = seed_controls_df[control_labels]
-    seed_control_relaxation_factors_df = seed_control_relaxation_factors_df[control_labels]
+    seed_controls_df = seed_controls_df[control_cols]
+    seed_control_relaxation_factors_df = seed_control_relaxation_factors_df[control_cols]
 
     # determine master_control_index if specified in settings
     total_hh_control_col = settings.get('total_hh_control')
@@ -54,14 +51,16 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, seed_contro
         final_weights = seed_incidence['final_seed_weight']
 
         # incidence table should only have control columns
-        seed_incidence = seed_incidence[control_labels]
+        seed_incidence = seed_incidence[control_cols]
 
         control_totals = seed_controls_df.loc[seed_id].values
 
         relaxation_factors = seed_control_relaxation_factors_df.loc[seed_id]
 
         integer_weights, status = do_integerizing(
-            control_spec=seed_control_spec,
+            label=seed_geography,
+            id=seed_id,
+            control_spec=control_spec,
             control_totals=control_totals,
             incidence_table=seed_incidence,
             final_weights=final_weights,
@@ -71,7 +70,7 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, seed_contro
 
         weight_list.append(integer_weights)
 
-        for col in seed_control_spec.target:
+        for col in control_cols:
             print "\nxxx", col
             print "   integerized ", (integer_weights*seed_incidence[col]).sum()
             print "   rounded     ", (final_weights.round()*seed_incidence[col]).sum()

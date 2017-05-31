@@ -60,7 +60,7 @@ class SimultaneousListBalancer(object):
         self.positive_weight_rows = initial_weights > 0
         self.incidence_table = incidence_table[self.positive_weight_rows]
 
-        logger.info("%s positive weight rows out of %s" % (self.positive_weight_rows.sum(), len(incidence_table.index)))
+        logger.debug("%s positive weight rows out of %s" % (self.positive_weight_rows.sum(), len(incidence_table.index)))
 
         initial_weights = initial_weights[self.positive_weight_rows]
         self.weights = pd.DataFrame({'aggregate_target': initial_weights})

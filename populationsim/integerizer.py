@@ -218,8 +218,8 @@ def np_integerizer_cbc(sample_count,
     return integerized_weights, result_status
 
 def do_integerizing(
-        # label,
-        # id,
+        label,
+        id,
         control_spec,
         control_totals,
         incidence_table,
@@ -287,7 +287,7 @@ def do_integerizing(
     status = integerizer.integerize()
 
     if status != pywraplp.Solver.OPTIMAL:
-        logger.warn("Integerizer did not find optimal solution: %s %s"
-                    % (status, SOLVER_STATUS_STRINGS[status]))
+        logger.warn("Integerizer did not find optimal solution for %s %s: %s %s"
+                    % (label, id, status, SOLVER_STATUS_STRINGS[status]))
 
     return integerizer.weights['integerized_weight'], status
