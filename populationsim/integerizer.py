@@ -169,13 +169,13 @@ def np_integerizer_cbc(sample_count,
         for hh in range(0, sample_count):
             hh_constraint_le[c].SetCoefficient(x[hh], incidence[c, hh])
             hh_constraint_le[c].SetCoefficient(relax_ge[c], -1.0)
-        logger.debug("Set hh_constraint_le to %s, %s" % (0, lp_right_hand_side[c]))
+        #logger.debug("Set hh_constraint_le to %s, %s" % (0, lp_right_hand_side[c]))
         # add the upper bound relaxation inequality constraint
         hh_constraint_ge[c] = solver.Constraint(lp_right_hand_side[c], hh_constraint_ge_bound[c])
         for hh in range(0, sample_count):
             hh_constraint_ge[c].SetCoefficient(x[hh], incidence[c, hh])
             hh_constraint_ge[c].SetCoefficient(relax_le[c], 1.0)
-        logger.debug("Set hh_constraint_ge to %s, %s" % (lp_right_hand_side[c], hh_constraint_ge_bound[c]))
+        #logger.debug("Set hh_constraint_ge to %s, %s" % (lp_right_hand_side[c], hh_constraint_ge_bound[c]))
 
     # add an equality constraint for the total households control
     total_hh_constraint = lp_right_hand_side[total_hh_control_index]

@@ -18,6 +18,40 @@ from helper import get_weight_table
 logger = logging.getLogger(__name__)
 
 
+def multi_integerize(incidence_df, sub_weights, sub_relaxation_factors, sub_controls, control_spec, sub_control_zones, total_hh_control_col, sub_geography):
+
+    # integerize the sub_zone weights
+    integer_weights_list = []
+    for zone_id, zone_name in sub_control_zones.iteritems():
+        control_totals = sub_controls.loc[zone_id].values
+        weights = sub_weights[zone_name]
+        relaxation_factors = sub_relaxation_factors.loc[zone_id]
+
+        integer_weights, status = do_integerizing(
+            label=sub_geography,
+            id=zone_id,
+            control_spec=control_spec,
+            control_totals=control_totals,
+            incidence_table=incidence_df,
+            final_weights=weights,
+            relaxation_factors=relaxation_factors,
+            total_hh_control_col=total_hh_control_col
+        )
+
+        # print "weights\n", weights
+        # print "integer_weights\n", integer_weights
+
+        zone_weights_df = pd.DataFrame(index=range(0, len(integer_weights.index)))
+        zone_weights_df[weights.index.name] = weights.index
+        zone_weights_df[sub_geography] = zone_id
+        zone_weights_df['balanced_weight'] = weights.values
+        zone_weights_df['integer_weight'] = integer_weights.values
+
+        integer_weights_list.append(zone_weights_df)
+
+    integer_weights_df = pd.concat(integer_weights_list)
+    return integer_weights_df
+
 def balance(parent_geography, parent_id, sub_geographies, control_spec, sub_controls_df, initial_weights, incidence_df, crosswalk_df, total_hh_control_col):
 
     sub_geography = sub_geographies[0]
@@ -51,41 +85,24 @@ def balance(parent_geography, parent_id, sub_geographies, control_spec, sub_cont
     )
 
     status = balancer.balance()
+    sub_weights = balancer.sub_zone_weights
+    sub_relaxation_factors = balancer.relaxation_factors
 
     logger.debug("%s %s converged %s iter %s"
                 % (parent_geography, parent_id, status['converged'], status['iter']))
 
-    # integerize the sub_zone weights
-    integer_weights_list = []
-    for zone_id, zone_name in sub_control_zones.iteritems():
-        control_totals = sub_controls.loc[zone_id].values
-        weights = balancer.sub_zone_weights[zone_name]
-        relaxation_factors = balancer.relaxation_factors.loc[zone_id]
+    integer_weights_df = multi_integerize(
+        incidence_df,
+        sub_weights,
+        sub_relaxation_factors,
+        sub_controls,
+        control_spec,
+        sub_control_zones,
+        total_hh_control_col,
+        sub_geography
+    )
+    integer_weights_df[parent_geography] = parent_id
 
-        integer_weights, status = do_integerizing(
-            label=sub_geography,
-            id=zone_id,
-            control_spec=control_spec,
-            control_totals=control_totals,
-            incidence_table=incidence_df,
-            final_weights=weights,
-            relaxation_factors=relaxation_factors,
-            total_hh_control_col=total_hh_control_col
-        )
-
-        # print "weights\n", weights
-        # print "integer_weights\n", integer_weights
-
-        zone_weights_df = pd.DataFrame(index=range(0, len(integer_weights.index)))
-        zone_weights_df[weights.index.name] = weights.index
-        zone_weights_df[parent_geography] = parent_id
-        zone_weights_df[sub_geography] = zone_id
-        zone_weights_df['balanced_weight'] = weights.values
-        zone_weights_df['integer_weight'] = integer_weights.values
-
-        integer_weights_list.append(zone_weights_df)
-
-    integer_weights_df = pd.concat(integer_weights_list)
     return integer_weights_df
 
 

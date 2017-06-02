@@ -33,8 +33,61 @@ def _insert_append(arr, indices, values, axis=0):
     return arr_update
 
 
-def balance_cvx(hh_table, A, w, mu=None, verbose_solver=False):
-    """Maximum Entropy allocaion method for a single unit
+# def balance_cvx(hh_table, A, w, mu=None, verbose_solver=False):
+#     """Maximum Entropy allocaion method for a single unit
+#
+#     Args:
+#         hh_table (numpy matrix): Table of households categorical data
+#         A (numpy matrix): Area marginals (controls)
+#         w (numpy array): Initial household allocation weights
+#         mu (numpy array): Importance weights of marginals fit accuracy
+#         verbose_solver (boolean): Provide detailed solver info
+#
+#     Returns:
+#         (numpy matrix, numpy matrix): Household weights, relaxation factors
+#     """
+#
+#     n_samples, n_controls = hh_table.shape
+#     x = cvx.Variable(n_samples)
+#
+#     if mu is None:
+#         objective = cvx.Maximize(
+#             cvx.sum_entries(cvx.entr(x) + cvx.mul_elemwise(cvx.log(w.T), x))
+#         )
+#
+#         constraints = [
+#             x >= 0,
+#             x.T * hh_table == A,
+#         ]
+#         prob = cvx.Problem(objective, constraints)
+#         prob.solve(solver=cvx.SCS, verbose=verbose_solver)
+#
+#         return x.value
+#
+#     else:
+#         # With relaxation factors
+#         z = cvx.Variable(n_controls)
+#
+#         objective = cvx.Maximize(
+#             cvx.sum_entries(cvx.entr(x) + cvx.mul_elemwise(cvx.log(w.T), x)) +
+#             cvx.sum_entries(mu * (cvx.entr(z)))
+#         )
+#
+#         constraints = [
+#             x >= 0,
+#             z >= 0,
+#             x.T * hh_table == cvx.mul_elemwise(A, z.T),
+#         ]
+#         prob = cvx.Problem(objective, constraints)
+#         prob.solve(solver=cvx.SCS, verbose=verbose_solver)
+#
+#         return x.value, z.value
+
+
+def balance_cvx(
+        hh_table, A, w, mu, total_hh_control_index, verbose_solver=False
+):
+    """Maximum Entropy allocaion method for multiple balanced units
 
     Args:
         hh_table (numpy matrix): Table of households categorical data
@@ -48,29 +101,42 @@ def balance_cvx(hh_table, A, w, mu=None, verbose_solver=False):
     """
 
     n_samples, n_controls = hh_table.shape
-    x = cvx.Variable(n_samples)
 
-    if mu is None:
-        objective = cvx.Maximize(
-            cvx.sum_entries(cvx.entr(x) + cvx.mul_elemwise(cvx.log(w.T), x))
+    # Solver won't converge with zero marginals. Identify and remove.
+    zero_marginals = np.where(~A.any(axis=1))[0]
+    zero_weights = np.zeros((1, n_samples))
+
+    if zero_marginals.size:
+        logging.info(
+            '{} tract(s) with zero marginals encountered. '
+            'Setting weights to zero'.format(zero_marginals.size)
         )
 
-        constraints = [
-            x >= 0,
-            x.T * hh_table == A,
-        ]
-        prob = cvx.Problem(objective, constraints)
-        prob.solve(solver=cvx.SCS, verbose=verbose_solver)
+        # Need to remove problem tracts and add a row of zeros later
+        A = np.delete(A, zero_marginals, axis=0)
+        w = np.delete(w, zero_marginals, axis=0)
+        mu = np.delete(mu, zero_marginals, axis=1)
 
-        return x.value
+    x = cvx.Variable(n_samples)
+    # With relaxation factors
+    z = cvx.Variable(n_controls)
 
-    else:
-        # With relaxation factors
-        z = cvx.Variable(n_controls)
+    solved = False
+    importance_weights_relaxed = False
+    while not solved:
 
+        # minimize: sum( x*log(x/w) ) + sum( mu*z*log(z) )
+        # minimize: sum( x*log(x) - x*log(w) ) + sum( mu*z*log(z) )
+        # maximize: sum( -x*log(x) + x*log(w) ) + sum( -mu*z*log(z))
         objective = cvx.Maximize(
-            cvx.sum_entries(cvx.entr(x) + cvx.mul_elemwise(cvx.log(w.T), x)) +
-            cvx.sum_entries(mu * (cvx.entr(z)))
+            cvx.sum_entries(
+                cvx.entr(x) + cvx.mul_elemwise(cvx.log(w.T), x)
+            ) +
+            cvx.sum_entries(
+                cvx.mul_elemwise(
+                    mu.T, cvx.entr(z)
+                )
+            )
         )
 
         constraints = [
@@ -78,10 +144,49 @@ def balance_cvx(hh_table, A, w, mu=None, verbose_solver=False):
             z >= 0,
             x.T * hh_table == cvx.mul_elemwise(A, z.T),
         ]
-        prob = cvx.Problem(objective, constraints)
-        prob.solve(solver=cvx.SCS, verbose=verbose_solver)
 
-        return x.value, z.value
+        prob = cvx.Problem(objective, constraints)
+
+        try:
+            prob.solve(solver=cvx.ECOS, max_iters=100, verbose=verbose_solver)
+            solved = True
+
+        except cvx.SolverError:
+            if np.all(mu == 1):
+                # We can't reduce mu any further
+                break
+
+            i = mu[total_hh_control_index, 0]
+            mu = np.where(mu > 2, mu/2.0, 1)
+            mu[total_hh_control_index, 0] = i
+
+            # print("relaxed importance", mu)
+            importance_weights_relaxed = True
+
+    if importance_weights_relaxed:
+        logging.info(
+            'Solver error encountered. Importance weights have been relaxed.')
+        print("mu", mu)
+
+    if not np.any(x.value):
+        logging.exception(
+            'Solution infeasible. Using initial weights.')
+
+    # If we didn't get a value return the initial weights
+    weights_out = x.value if np.any(x.value) else w
+    zs_out = z.value
+
+    # Insert zeros
+    if zero_marginals.size:
+        # Due to numpy insert behavior, we need to differentiate between the
+        # values that go into the middle of the array, and the values that get
+        # appended
+        weights_out = _insert_append(
+            weights_out, zero_marginals, zero_weights, axis=0)
+        zs_out = _insert_append(
+            z.value, zero_marginals, np.zeros((n_controls, 1)), axis=1)
+
+    return weights_out, zs_out
 
 
 def balance_multi_cvx(
@@ -173,10 +278,9 @@ def balance_multi_cvx(
                 # We can't reduce mu any further
                 break
 
-            #mu = np.where(mu > 10, mu - 10, 1)
+            mu = np.where(mu > 10, mu - 10, 1)
 
-            mu = np.where(mu > 2.0, mu /2.0, 1.0)
-            print("relaxed importance", mu)
+            # print("relaxed importance", mu)
             importance_weights_relaxed = True
 
     if importance_weights_relaxed:

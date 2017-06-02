@@ -36,7 +36,7 @@ def input_pre_processor(settings, configs_dir, data_dir):
                                % (table, data_file_path, ))
 
         logger.info("Reading csv file %s" % data_file_path)
-        df = pd.read_csv(data_file_path)
+        df = pd.read_csv(data_file_path, comment='#')
 
         # rename columns
         column_map = table_info.get('column_map', None)

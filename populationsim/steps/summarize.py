@@ -77,21 +77,22 @@ def meta_summary(incidence_df, control_spec, top_geography, sub_geographies):
     controls_df = controls_df[control_cols]
 
     seed_weight_cols = ['initial_seed_weight', 'final_seed_weight', 'integer_seed_weight']
-    seed_weights = incidence_df[seed_weight_cols]
-
     incidence = incidence_df[control_cols]
 
     summary = pd.DataFrame(index=control_cols)
     summary['control'] = controls_df.T
-
     for c in seed_weight_cols:
-        summary[c] = incidence.multiply(seed_weights[c], axis="index").sum(axis=0)
+        if c in incidence_df:
+            summary[c] = incidence.multiply(incidence_df[c], axis="index").sum(axis=0)
 
     for g in sub_geographies:
 
         sub_weight_cols = ['balanced_weight', 'integer_weight']
 
         sub_weights = get_weight_table(g)
+
+        if sub_weights is None:
+            continue
 
         sub_weights = sub_weights[['hh_id'] + sub_weight_cols].groupby('hh_id').sum()
 

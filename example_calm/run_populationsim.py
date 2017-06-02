@@ -20,11 +20,11 @@ _MODELS = [
     'input_pre_processor',
     'setup_data_structures',
     'initial_seed_balancing',
-    'meta_control_factoring',
-    'final_seed_balancing',
-    'integerize_final_seed_weights',
-    'sub_balancing',
-    'low_balancing',
+    # 'meta_control_factoring',
+    # 'final_seed_balancing',
+    # 'integerize_final_seed_weights',
+    # 'sub_balancing',
+    # 'low_balancing',
     'summarize'
 
     # expand household and person records with final weights
@@ -40,7 +40,7 @@ _MODELS = [
 # and resume pipeline processing on the next submodel step after the specified checkpoint
 resume_after = None
 #resume_after = 'integerize_final_seed_weights'
-resume_after = 'low_balancing'
+#resume_after = 'setup_data_structures'
 
 pipeline.run(models=_MODELS, resume_after=resume_after)
 
