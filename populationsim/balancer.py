@@ -281,8 +281,11 @@ def do_seed_balancing_cvx(seed_geography, seed_control_spec, seed_id, total_hh_c
     # incidence table should only have control columns
     incidence = incidence_df[seed_control_spec.target]
 
-    hh_table = np.mat(incidence.as_matrix())
-    A = np.mat(control_totals)
+    #hh_table = np.mat(incidence.as_matrix())
+    #A = np.mat(control_totals)
+    hh_table = incidence.as_matrix()
+    A = control_totals.as_matrix()
+
     w = np.mat(initial_weights)
     mu = np.mat(control_importance_weights)
 

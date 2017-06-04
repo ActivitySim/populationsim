@@ -19,7 +19,7 @@ t0 = print_elapsed_time()
 _MODELS = [
     'input_pre_processor',
     'setup_data_structures',
-    'initial_seed_balancing',
+    # 'initial_seed_balancing',
     # 'meta_control_factoring',
     # 'final_seed_balancing',
     # 'integerize_final_seed_weights',

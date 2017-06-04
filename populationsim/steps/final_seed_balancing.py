@@ -63,8 +63,4 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     # bulk concat all seed level results
     final_seed_weights = pd.concat(weight_list)
 
-    relaxation_factors = relaxation_factors.transpose()
-
-    orca.add_table('seed_control_relaxation_factors', relaxation_factors)
-
     orca.add_column('incidence_table', 'final_seed_weight', final_seed_weights)

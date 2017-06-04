@@ -16,11 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 @orca.step()
-def integerize_final_seed_weights(settings, crosswalk, control_spec, seed_control_relaxation_factors, incidence_table):
+def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_table):
 
     crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()
-    seed_control_relaxation_factors_df = seed_control_relaxation_factors.to_frame()
     control_spec = control_spec.to_frame()
 
     seed_geography = settings.get('seed_geography')
@@ -30,9 +29,7 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, seed_contro
     control_cols = control_spec.target
 
     # FIXME - ensure columns are in right order for orca-extended table
-    # only want columns for controls we are using
     seed_controls_df = seed_controls_df[control_cols]
-    seed_control_relaxation_factors_df = seed_control_relaxation_factors_df[control_cols]
 
     # determine master_control_index if specified in settings
     total_hh_control_col = settings.get('total_hh_control')
@@ -47,34 +44,17 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, seed_contro
         # slice incidence rows for this seed geography
         seed_incidence = incidence_df[incidence_df[seed_geography] == seed_id]
 
-        # initial hh weights
-        final_weights = seed_incidence['final_seed_weight']
-
-        # incidence table should only have control columns
-        seed_incidence = seed_incidence[control_cols]
-
-        control_totals = seed_controls_df.loc[seed_id].values
-
-        relaxation_factors = seed_control_relaxation_factors_df.loc[seed_id]
-
         integer_weights, status = do_integerizing(
             label=seed_geography,
             id=seed_id,
             control_spec=control_spec,
-            control_totals=control_totals,
-            incidence_table=seed_incidence,
-            final_weights=final_weights,
-            relaxation_factors=relaxation_factors,
+            control_totals=seed_controls_df.loc[seed_id],
+            incidence_table=seed_incidence[control_cols],
+            float_weights=seed_incidence['final_seed_weight'],
             total_hh_control_col=total_hh_control_col
         )
 
         weight_list.append(integer_weights)
-
-        for col in control_cols:
-            print "\nxxx", col
-            print "   integerized ", (integer_weights*seed_incidence[col]).sum()
-            print "   rounded     ", (final_weights.round()*seed_incidence[col]).sum()
-            print "   control     ", seed_controls_df[col].loc[seed_id]
 
     # bulk concat all seed level results
     integer_seed_weights = pd.concat(weight_list)

@@ -216,14 +216,17 @@ def setup_data_structures(settings, configs_dir, households, persons, geo_cross_
         = crosswalk_df[[seed_geography, meta_geography]].groupby(seed_geography, as_index=True).min()[meta_geography]
     incidence_table[meta_geography] = incidence_table[seed_geography].map(seed_to_meta)
 
-    # add sample_weight col to incidence table
-    hh_weight_col = settings['household_weight_col']
-    incidence_table['sample_weight'] = households_df[hh_weight_col]
-
     geographies = settings['geographies']
     for g in geographies:
         controls = build_control_table(g, control_spec, settings, crosswalk_df)
         orca.add_table(control_table_name(g), controls)
+
+    # add sample_weight col to incidence table
+    hh_weight_col = settings['household_weight_col']
+    incidence_table['sample_weight'] = households_df[hh_weight_col]
+
+    # drop any zero weight households (there are some in calm data)
+    incidence_table = incidence_table[incidence_table['sample_weight'] > 0]
 
     # remove any rows in incidence table not in seed zones
     # FIXME - assumes geo_cross_walk_df has extra rows
@@ -234,5 +237,29 @@ def setup_data_structures(settings, configs_dir, households, persons, geo_cross_
         rows_dropped = len(rows_in_seed_zones) - len(incidence_table)
         logger.info("dropped %s rows from incidence table" % rows_dropped)
         logger.info("kept %s rows in incidence table" % len(incidence_table))
+
+    GROUP_BY_INCIDENECE_SIGNATURE = False
+    if GROUP_BY_INCIDENECE_SIGNATURE:
+        control_cols = list(control_spec.target)
+        grouper = incidence_table.groupby(control_cols + [seed_geography])
+        grouped_incidence_table = grouper.max()
+        grouped_incidence_table['sample_weight'] = grouper.sum()['sample_weight']
+        grouped_incidence_table = grouped_incidence_table.reset_index()
+        grouped_incidence_table.index.name = incidence_table.index.name
+
+        # it doesn't really matter what the incidence_table index is until we create population
+        # when we need to expand each group to constituent households
+        # but it should have the same name
+        grouped_incidence_table.index.name = incidence_table.index.name
+        # hh_col = settings['household_id_col']
+        # grouped_incidence_table[hh_col] = grouped_incidence_table.index
+
+        logger.info("grouped incidence table has %s entries, ungrouped has %s"
+                    % (len(grouped_incidence_table.index), len(incidence_table.index)))
+
+        orca.add_table('ungrouped_incidence_table', incidence_table)
+
+        incidence_table = grouped_incidence_table
+
 
     orca.add_table('incidence_table', incidence_table)

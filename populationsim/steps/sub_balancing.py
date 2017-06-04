@@ -11,6 +11,9 @@ import numpy as np
 from ..simul_balancer import SimultaneousListBalancer
 from ..integerizer import do_integerizing
 
+
+from ..doppel import discretize_multi_weights
+
 from helper import get_control_table
 from helper import weight_table_name
 from helper import get_weight_table
@@ -18,23 +21,43 @@ from helper import get_weight_table
 logger = logging.getLogger(__name__)
 
 
-def multi_integerize(incidence_df, sub_weights, sub_relaxation_factors, sub_controls, control_spec, sub_control_zones, total_hh_control_col, sub_geography):
+# def multi_integerize_cvx(incidence_df, sub_weights, sub_relaxation_factors, sub_controls, control_spec, sub_control_zones, total_hh_control_col, sub_geography):
+#
+#
+#     control_names = control_spec.target
+#
+#     tract_ids = sub_control_zones.index.values
+#
+#     hh_table = incidence_df[control_names].as_matrix()
+#     hh_weights = np.mat(sub_weights[sub_control_zones.values].as_matrix()).T
+#
+#     sample_weights_int = hh_weights.astype(int)
+#
+#     print("hh_table", type(hh_table), hh_table.shape)
+#     print("hh_weights", type(hh_weights), hh_weights.shape)
+#
+#     discretized_hh_weights = discretize_multi_weights(hh_table, hh_weights, verbose_solver=True)
+#     total_weights = sample_weights_int + discretized_hh_weights
+#
+#     pass
+#
+
+def multi_integerize(incidence_df, sub_weights, sub_controls, control_spec, sub_control_zones, total_hh_control_col, sub_geography):
 
     # integerize the sub_zone weights
     integer_weights_list = []
     for zone_id, zone_name in sub_control_zones.iteritems():
-        control_totals = sub_controls.loc[zone_id].values
+        #control_totals = sub_controls.loc[zone_id].values
         weights = sub_weights[zone_name]
-        relaxation_factors = sub_relaxation_factors.loc[zone_id]
+        #relaxation_factors = sub_relaxation_factors.loc[zone_id]
 
         integer_weights, status = do_integerizing(
             label=sub_geography,
             id=zone_id,
             control_spec=control_spec,
-            control_totals=control_totals,
-            incidence_table=incidence_df,
-            final_weights=weights,
-            relaxation_factors=relaxation_factors,
+            control_totals=sub_controls.loc[zone_id],
+            incidence_table=incidence_df[control_spec.target],
+            float_weights=weights,
             total_hh_control_col=total_hh_control_col
         )
 
@@ -52,32 +75,40 @@ def multi_integerize(incidence_df, sub_weights, sub_relaxation_factors, sub_cont
     integer_weights_df = pd.concat(integer_weights_list)
     return integer_weights_df
 
+
 def balance(parent_geography, parent_id, sub_geographies, control_spec, sub_controls_df, initial_weights, incidence_df, crosswalk_df, total_hh_control_col):
 
     sub_geography = sub_geographies[0]
 
-    control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
+    sub_control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
 
     # only want subcontrol rows for current geography geo_id
     sub_ids = crosswalk_df.loc[crosswalk_df[parent_geography] == parent_id, sub_geography].unique()
     sub_controls = sub_controls_df.loc[sub_ids]
+
+    # FIXME - an rason not to just drop out any empthy zones?
+    empty_sub_zones = (sub_controls[total_hh_control_col] == 0)
+    if empty_sub_zones.any():
+        logger.info("dropping %s empty %s  in %s %s"
+                    % (empty_sub_zones.sum(), sub_geography, parent_geography, parent_id))
+        sub_controls = sub_controls[ ~empty_sub_zones ]
 
     # standard names for sub_control zone columns in controls and weights
     sub_control_zone_names = ['%s_%s' % (sub_geography, z) for z in sub_controls.index]
     sub_control_zones = pd.Series(sub_control_zone_names, index=sub_controls.index)
 
     # controls - organized in legible form
-    controls = pd.DataFrame({'name': control_spec.target})
-    controls['importance'] = control_spec.importance
+    controls = pd.DataFrame({'name': sub_control_spec.target})
+    controls['importance'] = sub_control_spec.importance
     controls['total'] = sub_controls.sum(axis=0).values
     for zone, zone_name in sub_control_zones.iteritems():
         controls[zone_name] = sub_controls.loc[zone].values
 
     # incidence table should only have control columns
-    incidence_df = incidence_df[control_spec.target]
+    sub_incidence_df = incidence_df[sub_control_spec.target]
 
     balancer = SimultaneousListBalancer(
-        incidence_table=incidence_df,
+        incidence_table=sub_incidence_df,
         initial_weights=initial_weights,
         controls=controls,
         sub_control_zones=sub_control_zones,
@@ -94,7 +125,6 @@ def balance(parent_geography, parent_id, sub_geographies, control_spec, sub_cont
     integer_weights_df = multi_integerize(
         incidence_df,
         sub_weights,
-        sub_relaxation_factors,
         sub_controls,
         control_spec,
         sub_control_zones,

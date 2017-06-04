@@ -337,7 +337,7 @@ def discretize_multi_weights(hh_table, x, gamma=100., verbose_solver=False):
         # Need to remove problem tracts and add a row of zeros later
         x = np.delete(x, zero_weights_inds, axis=0)
 
-    n_tracts = x.shape[0]
+    n_tracts, _ = x.shape
 
     # Integerize x values
     x_int = x.astype(int)
@@ -372,6 +372,11 @@ def discretize_multi_weights(hh_table, x, gamma=100., verbose_solver=False):
         y >= 0,
         y <= 1.0
     ]
+
+    assert not np.isnan(hh_table).any()
+    assert not np.isnan(x).any()
+    assert not np.isnan(x_log).any()
+    assert not np.isnan(A_residuals).any()
 
     prob = cvx.Problem(objective, constraints)
 
