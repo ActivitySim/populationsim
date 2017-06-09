@@ -6,8 +6,9 @@ import numpy as np
 
 import pandas as pd
 
-from doppel import balance_multi_cvx
+from util import setting
 
+RESCALE_SUBZONE_WEIGHTS = setting('RESCALE_SUBZONE_WEIGHTS')
 
 logger = logging.getLogger(__name__)
 
@@ -58,12 +59,10 @@ class SimultaneousListBalancer(object):
         # remove zero weight rows
         # remember series so we can add zero weight rows back into result after balancing
         self.positive_weight_rows = initial_weights > 0
-        self.incidence_table = incidence_table[self.positive_weight_rows]
-
         logger.debug("%s positive weight rows out of %s" % (self.positive_weight_rows.sum(), len(incidence_table.index)))
 
-        initial_weights = initial_weights[self.positive_weight_rows]
-        self.weights = pd.DataFrame({'aggregate_target': initial_weights})
+        self.incidence_table = incidence_table[self.positive_weight_rows]
+        self.weights = pd.DataFrame({'parent': initial_weights[self.positive_weight_rows]})
 
         self.controls = controls
         self.sub_control_zones = sub_control_zones
@@ -77,7 +76,7 @@ class SimultaneousListBalancer(object):
         assert len(self.incidence_table.columns) == len(self.controls.index)
         assert len(self.weights.index) == len(self.incidence_table.index)
 
-        self.weights['upper_bound'] = self.weights['aggregate_target']
+        self.weights['upper_bound'] = self.weights['parent']
         if 'lower_bound' not in self.weights:
             self.weights['lower_bound'] = 0.0
 
@@ -86,7 +85,7 @@ class SimultaneousListBalancer(object):
         total_hh = int(total_hh_controls['total'])
         sub_zone_hh_fractions = total_hh_controls[self.sub_control_zones] / total_hh
         for zone, zone_name in self.sub_control_zones.iteritems():
-            self.weights[zone_name] = self.weights['aggregate_target'] * sub_zone_hh_fractions[zone_name]
+            self.weights[zone_name] = self.weights['parent'] * sub_zone_hh_fractions[zone_name]
 
         #print "weights\n", self.weights
 
@@ -104,12 +103,12 @@ class SimultaneousListBalancer(object):
         incidence = self.incidence_table.as_matrix().transpose().astype(np.float64)
 
         # FIXME - do we also need sample_weights? (as the spec suggests?)
-        weights_agg_target = np.asanyarray(self.weights['aggregate_target']).astype(np.float64)
+        parent_weights = np.asanyarray(self.weights['parent']).astype(np.float64)
 
         weights_lower_bound = np.asanyarray(self.weights['lower_bound']).astype(np.float64)
         weights_upper_bound = np.asanyarray(self.weights['upper_bound']).astype(np.float64)
 
-        controls_total = np.asanyarray(self.controls['total']).astype(np.float64)
+        parent_controls = np.asanyarray(self.controls['total']).astype(np.float64)
         controls_importance = np.asanyarray(self.controls['importance']).astype(np.float64)
 
         sub_controls = self.controls[self.sub_control_zones].as_matrix().astype('float').transpose()
@@ -122,11 +121,11 @@ class SimultaneousListBalancer(object):
             zone_count,
             master_control_index,
             incidence,
-            weights_agg_target,
+            parent_weights,
             weights_lower_bound,
             weights_upper_bound,
             sub_weights,
-            controls_total,
+            parent_controls,
             controls_importance,
             sub_controls)
 
@@ -150,112 +149,17 @@ class SimultaneousListBalancer(object):
         return self.status
 
 
-    def xbalance(self):
-
-        assert len(self.incidence_table.columns) == len(self.controls.index)
-        assert len(self.weights.index) == len(self.incidence_table.index)
-
-        self.weights['upper_bound'] = self.weights['aggregate_target']
-        if 'lower_bound' not in self.weights:
-            self.weights['lower_bound'] = 0.0
-
-        # set initial sub zone weights proportionate to number of households
-        total_hh_controls = self.controls.iloc[self.master_control_index]
-        total_hh = int(total_hh_controls['total'])
-        sub_zone_hh_fractions = total_hh_controls[self.sub_control_zones] / total_hh
-        for zone, zone_name in self.sub_control_zones.iteritems():
-            self.weights[zone_name] = self.weights['aggregate_target'] * sub_zone_hh_fractions[zone_name]
-
-        #print "weights\n", self.weights
-
-        self.controls['total'] = np.maximum(self.controls['total'], MIN_CONTROL_VALUE)
-
-        # control relaxation importance weights (higher weights result in lower relaxation factor)
-        self.controls['importance'] = np.maximum(self.controls['importance'], MIN_IMPORTANCE)
-
-
-        zone_count = len(self.sub_control_zones)
-
-        incidence = self.incidence_table.as_matrix()
-
-        # sub_zone marginals
-        A = self.controls[self.sub_control_zones].as_matrix().astype('float').transpose()
-
-
-        # meta marginals
-        B = np.mat(np.dot(np.ones((1, zone_count)), A)[0])
-
-        # Control importance weights
-        # < 1 means not important (thus relaxing the contraint in the solver)
-        #mu = np.mat([1] * control_count)
-        meta_mu = np.asanyarray(self.controls['importance']).astype(np.float64)
-
-        meta_mu = meta_mu / 10.0
-
-        # Initial weights from PUMS
-        sample_weights = np.asanyarray(self.weights['aggregate_target']).astype(np.float64)
-        w = sample_weights.T
-        w_extend = np.tile(w, (zone_count, 1))
-
-        mu_extend = np.mat(np.tile(meta_mu, (zone_count, 1))).T
-
-
-        # print "incidence\n", incidence
-        # print "A\n", A
-        # print "B\n", B
-        # print "w_extend\n", w_extend
-        # print "mu_extend\n", mu_extend
-        # print "meta_mu\n", meta_mu
-        #assert False
-
-
-        # weights_out, zs_out, qs_out
-        weights_final, relaxation_factors, relax_meta = balance_multi_cvx(
-            hh_table=incidence,
-            A=A,
-            B=B,
-            w=w_extend,
-            mu=mu_extend,
-            meta_mu=meta_mu
-        )
-
-        relaxation_factors = relaxation_factors.T
-
-        # print "weights_final\n", weights_final
-        # print "weights_final.shape", weights_final.shape
-        # print "relaxation_factors\n", relaxation_factors.T
-        # print "relax_meta\n", relax_meta
-
-        status = 0
-
-        # dataframe with sub_zone_weights in columns, and zero weight rows restored
-        self.sub_zone_weights = pd.DataFrame(index = self.positive_weight_rows.index)
-        for i, c in zip(range(len(self.sub_control_zones)), self.sub_control_zones):
-            self.sub_zone_weights[c] = pd.Series(weights_final[i].A1, self.weights.index)
-        self.sub_zone_weights.fillna(value=0.0, inplace=True)
-
-        # dataframe with relaxation factors for each control in columns and one row per subzone
-        self.relaxation_factors = pd.DataFrame(
-            data=relaxation_factors,
-            columns=self.controls.name,
-            index=self.sub_control_zones.index)
-
-        self.status = status
-
-        return self.status
-
-
 def np_simul_balancer(
         sample_count,
         control_count,
         zone_count,
         master_control_index,
         incidence,
-        weights_aggregate_target,
+        parent_weights,
         weights_lower_bound,
         weights_upper_bound,
         sub_weights,
-        controls_total,
+        parent_controls,
         controls_importance,
         sub_controls):
 
@@ -264,8 +168,8 @@ def np_simul_balancer(
 
     importance_adjustment = 1.0
 
-    # make a copy as we change this
-    weights_final = sub_weights.copy()
+    # FIXME - make a copy as we change this (not really necessary as caller doesn't use it...)
+    sub_weights = sub_weights.copy()
 
     # array of control indexes for iterating over controls
     control_indexes = range(control_count)
@@ -278,7 +182,7 @@ def np_simul_balancer(
 
     for iter in range(MAX_ITERATIONS):
 
-        weights_previous = weights_final.copy()
+        weights_previous = sub_weights.copy()
 
         # reset gamma every iteration
         gamma = np.ones((zone_count, control_count))
@@ -298,21 +202,21 @@ def np_simul_balancer(
 
             for z in range(zone_count):
 
-                xx = (weights_final[z] * incidence[c]).sum()
-                yy = (weights_final[z] * incidence2[c]).sum()
+                xx = (sub_weights[z] * incidence[c]).sum()
 
                 # calculate constraint balancing factors, gamma
                 if xx > 0:
+                    yy = (sub_weights[z] * incidence2[c]).sum()
                     relaxed_constraint = sub_controls[z, c] * relaxation_factors[z, c]
                     relaxed_constraint = max(relaxed_constraint, MIN_CONTROL_VALUE)
                     gamma[z, c] \
                         = 1.0 - (xx - relaxed_constraint) / (yy + relaxed_constraint / importance)
 
                 # update HH weights
-                weights_final[z][incidence[c] > 0] *= gamma[z, c]
+                    sub_weights[z][incidence[c] > 0] *= gamma[z, c]
 
                 # clip weights to upper and lower bounds
-                weights_final[z] = np.clip(weights_final[z],
+                    sub_weights[z] = np.clip(sub_weights[z],
                                            weights_lower_bound, weights_upper_bound)
 
                 relaxation_factors[z, c] *= pow(1.0 / gamma[z, c], 1.0 / importance)
@@ -320,19 +224,19 @@ def np_simul_balancer(
                 # clip relaxation_factors
                 relaxation_factors[z] = np.minimum(relaxation_factors[z], MAX_RELAXATION_FACTOR)
 
-        # FIXME - can't rescale weights and expect to converge
-        # FIXME - also zero weight hh should have been sliced out?
-
-        # rescale weights to sum to weights_seed
-        scale = weights_aggregate_target / np.sum(weights_final, axis=0)
-        # FIXME - what to do for rows where sum(weights_final) are zero?
-        scale = np.nan_to_num(scale)
-        weights_final *= scale
+        if RESCALE_SUBZONE_WEIGHTS:
+            # FIXME - can't rescale weights and expect to converge
+            # FIXME - also zero weight hh should have been sliced out?
+            # rescale sub_weights so weight of each hh across sub zones sums to parent_weight
+            scale = parent_weights / np.sum(sub_weights, axis=0)
+            # FIXME - what to do for rows where sum(sub_weights) are zero?
+            scale = np.nan_to_num(scale)
+            sub_weights *= scale
 
         max_gamma_dif = np.absolute(gamma - 1).max()
         assert not np.isnan(max_gamma_dif)
 
-        delta = np.absolute(weights_final - weights_previous).sum() / sample_count
+        delta = np.absolute(sub_weights - weights_previous).sum() / sample_count
         assert not np.isnan(delta)
 
         #logger.info("iter %s delta %s max_gamma_dif %s" % (iter, delta, max_gamma_dif))
@@ -353,4 +257,4 @@ def np_simul_balancer(
         'max_gamma_dif': max_gamma_dif
     }
 
-    return weights_final, relaxation_factors, status
+    return sub_weights, relaxation_factors, status

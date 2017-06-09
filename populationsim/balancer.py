@@ -6,8 +6,9 @@ import numpy as np
 
 import pandas as pd
 
-from doppel import balance_cvx
-from doppel import balance_multi_cvx
+from util import setting
+
+USE_CVX = setting('USE_CVX')
 
 
 logger = logging.getLogger(__name__)
@@ -247,84 +248,5 @@ def do_seed_balancing(seed_geography, seed_control_spec, seed_id, total_hh_contr
     status, weights, controls = balancer.balance()
 
     return status, weights, controls
-
-
-def do_seed_balancing_cvx(seed_geography, seed_control_spec, seed_id, total_hh_control_col, max_expansion_factor,
-                  incidence_df, seed_controls_df):
-
-    #seed_control_spec = seed_control_spec.head()
-
-    #incidence_df = incidence_df.head(500)
-
-    seed_controls_df = seed_controls_df[seed_control_spec.target]
-
-    total_hh_control_index = incidence_df.columns.get_loc(total_hh_control_col)
-
-    # slice incidence rows for this seed geography
-    incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
-
-    positive_weight_rows = incidence_df['sample_weight'] > 0
-    incidence_df = incidence_df[positive_weight_rows]
-
-    control_totals = seed_controls_df.loc[seed_id]
-    control_importance_weights = seed_control_spec.importance_cvx
-
-    print "control_totals\n", control_totals
-
-    # initial hh weights as pandas series
-    initial_weights = incidence_df['sample_weight']
-
-    # FIXME - scale the initial weights
-    initial_weights = initial_weights * (initial_weights.sum()/control_totals[total_hh_control_index])
-
-
-    # incidence table should only have control columns
-    incidence = incidence_df[seed_control_spec.target]
-
-    #hh_table = np.mat(incidence.as_matrix())
-    #A = np.mat(control_totals)
-    hh_table = incidence.as_matrix()
-    A = control_totals.as_matrix()
-
-    w = np.mat(initial_weights)
-    mu = np.mat(control_importance_weights)
-
-    # Control importance weights
-    # < 1 means not important (thus relaxing the constraint in the solver)
-    #mu = np.mat([1] * n_controls)
-
-    # Our trade-off coefficient gamma
-    # Low values (~1) mean we trust our initial weights, high values
-    # (~10000) mean want to fit the marginals.
-    gamma = 1.
-
-
-    print "hh_table %s %s" % (type(hh_table), hh_table.shape)
-    print "A %s %s" % (type(A), A.shape)
-    print "w %s %s" % (type(w), w.shape)
-    print "mu %s %s" % (type(mu), mu.shape)
-
-    # print "hh_table\n", hh_table
-    # print "A\n", A
-    # print "w\n", w
-    print "mu\n", mu
-
-    # weights_out, zs_out, qs_out = balance_multi_cvx(
-    #     hh_table, A, B, w_extend, gamma * mu_extend.T, meta_gamma
-    # )
-
-    weights_out, zs_out = balance_cvx(
-        hh_table, A, w, gamma * mu, total_hh_control_index, verbose_solver=True
-    )
-
-    print "weights_out", weights_out.shape
-    print "zs_out", zs_out.shape, zs_out
-
-    balanced_weights = pd.Series(0.0, index=positive_weight_rows.index)
-    balanced_weights[incidence_df.index] = weights_out.A1
-
-    relaxation_factors = pd.Series(zs_out.A1, index=incidence.columns.tolist())
-
-    return balanced_weights, relaxation_factors
 
 

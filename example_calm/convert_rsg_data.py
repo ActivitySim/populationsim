@@ -11,9 +11,9 @@ import pandas as pd, numpy as np
 pd.options.mode.chained_assignment = None  # turn off SettingWithCopyWarning
 
 # settings
-input_folder = "./raw_data/"
-output_folder = "./data/"
-output_datastore_fname = "./data/populationsim.h5"
+input_folder = "./data_rsg_raw/"
+output_folder = "./data_rsg/"
+output_datastore_fname = "./data_rsg/populationsim.h5"
 
 if __name__ == "__main__":
 

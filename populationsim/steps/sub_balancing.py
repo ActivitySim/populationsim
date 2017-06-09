@@ -9,10 +9,10 @@ import pandas as pd
 import numpy as np
 
 from ..simul_balancer import SimultaneousListBalancer
+
 from ..integerizer import do_integerizing
+from ..simul_integerizer import do_simul_integerizing
 
-
-from ..doppel import discretize_multi_weights
 
 from helper import get_control_table
 from helper import weight_table_name
@@ -20,36 +20,20 @@ from helper import get_weight_table
 
 logger = logging.getLogger(__name__)
 
+SIMUL_INTEGERIZE = False
 
-# def multi_integerize_cvx(incidence_df, sub_weights, sub_relaxation_factors, sub_controls, control_spec, sub_control_zones, total_hh_control_col, sub_geography):
-#
-#
-#     control_names = control_spec.target
-#
-#     tract_ids = sub_control_zones.index.values
-#
-#     hh_table = incidence_df[control_names].as_matrix()
-#     hh_weights = np.mat(sub_weights[sub_control_zones.values].as_matrix()).T
-#
-#     sample_weights_int = hh_weights.astype(int)
-#
-#     print("hh_table", type(hh_table), hh_table.shape)
-#     print("hh_weights", type(hh_weights), hh_weights.shape)
-#
-#     discretized_hh_weights = discretize_multi_weights(hh_table, hh_weights, verbose_solver=True)
-#     total_weights = sample_weights_int + discretized_hh_weights
-#
-#     pass
-#
-
-def multi_integerize(incidence_df, sub_weights, sub_controls, control_spec, sub_control_zones, total_hh_control_col, sub_geography):
+def sequential_multi_integerize(incidence_df,
+                     parent_weights, parent_controls,
+                     sub_weights, sub_controls,
+                     control_spec, total_hh_control_col,
+                     sub_control_zones,
+                     parent_geography, sub_geography):
 
     # integerize the sub_zone weights
     integer_weights_list = []
     for zone_id, zone_name in sub_control_zones.iteritems():
         #control_totals = sub_controls.loc[zone_id].values
         weights = sub_weights[zone_name]
-        #relaxation_factors = sub_relaxation_factors.loc[zone_id]
 
         integer_weights, status = do_integerizing(
             label=sub_geography,
@@ -76,7 +60,17 @@ def multi_integerize(incidence_df, sub_weights, sub_controls, control_spec, sub_
     return integer_weights_df
 
 
-def balance(parent_geography, parent_id, sub_geographies, control_spec, sub_controls_df, initial_weights, incidence_df, crosswalk_df, total_hh_control_col):
+def balance(
+        parent_geography,
+        parent_id,
+        sub_geographies,
+        control_spec,
+        parent_controls_df,
+        sub_controls_df,
+        initial_weights,
+        incidence_df,
+        crosswalk_df,
+        total_hh_control_col):
 
     sub_geography = sub_geographies[0]
 
@@ -86,7 +80,7 @@ def balance(parent_geography, parent_id, sub_geographies, control_spec, sub_cont
     sub_ids = crosswalk_df.loc[crosswalk_df[parent_geography] == parent_id, sub_geography].unique()
     sub_controls = sub_controls_df.loc[sub_ids]
 
-    # FIXME - an rason not to just drop out any empthy zones?
+    # FIXME - an rason not to just drop out any empty zones?
     empty_sub_zones = (sub_controls[total_hh_control_col] == 0)
     if empty_sub_zones.any():
         logger.info("dropping %s empty %s  in %s %s"
@@ -117,19 +111,22 @@ def balance(parent_geography, parent_id, sub_geographies, control_spec, sub_cont
 
     status = balancer.balance()
     sub_weights = balancer.sub_zone_weights
-    sub_relaxation_factors = balancer.relaxation_factors
 
     logger.debug("%s %s converged %s iter %s"
                 % (parent_geography, parent_id, status['converged'], status['iter']))
 
+    if SIMUL_INTEGERIZE:
+        multi_integerize = do_simul_integerizing
+    else:
+        multi_integerize = sequential_multi_integerize
+
     integer_weights_df = multi_integerize(
         incidence_df,
-        sub_weights,
-        sub_controls,
-        control_spec,
+        initial_weights, controls,
+        sub_weights, sub_controls,
+        control_spec, total_hh_control_col,
         sub_control_zones,
-        total_hh_control_col,
-        sub_geography
+        parent_geography, sub_geography
     )
     integer_weights_df[parent_geography] = parent_id
 
@@ -153,6 +150,7 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
     total_hh_control_col = settings.get('total_hh_control')
 
     # control table for the sub geography below seed
+    parent_controls_df = get_control_table(parent_geography)
     sub_controls_df = get_control_table(sub_geography)
 
     integer_weights_list = []
@@ -171,6 +169,7 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
             parent_id=seed_id,
             sub_geographies=sub_geographies,
             control_spec=control_spec,
+            parent_controls_df=parent_controls_df,
             sub_controls_df=sub_controls_df,
             initial_weights=initial_weights,
             incidence_df=seed_incidence_df,
@@ -209,7 +208,7 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
 
     total_hh_control_col = settings.get('total_hh_control')
 
-    # control table for the sub geography below seed
+    parent_controls_df = get_control_table(parent_geography)
     sub_controls_df = get_control_table(sub_geography)
 
     weights_df = get_weight_table(parent_geography)
@@ -223,6 +222,9 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
         seed_crosswalk_df = crosswalk_df[crosswalk_df[seed_geography] == seed_id]
 
         parent_ids = seed_crosswalk_df[parent_geography].unique()
+
+        #parent_ids = [10900]
+
         for parent_id in parent_ids:
 
             logger.info("balancing seed %s, %s %s" % (seed_id, parent_geography, parent_id))
@@ -241,6 +243,7 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
                 parent_id=parent_id,
                 sub_geographies=sub_geographies,
                 control_spec=control_spec,
+                parent_controls_df=parent_controls_df,
                 sub_controls_df=sub_controls_df,
                 initial_weights=initial_weights,
                 incidence_df=seed_incidence_df,

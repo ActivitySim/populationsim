@@ -10,14 +10,19 @@ import numpy as np
 
 from activitysim.core import assign
 
+from populationsim.util import data_dir_from_settings
+from populationsim.util import setting
+
 
 logger = logging.getLogger(__name__)
 
 
 @orca.step()
-def input_pre_processor(settings, configs_dir, data_dir):
+def input_pre_processor(settings):
 
-    table_list = settings.get('input_pre_processor', None)
+    data_dir = data_dir_from_settings()
+
+    table_list = setting('input_pre_processor')
 
     if not table_list:
         logger.warn('No input_pre_processor table list in settings.')
@@ -26,7 +31,10 @@ def input_pre_processor(settings, configs_dir, data_dir):
     for table in table_list:
         logger.info("input_pre_processor processing %s" % table)
 
-        table_info = settings.get(table, None)
+        table_info = setting(table)
+        if not table_info:
+            logger.warn('No table info for %s in settings. Skipping table' % (table,))
+            continue
 
         # read the csv file
         data_filename = table_info.get('filename', None)

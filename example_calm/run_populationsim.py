@@ -1,4 +1,5 @@
 import os
+import logging
 
 import orca
 
@@ -12,19 +13,32 @@ from activitysim.core.tracing import print_elapsed_time
 
 from populationsim import steps
 
+from populationsim.util import setting
+
 tracing.config_logger()
 
 t0 = print_elapsed_time()
 
+
+logger = logging.getLogger('populationsim')
+
+logger.info("USE_CVX: %s" % setting('USE_CVX'))
+logger.info("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: %s" % setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS'))
+logger.info("meta_control_data: %s" % setting('meta_control_data'))
+logger.info("RESCALE_SUBZONE_WEIGHTS: %s" % setting('RESCALE_SUBZONE_WEIGHTS'))
+logger.info("control_file_name: %s" % setting('control_file_name'))
+
+
+
 _MODELS = [
     'input_pre_processor',
     'setup_data_structures',
-    # 'initial_seed_balancing',
-    # 'meta_control_factoring',
-    # 'final_seed_balancing',
-    # 'integerize_final_seed_weights',
-    # 'sub_balancing',
-    # 'low_balancing',
+    'initial_seed_balancing',
+    'meta_control_factoring',
+    'final_seed_balancing',
+    'integerize_final_seed_weights',
+    'sub_balancing',
+    'low_balancing',
     'summarize'
 
     # expand household and person records with final weights
@@ -39,8 +53,8 @@ _MODELS = [
 # the pipeline manager will attempt to load checkpointed tables from the checkpoint store
 # and resume pipeline processing on the next submodel step after the specified checkpoint
 resume_after = None
-#resume_after = 'integerize_final_seed_weights'
-#resume_after = 'setup_data_structures'
+#resume_after = 'meta_control_factoring'
+#resume_after = 'summarize'
 
 pipeline.run(models=_MODELS, resume_after=resume_after)
 
@@ -68,8 +82,8 @@ pipeline.run(models=_MODELS, resume_after=resume_after)
 # write final versions of all checkpointed dataframes to CSV files to review results
 if True:
     for table_name in pipeline.checkpointed_tables():
-        # if table_name in ['households', 'persons']:
-        #     continue
+        if table_name in ['households', 'persons']:
+            continue
         file_name = "%s.csv" % table_name
         print "writing", file_name
         file_path = os.path.join(orca.get_injectable("output_dir"), file_name)

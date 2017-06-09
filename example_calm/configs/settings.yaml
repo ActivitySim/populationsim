@@ -1,5 +1,12 @@
 
-#store: calm_psim.h5
+USE_CVX: False
+INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
+RESCALE_SUBZONE_WEIGHTS: False
+control_file_name: controls_original.csv
+
+
+data_dir: data_calm
+
 
 trace_geography:
   TAZ: 100
@@ -24,13 +31,13 @@ households:
   filename : seed_households.csv
   index_col: hh_id
   column_map:
-    SERIALNO: hh_id
+    hhnum: hh_id
 
 persons:
   # expression_filename: seed_persons_expressions.csv
   filename : seed_persons.csv
   column_map:
-    SERIALNO: hh_id
+    hhnum: hh_id
     SPORDER: per_num
 
 geo_cross_walk:
@@ -39,13 +46,14 @@ geo_cross_walk:
     TRACTCE: TRACT
 
 low_control_data:
-  filename : low_control_data.csv
+  filename : control_totals_maz.csv
 
 mid_control_data:
-  filename : mid_control_data.csv
+  filename : control_totals_taz.csv
 
 meta_control_data:
-  filename : meta_control_data.csv
+  filename : control_totals_meta.csv
+  #filename : scaled_control_totals_meta.csv
 
 geographies: [REGION, PUMA, TRACT, TAZ]
 seed_geography: PUMA

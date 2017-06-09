@@ -6,7 +6,6 @@ import orca
 import pandas as pd
 
 from ..balancer import do_seed_balancing
-from ..balancer import do_seed_balancing_cvx
 
 from helper import get_control_table
 
@@ -41,35 +40,20 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
         logger.info("initial_seed_balancing seed id %s" % seed_id)
 
-        USE_CVX = False
+        status, weights_df, controls_df = do_seed_balancing(
+            seed_geography=seed_geography,
+            seed_control_spec=seed_control_spec,
+            seed_id=seed_id,
+            total_hh_control_col=total_hh_control_col,
+            max_expansion_factor=max_expansion_factor,
+            incidence_df=incidence_df,
+            seed_controls_df=seed_controls_df)
 
-        if USE_CVX:
+        logger.info("seed_balancer status: %s" % status)
+        if not status['converged']:
+            raise RuntimeError("initial_seed_balancing for seed_id %s did not converge" % seed_id)
 
-            balanced_weights, relaxation_factors = do_seed_balancing_cvx(
-                seed_geography=seed_geography,
-                seed_control_spec=seed_control_spec,
-                seed_id=seed_id,
-                total_hh_control_col=total_hh_control_col,
-                max_expansion_factor=max_expansion_factor,
-                incidence_df=incidence_df,
-                seed_controls_df=seed_controls_df)
-
-        else:
-
-            status, weights_df, controls_df = do_seed_balancing(
-                seed_geography=seed_geography,
-                seed_control_spec=seed_control_spec,
-                seed_id=seed_id,
-                total_hh_control_col=total_hh_control_col,
-                max_expansion_factor=max_expansion_factor,
-                incidence_df=incidence_df,
-                seed_controls_df=seed_controls_df)
-
-            logger.info("seed_balancer status: %s" % status)
-            if not status['converged']:
-                raise RuntimeError("initial_seed_balancing for seed_id %s did not converge" % seed_id)
-
-            balanced_weights = weights_df['final']
+        balanced_weights = weights_df['final']
 
         logger.info("Total balanced weights for seed %s = %s" % (seed_id, balanced_weights.sum()))
 
