@@ -8,7 +8,7 @@ import pandas as pd
 from util import setting
 
 USE_CVX = setting('USE_CVX')
-USE_BACKSTOPPED_CONTROLS = setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS')
+INTEGERIZE_WITH_BACKSTOPPED_CONTROLS = setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS')
 
 
 if USE_CVX:
@@ -379,7 +379,8 @@ def do_integerizing(
         incidence_table = incidence_table[~zero_weight_rows]
         float_weights = float_weights[~zero_weight_rows]
 
-    if USE_BACKSTOPPED_CONTROLS:
+    status = None
+    if INTEGERIZE_WITH_BACKSTOPPED_CONTROLS and len(control_totals) < len(incidence_table.columns):
 
         ##########################################
         # - backstopped control_totals
@@ -419,32 +420,8 @@ def do_integerizing(
 
         logger.debug("Integerizer status for backdropped %s %s: %s" % (label, id, status))
 
-    else:
-
-        ##########################################
-        # - relaxed control_totals
-        ##########################################
-
-        relaxed_control_totals = np.round(np.dot(np.asanyarray(float_weights), incidence_table.as_matrix()))
-        relaxed_control_totals = pd.Series(relaxed_control_totals, index=incidence_table.columns.values)
-
-        integerizer = Integerizer(
-            control_totals=relaxed_control_totals,
-            incidence_table=incidence_table,
-            control_importance_weights=control_spec.importance,
-            float_weights=float_weights,
-            relaxed_control_totals=relaxed_control_totals,
-            total_hh_control_index=incidence_table.columns.get_loc(total_hh_control_col),
-            control_is_hh_based=control_spec['seed_table'] == 'households'
-        )
-
-        # otherwise, solve for the integer weights using the Mixed Integer Programming solver.
-        status = integerizer.integerize()
-
-        logger.debug("Integerizer status for relaxed_control_totals %s %s: %s" % (label, id, status))
-
-
-    if status not in STATUS_SUCCESS and len(control_totals) < len(incidence_table.columns):
+    # if we either tried backstopped controls or failed, or never tried at all
+    if status not in STATUS_SUCCESS:
 
         ##########################################
         # - unbackstopped partial control_totals
@@ -469,7 +446,7 @@ def do_integerizing(
 
         status = integerizer.integerize()
 
-        logger.debug("Integerizer status for partial control_totals %s %s: %s" % (label, id, status))
+        logger.debug("Integerizer status for unbackstopped control_totals %s %s: %s" % (label, id, status))
 
 
     if status not in STATUS_SUCCESS:

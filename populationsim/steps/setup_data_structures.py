@@ -11,9 +11,11 @@ import numpy as np
 
 from ..assign import assign_variable
 from helper import control_table_name
+from populationsim.util import setting
 
 logger = logging.getLogger(__name__)
 
+GROUP_BY_INCIDENCE_SIGNATURE = setting('GROUP_BY_INCIDENCE_SIGNATURE')
 
 def validate_geography_settings(settings):
     if 'geographies' not in settings:
@@ -238,8 +240,7 @@ def setup_data_structures(settings, configs_dir, households, persons, geo_cross_
         logger.info("dropped %s rows from incidence table" % rows_dropped)
         logger.info("kept %s rows in incidence table" % len(incidence_table))
 
-    GROUP_BY_INCIDENECE_SIGNATURE = False
-    if GROUP_BY_INCIDENECE_SIGNATURE:
+    if GROUP_BY_INCIDENCE_SIGNATURE:
         control_cols = list(control_spec.target)
         grouper = incidence_table.groupby(control_cols + [seed_geography])
         grouped_incidence_table = grouper.max()

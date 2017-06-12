@@ -8,8 +8,6 @@ import pandas as pd
 
 from util import setting
 
-RESCALE_SUBZONE_WEIGHTS = setting('RESCALE_SUBZONE_WEIGHTS')
-
 logger = logging.getLogger(__name__)
 
 MAX_ITERATIONS = 1000
@@ -224,14 +222,13 @@ def np_simul_balancer(
                 # clip relaxation_factors
                 relaxation_factors[z] = np.minimum(relaxation_factors[z], MAX_RELAXATION_FACTOR)
 
-        if RESCALE_SUBZONE_WEIGHTS:
-            # FIXME - can't rescale weights and expect to converge
-            # FIXME - also zero weight hh should have been sliced out?
-            # rescale sub_weights so weight of each hh across sub zones sums to parent_weight
-            scale = parent_weights / np.sum(sub_weights, axis=0)
-            # FIXME - what to do for rows where sum(sub_weights) are zero?
-            scale = np.nan_to_num(scale)
-            sub_weights *= scale
+        # FIXME - can't rescale weights and expect to converge
+        # FIXME - also zero weight hh should have been sliced out?
+        # rescale sub_weights so weight of each hh across sub zones sums to parent_weight
+        scale = parent_weights / np.sum(sub_weights, axis=0)
+        # FIXME - what to do for rows where sum(sub_weights) are zero?
+        scale = np.nan_to_num(scale)
+        sub_weights *= scale
 
         max_gamma_dif = np.absolute(gamma - 1).max()
         assert not np.isnan(max_gamma_dif)

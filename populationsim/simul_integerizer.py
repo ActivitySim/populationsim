@@ -263,7 +263,7 @@ def do_simul_integerizing(
 
     zero_weight_rows = parent_weights > 0
     if zero_weight_rows.any():
-        logger.debug("omitting %s zero weight rows out of %s" % (zero_weight_rows.sum(), len(incidence_df.index)))
+        logger.info("omitting %s zero weight rows out of %s" % (zero_weight_rows.sum(), len(incidence_df.index)))
         incidence_df = incidence_df[~zero_weight_rows]
 
     print "incidence_df", incidence_df.shape

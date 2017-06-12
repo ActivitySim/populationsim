@@ -8,4 +8,5 @@ import meta_control_factoring
 import final_seed_balancing
 import integerize_final_seed_weights
 import sub_balancing
+import expand_population
 import summarize

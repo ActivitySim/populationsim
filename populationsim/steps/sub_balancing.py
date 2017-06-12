@@ -11,8 +11,8 @@ import numpy as np
 from ..simul_balancer import SimultaneousListBalancer
 
 from ..integerizer import do_integerizing
-from ..simul_integerizer import do_simul_integerizing
 
+from populationsim.util import setting
 
 from helper import get_control_table
 from helper import weight_table_name
@@ -21,6 +21,11 @@ from helper import get_weight_table
 logger = logging.getLogger(__name__)
 
 SIMUL_INTEGERIZE = False
+if SIMUL_INTEGERIZE:
+    from ..simul_integerizer import do_simul_integerizing
+
+
+SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS = setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS')
 
 def sequential_multi_integerize(incidence_df,
                      parent_weights, parent_controls,
@@ -162,7 +167,10 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
         seed_incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
 
-        initial_weights = seed_incidence_df['integer_seed_weight']
+        if SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS:
+            initial_weights = seed_incidence_df['final_seed_weight']
+        else:
+            initial_weights = seed_incidence_df['integer_seed_weight']
 
         zone_weights_df = balance(
             parent_geography=parent_geography,

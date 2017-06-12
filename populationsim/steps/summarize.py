@@ -112,10 +112,12 @@ def summarize(settings, crosswalk, incidence_table, control_spec):
     seed_geography = settings.get('seed_geography')
     meta_geography = geographies[0]
     sub_geographies = geographies[geographies.index(seed_geography) + 1:]
+    household_id_col = settings.get('household_id_col')
 
     meta_summary_df = meta_summary(incidence_df, control_spec, meta_geography, sub_geographies)
     orca.add_table('%s_summary' % (geographies[0],), meta_summary_df)
 
+    hh_weights_summary = incidence_df[['final_seed_weight', 'integer_seed_weight']].copy()
 
     for geography in sub_geographies:
 
@@ -123,6 +125,10 @@ def summarize(settings, crosswalk, incidence_table, control_spec):
 
         if weights_df is None:
             continue
+
+        hh_weights = weights_df[[household_id_col, 'balanced_weight', 'integer_weight']].groupby([household_id_col]).sum()
+        hh_weights_summary['%s_balanced_weight' % geography] = hh_weights['balanced_weight']
+        hh_weights_summary['%s_integer_weight' % geography] = hh_weights['integer_weight']
 
         # aggregate to seed level
         hh_id_col = incidence_df.index.name
@@ -142,4 +148,6 @@ def summarize(settings, crosswalk, incidence_table, control_spec):
 
         df = summarize_geography(geography, 'integer_weight', settings, crosswalk_df, weights_df, incidence_df)
         orca.add_table('%s_summary' % (geography,), df)
+
+    orca.add_table('hh_weights_summary', hh_weights_summary)
 
