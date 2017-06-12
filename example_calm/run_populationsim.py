@@ -5,14 +5,11 @@ import orca
 
 
 from activitysim.core import inject_defaults
+from populationsim import steps
 
 from activitysim.core import tracing
 from activitysim.core import pipeline
-
 from activitysim.core.tracing import print_elapsed_time
-
-from populationsim import steps
-
 from populationsim.util import setting
 
 tracing.config_logger()
@@ -23,11 +20,12 @@ t0 = print_elapsed_time()
 logger = logging.getLogger('populationsim')
 
 logger.info("USE_CVX: %s" % setting('USE_CVX'))
-logger.info("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: %s" % setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS'))
-logger.info("meta_control_data: %s" % setting('meta_control_data'))
-logger.info("RESCALE_SUBZONE_WEIGHTS: %s" % setting('RESCALE_SUBZONE_WEIGHTS'))
-logger.info("control_file_name: %s" % setting('control_file_name'))
 
+logger.info("GROUP_BY_INCIDENCE_SIGNATURE: %s" % setting('GROUP_BY_INCIDENCE_SIGNATURE'))
+logger.info("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: %s" % setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS'))
+logger.info("SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: %s" % setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS'))
+logger.info("meta_control_data: %s" % setting('meta_control_data'))
+logger.info("control_file_name: %s" % setting('control_file_name'))
 
 
 _MODELS = [
@@ -39,11 +37,12 @@ _MODELS = [
     'integerize_final_seed_weights',
     'sub_balancing',
     'low_balancing',
-    'summarize'
 
     # expand household and person records with final weights
     # to one household and one person record per weight with unique IDs
-    # 'expand_population',
+    #'expand_population',
+
+    'summarize'
 
     # write the household and person files to CSV files
     # 'write_results'
@@ -54,7 +53,7 @@ _MODELS = [
 # and resume pipeline processing on the next submodel step after the specified checkpoint
 resume_after = None
 #resume_after = 'meta_control_factoring'
-#resume_after = 'summarize'
+#resume_after = 'low_balancing'
 
 pipeline.run(models=_MODELS, resume_after=resume_after)
 
@@ -97,4 +96,4 @@ pipeline.close()
 file_path = os.path.join(orca.get_injectable("output_dir"), "checkpoints.csv")
 pipeline.get_checkpoints().to_csv(file_path)
 
-t0 = print_elapsed_time("all models", t0)
+t0 = ("all models", t0)

@@ -1,9 +1,12 @@
 
 USE_CVX: False
 INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
-RESCALE_SUBZONE_WEIGHTS: False
+SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: True
+GROUP_BY_INCIDENCE_SIGNATURE: True
+
 control_file_name: controls_original.csv
 
+# scaled/unscaled meta_control_data file name specifiec below
 
 data_dir: data_calm
 
@@ -52,8 +55,8 @@ mid_control_data:
   filename : control_totals_taz.csv
 
 meta_control_data:
-  filename : control_totals_meta.csv
-  #filename : scaled_control_totals_meta.csv
+  #filename : control_totals_meta.csv
+  filename : scaled_control_totals_meta.csv
 
 geographies: [REGION, PUMA, TRACT, TAZ]
 seed_geography: PUMA
