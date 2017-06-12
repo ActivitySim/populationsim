@@ -82,7 +82,7 @@ class Integerizer(object):
         sample_count = len(self.incidence_table.index)
         control_count = len(self.incidence_table.columns)
 
-        incidence = self.incidence_table.as_matrix().transpose()
+        incidence = self.incidence_table.as_matrix().transpose().astype(np.float64)
         float_weights = np.asanyarray(self.float_weights).astype(np.float64)
         control_totals = np.asanyarray(self.control_totals).astype(np.int)
         relaxed_control_totals = np.asanyarray(self.relaxed_control_totals).astype(np.float64)
