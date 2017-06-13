@@ -245,8 +245,22 @@ def setup_data_structures(settings, configs_dir, households, persons, geo_cross_
         grouper = incidence_table.groupby(control_cols + [seed_geography])
         grouped_incidence_table = grouper.max()
         grouped_incidence_table['sample_weight'] = grouper.sum()['sample_weight']
+        grouped_incidence_table['group_size'] = grouper.count()['sample_weight']
         grouped_incidence_table = grouped_incidence_table.reset_index()
         grouped_incidence_table.index.name = incidence_table.index.name
+
+        # add group_id of each hh to the ungrouped incidence table
+        grouped_incidence_table['group_id'] = grouped_incidence_table.index
+        incidence_table['group_id'] = incidence_table[control_cols].merge(
+            grouped_incidence_table[control_cols + ['group_id']],
+            on=control_cols,
+            how='left').group_id.astype(int).values
+
+        # explicitly provide this as a column makes it easier for use when expanding population
+        household_id_col = setting('household_id_col')
+        incidence_table[household_id_col] = incidence_table.index.astype(int)
+        #incidence_table['group_id'] = incidence_table['group_id'].astype(int)
+
 
         # it doesn't really matter what the incidence_table index is until we create population
         # when we need to expand each group to constituent households

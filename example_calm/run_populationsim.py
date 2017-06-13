@@ -37,10 +37,10 @@ _MODELS = [
     'integerize_final_seed_weights',
     'sub_balancing',
     'low_balancing',
-
-    # expand household and person records with final weights
-    # to one household and one person record per weight with unique IDs
-    #'expand_population',
+    #
+    # # expand household and person records with final weights
+    # # to one household and one person record per weight with unique IDs
+    'expand_population',
 
     'summarize'
 
@@ -52,31 +52,10 @@ _MODELS = [
 # the pipeline manager will attempt to load checkpointed tables from the checkpoint store
 # and resume pipeline processing on the next submodel step after the specified checkpoint
 resume_after = None
-#resume_after = 'meta_control_factoring'
 #resume_after = 'low_balancing'
 
 pipeline.run(models=_MODELS, resume_after=resume_after)
 
-#
-# incidence_table = pipeline.get_table('incidence_table')
-# control_spec = pipeline.get_table('control_spec')
-#
-# g = list(control_spec.target.values)
-# #g = ['num_hh',  'hh_size_1',  'hh_size_2']
-#
-# print g
-# print incidence_table.columns.values
-# print "households:", len(incidence_table.index)
-#
-# households_by_controls = incidence_table.groupby(g)[['PUMA']].count()
-# households_by_controls['sample_weight'] = incidence_table.groupby(g)[['sample_weight']].sum()
-# print "unique:", len(households_by_controls.index)
-# print households_by_controls
-#
-# file_path = os.path.join(orca.get_injectable("output_dir"), 'xxx.csv')
-# households_by_controls.reset_index().to_csv(file_path, index=True)
-#
-# print incidence_table[ incidence_table.num_hh != 1 ]
 
 # write final versions of all checkpointed dataframes to CSV files to review results
 if True:

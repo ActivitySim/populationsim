@@ -57,7 +57,7 @@ def sequential_multi_integerize(incidence_df,
         zone_weights_df[weights.index.name] = weights.index
         zone_weights_df[sub_geography] = zone_id
         zone_weights_df['balanced_weight'] = weights.values
-        zone_weights_df['integer_weight'] = integer_weights.values
+        zone_weights_df['integer_weight'] = integer_weights.astype(int).values
 
         integer_weights_list.append(zone_weights_df)
 
@@ -188,6 +188,8 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
 
     integer_weights_df = pd.concat(integer_weights_list)
+    integer_weights_df['integer_weight'] = integer_weights_df['integer_weight'].astype(int)
+
     orca.add_table(weight_table_name(sub_geography), integer_weights_df)
     orca.add_table(weight_table_name(sub_geography, sparse=True), integer_weights_df[integer_weights_df['integer_weight'] > 0])
 
@@ -268,6 +270,8 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
 
 
     integer_weights_df = pd.concat(integer_weights_list)
+    integer_weights_df['integer_weight'] = integer_weights_df['integer_weight'].astype(int)
+
     orca.add_table(weight_table_name(sub_geography), integer_weights_df)
     orca.add_table(weight_table_name(sub_geography, sparse=True), integer_weights_df[integer_weights_df['integer_weight'] > 0])
 
