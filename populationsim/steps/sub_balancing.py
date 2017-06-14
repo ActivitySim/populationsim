@@ -26,16 +26,15 @@ if SIMUL_INTEGERIZE:
 
 
 def sequential_multi_integerize(incidence_df,
-                     parent_weights, parent_controls,
-                     sub_weights, sub_controls,
-                     control_spec, total_hh_control_col,
-                     sub_control_zones,
-                     parent_geography, sub_geography):
+                                parent_weights, parent_controls,
+                                sub_weights, sub_controls,
+                                control_spec, total_hh_control_col,
+                                sub_control_zones,
+                                parent_geography, sub_geography):
 
     # integerize the sub_zone weights
     integer_weights_list = []
     for zone_id, zone_name in sub_control_zones.iteritems():
-        #control_totals = sub_controls.loc[zone_id].values
         weights = sub_weights[zone_name]
 
         integer_weights, status = do_integerizing(
@@ -47,9 +46,6 @@ def sequential_multi_integerize(incidence_df,
             float_weights=weights,
             total_hh_control_col=total_hh_control_col
         )
-
-        # print "weights\n", weights
-        # print "integer_weights\n", integer_weights
 
         zone_weights_df = pd.DataFrame(index=range(0, len(integer_weights.index)))
         zone_weights_df[weights.index.name] = weights.index
@@ -88,7 +84,7 @@ def balance(
     if empty_sub_zones.any():
         logger.info("dropping %s empty %s  in %s %s"
                     % (empty_sub_zones.sum(), sub_geography, parent_geography, parent_id))
-        sub_controls = sub_controls[ ~empty_sub_zones ]
+        sub_controls = sub_controls[~empty_sub_zones]
 
     # standard names for sub_control zone columns in controls and weights
     sub_control_zone_names = ['%s_%s' % (sub_geography, z) for z in sub_controls.index]
@@ -116,7 +112,7 @@ def balance(
     sub_weights = balancer.sub_zone_weights
 
     logger.debug("%s %s converged %s iter %s"
-                % (parent_geography, parent_id, status['converged'], status['iter']))
+                 % (parent_geography, parent_id, status['converged'], status['iter']))
 
     if SIMUL_INTEGERIZE:
         multi_integerize = do_simul_integerizing
@@ -188,24 +184,23 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
             crosswalk_df=crosswalk_df,
             total_hh_control_col=total_hh_control_col)
 
-        # facilitate summaries
+        # add meta level geography column to facilitate summaries
         zone_weights_df[meta_geography] = meta_id
 
         integer_weights_list.append(zone_weights_df)
 
-
     integer_weights_df = pd.concat(integer_weights_list)
     integer_weights_df['integer_weight'] = integer_weights_df['integer_weight'].astype(int)
 
-    orca.add_table(weight_table_name(sub_geography), integer_weights_df)
-    orca.add_table(weight_table_name(sub_geography, sparse=True), integer_weights_df[integer_weights_df['integer_weight'] > 0])
+    orca.add_table(weight_table_name(sub_geography),
+                   integer_weights_df)
+    orca.add_table(weight_table_name(sub_geography, sparse=True),
+                   integer_weights_df[integer_weights_df['integer_weight'] > 0])
 
     if 'trace_geography' in settings and sub_geography in settings['trace_geography']:
         sub_geography_id = settings.get('trace_geography')[sub_geography]
-        df = integer_weights_df[ integer_weights_df[sub_geography] ==  sub_geography_id]
+        df = integer_weights_df[integer_weights_df[sub_geography] == sub_geography_id]
         orca.add_table('trace_%s' % weight_table_name(sub_geography), df)
-
-
 
 
 @orca.step()
@@ -244,8 +239,6 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
 
         parent_ids = seed_crosswalk_df[parent_geography].unique()
 
-        #parent_ids = [10900]
-
         for parent_id in parent_ids:
 
             logger.info("balancing seed %s, %s %s" % (seed_id, parent_geography, parent_id))
@@ -253,9 +246,6 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
             initial_weights = weights_df[weights_df[parent_geography] == parent_id]
             initial_weights = initial_weights.set_index(settings.get('household_id_col'))
             initial_weights = initial_weights['integer_weight']
-
-            # print "\n\n\n######################################## initial_weights"
-            # print initial_weights
 
             assert len(initial_weights.index) == len(seed_incidence_df.index)
 
@@ -271,23 +261,21 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
                 crosswalk_df=crosswalk_df,
                 total_hh_control_col=total_hh_control_col)
 
-            # facilitate summaries
+            # add higher level geography columns to facilitate summaries
             zone_weights_df[seed_geography] = seed_id
             zone_weights_df[meta_geography] = meta_id
 
-            # print "######################################## zone_weights_df"
-            # print zone_weights_df
-
             integer_weights_list.append(zone_weights_df)
-
 
     integer_weights_df = pd.concat(integer_weights_list)
     integer_weights_df['integer_weight'] = integer_weights_df['integer_weight'].astype(int)
 
-    orca.add_table(weight_table_name(sub_geography), integer_weights_df)
-    orca.add_table(weight_table_name(sub_geography, sparse=True), integer_weights_df[integer_weights_df['integer_weight'] > 0])
+    orca.add_table(weight_table_name(sub_geography),
+                   integer_weights_df)
+    orca.add_table(weight_table_name(sub_geography, sparse=True),
+                   integer_weights_df[integer_weights_df['integer_weight'] > 0])
 
     if 'trace_geography' in settings and sub_geography in settings['trace_geography']:
         sub_geography_id = settings.get('trace_geography')[sub_geography]
-        df = integer_weights_df[ integer_weights_df[sub_geography] ==  sub_geography_id]
+        df = integer_weights_df[integer_weights_df[sub_geography] == sub_geography_id]
         orca.add_table('trace_%s' % weight_table_name(sub_geography), df)

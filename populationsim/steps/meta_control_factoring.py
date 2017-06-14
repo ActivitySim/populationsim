@@ -61,7 +61,8 @@ def meta_control_factoring(settings, control_spec, incidence_table):
         hh_level_weights[target] = incidence_df[target] * incidence_df['initial_seed_weight']
 
     # weights of meta targets at seed level
-    factored_seed_weights = hh_level_weights.groupby([seed_geography, meta_geography], as_index=False).sum()
+    factored_seed_weights = \
+        hh_level_weights.groupby([seed_geography, meta_geography], as_index=False).sum()
     factored_seed_weights.set_index(seed_geography, inplace=True)
     dump_table("factored_seed_weights", factored_seed_weights)
 

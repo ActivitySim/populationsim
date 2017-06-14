@@ -7,14 +7,16 @@ import numpy as np
 import pandas as pd
 from util import setting
 
-USE_CVX = setting('USE_CVX')
-INTEGERIZE_WITH_BACKSTOPPED_CONTROLS = setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS')
-
+USE_CVX = False
 
 if USE_CVX:
     import cylp
     import cvxpy as cvx
+else:
+    from ortools.linear_solver import pywraplp
 
+
+if USE_CVX:
     CVX_STATUS = {
         cvx.OPTIMAL: 'OPTIMAL',
         cvx.INFEASIBLE: 'INFEASIBLE',
@@ -23,12 +25,9 @@ if USE_CVX:
         cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
         cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
         None: 'FAILED'
-
     }
 
 else:
-    from ortools.linear_solver import pywraplp
-
     CBC_STATUS = {
         pywraplp.Solver.OPTIMAL: 'OPTIMAL',
         pywraplp.Solver.FEASIBLE: 'FEASIBLE',
@@ -37,6 +36,7 @@ else:
         pywraplp.Solver.ABNORMAL: 'ABNORMAL',
         pywraplp.Solver.NOT_SOLVED: 'NOT_SOLVED',
     }
+
 
 STATUS_SUCCESS = ['OPTIMAL', 'FEASIBLE', 'OPTIMAL_INACCURATE']
 
@@ -96,7 +96,6 @@ class Integerizer(object):
         assert len(control_is_hh_based) == control_count
         assert len(self.incidence_table.columns) == control_count
 
-
         if USE_CVX:
             int_weights, resid_weights, status = np_integerizer_cvx(
                 incidence=incidence,
@@ -109,8 +108,7 @@ class Integerizer(object):
                 try_harder=try_harder
             )
         else:
-            int_weights, resid_weights, status \
-                = np_integerizer_cbc(
+            int_weights, resid_weights, status = np_integerizer_cbc(
                 sample_count=sample_count,
                 control_count=control_count,
                 incidence=incidence,
@@ -133,7 +131,6 @@ class Integerizer(object):
 
         delta = (integerized_weights != np.round(float_weights)).sum()
         logger.debug("Integerizer: %s out of %s different from round" % (delta, len(float_weights)))
-
 
         return status
 
@@ -377,28 +374,26 @@ def do_integerizing(
 
     zero_weight_rows = (float_weights == 0)
     if zero_weight_rows.any():
-        logger.debug("omitting %s zero weight rows out of %s" % (
-        zero_weight_rows.sum(), len(incidence_table.index)))
+        logger.debug("omitting %s zero weight rows out of %s"
+                     % (zero_weight_rows.sum(), len(incidence_table.index)))
         incidence_table = incidence_table[~zero_weight_rows]
         float_weights = float_weights[~zero_weight_rows]
 
     status = None
-    if INTEGERIZE_WITH_BACKSTOPPED_CONTROLS and len(control_totals) < len(incidence_table.columns):
+    if setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS') \
+            and len(control_totals) < len(incidence_table.columns):
 
         ##########################################
         # - backstopped control_totals
         ##########################################
 
-        relaxed_control_totals = np.round(np.dot(np.asanyarray(float_weights), incidence_table.as_matrix()))
-        relaxed_control_totals = pd.Series(relaxed_control_totals, index=incidence_table.columns.values)
+        relaxed_control_totals = \
+            np.round(np.dot(np.asanyarray(float_weights), incidence_table.as_matrix()))
+        relaxed_control_totals = \
+            pd.Series(relaxed_control_totals, index=incidence_table.columns.values)
 
         backstopped_control_totals = relaxed_control_totals.copy()
         backstopped_control_totals.update(control_totals)
-
-        # print "control_totals\n", control_totals
-        # print "relaxed_control_totals\n", relaxed_control_totals
-        # print "backstopped_control_totals\n", backstopped_control_totals
-
 
         # if the incidence table has only one record, then the final integer weights
         # should be just an array with 1 element equal to the total number of households;
@@ -417,7 +412,7 @@ def do_integerizing(
         # otherwise, solve for the integer weights using the Mixed Integer Programming solver.
         status = integerizer.integerize()
 
-        logger.debug("Integerizer status for backdropped %s %s: %s" % (label, id, status))
+        logger.debug("Integerizer status for backstopped %s %s: %s" % (label, id, status))
 
     # if we either tried backstopped controls or failed, or never tried at all
     if status not in STATUS_SUCCESS:
@@ -430,8 +425,10 @@ def do_integerizing(
         incidence_table = incidence_table[balanced_control_cols]
         control_spec = control_spec[control_spec.target.isin(balanced_control_cols)]
 
-        relaxed_control_totals = np.round(np.dot(np.asanyarray(float_weights), incidence_table.as_matrix()))
-        relaxed_control_totals = pd.Series(relaxed_control_totals, index=incidence_table.columns.values)
+        relaxed_control_totals = \
+            np.round(np.dot(np.asanyarray(float_weights), incidence_table.as_matrix()))
+        relaxed_control_totals = \
+            pd.Series(relaxed_control_totals, index=incidence_table.columns.values)
 
         integerizer = Integerizer(
             control_totals=control_totals,
@@ -445,11 +442,11 @@ def do_integerizing(
 
         status = integerizer.integerize()
 
-        logger.debug("Integerizer status for unbackstopped control_totals %s %s: %s" % (label, id, status))
-
+        logger.debug("Integerizer status for unbackstopped %s %s: %s" % (label, id, status))
 
     if status not in STATUS_SUCCESS:
-        logger.error("Integerizer failed for %s %s. Returning smart-rounded original weights" % (label, id,))
+        logger.error("Integerizer failed for %s %s. Returning smart-rounded original weights"
+                     % (label, id,))
 
     integerized_weights = pd.Series(0.0, index=zero_weight_rows.index)
     integerized_weights.update(integerizer.weights['integerized_weight'])

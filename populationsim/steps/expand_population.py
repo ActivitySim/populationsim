@@ -44,26 +44,31 @@ def expand_population():
         expanded_weights.rename(columns={household_id_col: 'group_id'}, inplace=True)
 
         # the original incidence table with one row per hh, with index hh_id
-        ungrouped_incidence_table = pipeline.get_table('ungrouped_incidence_table')[[household_id_col, 'group_id', 'sample_weight']]
+        household_groups = pipeline.get_table('household_groups')
+        household_groups = household_groups[[household_id_col, 'group_id', 'sample_weight']]
 
-        grouper = ungrouped_incidence_table.groupby('group_id')
-
-        # - probs approach
+        # for each group, lists of hh_ids and their sample_weights (as relative probabiliities)
+        # [ [ [<group_0_hh_id_list>], [<group_0_hh_prob_list>] ],
+        #   [ [<group_1_hh_id_list>], [<group_1_hh_prob_list>] ], ... ]
         HH_IDS = 0
         HH_PROBS = 1
+        grouper = household_groups.groupby('group_id')
         group_hh_probs = [0] * len(grouper)
-
         for group_id, df in grouper:
             hh_ids = list(df[household_id_col])
             probs = list(df.sample_weight / df.sample_weight.sum())
             group_hh_probs[group_id] = [hh_ids, probs]
 
         # now make a hh_id choice for each group_id in expanded_weights
-        choose = lambda group_id : np.random.choice(group_hh_probs[group_id][HH_IDS], p=group_hh_probs[group_id][HH_PROBS])
-        expanded_weights[household_id_col] = expanded_weights.group_id.apply(choose, convert_dtype=True,)
+        def chooser(group_id):
+            hh_ids = group_hh_probs[group_id][HH_IDS]
+            hh_probs = group_hh_probs[group_id][HH_PROBS]
+            return np.random.choice(hh_ids, p=hh_probs)
+        expanded_weights[household_id_col] = \
+            expanded_weights.group_id.apply(chooser, convert_dtype=True,)
 
-        #del expanded_weights['group_id']
-        #del expanded_weights['integer_weight']
+        # FIXME - omit in production?
+        # del expanded_weights['group_id']
+        # del expanded_weights['integer_weight']
 
     orca.add_table('expanded_household_ids', expanded_weights)
-

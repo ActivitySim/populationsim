@@ -14,7 +14,6 @@ from helper import get_control_table
 logger = logging.getLogger(__name__)
 
 
-
 @orca.step()
 def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_table):
 
@@ -60,6 +59,3 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
     integer_seed_weights = pd.concat(weight_list)
 
     orca.add_column('incidence_table', 'integer_seed_weight', integer_seed_weights)
-
-
-

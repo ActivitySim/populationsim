@@ -15,6 +15,7 @@ from populationsim.util import setting
 
 logger = logging.getLogger(__name__)
 
+
 def validate_geography_settings(settings):
     if 'geographies' not in settings:
         raise RuntimeError("geographies not specified in settings")
@@ -167,8 +168,8 @@ def build_crosswalk_table(settings):
     geographies = settings.get('geographies')
 
     crosswalk_data_table = orca.get_table(settings.get('crosswalk_data_table')).to_frame()
-    column_map = {geography_settings.get(g)['id_column'] : g for g in geographies}
-    crosswalk = crosswalk_data_table.rename(columns = column_map)
+    column_map = {geography_settings.get(g)['id_column']: g for g in geographies}
+    crosswalk = crosswalk_data_table.rename(columns=column_map)
 
     # dont need any other geographies
     crosswalk = crosswalk[geographies]
@@ -212,8 +213,9 @@ def setup_data_structures(settings, configs_dir, households, persons):
     incidence_table[seed_geography] = households_df[seed_col]
 
     # create series mapping seed id to meta geography id
-    seed_to_meta \
-        = crosswalk_df[[seed_geography, meta_geography]].groupby(seed_geography, as_index=True).min()[meta_geography]
+    seed_to_meta = \
+        crosswalk_df[[seed_geography, meta_geography]]\
+        .groupby(seed_geography, as_index=True).min()[meta_geography]
     incidence_table[meta_geography] = incidence_table[seed_geography].map(seed_to_meta)
 
     geographies = settings['geographies']
@@ -239,40 +241,38 @@ def setup_data_structures(settings, configs_dir, households, persons):
         logger.info("kept %s rows in incidence table" % len(incidence_table))
 
     if setting('GROUP_BY_INCIDENCE_SIGNATURE'):
-        control_cols = list(control_spec.target)
-        grouper = incidence_table.groupby(control_cols + [seed_geography])
-        grouped_incidence_table = grouper.max()
-        grouped_incidence_table['sample_weight'] = grouper.sum()['sample_weight']
-        grouped_incidence_table['group_size'] = grouper.count()['sample_weight']
-        grouped_incidence_table = grouped_incidence_table.reset_index()
-        grouped_incidence_table.index.name = incidence_table.index.name
-
-        # add group_id of each hh to the ungrouped incidence table
-        grouped_incidence_table['group_id'] = grouped_incidence_table.index
-        incidence_table['group_id'] = incidence_table[control_cols].merge(
-            grouped_incidence_table[control_cols + ['group_id']],
-            on=control_cols,
-            how='left').group_id.astype(int).values
-
-        # explicitly provide this as a column makes it easier for use when expanding population
+        hh_incidence_table = incidence_table
         household_id_col = setting('household_id_col')
-        incidence_table[household_id_col] = incidence_table.index.astype(int)
-        #incidence_table['group_id'] = incidence_table['group_id'].astype(int)
 
+        hh_groupby_cols = list(control_spec.target) + [seed_geography]
+        hh_grouper = hh_incidence_table.groupby(hh_groupby_cols)
+        group_incidence_table = hh_grouper.max()
+        group_incidence_table['sample_weight'] = hh_grouper.sum()['sample_weight']
+        group_incidence_table['group_size'] = hh_grouper.count()['sample_weight']
+        group_incidence_table = group_incidence_table.reset_index()
+
+        logger.info("grouped incidence table has %s entries, ungrouped has %s"
+                    % (len(group_incidence_table.index), len(hh_incidence_table.index)))
+
+        # add group_id of each hh to hh_incidence_table
+        group_incidence_table['group_id'] = group_incidence_table.index
+        hh_incidence_table['group_id'] = hh_incidence_table[hh_groupby_cols].merge(
+            group_incidence_table[hh_groupby_cols + ['group_id']],
+            on=hh_groupby_cols,
+            how='left').group_id.astype(int).values
 
         # it doesn't really matter what the incidence_table index is until we create population
         # when we need to expand each group to constituent households
-        # but it should have the same name
-        grouped_incidence_table.index.name = incidence_table.index.name
-        # hh_col = settings['household_id_col']
-        # grouped_incidence_table[hh_col] = grouped_incidence_table.index
+        # but incidence_table should have the same name whether grouped or ungrouped
+        # so that the rest of the steps can handle them interchangeably
+        group_incidence_table.index.name = hh_incidence_table.index.name
 
-        logger.info("grouped incidence table has %s entries, ungrouped has %s"
-                    % (len(grouped_incidence_table.index), len(incidence_table.index)))
+        # create table mapping household_groups to households and their sample_weights
+        # explicitly provide hh_id as a column to make it easier for use when expanding population
+        household_groups = hh_incidence_table[['group_id', 'sample_weight']]
+        household_groups[household_id_col] = household_groups.index.astype(int)
+        orca.add_table('household_groups', household_groups)
 
-        orca.add_table('ungrouped_incidence_table', incidence_table)
-
-        incidence_table = grouped_incidence_table
-
-
-    orca.add_table('incidence_table', incidence_table)
+        orca.add_table('incidence_table', group_incidence_table)
+    else:
+        orca.add_table('incidence_table', incidence_table)

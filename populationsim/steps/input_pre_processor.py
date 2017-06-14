@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 @orca.step()
 def input_pre_processor():
 
-
     data_dir = data_dir_from_settings()
 
     table_list = setting('input_pre_processor')
@@ -84,4 +83,3 @@ def input_pre_processor():
         logger.info("adding table %s" % table)
 
         orca.add_table(table, df)
-

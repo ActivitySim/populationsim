@@ -58,17 +58,18 @@ class SimulIntegerizer(object):
         # remove zero weight rows
         # remember series so we can add zero weight rows back into result after balancing
         self.positive_weight_rows = initial_weights > 0
-        logger.debug("%s positive weight rows out of %s" % (self.positive_weight_rows.sum(), len(incidence_table.index)))
+        logger.debug("%s positive weight rows out of %s"
+                     % (self.positive_weight_rows.sum(), len(incidence_table.index)))
 
         self.incidence_table = incidence_table[self.positive_weight_rows]
-        self.weights = pd.DataFrame({'aggregate_target': initial_weights[self.positive_weight_rows]})
+        self.weights = \
+            pd.DataFrame({'aggregate_target': initial_weights[self.positive_weight_rows]})
 
         self.controls = controls
         self.sub_control_zones = sub_control_zones
 
         self.total_hh_control_col = total_hh_control_col
         self.master_control_index = self.incidence_table.columns.get_loc(total_hh_control_col)
-
 
     def integerize(self):
 
@@ -80,7 +81,8 @@ class SimulIntegerizer(object):
         control_totals = np.asanyarray(self.control_totals).astype(np.int)
         relaxed_control_totals = np.asanyarray(self.relaxed_control_totals).astype(np.float64)
         control_is_hh_based = np.asanyarray(self.control_is_hh_based).astype(np.int)
-        control_importance_weights = np.asanyarray(self.control_importance_weights).astype(np.float64)
+        control_importance_weights = \
+            np.asanyarray(self.control_importance_weights).astype(np.float64)
 
         assert len(float_weights) == sample_count
         assert len(control_totals) == control_count
@@ -97,7 +99,6 @@ class SimulIntegerizer(object):
             total_hh_control_index=self.total_hh_control_index,
         )
 
-
         self.weights = pd.DataFrame(index=self.incidence_table.index)
         self.weights['integerized_weight'] = integerized_weights
 
@@ -105,7 +106,8 @@ class SimulIntegerizer(object):
         logger.debug("Integerizer: %s out of %s different from round" % (delta, len(float_weights)))
 
         logger.debug("total_hh float %s int %s control %s\n" %
-                    (float_weights.sum(), integerized_weights.sum(), control_totals[self.total_hh_control_index]))
+                     (float_weights.sum(), integerized_weights.sum(),
+                      control_totals[self.total_hh_control_index]))
 
         return status
 
@@ -152,7 +154,7 @@ def np_integerizer_cvx(incidence,
     relax_ge = cvx.Variable(control_count)
 
     # FIXME - ignore as handled by constraint?
-    #control_importance_weights[total_hh_control_index] = 0
+    # control_importance_weights[total_hh_control_index] = 0
 
     # - Set objective
 
@@ -202,7 +204,7 @@ def np_integerizer_cvx(incidence,
         # - solver list: http://www.cvxpy.org/en/latest/tutorial/advanced/
         # cvx.installed_solvers(): ['ECOS_BB', 'SCS', 'ECOS', 'LS']
         # ['CVXOPT', 'ECOS_BB', 'GLPK_MI', 'SCS', 'ECOS', 'GLPK', 'LS']
-        #prob.solve(solver=cvx.ECOS, verbose=True)
+        # prob.solve(solver=cvx.ECOS, verbose=True)
 
         print cvx.installed_solvers()
         prob.solve(solver=cvx.CBC, max_iters=10,  verbose=True)
@@ -223,8 +225,6 @@ def np_integerizer_cvx(incidence,
     weights_out = int_weights + resid_weights_out
 
     return weights_out, CVX_STATUS[prob.status]
-
-
 
 
 def do_simul_integerizing(
@@ -263,14 +263,15 @@ def do_simul_integerizing(
 
     zero_weight_rows = parent_weights > 0
     if zero_weight_rows.any():
-        logger.info("omitting %s zero weight rows out of %s" % (zero_weight_rows.sum(), len(incidence_df.index)))
+        logger.info("omitting %s zero weight rows out of %s"
+                    % (zero_weight_rows.sum(), len(incidence_df.index)))
         incidence_df = incidence_df[~zero_weight_rows]
 
     print "incidence_df", incidence_df.shape
 
     sample_count = len(parent_weights.index)
     zone_count = len(sub_control_zones)
-    #incidence_df = incidence_df[control_spec.target]
+    # incidence_df = incidence_df[control_spec.target]
 
     parent_countrol_cols = list(parent_controls['name'])
     print "parent_countrol_cols\n", parent_countrol_cols
@@ -294,9 +295,9 @@ def do_simul_integerizing(
 
     print "sub_controls_df\n", sub_controls
 
-    #zone_id, zone_name in sub_control_zones.iteritems()
-    #control_totals=sub_controls.loc[zone_id],
-    #sub_weights[zone_name]
+    # zone_id, zone_name in sub_control_zones.iteritems()
+    # control_totals=sub_controls.loc[zone_id],
+    # sub_weights[zone_name]
 
     assert False
 

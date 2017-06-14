@@ -19,13 +19,17 @@ t0 = print_elapsed_time()
 
 logger = logging.getLogger('populationsim')
 
-logger.info("USE_CVX: %s" % setting('USE_CVX'))
 
-logger.info("GROUP_BY_INCIDENCE_SIGNATURE: %s" % setting('GROUP_BY_INCIDENCE_SIGNATURE'))
-logger.info("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: %s" % setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS'))
-logger.info("SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: %s" % setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS'))
-logger.info("meta_control_data: %s" % setting('meta_control_data'))
-logger.info("control_file_name: %s" % setting('control_file_name'))
+logger.info("GROUP_BY_INCIDENCE_SIGNATURE: %s"
+            % setting('GROUP_BY_INCIDENCE_SIGNATURE'))
+logger.info("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: %s"
+            % setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS'))
+logger.info("SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: %s"
+            % setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS'))
+logger.info("meta_control_data: %s"
+            % setting('meta_control_data'))
+logger.info("control_file_name: %s"
+            % setting('control_file_name'))
 
 
 _MODELS = [
@@ -52,7 +56,7 @@ _MODELS = [
 # the pipeline manager will attempt to load checkpointed tables from the checkpoint store
 # and resume pipeline processing on the next submodel step after the specified checkpoint
 resume_after = None
-#resume_after = 'low_balancing'
+# resume_after = 'low_balancing'
 
 pipeline.run(models=_MODELS, resume_after=resume_after)
 

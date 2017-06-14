@@ -34,7 +34,7 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
     max_expansion_factor = settings.get('max_expansion_factor', None)
 
-    relaxation_factors = pd.DataFrame(index = seed_controls_df.columns.tolist())
+    relaxation_factors = pd.DataFrame(index=seed_controls_df.columns.tolist())
 
     # run balancer for each seed geography
     weight_list = []

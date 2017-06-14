@@ -4,16 +4,12 @@
 import numpy as np
 import pandas as pd
 import orca
-
+from ..integerizer import do_integerizing
 
 orca.add_injectable('settings', {'INTEGERIZE_WITH_BACKSTOPPED_CONTROLS': True})
 
-from ..integerizer import do_integerizing
-
 
 def test_integerizer():
-
-
 
     # rows are elements for which factors are calculated, columns are constraints to be satisfied
     incidence_table = pd.DataFrame({
@@ -23,14 +19,16 @@ def test_integerizer():
         'p1': [1, 1, 2, 1, 0, 1, 2, 1],
         'p2': [1, 0, 1, 0, 2, 1, 1, 1],
         'p3': [1, 1, 0, 2, 1, 0, 2, 0],
-        'float_weights': [1.362893, 25.658290, 7.978812, 27.789651, 18.451021, 8.641589, 1.476104, 8.641589]
+        'float_weights':
+            [1.362893, 25.658290, 7.978812, 27.789651, 18.451021, 8.641589, 1.476104, 8.641589]
     })
 
     control_cols = ['num_hh', 'hh_1', 'hh_2', 'p1', 'p2', 'p3']
 
     control_spec = pd.DataFrame(
         {
-            'seed_table': ['households','households','households','persons','persons','persons' ],
+            'seed_table':
+                ['households', 'households', 'households', 'persons', 'persons', 'persons'],
             'target': control_cols,
             'importance': [10000000, 1000, 1000, 1000, 1000, 1000]
         }
@@ -48,6 +46,3 @@ def test_integerizer():
         float_weights=incidence_table['float_weights'],
         total_hh_control_col='num_hh'
     )
-
-
-

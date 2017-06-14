@@ -57,7 +57,8 @@ class SimultaneousListBalancer(object):
         # remove zero weight rows
         # remember series so we can add zero weight rows back into result after balancing
         self.positive_weight_rows = initial_weights > 0
-        logger.debug("%s positive weight rows out of %s" % (self.positive_weight_rows.sum(), len(incidence_table.index)))
+        logger.debug("%s positive weight rows out of %s"
+                     % (self.positive_weight_rows.sum(), len(incidence_table.index)))
 
         self.incidence_table = incidence_table[self.positive_weight_rows]
         self.weights = pd.DataFrame({'parent': initial_weights[self.positive_weight_rows]})
@@ -67,7 +68,6 @@ class SimultaneousListBalancer(object):
 
         self.total_hh_control_col = total_hh_control_col
         self.master_control_index = self.incidence_table.columns.get_loc(total_hh_control_col)
-
 
     def balance(self):
 
@@ -84,8 +84,6 @@ class SimultaneousListBalancer(object):
         sub_zone_hh_fractions = total_hh_controls[self.sub_control_zones] / total_hh
         for zone, zone_name in self.sub_control_zones.iteritems():
             self.weights[zone_name] = self.weights['parent'] * sub_zone_hh_fractions[zone_name]
-
-        #print "weights\n", self.weights
 
         self.controls['total'] = np.maximum(self.controls['total'], MIN_CONTROL_VALUE)
 
@@ -128,7 +126,7 @@ class SimultaneousListBalancer(object):
             sub_controls)
 
         # dataframe with sub_zone_weights in columns, and zero weight rows restored
-        self.sub_zone_weights = pd.DataFrame(index = self.positive_weight_rows.index)
+        self.sub_zone_weights = pd.DataFrame(index=self.positive_weight_rows.index)
         for i, c in zip(range(len(self.sub_control_zones)), self.sub_control_zones):
             self.sub_zone_weights[c] = pd.Series(weights_final[i], self.weights.index)
         self.sub_zone_weights.fillna(value=0.0, inplace=True)
@@ -211,11 +209,10 @@ def np_simul_balancer(
                         = 1.0 - (xx - relaxed_constraint) / (yy + relaxed_constraint / importance)
 
                 # update HH weights
-                    sub_weights[z][incidence[c] > 0] *= gamma[z, c]
+                sub_weights[z][incidence[c] > 0] *= gamma[z, c]
 
                 # clip weights to upper and lower bounds
-                    sub_weights[z] = np.clip(sub_weights[z],
-                                           weights_lower_bound, weights_upper_bound)
+                sub_weights[z] = np.clip(sub_weights[z], weights_lower_bound, weights_upper_bound)
 
                 relaxation_factors[z, c] *= pow(1.0 / gamma[z, c], 1.0 / importance)
 
@@ -235,8 +232,6 @@ def np_simul_balancer(
 
         delta = np.absolute(sub_weights - weights_previous).sum() / sample_count
         assert not np.isnan(delta)
-
-        #logger.info("iter %s delta %s max_gamma_dif %s" % (iter, delta, max_gamma_dif))
 
         # standard convergence criteria
         converged = delta < MAX_DELTA and max_gamma_dif < MAX_GAMMA

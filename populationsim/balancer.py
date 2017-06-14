@@ -175,12 +175,11 @@ def np_balancer(
 
         max_gamma_dif = np.absolute(gamma - 1).max()
 
-        # delta = (weights_final - weights_previous).abs().sum() / sample_count
         delta = np.absolute(weights_final - weights_previous).sum() / sample_count
 
         converged = delta < MAX_GAP and max_gamma_dif < MAX_GAP
 
-        #logger.debug("iter %s delta %s max_gamma_dif %s" % (iter, delta, max_gamma_dif))
+        # logger.debug("iter %s delta %s max_gamma_dif %s" % (iter, delta, max_gamma_dif))
 
         if converged:
             break
@@ -195,8 +194,9 @@ def np_balancer(
     return weights_final, relaxation_factors, status
 
 
-def do_seed_balancing(seed_geography, seed_control_spec, seed_id, total_hh_control_col, max_expansion_factor,
-                  incidence_df, seed_controls_df):
+def do_seed_balancing(seed_geography, seed_control_spec, seed_id,
+                      total_hh_control_col, max_expansion_factor,
+                      incidence_df, seed_controls_df):
 
     # slice incidence rows for this seed geography
     incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
@@ -213,7 +213,6 @@ def do_seed_balancing(seed_geography, seed_control_spec, seed_id, total_hh_contr
 
     # master_control_index is total_hh_control_col
     if total_hh_control_col not in incidence_df.columns:
-        #print incidence_df.columns
         raise RuntimeError("total_hh_control column '%s' not found in incidence table"
                            % total_hh_control_col)
     total_hh_control_index = incidence_df.columns.get_loc(total_hh_control_col)
@@ -246,5 +245,3 @@ def do_seed_balancing(seed_geography, seed_control_spec, seed_id, total_hh_contr
     status, weights, controls = balancer.balance()
 
     return status, weights, controls
-
-
