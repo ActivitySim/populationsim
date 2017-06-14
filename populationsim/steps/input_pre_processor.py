@@ -18,7 +18,8 @@ logger = logging.getLogger(__name__)
 
 
 @orca.step()
-def input_pre_processor(settings):
+def input_pre_processor():
+
 
     data_dir = data_dir_from_settings()
 
@@ -81,5 +82,6 @@ def input_pre_processor(settings):
             df = pd.concat([df, results], axis=1)
 
         logger.info("adding table %s" % table)
+
         orca.add_table(table, df)
 

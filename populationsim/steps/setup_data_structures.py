@@ -15,8 +15,6 @@ from populationsim.util import setting
 
 logger = logging.getLogger(__name__)
 
-GROUP_BY_INCIDENCE_SIGNATURE = setting('GROUP_BY_INCIDENCE_SIGNATURE')
-
 def validate_geography_settings(settings):
     if 'geographies' not in settings:
         raise RuntimeError("geographies not specified in settings")
@@ -188,7 +186,7 @@ def build_crosswalk_table(settings):
 
 
 @orca.step()
-def setup_data_structures(settings, configs_dir, households, persons, geo_cross_walk):
+def setup_data_structures(settings, configs_dir, households, persons):
 
     validate_geography_settings(settings)
     geography_settings = settings.get('geography_settings')
@@ -240,7 +238,7 @@ def setup_data_structures(settings, configs_dir, households, persons, geo_cross_
         logger.info("dropped %s rows from incidence table" % rows_dropped)
         logger.info("kept %s rows in incidence table" % len(incidence_table))
 
-    if GROUP_BY_INCIDENCE_SIGNATURE:
+    if setting('GROUP_BY_INCIDENCE_SIGNATURE'):
         control_cols = list(control_spec.target)
         grouper = incidence_table.groupby(control_cols + [seed_geography])
         grouped_incidence_table = grouper.max()

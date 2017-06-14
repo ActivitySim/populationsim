@@ -8,8 +8,6 @@ import pandas as pd
 
 from util import setting
 
-USE_CVX = setting('USE_CVX')
-
 
 logger = logging.getLogger(__name__)
 

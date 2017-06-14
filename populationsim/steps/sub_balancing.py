@@ -25,8 +25,6 @@ if SIMUL_INTEGERIZE:
     from ..simul_integerizer import do_simul_integerizing
 
 
-SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS = setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS')
-
 def sequential_multi_integerize(incidence_df,
                      parent_weights, parent_controls,
                      sub_weights, sub_controls,
@@ -147,6 +145,7 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
     geographies = settings.get('geographies')
     seed_geography = settings.get('seed_geography')
+    meta_geography = geographies[0]
 
     parent_geography = seed_geography
     sub_geographies = geographies[geographies.index(parent_geography) + 1:]
@@ -167,7 +166,12 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
         seed_incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
 
-        if SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS:
+        seed_crosswalk_df = crosswalk_df[crosswalk_df[seed_geography] == seed_id]
+
+        assert len(seed_crosswalk_df[meta_geography].unique()) == 1
+        meta_id = seed_crosswalk_df[meta_geography].max()
+
+        if setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS'):
             initial_weights = seed_incidence_df['final_seed_weight']
         else:
             initial_weights = seed_incidence_df['integer_seed_weight']
@@ -183,6 +187,9 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
             incidence_df=seed_incidence_df,
             crosswalk_df=crosswalk_df,
             total_hh_control_col=total_hh_control_col)
+
+        # facilitate summaries
+        zone_weights_df[meta_geography] = meta_id
 
         integer_weights_list.append(zone_weights_df)
 
@@ -210,6 +217,7 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
 
     geographies = settings.get('geographies')
     seed_geography = settings.get('seed_geography')
+    meta_geography = geographies[0]
 
     DEPTH = 1
     parent_geography = geographies[geographies.index(seed_geography) + DEPTH]
@@ -230,6 +238,9 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
 
         seed_incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
         seed_crosswalk_df = crosswalk_df[crosswalk_df[seed_geography] == seed_id]
+
+        assert len(seed_crosswalk_df[meta_geography].unique()) == 1
+        meta_id = seed_crosswalk_df[meta_geography].max()
 
         parent_ids = seed_crosswalk_df[parent_geography].unique()
 
@@ -262,6 +273,7 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
 
             # facilitate summaries
             zone_weights_df[seed_geography] = seed_id
+            zone_weights_df[meta_geography] = meta_id
 
             # print "######################################## zone_weights_df"
             # print zone_weights_df

@@ -9,12 +9,13 @@ import numpy as np
 
 from helper import get_control_table
 from helper import get_weight_table
+from populationsim.util import setting
 
 logger = logging.getLogger(__name__)
 
 
 def summarize_geography(geography, weight_col,
-                        settings, crosswalk_df, results_df, incidence_df):
+                        crosswalk_df, results_df, incidence_df):
 
     # controls_table for current geography level
     controls_df = get_control_table(geography)
@@ -68,19 +69,22 @@ def summarize_geography(geography, weight_col,
     return summary_df
 
 
-def meta_summary(incidence_df, control_spec, top_geography, sub_geographies):
+def meta_summary(incidence_df, control_spec, top_geography, top_id, sub_geographies):
+
+    incidence_df = incidence_df[ incidence_df[top_geography] == top_id ]
 
     control_cols = control_spec.target.values
 
     controls_df = get_control_table(top_geography)
 
-    controls_df = controls_df[control_cols]
+    # controls for this geography as series
+    controls = controls_df[control_cols].loc[top_id]
 
     seed_weight_cols = ['initial_seed_weight', 'final_seed_weight', 'integer_seed_weight']
     incidence = incidence_df[control_cols]
 
     summary = pd.DataFrame(index=control_cols)
-    summary['control'] = controls_df.T
+    summary['control'] = controls
     for c in seed_weight_cols:
         if c in incidence_df:
             summary[c] = incidence.multiply(incidence_df[c], axis="index").sum(axis=0)
@@ -94,6 +98,8 @@ def meta_summary(incidence_df, control_spec, top_geography, sub_geographies):
         if sub_weights is None:
             continue
 
+        sub_weights = sub_weights[ sub_weights[top_geography] == top_id ]
+
         sub_weights = sub_weights[['hh_id'] + sub_weight_cols].groupby('hh_id').sum()
 
         for c in sub_weight_cols:
@@ -102,20 +108,25 @@ def meta_summary(incidence_df, control_spec, top_geography, sub_geographies):
     return summary
 
 
+def summarize_for_meta():
+    pass
+
 @orca.step()
-def summarize(settings, crosswalk, incidence_table, control_spec):
+def summarize(crosswalk, incidence_table, control_spec):
 
     crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()
 
-    geographies = settings.get('geographies')
-    seed_geography = settings.get('seed_geography')
+    geographies = setting('geographies')
+    seed_geography = setting('seed_geography')
     meta_geography = geographies[0]
     sub_geographies = geographies[geographies.index(seed_geography) + 1:]
-    household_id_col = settings.get('household_id_col')
+    household_id_col = setting('household_id_col')
 
-    meta_summary_df = meta_summary(incidence_df, control_spec, meta_geography, sub_geographies)
-    orca.add_table('%s_summary' % (geographies[0],), meta_summary_df)
+    meta_ids = crosswalk_df[meta_geography].unique()
+    for meta_id in meta_ids:
+        meta_summary_df = meta_summary(incidence_df, control_spec, meta_geography, meta_id, sub_geographies)
+        orca.add_table('%s_%s_summary' % (meta_geography, meta_id), meta_summary_df)
 
     hh_weights_summary = incidence_df[['final_seed_weight', 'integer_seed_weight']].copy()
 
@@ -143,10 +154,10 @@ def summarize(settings, crosswalk, incidence_table, control_spec):
 
         orca.add_table('%s_aggregate' % (geography,), aggegrate_weights)
 
-        df = summarize_geography(seed_geography, 'integer_weight', settings, crosswalk_df, weights_df, incidence_df)
+        df = summarize_geography(seed_geography, 'integer_weight', crosswalk_df, weights_df, incidence_df)
         orca.add_table('%s_%s_summary' % (geography, seed_geography,), df)
 
-        df = summarize_geography(geography, 'integer_weight', settings, crosswalk_df, weights_df, incidence_df)
+        df = summarize_geography(geography, 'integer_weight', crosswalk_df, weights_df, incidence_df)
         orca.add_table('%s_summary' % (geography,), df)
 
     orca.add_table('hh_weights_summary', hh_weights_summary)

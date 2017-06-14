@@ -17,8 +17,6 @@ from helper import weight_table_name
 
 logger = logging.getLogger(__name__)
 
-GROUP_BY_INCIDENCE_SIGNATURE = setting('GROUP_BY_INCIDENCE_SIGNATURE')
-
 
 @orca.step()
 def expand_population():
@@ -40,7 +38,7 @@ def expand_population():
     weights_np = np.repeat(weights.as_matrix(), weights.integer_weight.values, axis=0)
     expanded_weights = pd.DataFrame(data=weights_np, columns=weight_cols)
 
-    if GROUP_BY_INCIDENCE_SIGNATURE:
+    if setting('GROUP_BY_INCIDENCE_SIGNATURE'):
 
         # the household_id_col is really the group_id
         expanded_weights.rename(columns={household_id_col: 'group_id'}, inplace=True)

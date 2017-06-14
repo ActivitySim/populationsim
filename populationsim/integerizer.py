@@ -371,8 +371,11 @@ def do_integerizing(
         float_weights,
         total_hh_control_col):
 
+    if total_hh_control_col not in incidence_table.columns:
+        raise RuntimeError("total_hh_control column '%s' not found in incidence table"
+                           % total_hh_control_col)
 
-    zero_weight_rows = float_weights == 0
+    zero_weight_rows = (float_weights == 0)
     if zero_weight_rows.any():
         logger.debug("omitting %s zero weight rows out of %s" % (
         zero_weight_rows.sum(), len(incidence_table.index)))
@@ -396,10 +399,6 @@ def do_integerizing(
         # print "relaxed_control_totals\n", relaxed_control_totals
         # print "backstopped_control_totals\n", backstopped_control_totals
 
-        # master_control_index is column index in incidence table of total_hh_control_col
-        if total_hh_control_col not in incidence_table.columns:
-            raise RuntimeError("total_hh_control column '%s' not found in incidence table"
-                               % total_hh_control_col)
 
         # if the incidence table has only one record, then the final integer weights
         # should be just an array with 1 element equal to the total number of households;

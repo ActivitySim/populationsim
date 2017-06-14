@@ -1,5 +1,10 @@
 
-#store: calm_psim.h5
+USE_CVX: False
+INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
+SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: True
+GROUP_BY_INCIDENCE_SIGNATURE: False
+
+control_file_name: controls.csv
 
 
 household_weight_col: WGTP
@@ -45,6 +50,9 @@ meta_control_data:
   filename : meta_controls.csv
 
 geographies: [meta, seed, mid, low]
+seed_geography: seed
+crosswalk_data_table: geo_cross_walk
+
 
 geography_settings:
   meta:
