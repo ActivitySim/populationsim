@@ -10,6 +10,19 @@ control_file_name: controls_original.csv
 data_dir: data_calm
 
 
+# if output_tables is commented out, then all tables will be output EXCEPT skip_output_tables
+output_tables:
+  - expanded_household_ids
+  - REGION_1_summary
+  - TRACT_summary
+  - TAZ_summary
+
+# list of tables to skip if output_tables not specified
+skip_output_tables:
+  - households
+  - persons
+
+
 trace_geography:
   TAZ: 100
   TRACT: 10200

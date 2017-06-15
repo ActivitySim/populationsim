@@ -68,7 +68,7 @@ def expand_population():
             expanded_weights.group_id.apply(chooser, convert_dtype=True,)
 
         # FIXME - omit in production?
-        # del expanded_weights['group_id']
-        # del expanded_weights['integer_weight']
+        del expanded_weights['group_id']
+        del expanded_weights['integer_weight']
 
     orca.add_table('expanded_household_ids', expanded_weights)

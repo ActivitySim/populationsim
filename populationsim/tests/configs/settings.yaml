@@ -11,6 +11,18 @@ household_id_col: hh_id
 total_hh_control: num_hh
 max_expansion_factor: 5
 
+# if output_tables is commented out, then all tables will be output EXCEPT skip_output_tables
+output_tables:
+  - expanded_household_ids
+  - REGION_1_summary
+  - TRACT_summary
+  - TAZ_summary
+
+# list of tables to skip if output_tables not specified
+skip_output_tables:
+  - households
+  - persons
+
 # ordered list
 input_pre_processor:
   - households
