@@ -32,7 +32,8 @@ def write_results(output_dir):
         file_name = "%s.csv" % table_name
         logger.info("writing output file %s" % file_name)
         file_path = os.path.join(output_dir, file_name)
-        df.to_csv(file_path, index=True)
+        write_index = df.index.name is not None
+        df.to_csv(file_path, index=write_index)
 
     # # write checkpoints (this can be called whether or not pipeline is open)
     # file_path = os.path.join(orca.get_injectable("output_dir"), "checkpoints.csv")
