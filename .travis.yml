@@ -19,7 +19,9 @@ install:
 - pip install pytest pytest-cov coveralls pep8 pytest-xdist
 - pip install sphinx numpydoc
 - pip install psutil
-- easy_install ortools
+- which easy_install
+- easy_install --version
+- easy_install -U --user ortools
 - pip install https://github.com/RSGInc/activitysim/zipball/master
 - pip install .
 script:
