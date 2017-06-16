@@ -10,11 +10,19 @@ python:
 
 before_install:
   - 'echo "repo_token: $GH_TOKEN" >> .coveralls.yml'
+  - cat .coveralls.yml
   - docker build . -t popsim:xenial
 
 script:
 - docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && pep8 populationsim"
-- docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && py.test populationsim/tests --boxed --cov populationsim && ls -la && cat .coverage && coveralls"
+- docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && py.test populationsim/tests --boxed --cov populationsim && ls -la && cat .coverage"
+- docker cp popsim:xenial:/vagrant/.coverage .coverage
+- ls -la
+
+after_success:
+- apt-get -y install python-pip
+- pip install coveralls
+- coveralls --data_file=.coverage
 
 notifications:
   slack:
