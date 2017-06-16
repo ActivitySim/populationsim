@@ -9,7 +9,7 @@ python:
 - '2.7'
 
 before_install:
-  - docker build -t popsim:xenial .
+  - docker build . -t popsim:xenial
 
 script:
 - docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && pep8 populationsim"

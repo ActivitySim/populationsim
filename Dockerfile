@@ -17,6 +17,3 @@ RUN conda create -q -n test-environment python=2.7 cytoolz numpy pandas pip pyta
 RUN [ "/bin/bash", "-c", "source activate test-environment && pip install orca openmatrix zbox pytest pytest-cov coveralls pep8 pytest-xdist sphinx numpydoc psutil && easy_install -v -U --user ortools && pip --no-cache-dir install https://github.com/RSGInc/activitysim/zipball/master" ]
 
 RUN [ "/bin/bash", "-c", "source activate test-environment && pip install ."]
-
-#RUN [ "/bin/bash", "-c", "source activate test-environment && py.test populationsim/tests --boxed --cov populationsim"]
-
