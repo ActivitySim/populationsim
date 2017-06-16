@@ -9,7 +9,7 @@ python:
 - '2.7'
 
 before_install:
-  - echo "repo_token: $GH_TOKEN" >> .coveralls.yml
+  - 'echo "repo_token: $GH_TOKEN" >> .coveralls.yml'
   - cat .coveralls.yml
   - docker build . -t popsim:xenial
 
