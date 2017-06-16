@@ -7,7 +7,7 @@ RUN  apt-get update \
   gcc \
   wget
 RUN wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh
-RUN [ "/bin/bash", "-c", "chmod +x miniconda.sh && miniconda.sh -b -p /vagrant/miniconda"]
+RUN chmod +x miniconda.sh && /bin/bash -c miniconda.sh -b -p /vagrant/miniconda
 
 ENV PATH=/vagrant/miniconda/bin:${PATH}
 RUN conda config --set always_yes yes --set changeps1 no
