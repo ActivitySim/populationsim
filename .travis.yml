@@ -18,6 +18,7 @@ script:
 - docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && py.test populationsim/tests --boxed --cov populationsim"
 
 after_success:
+- docker run popsim:xenial ls -la
 - docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && coveralls"
 #- bin/build_docs.sh
 

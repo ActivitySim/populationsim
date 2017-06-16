@@ -1,0 +1,17 @@
+
+grep -r --include "*.py" FIXME .
+
+./populationsim/simul_balancer.py:
+# FIXME - do we also need sample_weights? (as the spec suggests?)
+# FIXME - do we also need sample_weights? (as the spec suggests?)
+# FIXME - what to do for rows where sum(weights_final) are zero?
+
+./populationsim/steps/meta_control_factoring.py:
+# FIXME - why round scaled factored seed_weights to int prior to final seed balancing?
+
+./populationsim/steps/simultaneous_sub_balancing.py:
+# FIXME - how to apply max_expansion_factor to compute sub_zone ub_weights
+# FIXME - scale by the number of households in each sub_zone compared to the target zone?
+# FIXME - or should upper bounds remain the same for each subzone?
+# FIXME - do we need to use integerized weights?
+# FIXME - or can we use final_seed_weight and wait until the end to integerize?

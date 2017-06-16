@@ -1,52 +1,89 @@
 
-store: calm_psim.h5
+INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
+SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: True
+GROUP_BY_INCIDENCE_SIGNATURE: True
 
-seed_households:
-  filename : pums_hhs.csv
-  id : hhnum
-  seed_zone_id : puma
-  weight : wgtp
+control_file_name: controls_original.csv
 
-seed_persons: 
-  filename : pums_pers.csv
-  hh_id : SERIALNO
+# scaled/unscaled meta_control_data file name specifiec below
 
-lower_level_geographies: mid,low
+data_dir: data_calm
 
-geographic_crosswalk:
-  filename : geocwalk.csv
-  seed_id : puma
-  meta_id : district
-  mid_id : taz
-  low_id : maz
 
-meta_control_data :
-  filename : districts.csv
-  id : district
+# if output_tables is commented out, then all tables will be output EXCEPT skip_output_tables
+#output_tables:
+#  - expanded_household_ids
+#  - REGION_1_summary
+#  - TRACT_summary
+#  - TAZ_summary
 
-mid_control_data :
-  filename : tazs.csv
-  id : taz
+# list of tables to skip if output_tables not specified
+skip_output_tables:
+  - households
+  - persons
 
-low_control_data :
-  filename :  mazs.csv
-  id : maz
 
-input_pre_processor: 
-  seed_households : seed_households_expressions.csv 
-  seed_persons : seed_persons_expressions.csv 
-  meta_control_data : meta_control_data_expressions.csv 
-  mid_control_data : mid_control_data_expressions.csv 
-  low_control_data : low_control_data_expressions.csv 
+trace_geography:
+  TAZ: 100
+  TRACT: 10200
 
-controls : controls.csv
+household_weight_col: WGTP
+household_id_col: hh_id
+total_hh_control: num_hh
+max_expansion_factor: 30
 
-maxExpansionFactor : 15
+# ordered list
+input_pre_processor:
+  - households
+  - persons
+  - geo_cross_walk
+  # the following will eventually be created by setup_data_structures step
+  - low_control_data
+  - mid_control_data
+  - meta_control_data
 
-expanded_households :
-  filename : households.csv
-  output_fields : serialno, np, nwrkrs_esr, hincp
+households:
+  filename : seed_households.csv
+  index_col: hh_id
+  column_map:
+    hhnum: hh_id
 
-expanded_persons :
-  filename : persons.csv
-  output_fields : sporder, agep, relp, employed
+persons:
+  # expression_filename: seed_persons_expressions.csv
+  filename : seed_persons.csv
+  column_map:
+    hhnum: hh_id
+    SPORDER: per_num
+
+geo_cross_walk:
+  filename : geo_cross_walk.csv
+  column_map:
+    TRACTCE: TRACT
+
+low_control_data:
+  filename : control_totals_maz.csv
+
+mid_control_data:
+  filename : control_totals_taz.csv
+
+meta_control_data:
+  #filename : control_totals_meta.csv
+  filename : scaled_control_totals_meta.csv
+
+geographies: [REGION, PUMA, TRACT, TAZ]
+seed_geography: PUMA
+crosswalk_data_table: geo_cross_walk
+
+geography_settings:
+  REGION:
+    control_data_table: meta_control_data
+    id_column: REGION
+  PUMA:
+    controls_table: seed_controls
+    id_column: PUMA
+  TRACT:
+    control_data_table: mid_control_data
+    id_column: TRACT
+  TAZ:
+    control_data_table: low_control_data
+    id_column: TAZ

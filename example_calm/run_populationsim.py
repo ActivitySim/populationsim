@@ -1,35 +1,61 @@
-import orca
-from activitysim import defaults
-from activitysim import tracing
-import pandas as pd
-import numpy as np
 import os
+import logging
 
-# read input tables, processes with pandas expressions,
-# and creates tables in the datastore
-orca.run(['input_pre_processor'])
+import orca
 
-# setup geographic correspondence, seeds, control sets,
-# weights, expansion factors, and incidence tables
-orca.run(['setup_data_structures'])
 
-# seed (puma) balancing, meta level balancing, meta
-# control factoring, and meta final balancing
-orca.run(['initial_seed_balancing'])
+from activitysim.core import inject_defaults
+from populationsim import steps
 
-# final balancing for each seed (puma) zone with aggregated
-# low and mid-level controls and distributed meta-level controls
-orca.run(['final_seed_balancing'])
+from activitysim.core import tracing
+from activitysim.core import pipeline
+from activitysim.core.tracing import print_elapsed_time
+from populationsim.util import setting
 
-# iteratively loop through zones and list balance each
-# lower-level zone within a meta zone and then each next-lower-level
-# zone within a lower-level zone, etc.  This is the current procedure,
-# which is being revised.
-orca.run(['lower_geography_allocation'])
+tracing.config_logger()
 
-# expand household and person records with final weights
-# to one household and one person record per weight with unique IDs
-orca.run(['expand_population'])
+t0 = print_elapsed_time()
 
-# write the household and person files to CSV files
-orca.run(['write_results'])
+
+logger = logging.getLogger('populationsim')
+
+
+logger.info("GROUP_BY_INCIDENCE_SIGNATURE: %s"
+            % setting('GROUP_BY_INCIDENCE_SIGNATURE'))
+logger.info("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: %s"
+            % setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS'))
+logger.info("SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: %s"
+            % setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS'))
+logger.info("meta_control_data: %s"
+            % setting('meta_control_data'))
+logger.info("control_file_name: %s"
+            % setting('control_file_name'))
+
+
+_MODELS = [
+    'input_pre_processor',
+    'setup_data_structures',
+    'initial_seed_balancing',
+    'meta_control_factoring',
+    'final_seed_balancing',
+    'integerize_final_seed_weights',
+    'sub_balancing',
+    'low_balancing',
+    'expand_population',
+    'summarize',
+    'write_results'
+]
+
+# If you provide a resume_after argument to pipeline.run
+# the pipeline manager will attempt to load checkpointed tables from the checkpoint store
+# and resume pipeline processing on the next submodel step after the specified checkpoint
+resume_after = None
+#resume_after = 'summarize'
+
+pipeline.run(models=_MODELS, resume_after=resume_after)
+
+
+# tables will no longer be available after pipeline is closed
+pipeline.close()
+
+t0 = ("all models", t0)
