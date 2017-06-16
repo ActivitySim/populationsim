@@ -15,7 +15,9 @@ before_install:
 
 script:
 - docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && pep8 populationsim"
-- docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && py.test populationsim/tests --boxed --cov populationsim"
+- docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && py.test
+populationsim/tests --boxed --cov populationsim && ls -la && cat .coverage"
+- docker run popsim:xenial /bin/bash -c "ls -la && cat .coverage"
 
 after_success:
 - docker run popsim:xenial ls -la
