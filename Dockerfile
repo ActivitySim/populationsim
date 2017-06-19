@@ -11,9 +11,6 @@ RUN wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O m
 RUN [ "/bin/bash", "-c", "/bin/bash miniconda.sh -b -p ./miniconda"]
 
 ENV PATH=/vagrant/miniconda/bin:${PATH}
-ENV TRAVIS=${TRAVIS}
-ENV TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
-ENV TRAVIS_BRANCH=${TRAVIS_BRANCH}
 RUN conda config --set always_yes yes --set changeps1 no
 RUN conda update -q conda
 

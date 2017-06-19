@@ -14,7 +14,7 @@ before_install:
 
 script:
 - docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && pep8 populationsim"
-- docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && py.test populationsim/tests --boxed --cov populationsim && ls -la && cat .coverage && coveralls"
+- docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && py.test populationsim/tests --boxed --cov populationsim && COVERALLS_REPO_TOKEN=nUGQJN49shm2gqGODE1SWQ7WknhAOYraZ coveralls"
 
 notifications:
   slack:
