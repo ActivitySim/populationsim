@@ -5,6 +5,7 @@ WORKDIR /vagrant
 RUN  apt-get update \
   && apt-get install -y bzip2 \
   gcc \
+  git \
   wget
 RUN wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh
 RUN [ "/bin/bash", "-c", "/bin/bash miniconda.sh -b -p ./miniconda"]
