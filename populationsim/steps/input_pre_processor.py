@@ -10,14 +10,19 @@ import numpy as np
 
 from activitysim.core import assign
 
+from populationsim.util import data_dir_from_settings
+from populationsim.util import setting
+
 
 logger = logging.getLogger(__name__)
 
 
 @orca.step()
-def input_pre_processor(settings, configs_dir, data_dir):
+def input_pre_processor():
 
-    table_list = settings.get('input_pre_processor', None)
+    data_dir = data_dir_from_settings()
+
+    table_list = setting('input_pre_processor')
 
     if not table_list:
         logger.warn('No input_pre_processor table list in settings.')
@@ -26,7 +31,10 @@ def input_pre_processor(settings, configs_dir, data_dir):
     for table in table_list:
         logger.info("input_pre_processor processing %s" % table)
 
-        table_info = settings.get(table, None)
+        table_info = setting(table)
+        if not table_info:
+            logger.warn('No table info for %s in settings. Skipping table' % (table,))
+            continue
 
         # read the csv file
         data_filename = table_info.get('filename', None)
@@ -36,7 +44,7 @@ def input_pre_processor(settings, configs_dir, data_dir):
                                % (table, data_file_path, ))
 
         logger.info("Reading csv file %s" % data_file_path)
-        df = pd.read_csv(data_file_path)
+        df = pd.read_csv(data_file_path, comment='#')
 
         # rename columns
         column_map = table_info.get('column_map', None)
@@ -54,6 +62,7 @@ def input_pre_processor(settings, configs_dir, data_dir):
         # read expression file
         expression_filename = table_info.get('expression_filename', None)
         if expression_filename:
+            assert False
             expression_file_path = os.path.join(configs_dir, expression_filename)
             if not os.path.exists(expression_file_path):
                 raise RuntimeError("input_pre_processor %s - expression file not found: %s"
@@ -72,4 +81,5 @@ def input_pre_processor(settings, configs_dir, data_dir):
             df = pd.concat([df, results], axis=1)
 
         logger.info("adding table %s" % table)
+
         orca.add_table(table, df)

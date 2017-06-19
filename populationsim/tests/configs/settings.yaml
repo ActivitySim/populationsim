@@ -1,11 +1,27 @@
 
-#store: calm_psim.h5
+INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
+SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: True
+GROUP_BY_INCIDENCE_SIGNATURE: False
+
+control_file_name: controls.csv
 
 
 household_weight_col: WGTP
 household_id_col: hh_id
 total_hh_control: num_hh
 max_expansion_factor: 5
+
+# if output_tables is commented out, then all tables will be output EXCEPT skip_output_tables
+output_tables:
+  - expanded_household_ids
+  - REGION_1_summary
+  - TRACT_summary
+  - TAZ_summary
+
+# list of tables to skip if output_tables not specified
+skip_output_tables:
+  - households
+  - persons
 
 # ordered list
 input_pre_processor:
@@ -45,6 +61,9 @@ meta_control_data:
   filename : meta_controls.csv
 
 geographies: [meta, seed, mid, low]
+seed_geography: seed
+crosswalk_data_table: geo_cross_walk
+
 
 geography_settings:
   meta:

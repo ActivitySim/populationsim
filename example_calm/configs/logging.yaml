@@ -15,12 +15,12 @@ logging:
   loggers:
 
     populationsim:
-      level: !!python/name:logging.INFO
+      level: !!python/name:logging.DEBUG
       handlers: [console, logfile]
       propagate: false
 
     activitysim:
-      level: !!python/name:logging.DEBUG
+      level: !!python/name:logging.INFO
       handlers: [console, logfile]
       propagate: false
 
@@ -43,7 +43,7 @@ logging:
       stream: ext://sys.stdout
       formatter: simpleFormatter
       #level: !!python/name:logging.NOTSET
-      level: !!python/name:logging.DEBUG
+      level: !!python/name:logging.INFO
 
   formatters:
 

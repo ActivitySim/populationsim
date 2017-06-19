@@ -3,63 +3,62 @@
 
 import logging
 import os
-
 import orca
 import pandas as pd
-import numpy as np
 
-from ..balancer import ListBalancer
-from ..balancer import seed_balancer
+from ..balancer import do_seed_balancing
+from helper import get_control_table
 
 
 logger = logging.getLogger(__name__)
 
 
 @orca.step()
-def final_seed_balancing(settings, geo_cross_walk, control_spec,
-                         incidence_table, seed_controls):
+def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
-    geo_cross_walk_df = geo_cross_walk.to_frame()
+    crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()
-    seed_controls_df = seed_controls.to_frame()
+    control_spec = control_spec.to_frame()
 
-    seed_col = settings.get('geography_settings')['seed'].get('id_column')
+    seed_geography = settings.get('seed_geography')
+
+    seed_controls_df = get_control_table(seed_geography)
 
     # we use all control_spec rows, so no need to filter on geography as for initial_seed_balancing
+
+    # FIXME - ensure columns are in right order for orca-extended table
+    seed_controls_df = seed_controls_df[control_spec.target]
 
     # determine master_control_index if specified in settings
     total_hh_control_col = settings.get('total_hh_control')
 
     max_expansion_factor = settings.get('max_expansion_factor', None)
 
+    relaxation_factors = pd.DataFrame(index=seed_controls_df.columns.tolist())
+
     # run balancer for each seed geography
     weight_list = []
-    seed_ids = geo_cross_walk_df[seed_col].unique()
+    seed_ids = crosswalk_df[seed_geography].unique()
     for seed_id in seed_ids:
 
         logger.info("initial_seed_balancing seed id %s" % seed_id)
 
-        balancer = seed_balancer(
+        status, weights_df, controls_df = do_seed_balancing(
+            seed_geography=seed_geography,
             seed_control_spec=control_spec,
             seed_id=seed_id,
-            seed_col=seed_col,
             total_hh_control_col=total_hh_control_col,
             max_expansion_factor=max_expansion_factor,
             incidence_df=incidence_df,
             seed_controls_df=seed_controls_df)
 
-        # balancer.dump()
-        status = balancer.balance()
-
         logger.info("seed_balancer status: %s" % status)
         if not status['converged']:
             raise RuntimeError("final_seed_balancing for seed_id %s did not converge" % seed_id)
 
-        weight_list.append(balancer.weights['final'])
+        weight_list.append(weights_df['final'])
 
-        # print "balancer.initial_weights\n", balancer.initial_weights
-        # print "balancer.ub_weights\n", balancer.ub_weights
-        # print "balancer.weights\n", balancer.weights
+        relaxation_factors[seed_id] = controls_df['relaxation_factor']
 
     # bulk concat all seed level results
     final_seed_weights = pd.concat(weight_list)

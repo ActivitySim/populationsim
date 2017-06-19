@@ -31,7 +31,8 @@ setup(
         'toolz >= 0.7',
         'zbox >= 1.2',
         'psutil >= 4.1',
-        'activitysim == 0.3dev1'
+        'activitysim == 0.3dev1',
+        'ortools >= 5.1.4045',
     ],
     dependency_links=['http://github.com/rsginc/activitysim/tarball/master#egg=activitysim-0.3dev1']
 )
