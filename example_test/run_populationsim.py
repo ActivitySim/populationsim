@@ -32,7 +32,7 @@ _MODELS = [
     'expand_population',
 
     # write the household and person files to CSV files
-    # 'write_results'
+    'write_results'
 ]
 
 

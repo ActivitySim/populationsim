@@ -20,17 +20,11 @@ from helper import get_weight_table
 
 logger = logging.getLogger(__name__)
 
-SIMUL_INTEGERIZE = False
-if SIMUL_INTEGERIZE:
-    from ..simul_integerizer import do_simul_integerizing
-
 
 def sequential_multi_integerize(incidence_df,
-                                parent_weights, parent_controls,
                                 sub_weights, sub_controls,
                                 control_spec, total_hh_control_col,
-                                sub_control_zones,
-                                parent_geography, sub_geography):
+                                sub_control_zones, sub_geography):
 
     # integerize the sub_zone weights
     integer_weights_list = []
@@ -64,7 +58,6 @@ def balance(
         parent_id,
         sub_geographies,
         control_spec,
-        parent_controls_df,
         sub_controls_df,
         initial_weights,
         incidence_df,
@@ -114,18 +107,11 @@ def balance(
     logger.debug("%s %s converged %s iter %s"
                  % (parent_geography, parent_id, status['converged'], status['iter']))
 
-    if SIMUL_INTEGERIZE:
-        multi_integerize = do_simul_integerizing
-    else:
-        multi_integerize = sequential_multi_integerize
-
-    integer_weights_df = multi_integerize(
+    integer_weights_df = sequential_multi_integerize(
         incidence_df,
-        initial_weights, controls,
         sub_weights, sub_controls,
         control_spec, total_hh_control_col,
-        sub_control_zones,
-        parent_geography, sub_geography
+        sub_control_zones, sub_geography
     )
     integer_weights_df[parent_geography] = parent_id
 
@@ -150,7 +136,6 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
     total_hh_control_col = settings.get('total_hh_control')
 
     # control table for the sub geography below seed
-    parent_controls_df = get_control_table(parent_geography)
     sub_controls_df = get_control_table(sub_geography)
 
     integer_weights_list = []
@@ -177,7 +162,6 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
             parent_id=seed_id,
             sub_geographies=sub_geographies,
             control_spec=control_spec,
-            parent_controls_df=parent_controls_df,
             sub_controls_df=sub_controls_df,
             initial_weights=initial_weights,
             incidence_df=seed_incidence_df,
@@ -221,7 +205,6 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
 
     total_hh_control_col = settings.get('total_hh_control')
 
-    parent_controls_df = get_control_table(parent_geography)
     sub_controls_df = get_control_table(sub_geography)
 
     weights_df = get_weight_table(parent_geography)
@@ -254,7 +237,6 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
                 parent_id=parent_id,
                 sub_geographies=sub_geographies,
                 control_spec=control_spec,
-                parent_controls_df=parent_controls_df,
                 sub_controls_df=sub_controls_df,
                 initial_weights=initial_weights,
                 incidence_df=seed_incidence_df,
