@@ -6,11 +6,8 @@ import os
 
 import orca
 import pandas as pd
-import numpy as np
 
 from ..simul_balancer import SimultaneousListBalancer
-
-from ..integerizer import do_integerizing
 
 from populationsim.util import setting
 
@@ -18,39 +15,11 @@ from helper import get_control_table
 from helper import weight_table_name
 from helper import get_weight_table
 
+from ..simul_integerizer import do_simul_integerizing
+from ..sequential_integerizer import do_sequential_integerizing
+
+
 logger = logging.getLogger(__name__)
-
-
-def sequential_multi_integerize(incidence_df,
-                                sub_weights, sub_controls,
-                                control_spec, total_hh_control_col,
-                                sub_control_zones, sub_geography):
-
-    # integerize the sub_zone weights
-    integer_weights_list = []
-    for zone_id, zone_name in sub_control_zones.iteritems():
-        weights = sub_weights[zone_name]
-
-        integer_weights, status = do_integerizing(
-            label=sub_geography,
-            id=zone_id,
-            control_spec=control_spec,
-            control_totals=sub_controls.loc[zone_id],
-            incidence_table=incidence_df[control_spec.target],
-            float_weights=weights,
-            total_hh_control_col=total_hh_control_col
-        )
-
-        zone_weights_df = pd.DataFrame(index=range(0, len(integer_weights.index)))
-        zone_weights_df[weights.index.name] = weights.index
-        zone_weights_df[sub_geography] = zone_id
-        zone_weights_df['balanced_weight'] = weights.values
-        zone_weights_df['integer_weight'] = integer_weights.astype(int).values
-
-        integer_weights_list.append(zone_weights_df)
-
-    integer_weights_df = pd.concat(integer_weights_list)
-    return integer_weights_df
 
 
 def balance(
@@ -61,34 +30,22 @@ def balance(
         sub_controls_df,
         initial_weights,
         incidence_df,
-        crosswalk_df,
-        total_hh_control_col):
+        total_hh_control_col
+        ):
 
     sub_geography = sub_geographies[0]
-
     sub_control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
 
-    # only want subcontrol rows for current geography geo_id
-    sub_ids = crosswalk_df.loc[crosswalk_df[parent_geography] == parent_id, sub_geography].unique()
-    sub_controls = sub_controls_df.loc[sub_ids]
-
-    # FIXME - an rason not to just drop out any empty zones?
-    empty_sub_zones = (sub_controls[total_hh_control_col] == 0)
-    if empty_sub_zones.any():
-        logger.info("dropping %s empty %s  in %s %s"
-                    % (empty_sub_zones.sum(), sub_geography, parent_geography, parent_id))
-        sub_controls = sub_controls[~empty_sub_zones]
-
     # standard names for sub_control zone columns in controls and weights
-    sub_control_zone_names = ['%s_%s' % (sub_geography, z) for z in sub_controls.index]
-    sub_control_zones = pd.Series(sub_control_zone_names, index=sub_controls.index)
+    sub_control_zone_names = ['%s_%s' % (sub_geography, z) for z in sub_controls_df.index]
+    sub_control_zones = pd.Series(sub_control_zone_names, index=sub_controls_df.index)
 
     # controls - organized in legible form
     controls = pd.DataFrame({'name': sub_control_spec.target})
     controls['importance'] = sub_control_spec.importance
-    controls['total'] = sub_controls.sum(axis=0).values
+    controls['total'] = sub_controls_df.sum(axis=0).values
     for zone, zone_name in sub_control_zones.iteritems():
-        controls[zone_name] = sub_controls.loc[zone].values
+        controls[zone_name] = sub_controls_df.loc[zone].values
 
     # incidence table should only have control columns
     sub_incidence_df = incidence_df[sub_control_spec.target]
@@ -102,21 +59,114 @@ def balance(
     )
 
     status = balancer.balance()
-    sub_weights = balancer.sub_zone_weights
 
     logger.debug("%s %s converged %s iter %s"
                  % (parent_geography, parent_id, status['converged'], status['iter']))
 
-    integer_weights_df = sequential_multi_integerize(
+    return balancer.sub_zone_weights
+
+def integerize(
+        sub_zone_weights,
+        parent_geography,
+        parent_id,
+        sub_geographies,
+        control_spec,
+        sub_controls_df,
+        parent_controls_df,
+        parent_weights,
         incidence_df,
-        sub_weights, sub_controls,
-        control_spec, total_hh_control_col,
-        sub_control_zones, sub_geography
-    )
+        total_hh_control_col,
+        USE_SIMUL_INTEGERIZER):
+
+    sub_geography = sub_geographies[0]
+
+    if USE_SIMUL_INTEGERIZER:
+
+        integer_weights_df = do_simul_integerizing(
+            incidence_df=incidence_df,
+            parent_weights=parent_weights,
+            parent_controls_df=parent_controls_df,
+            sub_weights=sub_zone_weights,
+            sub_controls_df=sub_controls_df,
+            parent_geography=parent_geography,
+            parent_id=parent_id,
+            sub_geography=sub_geography,
+            control_spec=control_spec,
+            total_hh_control_col=total_hh_control_col
+        )
+    else:
+
+        # standard names for sub_control zone columns in controls and weights
+        sub_control_zone_names = ['%s_%s' % (sub_geography, z) for z in sub_controls_df.index]
+        sub_control_zones = pd.Series(sub_control_zone_names, index=sub_controls_df.index)
+
+        integer_weights_df = do_sequential_integerizing(
+            incidence_df=incidence_df,
+            sub_weights=sub_zone_weights,
+            sub_controls=sub_controls_df,
+            control_spec=control_spec,
+            total_hh_control_col=total_hh_control_col,
+            sub_control_zones=sub_control_zones,
+            sub_geography=sub_geography
+        )
+
     integer_weights_df[parent_geography] = parent_id
 
     return integer_weights_df
 
+
+def balance_and_integerize(
+        parent_geography,
+        parent_id,
+        sub_geographies,
+        control_spec,
+        sub_controls_df,
+        parent_controls_df,
+        initial_weights,
+        incidence_df,
+        crosswalk_df,
+        total_hh_control_col,
+        USE_SIMUL_INTEGERIZER):
+
+    sub_geography = sub_geographies[0]
+
+    # only want subcontrol rows for current geography geo_id
+    sub_ids = crosswalk_df.loc[crosswalk_df[parent_geography] == parent_id, sub_geography].unique()
+    sub_controls_df = sub_controls_df.loc[sub_ids]
+
+    parent_controls_df = parent_controls_df.loc[[parent_id]]
+
+    # FIXME - any reason not to just drop out any empty zones?
+    empty_sub_zones = (sub_controls_df[total_hh_control_col] == 0)
+    if empty_sub_zones.any():
+        logger.info("dropping %s empty %s  in %s %s"
+                    % (empty_sub_zones.sum(), sub_geography, parent_geography, parent_id))
+        sub_controls_df = sub_controls_df[~empty_sub_zones]
+
+    sub_zone_weights = balance(
+        parent_geography=parent_geography,
+        parent_id=parent_id,
+        sub_geographies=sub_geographies,
+        control_spec=control_spec,
+        sub_controls_df=sub_controls_df,
+        initial_weights=initial_weights,
+        incidence_df=incidence_df,
+        total_hh_control_col=total_hh_control_col)
+
+    zone_weights_df = integerize(
+        sub_zone_weights,
+        parent_geography=parent_geography,
+        parent_id=parent_id,
+        sub_geographies=sub_geographies,
+        control_spec=control_spec,
+        sub_controls_df=sub_controls_df,
+        parent_controls_df=parent_controls_df,
+        parent_weights=initial_weights,
+        incidence_df=incidence_df,
+        total_hh_control_col=total_hh_control_col,
+        USE_SIMUL_INTEGERIZER=USE_SIMUL_INTEGERIZER)
+
+    return zone_weights_df
 
 @orca.step()
 def sub_balancing(settings, crosswalk, control_spec, incidence_table):
@@ -135,8 +185,8 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
     total_hh_control_col = settings.get('total_hh_control')
 
-    # control table for the sub geography below seed
     sub_controls_df = get_control_table(sub_geography)
+    parent_controls_df = get_control_table(parent_geography)
 
     integer_weights_list = []
 
@@ -157,16 +207,18 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
         else:
             initial_weights = seed_incidence_df['integer_seed_weight']
 
-        zone_weights_df = balance(
+        zone_weights_df = balance_and_integerize(
             parent_geography=parent_geography,
             parent_id=seed_id,
             sub_geographies=sub_geographies,
             control_spec=control_spec,
             sub_controls_df=sub_controls_df,
+            parent_controls_df=parent_controls_df,
             initial_weights=initial_weights,
             incidence_df=seed_incidence_df,
             crosswalk_df=crosswalk_df,
-            total_hh_control_col=total_hh_control_col)
+            total_hh_control_col=total_hh_control_col,
+            USE_SIMUL_INTEGERIZER=False)
 
         # add meta level geography column to facilitate summaries
         zone_weights_df[meta_geography] = meta_id
@@ -174,7 +226,6 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
         integer_weights_list.append(zone_weights_df)
 
     integer_weights_df = pd.concat(integer_weights_list)
-    integer_weights_df['integer_weight'] = integer_weights_df['integer_weight'].astype(int)
 
     orca.add_table(weight_table_name(sub_geography),
                    integer_weights_df)
@@ -206,6 +257,7 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
     total_hh_control_col = settings.get('total_hh_control')
 
     sub_controls_df = get_control_table(sub_geography)
+    parent_controls_df = get_control_table(parent_geography)
 
     weights_df = get_weight_table(parent_geography)
 
@@ -228,20 +280,28 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
 
             initial_weights = weights_df[weights_df[parent_geography] == parent_id]
             initial_weights = initial_weights.set_index(settings.get('household_id_col'))
-            initial_weights = initial_weights['integer_weight']
+
+            # FIXME - is this right?
+            #bug?
+            if setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS'):
+                initial_weights = initial_weights['balanced_weight']
+            else:
+                initial_weights = initial_weights['integer_weight']
 
             assert len(initial_weights.index) == len(seed_incidence_df.index)
 
-            zone_weights_df = balance(
+            zone_weights_df = balance_and_integerize(
                 parent_geography=parent_geography,
                 parent_id=parent_id,
                 sub_geographies=sub_geographies,
                 control_spec=control_spec,
                 sub_controls_df=sub_controls_df,
+                parent_controls_df=parent_controls_df,
                 initial_weights=initial_weights,
                 incidence_df=seed_incidence_df,
                 crosswalk_df=crosswalk_df,
-                total_hh_control_col=total_hh_control_col)
+                total_hh_control_col=total_hh_control_col,
+                USE_SIMUL_INTEGERIZER=False)
 
             # add higher level geography columns to facilitate summaries
             zone_weights_df[seed_geography] = seed_id
@@ -250,7 +310,6 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
             integer_weights_list.append(zone_weights_df)
 
     integer_weights_df = pd.concat(integer_weights_list)
-    integer_weights_df['integer_weight'] = integer_weights_df['integer_weight'].astype(int)
 
     orca.add_table(weight_table_name(sub_geography),
                    integer_weights_df)

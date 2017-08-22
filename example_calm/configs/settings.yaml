@@ -3,7 +3,8 @@ INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: True
 GROUP_BY_INCIDENCE_SIGNATURE: True
 
-control_file_name: controls_original.csv
+# control_file_name: controls_original.csv
+control_file_name: controls.csv
 
 # scaled/unscaled meta_control_data file name specifiec below
 
