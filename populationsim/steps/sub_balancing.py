@@ -136,6 +136,9 @@ def balance_and_integerize(
 
     parent_controls_df = parent_controls_df.loc[[parent_id]]
 
+    # only care about the control columns
+    incidence_df = incidence_df[control_spec.target]
+
     # FIXME - any reason not to just drop out any empty zones?
     empty_sub_zones = (sub_controls_df[total_hh_control_col] == 0)
     if empty_sub_zones.any():
@@ -283,7 +286,7 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
 
             # FIXME - is this right?
             #bug?
-            if setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS'):
+            if False and setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS'):
                 initial_weights = initial_weights['balanced_weight']
             else:
                 initial_weights = initial_weights['integer_weight']
@@ -301,7 +304,10 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
                 incidence_df=seed_incidence_df,
                 crosswalk_df=crosswalk_df,
                 total_hh_control_col=total_hh_control_col,
-                USE_SIMUL_INTEGERIZER=False)
+                USE_SIMUL_INTEGERIZER=True)
+
+            print "\nzone_weights_df\n", zone_weights_df
+            assert False
 
             # add higher level geography columns to facilitate summaries
             zone_weights_df[seed_geography] = seed_id

@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from util import setting
 
-USE_CVX = False
+USE_CVX = True
 
 if USE_CVX:
     import cylp
@@ -17,7 +17,7 @@ else:
 
 
 if USE_CVX:
-    CVX_STATUS = {
+    STATUS_TEXT = {
         cvx.OPTIMAL: 'OPTIMAL',
         cvx.INFEASIBLE: 'INFEASIBLE',
         cvx.UNBOUNDED: 'UNBOUNDED',
@@ -27,8 +27,18 @@ if USE_CVX:
         None: 'FAILED'
     }
 
+    STATUS_SUCCESS = ['OPTIMAL', 'OPTIMAL_INACCURATE']
+
+    # - solver list: http://www.cvxpy.org/en/latest/tutorial/advanced/
+    # cvx.installed_solvers(): ['ECOS_BB', 'SCS', 'ECOS', 'LS']
+    # ['CBC', 'CVXOPT', 'ECOS_BB', 'GLPK_MI', 'SCS', 'ECOS', 'GLPK', 'LS']
+    CVX_SOLVER = cvx.ECOS
+    CVX_SOLVER = cvx.GLPK_MI
+    CVX_MAX_ITERS = 300
+
+
 else:
-    CBC_STATUS = {
+    STATUS_TEXT = {
         pywraplp.Solver.OPTIMAL: 'OPTIMAL',
         pywraplp.Solver.FEASIBLE: 'FEASIBLE',
         pywraplp.Solver.INFEASIBLE: 'INFEASIBLE',
@@ -37,21 +47,28 @@ else:
         pywraplp.Solver.NOT_SOLVED: 'NOT_SOLVED',
     }
 
+    STATUS_SUCCESS = ['OPTIMAL', 'FEASIBLE']
 
-STATUS_SUCCESS = ['OPTIMAL', 'FEASIBLE', 'OPTIMAL_INACCURATE']
 
 logger = logging.getLogger(__name__)
 
 
 def smart_round(int_weights, resid_weights, total_household_control):
+    """
+    Round weights while maintaining total_household_control
+
+    Order the residual weights and round at the tipping point where hh totals are maintained
+    """
     assert len(int_weights) == len(resid_weights)
 
+    # find number of residuals that we need to round up
     int_shortfall = total_household_control - int_weights.sum()
     int_shortfall = np.clip(int_shortfall, 0, len(resid_weights))
 
     # indices of the int_shortfall highest resid_weights
     i = np.argsort(resid_weights)[-int_shortfall:]
 
+    # add 1 to the int_weights that we want to round upwards
     rounded_weights = np.copy(int_weights)
     rounded_weights[i] += 1
 
@@ -97,6 +114,7 @@ class Integerizer(object):
         assert len(self.incidence_table.columns) == control_count
 
         if USE_CVX:
+
             int_weights, resid_weights, status = np_integerizer_cvx(
                 incidence=incidence,
                 float_weights=float_weights,
@@ -120,6 +138,9 @@ class Integerizer(object):
                 timeout_in_seconds=self.timeout_in_seconds
             )
 
+        # for x in resid_weights:
+        #     print x
+
         total_household_control = control_totals[self.total_hh_control_index]
 
         integerized_weights = smart_round(int_weights, resid_weights, total_household_control)
@@ -132,116 +153,6 @@ class Integerizer(object):
 
         return status
 
-
-# def np_integerizer_cvx(incidence,
-#                        float_weights,
-#                        control_importance_weights,
-#                        control_totals,
-#                        relaxed_control_totals,
-#                        total_hh_control_index,
-#                        control_is_hh_based,
-#                        try_harder):
-#     assert not np.isnan(incidence).any()
-#     assert not np.isnan(float_weights).any()
-#
-#     if (float_weights == 0).any():
-#         # not sure this matters...
-#         logger.warn("np_integerizer_cvx: %s zero weights" % ((float_weights == 0).sum(),))
-#         assert False
-#
-#     incidence = incidence.T
-#     # float_weights = np.matrix(float_weights)
-#
-#     sample_count, control_count = incidence.shape
-#
-#     int_weights = float_weights.astype(int)
-#     resid_weights = float_weights % 1.0
-#
-#     # resid_control_totals - control totals of resid_weights
-#     resid_control_totals = np.dot(resid_weights, incidence)
-#
-#     # - lp_right_hand_side - relaxed_control_shortfall
-#     lp_right_hand_side = np.round(relaxed_control_totals) - np.dot(int_weights, incidence)
-#     lp_right_hand_side = np.maximum(lp_right_hand_side, 0.0)
-#
-#     # - create the inequality constraint upper bounds
-#     max_incidence_value = np.amax(incidence, axis=0)
-#     assert (max_incidence_value[control_is_hh_based] == 1).all()
-#     num_households = relaxed_control_totals[total_hh_control_index]
-#     relax_ge_upper_bound = np.maximum(max_incidence_value * num_households - lp_right_hand_side, 0)
-#
-#     # - Decision variables for optimization
-#     x = cvx.Variable(1, sample_count)
-#
-#     # - Create positive continuous constraint relaxation variables
-#     relax_le = cvx.Variable(control_count)
-#     relax_ge = cvx.Variable(control_count)
-#
-#     # FIXME - ignore as handled by constraint?
-#     # control_importance_weights[total_hh_control_index] = 0
-#
-#     # - Set objective
-#
-#     LOG_OVERFLOW = -725
-#     log_resid_weights = np.log(np.maximum(resid_weights, np.exp(LOG_OVERFLOW)))
-#     assert not np.isnan(log_resid_weights).any()
-#
-#     # control_importance_weights = [999]*control_count
-#     # control_importance_weights[total_hh_control_index] = 2000
-#     objective = cvx.Maximize(
-#         cvx.sum_entries(cvx.mul_elemwise(log_resid_weights, cvx.vec(x))) -
-#         cvx.sum_entries(cvx.mul_elemwise(control_importance_weights, relax_le)) -
-#         cvx.sum_entries(cvx.mul_elemwise(control_importance_weights, relax_ge))
-#     )
-#
-#     total_hh_right_hand_side = lp_right_hand_side[total_hh_control_index]
-#
-#     hh_constraint_ge_bound = np.maximum(control_totals * max_incidence_value, lp_right_hand_side)
-#
-#     constraints = [
-#         # any reason we can't try to match controls?
-#         # cvx.vec(x*incidence) <= resid_control_totals + relax_ge,
-#         # cvx.vec(x*incidence) >= resid_control_totals - relax_le,
-#         # this is what popsyn3 does - try to match rounded relaxed controls
-#         cvx.vec(x * incidence) - relax_le >= 0,
-#         cvx.vec(x * incidence) - relax_le <= lp_right_hand_side,
-#         cvx.vec(x * incidence) + relax_ge >= lp_right_hand_side,
-#         cvx.vec(x * incidence) + relax_ge <= hh_constraint_ge_bound,
-#         ###
-#         #
-#         x >= 0.0,
-#         x <= 1.0,
-#         # y
-#         relax_le >= 0.0,
-#         relax_le <= lp_right_hand_side,
-#         # z
-#         relax_ge >= 0.0,
-#         relax_ge <= relax_ge_upper_bound,
-#         cvx.sum_entries(x) >= total_hh_right_hand_side,
-#         cvx.sum_entries(x) <= total_hh_right_hand_side
-#     ]
-#
-#     prob = cvx.Problem(objective, constraints)
-#
-#     try:
-#         # - solver list: http://www.cvxpy.org/en/latest/tutorial/advanced/
-#         # cvx.installed_solvers(): ['ECOS_BB', 'SCS', 'ECOS', 'LS']
-#         # ['CBC', 'CVXOPT', 'ECOS_BB', 'GLPK_MI', 'SCS', 'ECOS', 'GLPK', 'LS']
-#
-#         prob.solve(solver=cvx.ECOS, verbose=True, max_iters=300)
-#
-#         #prob.solve(solver=cvx.CBC, max_iters=10, verbose=try_harder)
-#
-#     except cvx.SolverError:
-#         logging.exception(
-#             'Solver error encountered in weight discretization. Weights will be rounded.')
-#
-#     if np.any(x.value):
-#         resid_weights_out = np.asarray(x.value)[0]
-#     else:
-#         resid_weights_out = resid_weights
-#
-#     return int_weights, resid_weights_out, CVX_STATUS[prob.status]
 
 def np_integerizer_cvx(incidence,
                        float_weights,
@@ -267,16 +178,12 @@ def np_integerizer_cvx(incidence,
     int_weights = float_weights.astype(int)
     resid_weights = float_weights % 1.0
 
-    # resid_control_totals - control totals of resid_weights
-    resid_control_totals = np.dot(resid_weights, incidence)
-
     # - lp_right_hand_side - relaxed_control_shortfall
     lp_right_hand_side = np.round(relaxed_control_totals) - np.dot(int_weights, incidence)
     lp_right_hand_side = np.maximum(lp_right_hand_side, 0.0)
 
     # - create the inequality constraint upper bounds
     max_incidence_value = np.amax(incidence, axis=0)
-
     assert (max_incidence_value[control_is_hh_based] <= 1).all()
     num_households = relaxed_control_totals[total_hh_control_index]
     relax_ge_upper_bound = np.maximum(max_incidence_value * num_households - lp_right_hand_side, 0)
@@ -284,49 +191,46 @@ def np_integerizer_cvx(incidence,
     # - Decision variables for optimization
     x = cvx.Variable(1, sample_count)
 
-    # FIXME - should be zero or almost zero
     # 1.0 unless resid_weights is zero
-    #x_max = (~(float_weights == int_weights)).astype(float)
-    x_max = (np.abs(float_weights - int_weights) > 0.00000001 ).astype(float).reshape((1,-1))
+    x_max = (~(float_weights == int_weights)).astype(float).reshape((1,-1))
 
     # - Create positive continuous constraint relaxation variables
-    relax = cvx.Variable(control_count)
+    relax_le = cvx.Variable(control_count)
+    relax_ge = cvx.Variable(control_count)
 
     # FIXME - ignore as handled by constraint?
     # control_importance_weights[total_hh_control_index] = 0
 
     # - Set objective
 
-    #LOG_OVERFLOW = -725
-    LOG_OVERFLOW = -700
+    LOG_OVERFLOW = -725
     log_resid_weights = np.log(np.maximum(resid_weights, np.exp(LOG_OVERFLOW)))
     assert not np.isnan(log_resid_weights).any()
 
     objective = cvx.Maximize(
         cvx.sum_entries(cvx.mul_elemwise(log_resid_weights, cvx.vec(x))) -
-        cvx.sum_entries(cvx.mul_elemwise(control_importance_weights, cvx.abs(relax)))
+        cvx.sum_entries(cvx.mul_elemwise(control_importance_weights, relax_le)) -
+        cvx.sum_entries(cvx.mul_elemwise(control_importance_weights, relax_ge))
     )
 
     total_hh_right_hand_side = lp_right_hand_side[total_hh_control_index]
 
     hh_constraint_ge_bound = np.maximum(control_totals * max_incidence_value, lp_right_hand_side)
 
-    # FIXME - can we conflate the ge and le relaxation into a single variable
-
     constraints = [
-        # any reason we can't try to match controls?
-        # cvx.vec(x*incidence) <= resid_control_totals + relax_ge,
-        # cvx.vec(x*incidence) >= resid_control_totals - relax_le,
-
-        # this is what popsyn3 does - try to match rounded relaxed controls
-        cvx.vec(x * incidence) + relax >= 0,
-        cvx.vec(x * incidence) + relax <= hh_constraint_ge_bound,
+        cvx.vec(x * incidence) - relax_le >= 0,
+        cvx.vec(x * incidence) - relax_le <= lp_right_hand_side,
+        cvx.vec(x * incidence) + relax_ge >= lp_right_hand_side,
+        cvx.vec(x * incidence) + relax_ge <= hh_constraint_ge_bound,
 
         x >= 0.0,
         x <= x_max,
 
-        relax >= -lp_right_hand_side,
-        relax <= relax_ge_upper_bound,
+        relax_le >= 0.0,
+        relax_le <= lp_right_hand_side,
+
+        relax_ge >= 0.0,
+        relax_ge <= relax_ge_upper_bound,
 
         # equality constraint for the total households control
         cvx.sum_entries(x) == total_hh_right_hand_side,
@@ -335,24 +239,27 @@ def np_integerizer_cvx(incidence,
     prob = cvx.Problem(objective, constraints)
 
     try:
-        # - solver list: http://www.cvxpy.org/en/latest/tutorial/advanced/
-        # cvx.installed_solvers(): ['ECOS_BB', 'SCS', 'ECOS', 'LS']
-        # ['CBC', 'CVXOPT', 'ECOS_BB', 'GLPK_MI', 'SCS', 'ECOS', 'GLPK', 'LS']
-
-        prob.solve(solver=cvx.ECOS, verbose=True, max_iters=300)
-        #prob.solve(solver=cvx.CBC, max_iters=10, verbose=True)
-
+        prob.solve(solver=CVX_SOLVER, verbose=True, max_iters=CVX_MAX_ITERS)
     except cvx.SolverError:
-
         logging.exception(
             'Solver error encountered in weight discretization. Weights will be rounded.')
+
+    #bug
+    # print "\nlp_right_hand_side\n", lp_right_hand_side
+    # print "\nhh_constraint_ge_bound\n", hh_constraint_ge_bound
+    #
+    # print "\nx_max\n", x_max
+    # print "\nresid_weights\n", resid_weights
+    print "\nx\n", x.value
+    print "\nrelax_le\n", relax_le.value
+    print "\nrelax_ge\n", relax_ge.value
 
     if np.any(x.value):
         resid_weights_out = np.asarray(x.value)[0]
     else:
         resid_weights_out = resid_weights
 
-    return int_weights, resid_weights_out, CVX_STATUS[prob.status]
+    return int_weights, resid_weights_out, STATUS_TEXT[prob.status]
 
 
 def np_integerizer_cbc(sample_count,
@@ -466,7 +373,12 @@ def np_integerizer_cbc(sample_count,
 
     int_weights = int_weights.astype(int)
 
-    return int_weights, resid_weights_out, CBC_STATUS[result_status]
+    #bug
+    # print "\nlp_right_hand_side\n", lp_right_hand_side
+    # print "\nhh_constraint_ge_bound\n", hh_constraint_ge_bound
+    # print "\nx\n", resid_weights_out
+
+    return int_weights, resid_weights_out, STATUS_TEXT[result_status]
 
 
 def do_integerizing(

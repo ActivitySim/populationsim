@@ -6,7 +6,7 @@ GROUP_BY_INCIDENCE_SIGNATURE: True
 # control_file_name: controls_original.csv
 control_file_name: controls.csv
 
-# scaled/unscaled meta_control_data file name specifiec below
+# scaled/unscaled meta_control_data file name specified below
 
 data_dir: data_calm
 
