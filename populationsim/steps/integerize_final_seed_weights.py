@@ -43,9 +43,10 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
         # slice incidence rows for this seed geography
         seed_incidence = incidence_df[incidence_df[seed_geography] == seed_id]
 
+        trace_label = "%s_%s" % (seed_geography, seed_id)
+
         integer_weights, status = do_integerizing(
-            label=seed_geography,
-            id=seed_id,
+            trace_label=trace_label,
             control_spec=control_spec,
             control_totals=seed_controls_df.loc[seed_id],
             incidence_table=seed_incidence[control_cols],

@@ -93,6 +93,7 @@ def meta_control_factoring(settings, control_spec, incidence_table):
 
     # create final balancing controls
     # add newly created seed_level_meta_controls to the existing set of seed level controls
+    # FIXME - these will end up in table in indeterminate order
     for column_name in seed_level_meta_controls.columns:
         orca.add_column(control_table_name(seed_geography), column_name,
                         seed_level_meta_controls[column_name])

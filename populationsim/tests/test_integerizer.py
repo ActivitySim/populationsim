@@ -39,7 +39,6 @@ def test_integerizer():
 
     zot = do_integerizing(
         label='label',
-        id=42,
         control_spec=control_spec,
         control_totals=control_totals,
         incidence_table=incidence_table[control_cols],

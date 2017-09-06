@@ -7,7 +7,9 @@ import numpy as np
 import pandas as pd
 from util import setting
 
-USE_CVX = True
+from activitysim.core import tracing
+
+USE_CVX = setting('USE_CVXPY')
 
 if USE_CVX:
     import cylp
@@ -61,16 +63,19 @@ def smart_round(int_weights, resid_weights, total_household_control):
     """
     assert len(int_weights) == len(resid_weights)
 
+    # integer part of numbers to round
+    rounded_weights = np.copy(int_weights)
+
     # find number of residuals that we need to round up
     int_shortfall = total_household_control - int_weights.sum()
     int_shortfall = np.clip(int_shortfall, 0, len(resid_weights))
 
-    # indices of the int_shortfall highest resid_weights
-    i = np.argsort(resid_weights)[-int_shortfall:]
+    if int_shortfall > 0:
+        # indices of the int_shortfall highest resid_weights
+        i = np.argsort(resid_weights)[-int_shortfall:]
 
-    # add 1 to the int_weights that we want to round upwards
-    rounded_weights = np.copy(int_weights)
-    rounded_weights[i] += 1
+        # add 1 to the int_weights that we want to round upwards
+        rounded_weights[i] += 1
 
     return rounded_weights
 
@@ -138,9 +143,6 @@ class Integerizer(object):
                 timeout_in_seconds=self.timeout_in_seconds
             )
 
-        # for x in resid_weights:
-        #     print x
-
         total_household_control = control_totals[self.total_hh_control_index]
 
         integerized_weights = smart_round(int_weights, resid_weights, total_household_control)
@@ -171,7 +173,6 @@ def np_integerizer_cvx(incidence,
         assert False
 
     incidence = incidence.T
-    # float_weights = np.matrix(float_weights)
 
     sample_count, control_count = incidence.shape
 
@@ -215,7 +216,8 @@ def np_integerizer_cvx(incidence,
 
     total_hh_right_hand_side = lp_right_hand_side[total_hh_control_index]
 
-    hh_constraint_ge_bound = np.maximum(control_totals * max_incidence_value, lp_right_hand_side)
+    num_control_households = control_totals[total_hh_control_index]
+    hh_constraint_ge_bound = np.maximum(num_control_households * max_incidence_value, lp_right_hand_side)
 
     constraints = [
         cvx.vec(x * incidence) - relax_le >= 0,
@@ -243,16 +245,6 @@ def np_integerizer_cvx(incidence,
     except cvx.SolverError:
         logging.exception(
             'Solver error encountered in weight discretization. Weights will be rounded.')
-
-    #bug
-    # print "\nlp_right_hand_side\n", lp_right_hand_side
-    # print "\nhh_constraint_ge_bound\n", hh_constraint_ge_bound
-    #
-    # print "\nx_max\n", x_max
-    # print "\nresid_weights\n", resid_weights
-    print "\nx\n", x.value
-    print "\nrelax_le\n", relax_le.value
-    print "\nrelax_ge\n", relax_ge.value
 
     if np.any(x.value):
         resid_weights_out = np.asarray(x.value)[0]
@@ -341,7 +333,8 @@ def np_integerizer_cbc(sample_count,
     # - inequality constraints
     hh_constraint_ge = [[]] * control_count
     hh_constraint_le = [[]] * control_count
-    hh_constraint_ge_bound = np.maximum(control_totals * max_incidence_value, lp_right_hand_side)
+    num_control_households = control_totals[total_hh_control_index]
+    hh_constraint_ge_bound = np.maximum(num_control_households * max_incidence_value, lp_right_hand_side)
     for c in range(0, control_count):
         # don't add inequality constraints for total households control
         if c == total_hh_control_index:
@@ -373,17 +366,11 @@ def np_integerizer_cbc(sample_count,
 
     int_weights = int_weights.astype(int)
 
-    #bug
-    # print "\nlp_right_hand_side\n", lp_right_hand_side
-    # print "\nhh_constraint_ge_bound\n", hh_constraint_ge_bound
-    # print "\nx\n", resid_weights_out
-
     return int_weights, resid_weights_out, STATUS_TEXT[result_status]
 
 
 def do_integerizing(
-        label,
-        id,
+        trace_label,
         control_spec,
         control_totals,
         incidence_table,
@@ -407,6 +394,8 @@ def do_integerizing(
 
         ##########################################
         # - backstopped control_totals
+        # Use the balanced float weights to establish target values for control values
+        # specified for higher levels of geography, so we don't mess them up too badly
         ##########################################
 
         relaxed_control_totals = \
@@ -434,7 +423,7 @@ def do_integerizing(
         # otherwise, solve for the integer weights using the Mixed Integer Programming solver.
         status = integerizer.integerize()
 
-        logger.debug("Integerizer status for backstopped %s %s: %s" % (label, id, status))
+        logger.debug("Integerizer status for backstopped %s: %s" % (trace_label, status))
 
     # if we either tried backstopped controls or failed, or never tried at all
     if status not in STATUS_SUCCESS:
@@ -464,14 +453,13 @@ def do_integerizing(
 
         status = integerizer.integerize()
 
-        logger.debug("Integerizer status for unbackstopped %s %s: %s" % (label, id, status))
+        logger.debug("Integerizer status for unbackstopped %s: %s" % (trace_label, status))
 
     if status not in STATUS_SUCCESS:
-        logger.error("Integerizer failed for %s %s status %s. "
-                     "Returning smart-rounded original weights"
-                     % (label, id, status))
+        logger.error("Integerizer failed for %s status %s. "
+                     "Returning smart-rounded original weights" % (trace_label, status))
     elif status != 'OPTIMAL':
-        logger.warn("Integerizer status non-optimal for %s %s status %s." % (label, id, status))
+        logger.warn("Integerizer status non-optimal for %s status %s." % (trace_label, status))
 
     integerized_weights = pd.Series(0.0, index=zero_weight_rows.index)
     integerized_weights.update(integerizer.weights['integerized_weight'])

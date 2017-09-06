@@ -80,6 +80,10 @@ def integerize(
 
     sub_geography = sub_geographies[0]
 
+    # standard names for sub_control zone columns in controls and weights
+    sub_control_zone_names = ['%s_%s' % (sub_geography, z) for z in sub_controls_df.index]
+    sub_control_zones = pd.Series(sub_control_zone_names, index=sub_controls_df.index)
+
     if USE_SIMUL_INTEGERIZER:
 
         integer_weights_df = do_simul_integerizing(
@@ -92,13 +96,10 @@ def integerize(
             parent_id=parent_id,
             sub_geography=sub_geography,
             control_spec=control_spec,
-            total_hh_control_col=total_hh_control_col
+            total_hh_control_col=total_hh_control_col,
+            sub_control_zones=sub_control_zones
         )
     else:
-
-        # standard names for sub_control zone columns in controls and weights
-        sub_control_zone_names = ['%s_%s' % (sub_geography, z) for z in sub_controls_df.index]
-        sub_control_zones = pd.Series(sub_control_zone_names, index=sub_controls_df.index)
 
         integer_weights_df = do_sequential_integerizing(
             incidence_df=incidence_df,
@@ -107,7 +108,9 @@ def integerize(
             control_spec=control_spec,
             total_hh_control_col=total_hh_control_col,
             sub_control_zones=sub_control_zones,
-            sub_geography=sub_geography
+            sub_geography=sub_geography,
+            parent_geography=parent_geography,
+            parent_id=parent_id,
         )
 
     integer_weights_df[parent_geography] = parent_id
@@ -191,6 +194,20 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
     sub_controls_df = get_control_table(sub_geography)
     parent_controls_df = get_control_table(parent_geography)
 
+    #################################
+    # control spec rows and control_df columns should be in same order
+    # seed control columns may not be in right order, se we re-order them here
+    countrol_cols = list(parent_controls_df.columns)
+    parent_control_spec = control_spec[control_spec.target.isin(countrol_cols)]
+    parent_controls_df = parent_controls_df[parent_control_spec.target.values]
+    assert (list(parent_controls_df.columns) == parent_control_spec.target).all()
+
+    # check that these are already in the right order
+    countrol_cols = list(sub_controls_df.columns)
+    sub_control_spec = control_spec[control_spec.target.isin(countrol_cols)]
+    assert (list(sub_controls_df.columns) == sub_control_spec.target).all()
+    #################################
+
     integer_weights_list = []
 
     seed_ids = crosswalk_df[seed_geography].unique()
@@ -221,7 +238,7 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
             incidence_df=seed_incidence_df,
             crosswalk_df=crosswalk_df,
             total_hh_control_col=total_hh_control_col,
-            USE_SIMUL_INTEGERIZER=False)
+            USE_SIMUL_INTEGERIZER=setting('USE_SIMUL_INTEGERIZER'))
 
         # add meta level geography column to facilitate summaries
         zone_weights_df[meta_geography] = meta_id
@@ -284,9 +301,7 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
             initial_weights = weights_df[weights_df[parent_geography] == parent_id]
             initial_weights = initial_weights.set_index(settings.get('household_id_col'))
 
-            # FIXME - is this right?
-            #bug?
-            if False and setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS'):
+            if setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS'):
                 initial_weights = initial_weights['balanced_weight']
             else:
                 initial_weights = initial_weights['integer_weight']
@@ -304,10 +319,8 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
                 incidence_df=seed_incidence_df,
                 crosswalk_df=crosswalk_df,
                 total_hh_control_col=total_hh_control_col,
-                USE_SIMUL_INTEGERIZER=True)
+                USE_SIMUL_INTEGERIZER=setting('USE_SIMUL_INTEGERIZER'))
 
-            print "\nzone_weights_df\n", zone_weights_df
-            assert False
 
             # add higher level geography columns to facilitate summaries
             zone_weights_df[seed_geography] = seed_id
