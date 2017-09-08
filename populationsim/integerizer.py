@@ -55,9 +55,10 @@ else:
 logger = logging.getLogger(__name__)
 
 
-def smart_round(int_weights, resid_weights, total_household_control):
+def smart_round(int_weights, resid_weights, target_sum):
     """
-    Round weights while maintaining total_household_control
+    Round weights while ensuring (as far as possible that result sums to target_sum)
+
 
     Order the residual weights and round at the tipping point where hh totals are maintained
     """
@@ -67,7 +68,9 @@ def smart_round(int_weights, resid_weights, total_household_control):
     rounded_weights = np.copy(int_weights)
 
     # find number of residuals that we need to round up
-    int_shortfall = total_household_control - int_weights.sum()
+    int_shortfall = target_sum - int_weights.sum()
+
+    # clip to feasible, in case target was not achievable by rounding
     int_shortfall = np.clip(int_shortfall, 0, len(resid_weights))
 
     if int_shortfall > 0:
@@ -89,7 +92,24 @@ class Integerizer(object):
                  relaxed_control_totals,
                  total_hh_control_index,
                  control_is_hh_based):
+        """
 
+        Parameters
+        ----------
+        control_totals : pandas.Series
+            targeted control totals (either explict or backstopped) we are trying to hit
+        incidence_table : pandas.Dataframe
+            incidence table with columns only for targeted controls
+        control_importance_weights : pandas.Series
+            importance weights (from control_spec) of targeted controls
+        float_weights
+            blanaced float weights to integerize
+        relaxed_control_totals
+        total_hh_control_index : int
+        control_is_hh_based : bool
+        """
+
+        assert len(control_totals) == len(incidence_table.columns)
         self.control_totals = control_totals
         self.incidence_table = incidence_table
         self.control_importance_weights = control_importance_weights
@@ -193,7 +213,7 @@ def np_integerizer_cvx(incidence,
     x = cvx.Variable(1, sample_count)
 
     # 1.0 unless resid_weights is zero
-    x_max = (~(float_weights == int_weights)).astype(float).reshape((1,-1))
+    x_max = (~(float_weights == int_weights)).astype(float).reshape((1, -1))
 
     # - Create positive continuous constraint relaxation variables
     relax_le = cvx.Variable(control_count)
@@ -217,7 +237,8 @@ def np_integerizer_cvx(incidence,
     total_hh_right_hand_side = lp_right_hand_side[total_hh_control_index]
 
     num_control_households = control_totals[total_hh_control_index]
-    hh_constraint_ge_bound = np.maximum(num_control_households * max_incidence_value, lp_right_hand_side)
+    hh_constraint_ge_bound = \
+        np.maximum(num_control_households * max_incidence_value, lp_right_hand_side)
 
     constraints = [
         cvx.vec(x * incidence) - relax_le >= 0,
@@ -251,7 +272,10 @@ def np_integerizer_cvx(incidence,
     else:
         resid_weights_out = resid_weights
 
-    return int_weights, resid_weights_out, STATUS_TEXT[prob.status]
+    status_text = STATUS_TEXT[prob.status]
+    assert np.any(x.value) == (status_text in STATUS_SUCCESS)
+
+    return int_weights, resid_weights_out, status_text
 
 
 def np_integerizer_cbc(sample_count,
@@ -334,7 +358,8 @@ def np_integerizer_cbc(sample_count,
     hh_constraint_ge = [[]] * control_count
     hh_constraint_le = [[]] * control_count
     num_control_households = control_totals[total_hh_control_index]
-    hh_constraint_ge_bound = np.maximum(num_control_households * max_incidence_value, lp_right_hand_side)
+    hh_constraint_ge_bound = \
+        np.maximum(num_control_households * max_incidence_value, lp_right_hand_side)
     for c in range(0, control_count):
         # don't add inequality constraints for total households control
         if c == total_hh_control_index:
@@ -362,11 +387,14 @@ def np_integerizer_cbc(sample_count,
     solver.EnableOutput()
     result_status = solver.Solve()
 
-    resid_weights_out = np.asanyarray(map(lambda x: x.solution_value(), x)).astype(np.float64)
+    status_text = STATUS_TEXT[result_status]
 
-    int_weights = int_weights.astype(int)
+    if status_text in STATUS_SUCCESS:
+        resid_weights_out = np.asanyarray(map(lambda x: x.solution_value(), x)).astype(np.float64)
+    else:
+        resid_weights_out = resid_weights
 
-    return int_weights, resid_weights_out, STATUS_TEXT[result_status]
+    return int_weights.astype(int), resid_weights_out, status_text
 
 
 def do_integerizing(
@@ -376,6 +404,30 @@ def do_integerizing(
         incidence_table,
         float_weights,
         total_hh_control_col):
+    """
+
+    Parameters
+    ----------
+    trace_label : str
+    	trace label indicating geography zone being integerized (e.g. PUMA_600)
+    control_spec : pandas.Dataframe
+    	full control spec with columns 'target', 'seed_table', 'importance', ...
+    control_totals : pandas.Series
+    	control totals explicitly specified for this zone
+    incidence_table : pandas.Dataframe
+    float_weights : pandas.Series
+    	balanced float weights to integerize
+    total_hh_control_col : str
+    	name of total_hh column (preferentially constrain to match this control)
+
+    Returns
+    -------
+    integerized_weights : pandas.Series
+    status : str
+    	as defined in integerizer.STATUS_TEXT and STATUS_SUCCESS
+    """
+
+    assert len(control_spec.index) == len(incidence_table.columns)
 
     if total_hh_control_col not in incidence_table.columns:
         raise RuntimeError("total_hh_control column '%s' not found in incidence table"

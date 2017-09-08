@@ -30,7 +30,7 @@ class SimultaneousListBalancer(object):
 
     def __init__(self,
                  incidence_table,
-                 initial_weights,
+                 parent_weights,
                  controls,
                  sub_control_zones,
                  total_hh_control_col):
@@ -48,7 +48,7 @@ class SimultaneousListBalancer(object):
         total_hh_control_col
         """
         assert isinstance(incidence_table, pd.DataFrame)
-        assert len(initial_weights.index) == len(incidence_table.index)
+        assert len(parent_weights.index) == len(incidence_table.index)
         assert len(incidence_table.columns) == len(controls.index)
 
         assert 'total' in controls
@@ -56,12 +56,12 @@ class SimultaneousListBalancer(object):
 
         # remove zero weight rows
         # remember series so we can add zero weight rows back into result after balancing
-        self.positive_weight_rows = initial_weights > 0
+        self.positive_weight_rows = parent_weights > 0
         logger.debug("%s positive weight rows out of %s"
                      % (self.positive_weight_rows.sum(), len(incidence_table.index)))
 
         self.incidence_table = incidence_table[self.positive_weight_rows]
-        self.weights = pd.DataFrame({'parent': initial_weights[self.positive_weight_rows]})
+        self.weights = pd.DataFrame({'parent': parent_weights[self.positive_weight_rows]})
 
         self.controls = controls
         self.sub_control_zones = sub_control_zones

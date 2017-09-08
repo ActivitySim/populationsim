@@ -5,9 +5,9 @@ hh_size_2,TAZ,households,5000,HHSIZE2,households.NP == 2
 hh_size_3,TAZ,households,5000,HHSIZE3,households.NP == 3
 hh_size_4_plus,TAZ,households,5000,HHSIZE4,households.NP >= 4
 hh_age_15_24,TAZ,households,500,HHAGE1,(households.AGEHOH > 15) & (households.AGEHOH <= 24)
-hh_age_25_54,TAZ,households,500,HHAGE2,(households.AGEHOH > 25) & (households.AGEHOH <= 54)
-hh_age_55_64,TAZ,households,500,HHAGE3,(households.AGEHOH > 55) & (households.AGEHOH <= 64)
-hh_age_65_plus,TAZ,households,500,HHAGE4,(households.AGEHOH > 65) & (households.AGEHOH <= np.inf)
+hh_age_25_54,TAZ,households,500,HHAGE2,(households.AGEHOH > 24) & (households.AGEHOH <= 54)
+hh_age_55_64,TAZ,households,500,HHAGE3,(households.AGEHOH > 54) & (households.AGEHOH <= 64)
+hh_age_65_plus,TAZ,households,500,HHAGE4,(households.AGEHOH > 64) & (households.AGEHOH <= np.inf)
 hh_inc_15,TAZ,households,500,HHINC1,(households.HHINCADJ > -999999999) & (households.HHINCADJ <= 21297)
 hh_inc_15_30,TAZ,households,500,HHINC2,(households.HHINCADJ >21297) & (households.HHINCADJ <= 42593)
 hh_inc_30_60,TAZ,households,500,HHINC3,(households.HHINCADJ > 42593) & (households.HHINCADJ <= 85185)

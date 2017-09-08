@@ -95,9 +95,7 @@ def do_round_infeasible_subzones(
         integer_weights_list.append(zone_weights_df)
         zone_list.append(zone_id)
 
-    feasible_subzones = sub_control_zones.loc[ ~sub_control_zones.index.isin(zone_list) ]
-    infeasible_subzones = sub_control_zones.loc[ sub_control_zones.index.isin(zone_list) ]
+    feasible_subzones = sub_control_zones.loc[~sub_control_zones.index.isin(zone_list)]
+    infeasible_subzones = sub_control_zones.loc[sub_control_zones.index.isin(zone_list)]
     integer_weights_df = pd.concat(integer_weights_list)
     return feasible_subzones, infeasible_subzones, integer_weights_df
-
-

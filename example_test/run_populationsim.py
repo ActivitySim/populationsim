@@ -29,7 +29,7 @@ _MODELS = [
 
     # expand household and person records with final weights
     # to one household and one person record per weight with unique IDs
-    #'expand_population',
+    # 'expand_population',
 
     # write the household and person files to CSV files
     'write_results'
@@ -40,7 +40,7 @@ _MODELS = [
 # the pipeline manager will attempt to load checkpointed tables from the checkpoint store
 # and resume pipeline processing on the next submodel step after the specified checkpoint
 resume_after = None
-resume_after = 'integerize_final_seed_weights'
+#resume_after = 'integerize_final_seed_weights'
 
 pipeline.run(models=_MODELS, resume_after=resume_after)
 
