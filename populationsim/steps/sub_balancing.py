@@ -16,6 +16,8 @@ from helper import weight_table_name
 from helper import get_weight_table
 
 from ..simul_integerizer import do_simul_integerizing
+from ..simul_integerizer import HAVE_SIMUL_INTEGERIZER
+
 from ..sequential_integerizer import do_sequential_integerizing
 
 
@@ -135,26 +137,24 @@ def integerize(
     if setting('USE_SIMUL_INTEGERIZER'):
 
         integer_weights_df = do_simul_integerizing(
+            trace_label="%s_%s" % (parent_geography, parent_id),
             incidence_df=incidence_df,
             sub_weights=sub_zone_weights,
             sub_controls_df=sub_controls_df,
             control_spec=control_spec,
             total_hh_control_col=total_hh_control_col,
-            parent_geography=parent_geography,
-            parent_id=parent_id,
             sub_geography=sub_geography,
             sub_control_zones=sub_control_zones
         )
     else:
 
         integer_weights_df = do_sequential_integerizing(
+            trace_label="%s_%s" % (parent_geography, parent_id),
             incidence_df=incidence_df,
             sub_weights=sub_zone_weights,
             sub_controls=sub_controls_df,
             control_spec=control_spec,
             total_hh_control_col=total_hh_control_col,
-            parent_geography=parent_geography,
-            parent_id=parent_id,
             sub_geography=sub_geography,
             sub_control_zones=sub_control_zones,
         )
@@ -244,7 +244,7 @@ def balance_and_integerize(
         total_hh_control_col=total_hh_control_col,
         parent_geography=parent_geography,
         parent_id=parent_id,
-        sub_geography = sub_geography,
+        sub_geography=sub_geography,
         sub_control_zones=sub_control_zones)
 
     return integerized_sub_zone_weights_df

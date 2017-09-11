@@ -6,35 +6,37 @@ import logging
 import numpy as np
 import pandas as pd
 
-import cylp
-import cvxpy as cvx
-
 from activitysim.core import tracing
 from .integerizer import smart_round
 from .sequential_integerizer import do_sequential_integerizing
 
+try:
+    import cylp
+    import cvxpy as cvx
+    HAVE_SIMUL_INTEGERIZER = True
+except ImportError:
+    HAVE_SIMUL_INTEGERIZER = False
 
-import cylp
-import cvxpy as cvx
+if HAVE_SIMUL_INTEGERIZER:
 
-STATUS_TEXT = {
-    cvx.OPTIMAL: 'OPTIMAL',
-    cvx.INFEASIBLE: 'INFEASIBLE',
-    cvx.UNBOUNDED: 'UNBOUNDED',
-    cvx.OPTIMAL_INACCURATE: 'OPTIMAL_INACCURATE',
-    cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
-    cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
-    None: 'FAILED'
-}
+    STATUS_TEXT = {
+        cvx.OPTIMAL: 'OPTIMAL',
+        cvx.INFEASIBLE: 'INFEASIBLE',
+        cvx.UNBOUNDED: 'UNBOUNDED',
+        cvx.OPTIMAL_INACCURATE: 'OPTIMAL_INACCURATE',
+        cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
+        cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
+        None: 'FAILED'
+    }
 
-STATUS_SUCCESS = ['OPTIMAL', 'OPTIMAL_INACCURATE']
+    STATUS_SUCCESS = ['OPTIMAL', 'OPTIMAL_INACCURATE']
 
-# - solver list: http://www.cvxpy.org/en/latest/tutorial/advanced/
-# cvx.installed_solvers(): ['ECOS_BB', 'SCS', 'ECOS', 'LS']
-# ['CBC', 'CVXOPT', 'ECOS_BB', 'GLPK_MI', 'SCS', 'ECOS', 'GLPK', 'LS']
-# CVX_SOLVER = cvx.ECOS
-CVX_SOLVER = cvx.GLPK_MI
-CVX_MAX_ITERS = 1000
+    # - solver list: http://www.cvxpy.org/en/latest/tutorial/advanced/
+    # cvx.installed_solvers(): ['ECOS_BB', 'SCS', 'ECOS', 'LS']
+    # ['CBC', 'CVXOPT', 'ECOS_BB', 'GLPK_MI', 'SCS', 'ECOS', 'GLPK', 'LS']
+    # CVX_SOLVER = cvx.ECOS
+    CVX_SOLVER = cvx.GLPK_MI
+    CVX_MAX_ITERS = 1000
 
 
 logger = logging.getLogger(__name__)
@@ -249,6 +251,29 @@ def try_simul_integerizing(
         sub_geography,
         control_spec, total_hh_control_col,
         sub_control_zones):
+    """
+    Attempt simultaneous integerization and return integerized weights if successful
+
+    Parameters
+    ----------
+    incidence_df
+    sub_weights
+    sub_controls_df
+    sub_geography
+    control_spec
+    total_hh_control_col
+    sub_control_zones
+
+    Returns
+    -------
+    status : str
+        str value of integerizer status from STATUS_TEXT dict
+        integerization was successful if status in STATUS_SUCCESS list
+
+    integerized_weights_df : pandas.DataFrame or None
+        canonical form weight table, with columns for 'balanced_weight', 'integer_weight'
+        or None if integerization failed
+    """
 
     zero_weight_rows = sub_weights.sum(axis=1) == 0
 
@@ -292,6 +317,25 @@ def try_simul_integerizing(
 def reshape_result(float_weights, integerized_weights, sub_geography, sub_control_zones):
     """
     Reshape results into unstacked form - (same as that returned by sequential integerizer)
+    with columns for 'balanced_weight', 'integer_weight'
+    plus columns for household id, and sub_geography zone ids
+
+    Parameters
+    ----------
+    float_weights : pandas.DataFrame
+        dataframe with one row per sample hh and one column per sub_zone
+    integerized_weights : pandas.DataFrame
+        dataframe with one row per sample hh and one column per sub_zone
+    sub_geography : str
+        name of sub_geography for result column name
+    sub_control_zones : pandas.Series
+        series mapping zone_id (index) to zone label (value)
+
+    Returns
+    -------
+    integer_weights_df : pandas.DataFrame
+        canonical form weight table, with columns for 'balanced_weight', 'integer_weight'
+        plus columns for household id, and sub_geography zone ids
     """
 
     # integerize the sub_zone weights
@@ -314,13 +358,12 @@ def reshape_result(float_weights, integerized_weights, sub_geography, sub_contro
 
 
 def do_simul_integerizing(
+        trace_label,
         incidence_df,
         sub_weights,
         sub_controls_df,
         control_spec,
         total_hh_control_col,
-        parent_geography,
-        parent_id,
         sub_geography,
         sub_control_zones):
     """
@@ -345,10 +388,6 @@ def do_simul_integerizing(
         full control spec with columns 'target', 'seed_table', 'importance', ...
     total_hh_control_col : str
         name of total_hh column (so we can preferentially match this control)
-    parent_geography : str
-        parent geography zone name
-    parent_id : int
-        parent geography zone id
     sub_geography : str
         subzone geography name (e.g. 'TAZ')
     sub_control_zones : pandas.Series
@@ -362,7 +401,7 @@ def do_simul_integerizing(
         plus columns for household id, and sub_geography zone ids
     """
 
-    trace_label = "do_simul_integerizing_%s_%s" % (parent_geography, parent_id)
+    assert HAVE_SIMUL_INTEGERIZER
 
     # try simultaneous integerization of all subzones
     status,  integerized_weights_df = try_simul_integerizing(
@@ -387,8 +426,6 @@ def do_simul_integerizing(
             control_spec, total_hh_control_col,
             sub_control_zones,
             sub_geography,
-            parent_geography,
-            parent_id,
             combine_results=False)
 
     if len(feasible_zone_ids) == 0:
@@ -438,11 +475,9 @@ def do_simul_integerizing(
                     % (trace_label, status))
         return pd.concat([integerized_weights_df, rounded_weights_df])
 
-
     # haven't seen this happen, but I suppose it could...
-    logger.error("do_simul_integerizing retry failed for %s status %s. "
-                % (trace_label, status))
-    logger.info("do_simul_integerizing %s falling back to sequential integerizing for %s."
+    logger.error("do_simul_integerizing retry failed for %s status %s." % (trace_label, status))
+    logger.info("do_simul_integerizing falling back to sequential integerizing for %s."
                 % trace_label)
 
     # nothing to do but return do_sequential_integerizing combined results

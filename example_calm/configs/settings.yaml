@@ -3,11 +3,11 @@ INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
 LOW_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
 GROUP_BY_INCIDENCE_SIGNATURE: True
-USE_SIMUL_INTEGERIZER: True
-USE_CVXPY: True
+USE_SIMUL_INTEGERIZER: False
+USE_CVXPY: False
 
-control_file_name: controls_original.csv
-#control_file_name: controls.csv
+#control_file_name: controls_original.csv
+control_file_name: controls.csv
 
 # scaled/unscaled meta_control_data file name specified below
 

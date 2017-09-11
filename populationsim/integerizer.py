@@ -9,17 +9,25 @@ from util import setting
 
 from activitysim.core import tracing
 
-USE_CVX = setting('USE_CVXPY')
 
-if USE_CVX:
+try:
     import cylp
     import cvxpy as cvx
-else:
+    HAVE_CVX = True
+except ImportError:
+    HAVE_CVX = False
+
+try:
     from ortools.linear_solver import pywraplp
+    HAVE_ORTOOLS = True
+except ImportError:
+    HAVE_ORTOOLS = False
 
+STATUS_TEXT = {}
+STATUS_SUCCESS = ['OPTIMAL', 'FEASIBLE', 'OPTIMAL_INACCURATE']
 
-if USE_CVX:
-    STATUS_TEXT = {
+if HAVE_CVX:
+    STATUS_TEXT.update({
         cvx.OPTIMAL: 'OPTIMAL',
         cvx.INFEASIBLE: 'INFEASIBLE',
         cvx.UNBOUNDED: 'UNBOUNDED',
@@ -27,9 +35,9 @@ if USE_CVX:
         cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
         cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
         None: 'FAILED'
-    }
+    })
 
-    STATUS_SUCCESS = ['OPTIMAL', 'OPTIMAL_INACCURATE']
+    STATUS_SUCCESS += ['OPTIMAL', 'OPTIMAL_INACCURATE']
 
     # - solver list: http://www.cvxpy.org/en/latest/tutorial/advanced/
     # cvx.installed_solvers(): ['ECOS_BB', 'SCS', 'ECOS', 'LS']
@@ -38,18 +46,20 @@ if USE_CVX:
     CVX_SOLVER = cvx.GLPK_MI
     CVX_MAX_ITERS = 300
 
+if HAVE_ORTOOLS:
 
-else:
-    STATUS_TEXT = {
+    STATUS_TEXT.update({
         pywraplp.Solver.OPTIMAL: 'OPTIMAL',
         pywraplp.Solver.FEASIBLE: 'FEASIBLE',
         pywraplp.Solver.INFEASIBLE: 'INFEASIBLE',
         pywraplp.Solver.UNBOUNDED: 'UNBOUNDED',
         pywraplp.Solver.ABNORMAL: 'ABNORMAL',
         pywraplp.Solver.NOT_SOLVED: 'NOT_SOLVED',
-    }
+    })
 
-    STATUS_SUCCESS = ['OPTIMAL', 'FEASIBLE']
+    STATUS_SUCCESS += ['OPTIMAL', 'FEASIBLE']
+
+    CBC_TIMEOUT_IN_SECONDS = 60
 
 
 logger = logging.getLogger(__name__)
@@ -128,7 +138,6 @@ class Integerizer(object):
         self.total_hh_control_value = total_hh_control_value
         self.total_hh_control_index = total_hh_control_index
         self.control_is_hh_based = control_is_hh_based
-        self.timeout_in_seconds = 60
 
     def integerize(self):
 
@@ -147,7 +156,9 @@ class Integerizer(object):
         assert len(control_is_hh_based) == control_count
         assert len(self.incidence_table.columns) == control_count
 
-        if USE_CVX:
+        if setting('USE_CVXPY'):
+
+            assert HAVE_CVX
 
             int_weights, resid_weights, status = np_integerizer_cvx(
                 incidence=incidence,
@@ -159,18 +170,17 @@ class Integerizer(object):
                 control_is_hh_based=control_is_hh_based
             )
         else:
+
+            assert HAVE_ORTOOLS
+
             int_weights, resid_weights, status = np_integerizer_cbc(
-                sample_count=sample_count,
-                control_count=control_count,
                 incidence=incidence,
                 float_weights=float_weights,
                 control_importance_weights=control_importance_weights,
-                #control_totals=control_totals,
                 relaxed_control_totals=relaxed_control_totals,
                 total_hh_control_value=self.total_hh_control_value,
                 total_hh_control_index=self.total_hh_control_index,
-                control_is_hh_based=control_is_hh_based,
-                timeout_in_seconds=self.timeout_in_seconds
+                control_is_hh_based=control_is_hh_based
             )
 
         integerized_weights = smart_round(int_weights, resid_weights, self.total_hh_control_value)
@@ -286,16 +296,15 @@ def np_integerizer_cvx(incidence,
     return int_weights, resid_weights_out, status_text
 
 
-def np_integerizer_cbc(sample_count,
-                       control_count,
-                       incidence,
+def np_integerizer_cbc(incidence,
                        float_weights,
                        control_importance_weights,
                        relaxed_control_totals,
                        total_hh_control_value,
                        total_hh_control_index,
-                       control_is_hh_based,
-                       timeout_in_seconds):
+                       control_is_hh_based):
+
+    control_count, sample_count = incidence.shape
 
     # - Instantiate a mixed-integer solver
     solver = pywraplp.Solver('IntegerizeCbc', pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
@@ -346,12 +355,21 @@ def np_integerizer_cbc(sample_count,
             relax_le[c] = solver.NumVar(0.0, lp_right_hand_side[c], 'relax_le_' + str(c))
             relax_ge[c] = solver.NumVar(0.0, relax_ge_upper_bound[c], 'relax_ge_' + str(c))
 
-    # - Set objective: min sum{c(n)*x(n)} + 999*y(i) - 999*z(i)}
-    objective = solver.Objective()
+    # - Set objective
     # use negative for coefficients since solver is minimizing
-    # avoid overflow
+    objective = solver.Objective()
+
+    # popsim3 does does something rather peculiar, which I am not sure is right
+    # it applies a huge penalty to rounding a near-zero residual upwards
+    # the documentation justifying this is sparse and possibly confused:
+    # // Set objective: min sum{c(n)*x(n)} + 999*y(i) - 999*z(i)}
+    # objective_function_coefficients = -1.0 * np.log(resid_weights)
+    # objective_function_coefficients[(resid_weights <= np.exp(-999))] = 999
+    # so I am opting for an alternate interpretation of what they meant to do: avoid log overflow
+    # There is not much difference in effect...
     LOG_OVERFLOW = -700
     objective_function_coefficients = -1.0 * np.log(np.maximum(resid_weights, np.exp(LOG_OVERFLOW)))
+
     assert not np.isnan(objective_function_coefficients).any()
 
     for hh in range(0, sample_count):
@@ -389,7 +407,7 @@ def np_integerizer_cbc(sample_count,
     for hh in range(0, sample_count):
         constraint_eq.SetCoefficient(x[hh], incidence[total_hh_control_index, hh])
 
-    solver.set_time_limit(timeout_in_seconds * 1000)
+    solver.set_time_limit(CBC_TIMEOUT_IN_SECONDS * 1000)
 
     solver.EnableOutput()
     result_status = solver.Solve()
@@ -416,22 +434,22 @@ def do_integerizing(
     Parameters
     ----------
     trace_label : str
-    	trace label indicating geography zone being integerized (e.g. PUMA_600)
+        trace label indicating geography zone being integerized (e.g. PUMA_600)
     control_spec : pandas.Dataframe
-    	full control spec with columns 'target', 'seed_table', 'importance', ...
+        full control spec with columns 'target', 'seed_table', 'importance', ...
     control_totals : pandas.Series
-    	control totals explicitly specified for this zone
+        control totals explicitly specified for this zone
     incidence_table : pandas.Dataframe
     float_weights : pandas.Series
-    	balanced float weights to integerize
+        balanced float weights to integerize
     total_hh_control_col : str
-    	name of total_hh column (preferentially constrain to match this control)
+        name of total_hh column (preferentially constrain to match this control)
 
     Returns
     -------
     integerized_weights : pandas.Series
     status : str
-    	as defined in integerizer.STATUS_TEXT and STATUS_SUCCESS
+        as defined in integerizer.STATUS_TEXT and STATUS_SUCCESS
     """
 
     assert len(control_spec.index) == len(incidence_table.columns)
