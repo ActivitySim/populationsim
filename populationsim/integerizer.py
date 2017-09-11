@@ -59,13 +59,23 @@ def smart_round(int_weights, resid_weights, target_sum):
     """
     Round weights while ensuring (as far as possible that result sums to target_sum)
 
+    Parameters
+    ----------
+    int_weights : numpy.ndarray(int)
+    resid_weights : numpy.ndarray(float)
+    target_sum : int
 
-    Order the residual weights and round at the tipping point where hh totals are maintained
+    Returns
+    -------
+    rounded_weights : numpy.ndarray array of ints
     """
     assert len(int_weights) == len(resid_weights)
 
-    # integer part of numbers to round
-    rounded_weights = np.copy(int_weights)
+    # integer part of numbers to round (astype both copies and coerces)
+    rounded_weights = int_weights.astype(int)
+
+    # expect int_weights to be ints
+    assert (rounded_weights == int_weights).all()
 
     # find number of residuals that we need to round up
     int_shortfall = target_sum - int_weights.sum()
@@ -73,6 +83,7 @@ def smart_round(int_weights, resid_weights, target_sum):
     # clip to feasible, in case target was not achievable by rounding
     int_shortfall = np.clip(int_shortfall, 0, len(resid_weights))
 
+    # Order the residual weights and round at the tipping point where target_sum is achieved
     if int_shortfall > 0:
         # indices of the int_shortfall highest resid_weights
         i = np.argsort(resid_weights)[-int_shortfall:]
@@ -85,11 +96,11 @@ def smart_round(int_weights, resid_weights, target_sum):
 
 class Integerizer(object):
     def __init__(self,
-                 control_totals,
                  incidence_table,
                  control_importance_weights,
                  float_weights,
                  relaxed_control_totals,
+                 total_hh_control_value,
                  total_hh_control_index,
                  control_is_hh_based):
         """
@@ -109,12 +120,12 @@ class Integerizer(object):
         control_is_hh_based : bool
         """
 
-        assert len(control_totals) == len(incidence_table.columns)
-        self.control_totals = control_totals
         self.incidence_table = incidence_table
         self.control_importance_weights = control_importance_weights
         self.float_weights = float_weights
         self.relaxed_control_totals = relaxed_control_totals
+
+        self.total_hh_control_value = total_hh_control_value
         self.total_hh_control_index = total_hh_control_index
         self.control_is_hh_based = control_is_hh_based
         self.timeout_in_seconds = 60
@@ -126,14 +137,12 @@ class Integerizer(object):
 
         incidence = self.incidence_table.as_matrix().transpose().astype(np.float64)
         float_weights = np.asanyarray(self.float_weights).astype(np.float64)
-        control_totals = np.asanyarray(self.control_totals).astype(np.int)
         relaxed_control_totals = np.asanyarray(self.relaxed_control_totals).astype(np.float64)
         control_is_hh_based = np.asanyarray(self.control_is_hh_based).astype(bool)
-        control_importance_weights = np.asanyarray(self.control_importance_weights).astype(
-            np.float64)
+        control_importance_weights = \
+            np.asanyarray(self.control_importance_weights).astype(np.float64)
 
         assert len(float_weights) == sample_count
-        assert len(control_totals) == control_count
         assert len(relaxed_control_totals) == control_count
         assert len(control_is_hh_based) == control_count
         assert len(self.incidence_table.columns) == control_count
@@ -144,8 +153,8 @@ class Integerizer(object):
                 incidence=incidence,
                 float_weights=float_weights,
                 control_importance_weights=control_importance_weights,
-                control_totals=control_totals,
                 relaxed_control_totals=relaxed_control_totals,
+                total_hh_control_value=self.total_hh_control_value,
                 total_hh_control_index=self.total_hh_control_index,
                 control_is_hh_based=control_is_hh_based
             )
@@ -156,16 +165,15 @@ class Integerizer(object):
                 incidence=incidence,
                 float_weights=float_weights,
                 control_importance_weights=control_importance_weights,
-                control_totals=control_totals,
+                #control_totals=control_totals,
                 relaxed_control_totals=relaxed_control_totals,
+                total_hh_control_value=self.total_hh_control_value,
                 total_hh_control_index=self.total_hh_control_index,
                 control_is_hh_based=control_is_hh_based,
                 timeout_in_seconds=self.timeout_in_seconds
             )
 
-        total_household_control = control_totals[self.total_hh_control_index]
-
-        integerized_weights = smart_round(int_weights, resid_weights, total_household_control)
+        integerized_weights = smart_round(int_weights, resid_weights, self.total_hh_control_value)
 
         self.weights = pd.DataFrame(index=self.incidence_table.index)
         self.weights['integerized_weight'] = integerized_weights
@@ -179,8 +187,8 @@ class Integerizer(object):
 def np_integerizer_cvx(incidence,
                        float_weights,
                        control_importance_weights,
-                       control_totals,
                        relaxed_control_totals,
+                       total_hh_control_value,
                        total_hh_control_index,
                        control_is_hh_based):
 
@@ -236,9 +244,8 @@ def np_integerizer_cvx(incidence,
 
     total_hh_right_hand_side = lp_right_hand_side[total_hh_control_index]
 
-    num_control_households = control_totals[total_hh_control_index]
     hh_constraint_ge_bound = \
-        np.maximum(num_control_households * max_incidence_value, lp_right_hand_side)
+        np.maximum(total_hh_control_value * max_incidence_value, lp_right_hand_side)
 
     constraints = [
         cvx.vec(x * incidence) - relax_le >= 0,
@@ -267,13 +274,14 @@ def np_integerizer_cvx(incidence,
         logging.exception(
             'Solver error encountered in weight discretization. Weights will be rounded.')
 
-    if np.any(x.value):
+    status_text = STATUS_TEXT[prob.status]
+
+    if status_text in STATUS_SUCCESS:
+        assert x.value is not None
         resid_weights_out = np.asarray(x.value)[0]
     else:
+        assert x.value is None
         resid_weights_out = resid_weights
-
-    status_text = STATUS_TEXT[prob.status]
-    assert np.any(x.value) == (status_text in STATUS_SUCCESS)
 
     return int_weights, resid_weights_out, status_text
 
@@ -283,8 +291,8 @@ def np_integerizer_cbc(sample_count,
                        incidence,
                        float_weights,
                        control_importance_weights,
-                       control_totals,
                        relaxed_control_totals,
+                       total_hh_control_value,
                        total_hh_control_index,
                        control_is_hh_based,
                        timeout_in_seconds):
@@ -342,9 +350,9 @@ def np_integerizer_cbc(sample_count,
     objective = solver.Objective()
     # use negative for coefficients since solver is minimizing
     # avoid overflow
-    PENALTY = 700
-    objective_function_coefficients = -1.0 * np.log(resid_weights)
-    objective_function_coefficients[(resid_weights <= np.exp(-PENALTY))] = PENALTY
+    LOG_OVERFLOW = -700
+    objective_function_coefficients = -1.0 * np.log(np.maximum(resid_weights, np.exp(LOG_OVERFLOW)))
+    assert not np.isnan(objective_function_coefficients).any()
 
     for hh in range(0, sample_count):
         objective.SetCoefficient(x[hh], objective_function_coefficients[hh])
@@ -357,9 +365,8 @@ def np_integerizer_cbc(sample_count,
     # - inequality constraints
     hh_constraint_ge = [[]] * control_count
     hh_constraint_le = [[]] * control_count
-    num_control_households = control_totals[total_hh_control_index]
     hh_constraint_ge_bound = \
-        np.maximum(num_control_households * max_incidence_value, lp_right_hand_side)
+        np.maximum(total_hh_control_value * max_incidence_value, lp_right_hand_side)
     for c in range(0, control_count):
         # don't add inequality constraints for total households control
         if c == total_hh_control_index:
@@ -440,14 +447,16 @@ def do_integerizing(
         incidence_table = incidence_table[~zero_weight_rows]
         float_weights = float_weights[~zero_weight_rows]
 
+    total_hh_control_value = control_totals[total_hh_control_col]
+
     status = None
     if setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS') \
             and len(control_totals) < len(incidence_table.columns):
 
         ##########################################
         # - backstopped control_totals
-        # Use the balanced float weights to establish target values for control values
-        # specified for higher levels of geography, so we don't mess them up too badly
+        # Use balanced float weights to establish target values for all control values
+        # note: this more frequently results in infeasible solver results
         ##########################################
 
         relaxed_control_totals = \
@@ -455,19 +464,16 @@ def do_integerizing(
         relaxed_control_totals = \
             pd.Series(relaxed_control_totals, index=incidence_table.columns.values)
 
-        backstopped_control_totals = relaxed_control_totals.copy()
-        backstopped_control_totals.update(control_totals)
-
         # if the incidence table has only one record, then the final integer weights
         # should be just an array with 1 element equal to the total number of households;
         assert len(incidence_table.index) > 1
 
         integerizer = Integerizer(
-            control_totals=backstopped_control_totals,
             incidence_table=incidence_table,
             control_importance_weights=control_spec.importance,
             float_weights=float_weights,
             relaxed_control_totals=relaxed_control_totals,
+            total_hh_control_value=total_hh_control_value,
             total_hh_control_index=incidence_table.columns.get_loc(total_hh_control_col),
             control_is_hh_based=control_spec['seed_table'] == 'households'
         )
@@ -482,6 +488,8 @@ def do_integerizing(
 
         ##########################################
         # - unbackstopped partial control_totals
+        # Use balanced weights to establish control totals only for explicitly specified controls
+        # note: this usually results in feasible solver results, except for some single hh zones
         ##########################################
 
         balanced_control_cols = control_totals.index
@@ -494,11 +502,11 @@ def do_integerizing(
             pd.Series(relaxed_control_totals, index=incidence_table.columns.values)
 
         integerizer = Integerizer(
-            control_totals=control_totals,
             incidence_table=incidence_table,
             control_importance_weights=control_spec.importance,
             float_weights=float_weights,
             relaxed_control_totals=relaxed_control_totals,
+            total_hh_control_value=total_hh_control_value,
             total_hh_control_index=incidence_table.columns.get_loc(total_hh_control_col),
             control_is_hh_based=control_spec['seed_table'] == 'households'
         )

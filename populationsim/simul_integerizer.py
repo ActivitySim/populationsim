@@ -11,7 +11,6 @@ import cvxpy as cvx
 
 from activitysim.core import tracing
 from .integerizer import smart_round
-from .sequential_integerizer import do_round_infeasible_subzones
 from .sequential_integerizer import do_sequential_integerizing
 
 
@@ -45,12 +44,11 @@ class SimulIntegerizer(object):
 
     def __init__(self,
                  incidence_df,
-                 parent_weights,
                  sub_weights, sub_controls_df,
                  control_spec, total_hh_control_col
                  ):
 
-        sample_count = len(parent_weights.index)
+        sample_count = len(sub_weights.index)
         sub_zone_count = len(sub_weights.columns)
 
         assert len(sub_weights.index) == sample_count
@@ -62,7 +60,6 @@ class SimulIntegerizer(object):
         assert (incidence_df.columns == control_spec.target).all()
 
         self.incidence_df = incidence_df
-        self.parent_weights = parent_weights
         self.sub_weights = sub_weights
         self.total_hh_control_col = total_hh_control_col
 
@@ -248,21 +245,19 @@ class SimulIntegerizer(object):
 
 def try_simul_integerizing(
         incidence_df,
-        parent_weights,
         sub_weights, sub_controls_df,
-        parent_geography, parent_id,
         sub_geography,
         control_spec, total_hh_control_col,
         sub_control_zones):
 
-    zero_weight_rows = (parent_weights == 0)
+    zero_weight_rows = sub_weights.sum(axis=1) == 0
+
     if zero_weight_rows.any():
         logger.info("omitting %s zero weight rows out of %s"
                     % (zero_weight_rows.sum(), len(incidence_df.index)))
 
     integerizer = SimulIntegerizer(
         incidence_df[~zero_weight_rows],
-        parent_weights[~zero_weight_rows],
         sub_weights[~zero_weight_rows],
         sub_controls_df,
         control_spec,
@@ -320,20 +315,59 @@ def reshape_result(float_weights, integerized_weights, sub_geography, sub_contro
 
 def do_simul_integerizing(
         incidence_df,
-        parent_weights,
-        sub_weights, sub_controls_df,
-        parent_geography, parent_id,
+        sub_weights,
+        sub_controls_df,
+        control_spec,
+        total_hh_control_col,
+        parent_geography,
+        parent_id,
         sub_geography,
-        control_spec, total_hh_control_col,
         sub_control_zones):
+    """
+
+    Wrapper around simultaneous integerizer to handle solver failure for infeasible subzones.
+
+    Simultaneous integerize balanced float sub_weights,
+    If simultaneous integerization fails, integerize serially to identify infeasible subzones,
+    remove and smart_round infeasible subzones, and try simultaneous integerization again.
+    (That ought to succeed, but if not, then fall back to all sequential integerization)
+    Finally combine all results into a single result dataframe.
+
+    Parameters
+    ----------
+    incidence_df : pandas.Dataframe
+        full incidence_df for all hh samples in seed zone
+    sub_zone_weights : pandas.DataFame
+        balanced subzone household sample weights to integerize
+    sub_controls_df : pandas.Dataframe
+        sub_geography controls (one row per zone indexed by sub_zone id)
+    control_spec : pandas.Dataframe
+        full control spec with columns 'target', 'seed_table', 'importance', ...
+    total_hh_control_col : str
+        name of total_hh column (so we can preferentially match this control)
+    parent_geography : str
+        parent geography zone name
+    parent_id : int
+        parent geography zone id
+    sub_geography : str
+        subzone geography name (e.g. 'TAZ')
+    sub_control_zones : pandas.Series
+        index is zone id and value is zone label (e.g. TAZ_101)
+        for use in sub_controls_df column names
+
+    Returns
+    -------
+    integer_weights_df : pandas.DataFrame
+        canonical form weight table, with columns for 'balanced_weight', 'integer_weight'
+        plus columns for household id, and sub_geography zone ids
+    """
 
     trace_label = "do_simul_integerizing_%s_%s" % (parent_geography, parent_id)
 
+    # try simultaneous integerization of all subzones
     status,  integerized_weights_df = try_simul_integerizing(
         incidence_df,
-        parent_weights,
         sub_weights, sub_controls_df,
-        parent_geography, parent_id,
         sub_geography,
         control_spec, total_hh_control_col,
         sub_control_zones)
@@ -344,57 +378,72 @@ def do_simul_integerizing(
 
     logger.warn("do_simul_integerizing failed for %s status %s. " % (trace_label, status))
 
-    feasible_subzones, infeasible_subzones, rounded_weights_df = do_round_infeasible_subzones(
-        incidence_df,
-        sub_weights, sub_controls_df,
-        control_spec, total_hh_control_col,
-        sub_control_zones,
-        sub_geography,
-        parent_geography,
-        parent_id)
+    # if simultaneous integerization failed, sequentially integerize to detect infeasible subzones
+    # infeasible zones will be smart rounded and returned in rounded_weights_df
+    feasible_zone_ids, rounded_zone_ids, sequentially_integerized_weights_df, rounded_weights_df = \
+        do_sequential_integerizing(
+            incidence_df,
+            sub_weights, sub_controls_df,
+            control_spec, total_hh_control_col,
+            sub_control_zones,
+            sub_geography,
+            parent_geography,
+            parent_id,
+            combine_results=False)
+
+    if len(feasible_zone_ids) == 0:
+        # if all subzones are infeasible, then we don't have any feasible zones to try
+        # so the best we can do is return rounded_weights_df
+        logger.warn("do_sequential_integerizing failed for all subzones %s. " % trace_label)
+        logger.info("do_simul_integerizing returning smart rounded weights for %s."
+                    % trace_label)
+        return rounded_weights_df
+
+    if len(rounded_zone_ids) == 0:
+        # if all subzones are feasible, then there are no zones to remove in order to retry
+        # so the best we can do is return sequentially_integerized_weights_df
+        logger.warn("do_simul_integerizing failed but found no infeasible sub zones %s. "
+                    % trace_label)
+        logger.info("do_simul_integerizing %s falling back to sequential integerizing for %s."
+                    % trace_label)
+        return sequentially_integerized_weights_df
+
+    if len(feasible_zone_ids) == 1:
+        # if only one zone is feasible, not much point in simul_integerizing it
+        # so the best we can do is return do_sequential_integerizing combined results
+        logger.warn("do_simul_integerizing failed but found no infeasible sub zones %s. "
+                    % trace_label)
+        return pd.concat([sequentially_integerized_weights_df, rounded_weights_df])
+
+    # - remove the infeasible subzones and retry simul_integerizing
+
+    sub_controls_df = sub_controls_df.loc[feasible_zone_ids]
+    sub_control_zones = sub_control_zones.loc[sub_control_zones.index.isin(feasible_zone_ids)]
+    sub_weights = sub_weights[sub_control_zones]
 
     logger.info("do_simul_integerizing %s infeasable subzones for %s. "
-                % (len(infeasible_subzones), trace_label))
+                % (len(rounded_zone_ids), trace_label))
 
-    if len(infeasible_subzones) > 0:
-
-        # remove the infeasible subzones
-        sub_controls_df = sub_controls_df.loc[feasible_subzones.index]
-        sub_weights = sub_weights[feasible_subzones]
-        sub_control_zones = feasible_subzones
-
-        # try again without the infeasibles
-        status, integerized_weights_df = try_simul_integerizing(
-            incidence_df,
-            parent_weights,
-            sub_weights, sub_controls_df,
-            parent_geography, parent_id,
-            sub_geography,
-            control_spec, total_hh_control_col,
-            sub_control_zones)
-
-        if status in STATUS_SUCCESS:
-
-            logger.info("do_simul_integerizing retry succeeded for %s status %s. "
-                        % (trace_label, status))
-
-            integerized_weights_df = pd.concat([integerized_weights_df, rounded_weights_df])
-            return integerized_weights_df
-
-    # we don't expect this to happen...
-    logger.error("do_simul_integerizing retry failed for %s status %s. " % (trace_label, status))
-
-    logger.info("do_simul_integerizing %s falling back to sequential integerizing." % trace_label)
-
-    # sequentially integerize remaining zones since they failed simul_integerizing
-    integerized_weights_df = do_sequential_integerizing(
+    status, integerized_weights_df = try_simul_integerizing(
         incidence_df,
         sub_weights, sub_controls_df,
-        control_spec, total_hh_control_col,
-        sub_control_zones,
         sub_geography,
-        parent_geography,
-        parent_id)
+        control_spec, total_hh_control_col,
+        sub_control_zones)
 
-    integerized_weights_df = pd.concat([integerized_weights_df, rounded_weights_df])
-    return integerized_weights_df
+    if status in STATUS_SUCCESS:
+        # we successfully simul_integerized the sequentially feasible sub zones, so we can
+        # return the simul_integerized results along with the rounded_weights for the infeasibles
+        logger.info("do_simul_integerizing retry succeeded for %s status %s. "
+                    % (trace_label, status))
+        return pd.concat([integerized_weights_df, rounded_weights_df])
+
+
+    # haven't seen this happen, but I suppose it could...
+    logger.error("do_simul_integerizing retry failed for %s status %s. "
+                % (trace_label, status))
+    logger.info("do_simul_integerizing %s falling back to sequential integerizing for %s."
+                % trace_label)
+
+    # nothing to do but return do_sequential_integerizing combined results
+    return pd.concat([sequentially_integerized_weights_df, rounded_weights_df])

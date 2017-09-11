@@ -23,22 +23,47 @@ logger = logging.getLogger(__name__)
 
 
 def balance(
+        incidence_df,
+        parent_weights,
+        sub_controls_df,
+        control_spec,
+        total_hh_control_col,
         parent_geography,
         parent_id,
         sub_geographies,
-        control_spec,
-        sub_controls_df,
-        parent_weights,
-        incidence_df,
-        total_hh_control_col
+        sub_control_zones
         ):
+    """
 
-    sub_geography = sub_geographies[0]
+    Parameters
+    ----------
+    incidence_df : pandas.Dataframe
+        full incidence_df for all hh samples in seed zone
+    parent_weights : pandas.Series
+        parent zone balanced (possibly integerized) aggregate target weights
+    sub_controls_df : pandas.Dataframe
+        sub_geography controls (one row per zone indexed by sub_zone id)
+    control_spec : pandas.Dataframe
+        full control spec with columns 'target', 'seed_table', 'importance', ...
+    total_hh_control_col : str
+        name of total_hh column (so we can preferentially match this control)
+    parent_geography : str
+        parent geography zone name
+    parent_id : int
+        parent geography zone id
+    sub_geographies : list(str)
+        list of subgeographies in descending order
+    sub_control_zones : pandas.Series
+        index is zone id and value is zone label (e.g. TAZ_101)
+        for use in sub_controls_df column names
+
+    Returns
+    -------
+    sub_zone_weights : pandas.DataFrame
+        balanced subzone household float sample weights
+    """
+
     sub_control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
-
-    # standard names for sub_control zone columns in controls and weights
-    sub_control_zone_names = ['%s_%s' % (sub_geography, z) for z in sub_controls_df.index]
-    sub_control_zones = pd.Series(sub_control_zone_names, index=sub_controls_df.index)
 
     # controls - organized in legible form
     controls = pd.DataFrame({'name': sub_control_spec.target})
@@ -67,35 +92,57 @@ def balance(
 
 
 def integerize(
+        incidence_df,
         sub_zone_weights,
+        sub_controls_df,
+        control_spec,
+        total_hh_control_col,
         parent_geography,
         parent_id,
-        sub_geographies,
-        control_spec,
-        sub_controls_df,
-        parent_weights,
-        incidence_df,
-        total_hh_control_col,
-        USE_SIMUL_INTEGERIZER):
+        sub_geography,
+        sub_control_zones):
+    """
 
-    sub_geography = sub_geographies[0]
+    Parameters
+    ----------
+    incidence_df : pandas.Dataframe
+        full incidence_df for all hh samples in seed zone
+    sub_zone_weights : pandas.DataFame
+        balanced subzone household sample weights to integerize
+    sub_controls_df : pandas.Dataframe
+        sub_geography controls (one row per zone indexed by sub_zone id)
+    control_spec : pandas.Dataframe
+        full control spec with columns 'target', 'seed_table', 'importance', ...
+    total_hh_control_col : str
+        name of total_hh column (so we can preferentially match this control)
+    parent_geography : str
+        parent geography zone name
+    parent_id : int
+        parent geography zone id
+    sub_geography : str
+        subzone geography name (e.g. 'TAZ')
+    sub_control_zones : pandas.Series
+        index is zone id and value is zone label (e.g. TAZ_101)
+        for use in sub_controls_df column names
 
-    # standard names for sub_control zone columns in controls and weights
-    sub_control_zone_names = ['%s_%s' % (sub_geography, z) for z in sub_controls_df.index]
-    sub_control_zones = pd.Series(sub_control_zone_names, index=sub_controls_df.index)
+    Returns
+    -------
+    integer_weights_df : pandas.DataFrame
+        canonical form weight table, with columns for 'balanced_weight', 'integer_weight'
+        plus columns for household id, parent and sub_geography zone ids
+    """
 
-    if USE_SIMUL_INTEGERIZER:
+    if setting('USE_SIMUL_INTEGERIZER'):
 
         integer_weights_df = do_simul_integerizing(
             incidence_df=incidence_df,
-            parent_weights=parent_weights,
             sub_weights=sub_zone_weights,
             sub_controls_df=sub_controls_df,
+            control_spec=control_spec,
+            total_hh_control_col=total_hh_control_col,
             parent_geography=parent_geography,
             parent_id=parent_id,
             sub_geography=sub_geography,
-            control_spec=control_spec,
-            total_hh_control_col=total_hh_control_col,
             sub_control_zones=sub_control_zones
         )
     else:
@@ -106,10 +153,10 @@ def integerize(
             sub_controls=sub_controls_df,
             control_spec=control_spec,
             total_hh_control_col=total_hh_control_col,
-            sub_control_zones=sub_control_zones,
-            sub_geography=sub_geography,
             parent_geography=parent_geography,
             parent_id=parent_id,
+            sub_geography=sub_geography,
+            sub_control_zones=sub_control_zones,
         )
 
     integer_weights_df[parent_geography] = parent_id
@@ -118,17 +165,45 @@ def integerize(
 
 
 def balance_and_integerize(
+        incidence_df,
+        parent_weights,
+        sub_controls_df,
+        control_spec,
+        total_hh_control_col,
         parent_geography,
         parent_id,
         sub_geographies,
-        control_spec,
-        sub_controls_df,
-        parent_weights,
-        incidence_df,
         crosswalk_df,
-        total_hh_control_col,
-        USE_SIMUL_INTEGERIZER):
+        ):
+    """
 
+    Parameters
+    ----------
+    incidence_df : pandas.Dataframe
+        full incidence_df for all hh samples in seed zone
+    parent_weights : pandas.Series
+        parent zone balanced (possibly integerized) aggregate target weights
+    sub_controls_df : pandas.Dataframe
+        sub_geography controls (one row per zone indexed by sub_zone id)
+    control_spec : pandas.Dataframe
+        full control spec with columns 'target', 'seed_table', 'importance', ...
+    total_hh_control_col : str
+        name of total_hh column (so we can preferentially match this control)
+    parent_geography : str
+        parent geography zone name
+    parent_id : int
+        parent geography zone id
+    sub_geographies : list(str)
+        list of subgeographies in descending order
+    crosswalk_df : pandas.Dataframe
+        geo crosswork table sliced to current seed geography
+
+    Returns
+    -------
+    integerized_sub_zone_weights_df : pandas.DataFrame
+        canonical form weight table, with columns for 'balanced_weight', 'integer_weight'
+        plus columns for household id and sub_geography zone ids
+    """
     sub_geography = sub_geographies[0]
 
     # only want subcontrol rows for current geography geo_id
@@ -145,29 +220,34 @@ def balance_and_integerize(
                     % (empty_sub_zones.sum(), sub_geography, parent_geography, parent_id))
         sub_controls_df = sub_controls_df[~empty_sub_zones]
 
-    sub_zone_weights = balance(
-        parent_geography=parent_geography,
-        parent_id=parent_id,
-        sub_geographies=sub_geographies,
-        control_spec=control_spec,
-        sub_controls_df=sub_controls_df,
-        parent_weights=parent_weights,
-        incidence_df=incidence_df,
-        total_hh_control_col=total_hh_control_col)
+    # standard names for sub_control zone columns in controls and weights
+    sub_control_zone_names = ['%s_%s' % (sub_geography, z) for z in sub_controls_df.index]
+    sub_control_zones = pd.Series(sub_control_zone_names, index=sub_controls_df.index)
 
-    zone_weights_df = integerize(
-        sub_zone_weights,
-        parent_geography=parent_geography,
-        parent_id=parent_id,
-        sub_geographies=sub_geographies,
-        control_spec=control_spec,
-        sub_controls_df=sub_controls_df,
-        parent_weights=parent_weights,
+    balanced_sub_zone_weights = balance(
         incidence_df=incidence_df,
+        parent_weights=parent_weights,
+        sub_controls_df=sub_controls_df,
+        control_spec=control_spec,
         total_hh_control_col=total_hh_control_col,
-        USE_SIMUL_INTEGERIZER=USE_SIMUL_INTEGERIZER)
+        parent_geography=parent_geography,
+        parent_id=parent_id,
+        sub_geographies=sub_geographies,
+        sub_control_zones=sub_control_zones
+        )
 
-    return zone_weights_df
+    integerized_sub_zone_weights_df = integerize(
+        incidence_df=incidence_df,
+        sub_zone_weights=balanced_sub_zone_weights,
+        sub_controls_df=sub_controls_df,
+        control_spec=control_spec,
+        total_hh_control_col=total_hh_control_col,
+        parent_geography=parent_geography,
+        parent_id=parent_id,
+        sub_geography = sub_geography,
+        sub_control_zones=sub_control_zones)
+
+    return integerized_sub_zone_weights_df
 
 
 @orca.step()
@@ -200,27 +280,26 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
         seed_crosswalk_df = crosswalk_df[crosswalk_df[seed_geography] == seed_id]
 
-        assert len(seed_crosswalk_df[meta_geography].unique()) == 1
-        meta_id = seed_crosswalk_df[meta_geography].max()
-
         if setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS', False):
             initial_weights = seed_incidence_df['final_seed_weight']
         else:
             initial_weights = seed_incidence_df['integer_seed_weight']
 
         zone_weights_df = balance_and_integerize(
+            incidence_df=seed_incidence_df,
+            parent_weights=initial_weights,
+            sub_controls_df=sub_controls_df,
+            control_spec=control_spec,
+            total_hh_control_col=total_hh_control_col,
             parent_geography=parent_geography,
             parent_id=seed_id,
             sub_geographies=sub_geographies,
-            control_spec=control_spec,
-            sub_controls_df=sub_controls_df,
-            parent_weights=initial_weights,
-            incidence_df=seed_incidence_df,
-            crosswalk_df=crosswalk_df,
-            total_hh_control_col=total_hh_control_col,
-            USE_SIMUL_INTEGERIZER=setting('USE_SIMUL_INTEGERIZER'))
+            crosswalk_df=seed_crosswalk_df
+            )
 
         # add meta level geography column to facilitate summaries
+        assert len(seed_crosswalk_df[meta_geography].unique()) == 1
+        meta_id = seed_crosswalk_df[meta_geography].max()
         zone_weights_df[meta_geography] = meta_id
 
         integer_weights_list.append(zone_weights_df)
@@ -290,16 +369,16 @@ def low_balancing(settings, crosswalk, control_spec, incidence_table):
             assert len(initial_weights.index) == len(seed_incidence_df.index)
 
             zone_weights_df = balance_and_integerize(
+                incidence_df=seed_incidence_df,
+                parent_weights=initial_weights,
+                sub_controls_df=sub_controls_df,
+                control_spec=control_spec,
+                total_hh_control_col=total_hh_control_col,
                 parent_geography=parent_geography,
                 parent_id=parent_id,
                 sub_geographies=sub_geographies,
-                control_spec=control_spec,
-                sub_controls_df=sub_controls_df,
-                parent_weights=initial_weights,
-                incidence_df=seed_incidence_df,
-                crosswalk_df=crosswalk_df,
-                total_hh_control_col=total_hh_control_col,
-                USE_SIMUL_INTEGERIZER=setting('USE_SIMUL_INTEGERIZER'))
+                crosswalk_df=seed_crosswalk_df
+                )
 
             # add higher level geography columns to facilitate summaries
             zone_weights_df[seed_geography] = seed_id
