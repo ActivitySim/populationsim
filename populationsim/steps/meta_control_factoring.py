@@ -7,9 +7,12 @@ import os
 import orca
 import pandas as pd
 
+from activitysim.core import pipeline
 
 from helper import get_control_table
 from helper import control_table_name
+from helper import get_weight_table
+from populationsim.util import setting
 
 logger = logging.getLogger(__name__)
 
@@ -56,9 +59,13 @@ def meta_control_factoring(settings, control_spec, incidence_table):
     meta_control_targets = meta_controls_spec['target']
 
     # weights of meta targets at hh (incidence table) level
+    household_id_col = setting('household_id_col')
+    seed_weights_df = get_weight_table(seed_geography).set_index(household_id_col)
+
     hh_level_weights = incidence_df[[seed_geography, meta_geography]].copy()
     for target in meta_control_targets:
-        hh_level_weights[target] = incidence_df[target] * incidence_df['initial_seed_weight']
+        hh_level_weights[target] = \
+            incidence_df[target] * seed_weights_df['preliminary_balanced_weight']
 
     # weights of meta targets at seed level
     factored_seed_weights = \
@@ -93,8 +100,13 @@ def meta_control_factoring(settings, control_spec, incidence_table):
 
     # create final balancing controls
     # add newly created seed_level_meta_controls to the existing set of seed level controls
-    # FIXME - these will end up in table in indeterminate order
-    for column_name in seed_level_meta_controls.columns:
-        orca.add_column(control_table_name(seed_geography), column_name,
-                        seed_level_meta_controls[column_name])
-        logger.info("adding column %s" % column_name)
+
+    seed_controls_df = get_control_table(seed_geography)
+    assert len(seed_controls_df.index) == len(seed_level_meta_controls.index)
+    seed_controls_df = pd.concat([seed_controls_df, seed_level_meta_controls], axis=1)
+
+    # ensure columns are in right order for orca-extended table
+    seed_controls_df = seed_controls_df[control_spec.target]
+    assert (seed_controls_df.columns == control_spec.target).all()
+
+    pipeline.replace_table(control_table_name(seed_geography), seed_controls_df)

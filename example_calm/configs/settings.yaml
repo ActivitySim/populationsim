@@ -1,18 +1,16 @@
 
 INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
-LOW_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
 GROUP_BY_INCIDENCE_SIGNATURE: True
-USE_SIMUL_INTEGERIZER: False
-USE_CVXPY: False
+USE_SIMUL_INTEGERIZER: True
+USE_CVXPY: True
 
-#control_file_name: controls_original.csv
-control_file_name: controls.csv
+control_file_name: controls_original.csv
+#control_file_name: controls.csv
 
 # scaled/unscaled meta_control_data file name specified below
 
 data_dir: data_calm
-
 
 # if output_tables is commented out, then all tables will be output EXCEPT skip_output_tables
 #output_tables:
@@ -91,3 +89,19 @@ geography_settings:
   TAZ:
     control_data_table: low_control_data
     id_column: TAZ
+
+models:
+  - input_pre_processor
+  - setup_data_structures
+  - initial_seed_balancing
+  - meta_control_factoring
+  - final_seed_balancing
+  - integerize_final_seed_weights
+  - sub_balancing.geography=TRACT
+  - sub_balancing.geography=TAZ
+  # expand household and person records with final weights
+  # to one household and one person record per weight with unique IDs
+  - expand_population
+  - summarize
+  # write the household and person files to CSV files
+  - write_results

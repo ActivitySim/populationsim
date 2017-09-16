@@ -9,32 +9,18 @@ from activitysim.core import tracing
 from activitysim.core import pipeline
 
 from activitysim.core.tracing import print_elapsed_time
+from activitysim.core.config import handle_standard_args
 
 from populationsim import steps
+from populationsim.util import setting
+
+handle_standard_args()
 
 tracing.config_logger()
 
 t0 = print_elapsed_time()
 
-_MODELS = [
-    'input_pre_processor',
-    'setup_data_structures',
-    'initial_seed_balancing',
-    'meta_control_factoring',
-    'final_seed_balancing',
-    'integerize_final_seed_weights',
-    'sub_balancing',
-    'low_balancing',
-    'summarize',
-
-    # expand household and person records with final weights
-    # to one household and one person record per weight with unique IDs
-    'expand_population',
-
-    # write the household and person files to CSV files
-    'write_results'
-]
-
+MODELS = setting('models')
 
 # If you provide a resume_after argument to pipeline.run
 # the pipeline manager will attempt to load checkpointed tables from the checkpoint store
@@ -42,7 +28,7 @@ _MODELS = [
 resume_after = None
 # resume_after = 'integerize_final_seed_weights'
 
-pipeline.run(models=_MODELS, resume_after=resume_after)
+pipeline.run(models=MODELS, resume_after=resume_after)
 
 
 # incidence_table = pipeline.get_table('incidence_table')

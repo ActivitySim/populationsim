@@ -421,6 +421,7 @@ def do_simul_integerizing(
     # infeasible zones will be smart rounded and returned in rounded_weights_df
     feasible_zone_ids, rounded_zone_ids, sequentially_integerized_weights_df, rounded_weights_df = \
         do_sequential_integerizing(
+            trace_label,
             incidence_df,
             sub_weights, sub_controls_df,
             control_spec, total_hh_control_col,

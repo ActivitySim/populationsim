@@ -8,6 +8,7 @@ import pandas as pd
 from ..balancer import do_seed_balancing
 
 from helper import get_control_table
+from helper import weight_table_name
 
 
 logger = logging.getLogger(__name__)
@@ -62,4 +63,8 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     # bulk concat all seed level results
     weights = pd.concat(weight_list)
 
-    orca.add_column('incidence_table', 'initial_seed_weight', weights)
+    # build canonical weights table
+    # reset_index to get hh_id as column, not index
+    seed_weights_df = incidence_df[[seed_geography]].reset_index()
+    seed_weights_df['preliminary_balanced_weight'] = weights
+    orca.add_table(weight_table_name(seed_geography), seed_weights_df)

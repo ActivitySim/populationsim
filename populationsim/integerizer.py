@@ -80,15 +80,16 @@ def smart_round(int_weights, resid_weights, target_sum):
     rounded_weights : numpy.ndarray array of ints
     """
     assert len(int_weights) == len(resid_weights)
+    assert (int_weights == int_weights.astype(int)).all()
+    assert target_sum == int(target_sum)
+
+    target_sum = int(target_sum)
 
     # integer part of numbers to round (astype both copies and coerces)
     rounded_weights = int_weights.astype(int)
 
-    # expect int_weights to be ints
-    assert (rounded_weights == int_weights).all()
-
     # find number of residuals that we need to round up
-    int_shortfall = target_sum - int_weights.sum()
+    int_shortfall = target_sum - rounded_weights.sum()
 
     # clip to feasible, in case target was not achievable by rounding
     int_shortfall = np.clip(int_shortfall, 0, len(resid_weights))
@@ -98,7 +99,7 @@ def smart_round(int_weights, resid_weights, target_sum):
         # indices of the int_shortfall highest resid_weights
         i = np.argsort(resid_weights)[-int_shortfall:]
 
-        # add 1 to the int_weights that we want to round upwards
+        # add 1 to the integer weights that we want to round upwards
         rounded_weights[i] += 1
 
     return rounded_weights

@@ -21,8 +21,9 @@ input_pre_processor:
   - persons
   - geo_cross_walk
   # the following will eventually be created by setup_data_structures step
-  - low_control_data
-  - mid_control_data
+  - taz_control_data
+  - tract_control_data
+  - district_control_data
   - meta_control_data
 
 households:
@@ -43,32 +44,38 @@ geo_cross_walk:
   column_map:
     TRACTCE: TRACT
 
-low_control_data:
-  filename : low_controls.csv
+taz_control_data:
+  filename : taz_controls.csv
 
-mid_control_data:
-  filename : mid_controls.csv
+tract_control_data:
+  filename : tract_controls.csv
+
+district_control_data:
+  filename : district_controls.csv
 
 meta_control_data:
-  filename : meta_controls.csv
+  filename : region_controls.csv
 
 #geographies: [meta, seed, mid, low]
 #seed_geography: seed
-geographies: [DISTRICT, PUMA, TRACT, TAZ]
+geographies: [REGION, PUMA, DISTRICT, TRACT, TAZ]
 seed_geography: PUMA
 crosswalk_data_table: geo_cross_walk
 
 geography_settings:
-  DISTRICT:
+  REGION:
     control_data_table: meta_control_data
-    id_column: DISTRICT
+    id_column: REGION
   PUMA:
     id_column: PUMA
+  DISTRICT:
+    control_data_table: district_control_data
+    id_column: DISTRICT
   TRACT:
-    control_data_table: mid_control_data
+    control_data_table: tract_control_data
     id_column: TRACT
   TAZ:
-    control_data_table: low_control_data
+    control_data_table: taz_control_data
     id_column: TAZ
 
 
@@ -79,11 +86,12 @@ models:
   - meta_control_factoring
   - final_seed_balancing
   - integerize_final_seed_weights
+  - sub_balancing.geography = DISTRICT
   - sub_balancing.geography = TRACT
   - sub_balancing.geography=TAZ
-  # expand household and person records with final weights
-  # to one household and one person record per weight with unique IDs
-  # - expand_population
-  - summarize
-  # write the household and person files to CSV files
+#  # expand household and person records with final weights
+#  # to one household and one person record per weight with unique IDs
+#  # - expand_population
+#  - summarize
+#  # write the household and person files to CSV files
   - write_results

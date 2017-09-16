@@ -9,13 +9,21 @@ from populationsim import steps
 
 from activitysim.core import tracing
 from activitysim.core import pipeline
+from activitysim.core.config import handle_standard_args
 from activitysim.core.tracing import print_elapsed_time
+
 from populationsim.util import setting
+
+
+# Add (and handle) 'standard' activitysim arguments:
+#     --config : specify path to config_dir
+#     --output : specify path to output_dir
+#     --data   : specify path to data_dir
+handle_standard_args()
 
 tracing.config_logger()
 
 t0 = print_elapsed_time()
-
 
 logger = logging.getLogger('populationsim')
 
@@ -37,27 +45,15 @@ logger.info("control_file_name: %s"
             % setting('control_file_name'))
 
 
-_MODELS = [
-    'input_pre_processor',
-    'setup_data_structures',
-    'initial_seed_balancing',
-    'meta_control_factoring',
-    'final_seed_balancing',
-    'integerize_final_seed_weights',
-    'sub_balancing',
-    'low_balancing',
-    'expand_population',
-    'summarize',
-    'write_results'
-]
+MODELS = setting('models')
 
 # If you provide a resume_after argument to pipeline.run
 # the pipeline manager will attempt to load checkpointed tables from the checkpoint store
 # and resume pipeline processing on the next submodel step after the specified checkpoint
 resume_after = None
-# resume_after = 'sub_balancing'
+#resume_after = 'sub_balancing.geography=TRACT'
 
-pipeline.run(models=_MODELS, resume_after=resume_after)
+pipeline.run(models=MODELS, resume_after=resume_after)
 
 
 # tables will no longer be available after pipeline is closed

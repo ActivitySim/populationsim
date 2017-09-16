@@ -48,6 +48,7 @@ class ListBalancer(object):
         self.master_control_index = master_control_index
 
         assert len(self.incidence_table.columns) == len(self.control_totals)
+        assert len(self.incidence_table.columns) == len(self.control_importance_weights)
 
     def balance(self):
 
@@ -72,8 +73,10 @@ class ListBalancer(object):
         weights_initial = np.asanyarray(self.initial_weights).astype(np.float64)
         weights_lower_bound = np.asanyarray(self.lb_weights).astype(np.float64)
         weights_upper_bound = np.asanyarray(self.ub_weights).astype(np.float64)
-        controls_constraint = np.maximum(self.control_totals, MIN_CONTROL_VALUE)
-        controls_importance = np.maximum(self.control_importance_weights, MIN_IMPORTANCE)
+        controls_constraint = \
+            np.maximum(np.asanyarray(self.control_totals), MIN_CONTROL_VALUE)
+        controls_importance = \
+            np.maximum(np.asanyarray(self.control_importance_weights), MIN_IMPORTANCE)
 
         # balance
         weights_final, relaxation_factors, status = np_balancer(

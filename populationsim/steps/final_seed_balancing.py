@@ -8,7 +8,8 @@ import pandas as pd
 
 from ..balancer import do_seed_balancing
 from helper import get_control_table
-
+from helper import weight_table_name
+from helper import get_weight_table
 
 logger = logging.getLogger(__name__)
 
@@ -22,12 +23,9 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
     seed_geography = settings.get('seed_geography')
 
-    seed_controls_df = get_control_table(seed_geography)
-
     # we use all control_spec rows, so no need to filter on geography as for initial_seed_balancing
-
-    # FIXME - ensure columns are in right order for orca-extended table
-    seed_controls_df = seed_controls_df[control_spec.target]
+    seed_controls_df = get_control_table(seed_geography)
+    assert (seed_controls_df.columns == control_spec.target).all()
 
     # determine master_control_index if specified in settings
     total_hh_control_col = settings.get('total_hh_control')
@@ -63,4 +61,4 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     # bulk concat all seed level results
     final_seed_weights = pd.concat(weight_list)
 
-    orca.add_column('incidence_table', 'final_seed_weight', final_seed_weights)
+    orca.add_column(weight_table_name(seed_geography), 'balanced_weight', final_seed_weights)
