@@ -1,5 +1,6 @@
 import os
 
+import pandas as pd
 import orca
 
 from activitysim.core import inject_defaults
@@ -31,13 +32,17 @@ def test_full_run1():
         'meta_control_factoring',
         'final_seed_balancing',
         'integerize_final_seed_weights',
-        'sub_balancing',
-        'low_balancing',
+        'sub_balancing.geography = mid',
+        'sub_balancing.geography=low',
         'expand_population',
-        'summarize'
+        'summarize',
+        'write_results'
     ]
 
     pipeline.run(models=_MODELS, resume_after=None)
+
+    assert isinstance(pipeline.get_table('expanded_household_ids'), pd.DataFrame)
+    assert isinstance(pipeline.get_table('meta_1_summary'), pd.DataFrame)
 
     # tables will no longer be available after pipeline is closed
     pipeline.close()

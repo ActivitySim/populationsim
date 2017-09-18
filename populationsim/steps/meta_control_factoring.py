@@ -59,8 +59,7 @@ def meta_control_factoring(settings, control_spec, incidence_table):
     meta_control_targets = meta_controls_spec['target']
 
     # weights of meta targets at hh (incidence table) level
-    household_id_col = setting('household_id_col')
-    seed_weights_df = get_weight_table(seed_geography).set_index(household_id_col)
+    seed_weights_df = get_weight_table(seed_geography)
 
     hh_level_weights = incidence_df[[seed_geography, meta_geography]].copy()
     for target in meta_control_targets:
@@ -94,6 +93,7 @@ def meta_control_factoring(settings, control_spec, incidence_table):
         scaling_factor = factored_seed_weights[meta_geography].map(meta_factors[target])
         # scale the seed_level_meta_controls by meta_level scaling_factor
         seed_level_meta_controls[target] = factored_seed_weights[target] * scaling_factor
+        print "target", target
         # FIXME - why round scaled factored seed_weights to int prior to final seed balancing?
         seed_level_meta_controls[target] = seed_level_meta_controls[target].round().astype(int)
     dump_table("seed_level_meta_controls", seed_level_meta_controls)

@@ -135,7 +135,7 @@ def summarize(crosswalk, incidence_table, control_spec):
     hh_weights_summary = pd.DataFrame(index=incidence_df.index)
 
     # add seed level summaries
-    seed_weights_df = get_weight_table(seed_geography).set_index(household_id_col)
+    seed_weights_df = get_weight_table(seed_geography)
     hh_weights_summary['%s_balanced_weight' % seed_geography] = seed_weights_df['balanced_weight']
     hh_weights_summary['%s_integer_weight' % seed_geography] = seed_weights_df['integer_weight']
 

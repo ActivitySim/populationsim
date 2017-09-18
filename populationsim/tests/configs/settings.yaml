@@ -2,6 +2,8 @@
 INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: True
 GROUP_BY_INCIDENCE_SIGNATURE: False
+USE_SIMUL_INTEGERIZER: False
+USE_CVXPY: False
 
 control_file_name: controls.csv
 
@@ -12,11 +14,11 @@ total_hh_control: num_hh
 max_expansion_factor: 5
 
 # if output_tables is commented out, then all tables will be output EXCEPT skip_output_tables
-output_tables:
-  - expanded_household_ids
-  - REGION_1_summary
-  - TRACT_summary
-  - TAZ_summary
+#output_tables:
+#  - expanded_household_ids
+#  - meta_1_summary
+#  - mid_summary
+#  - low_summary
 
 # list of tables to skip if output_tables not specified
 skip_output_tables:

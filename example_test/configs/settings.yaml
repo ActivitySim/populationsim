@@ -52,8 +52,7 @@ mid_control_data:
 meta_control_data:
   filename : meta_controls.csv
 
-#geographies: [meta, seed, mid, low]
-#seed_geography: seed
+
 geographies: [DISTRICT, PUMA, TRACT, TAZ]
 seed_geography: PUMA
 crosswalk_data_table: geo_cross_walk
@@ -83,7 +82,7 @@ models:
   - sub_balancing.geography=TAZ
   # expand household and person records with final weights
   # to one household and one person record per weight with unique IDs
-  # - expand_population
+  - expand_population
   - summarize
   # write the household and person files to CSV files
   - write_results

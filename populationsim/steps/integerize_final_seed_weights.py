@@ -27,8 +27,7 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
     seed_geography = settings.get('seed_geography')
     seed_controls_df = get_control_table(seed_geography)
 
-    household_id_col = setting('household_id_col')
-    seed_weights_df = get_weight_table(seed_geography).set_index(household_id_col)
+    seed_weights_df = get_weight_table(seed_geography)
 
     # FIXME - I assume we want to integerize using meta controls too?
     control_cols = control_spec.target

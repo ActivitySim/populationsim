@@ -316,7 +316,8 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table, geography)
 
             # add higher level geography id columns to facilitate summaries
             parent_geography_ids = \
-                crosswalk_df.loc[crosswalk_df[parent_geography] == parent_id, parent_geographies].max(axis=0)
+                crosswalk_df.loc[crosswalk_df[parent_geography] == parent_id, parent_geographies]\
+                .max(axis=0)
             for z in parent_geography_ids.index:
                 zone_weights_df[z] = parent_geography_ids[z]
 

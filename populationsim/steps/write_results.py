@@ -21,6 +21,8 @@ def write_results(output_dir):
     if output_tables is None:
         output_tables = pipeline.checkpointed_tables()
 
+    print "\npipeline.checkpointed_tables()\n", pipeline.checkpointed_tables()
+
     skip_output_tables = setting('skip_output_tables')
     if skip_output_tables is None:
         skip_output_tables = []

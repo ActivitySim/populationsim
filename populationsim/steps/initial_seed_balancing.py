@@ -5,6 +5,8 @@ import logging
 import orca
 import pandas as pd
 
+from populationsim.util import setting
+
 from ..balancer import do_seed_balancing
 
 from helper import get_control_table
@@ -64,7 +66,10 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     weights = pd.concat(weight_list)
 
     # build canonical weights table
-    # reset_index to get hh_id as column, not index
-    seed_weights_df = incidence_df[[seed_geography]].reset_index()
+    seed_weights_df = incidence_df[[seed_geography]]
     seed_weights_df['preliminary_balanced_weight'] = weights
+
+    # copy household_id_col index to named column
+    seed_weights_df[setting('household_id_col')] = seed_weights_df.index
+
     orca.add_table(weight_table_name(seed_geography), seed_weights_df)
