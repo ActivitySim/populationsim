@@ -11,6 +11,15 @@ from ..integerizer import do_integerizing
 
 def test_integerizer():
 
+    configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
+    orca.add_injectable("configs_dir", configs_dir)
+
+    # data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    # orca.add_injectable("data_dir", data_dir)
+    #
+    # output_dir = os.path.join(os.path.dirname(__file__), 'output')
+    # orca.add_injectable("output_dir", output_dir)
+
     # rows are elements for which factors are calculated, columns are constraints to be satisfied
     incidence_table = pd.DataFrame({
         'num_hh': [1, 1, 1, 1, 1, 1, 1, 1],

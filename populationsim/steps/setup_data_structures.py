@@ -269,7 +269,7 @@ def setup_data_structures(settings, configs_dir, households, persons):
 
         # create table mapping household_groups to households and their sample_weights
         # explicitly provide hh_id as a column to make it easier for use when expanding population
-        household_groups = hh_incidence_table[['group_id', 'sample_weight']]
+        household_groups = hh_incidence_table[['group_id', 'sample_weight']].copy()
         household_groups[household_id_col] = household_groups.index.astype(int)
         orca.add_table('household_groups', household_groups)
 

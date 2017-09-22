@@ -78,20 +78,3 @@ geography_settings:
     control_data_table: taz_control_data
     id_column: TAZ
 
-
-models:
-  - input_pre_processor
-  - setup_data_structures
-  - initial_seed_balancing
-  - meta_control_factoring
-  - final_seed_balancing
-  - integerize_final_seed_weights
-  - sub_balancing.geography = DISTRICT
-  - sub_balancing.geography = TRACT
-  - sub_balancing.geography=TAZ
-  # expand household and person records with final weights
-  # to one household and one person record per weight with unique IDs
-  - expand_population
-  - summarize
-  # write the household and person files to CSV files
-  - write_results

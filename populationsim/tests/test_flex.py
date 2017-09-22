@@ -16,12 +16,12 @@ def teardown_function(func):
     inject.reinject_decorated_tables()
 
 
-def test_full_run1():
+def test_full_run2():
 
-    configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
+    configs_dir = os.path.join(os.path.dirname(__file__), 'configs2')
     orca.add_injectable("configs_dir", configs_dir)
 
-    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    data_dir = os.path.join(os.path.dirname(__file__), 'data2')
     orca.add_injectable("data_dir", data_dir)
 
     output_dir = os.path.join(os.path.dirname(__file__), 'output')
@@ -38,8 +38,9 @@ def test_full_run1():
         'meta_control_factoring',
         'final_seed_balancing',
         'integerize_final_seed_weights',
-        'sub_balancing.geography = mid',
-        'sub_balancing.geography=low',
+        'sub_balancing.geography = DISTRICT',
+        'sub_balancing.geography = TRACT',
+        'sub_balancing.geography=TAZ',
         'expand_population',
         'summarize',
         'write_results'
@@ -48,7 +49,7 @@ def test_full_run1():
     pipeline.run(models=_MODELS, resume_after=None)
 
     assert isinstance(pipeline.get_table('expanded_household_ids'), pd.DataFrame)
-    assert isinstance(pipeline.get_table('meta_1_summary'), pd.DataFrame)
+    assert isinstance(pipeline.get_table('REGION_1_summary'), pd.DataFrame)
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

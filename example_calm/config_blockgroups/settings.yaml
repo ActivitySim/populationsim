@@ -2,8 +2,8 @@
 INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
 GROUP_BY_INCIDENCE_SIGNATURE: True
-USE_SIMUL_INTEGERIZER: False
-USE_CVXPY: False
+USE_SIMUL_INTEGERIZER: True
+USE_CVXPY: True
 
 #control_file_name: controls_original.csv
 control_file_name: controls.csv
@@ -27,6 +27,7 @@ skip_output_tables:
 
 trace_geography:
   TAZ: 100
+  BLOCKGROUP: 51
   TRACT: 10200
 
 household_weight_col: WGTP
@@ -41,6 +42,7 @@ input_pre_processor:
   - geo_cross_walk
   # the following will eventually be created by setup_data_structures step
   - taz_control_data
+  - blockgroup_control_data
   - tract_control_data
   - meta_control_data
 
@@ -61,9 +63,19 @@ geo_cross_walk:
   filename : geo_cross_walk.csv
   column_map:
     TRACTCE: TRACT
+    BLKGRP: BLOCKGROUP
 
 taz_control_data:
   filename : control_totals_taz.csv
+
+blockgroup_control_data:
+  filename : control_totals_blockgroup.csv
+  column_map:
+    BLKGRP: BLOCKGROUP
+    HHI1BASE: HHSIZE1
+    HHI2BASE: HHSIZE2
+    HHI3BASE: HHSIZE3
+    HHI4BASE: HHSIZE4
 
 tract_control_data:
   filename : control_totals_tract.csv
@@ -72,7 +84,7 @@ meta_control_data:
   #filename : control_totals_meta.csv
   filename : scaled_control_totals_meta.csv
 
-geographies: [REGION, PUMA, TRACT, TAZ]
+geographies: [REGION, PUMA, TRACT, BLOCKGROUP, TAZ]
 seed_geography: PUMA
 crosswalk_data_table: geo_cross_walk
 
@@ -86,6 +98,9 @@ geography_settings:
   TRACT:
     control_data_table: tract_control_data
     id_column: TRACT
+  BLOCKGROUP:
+    control_data_table: blockgroup_control_data
+    id_column: BLOCKGROUP
   TAZ:
     control_data_table: taz_control_data
     id_column: TAZ
@@ -98,6 +113,7 @@ models:
   - final_seed_balancing
   - integerize_final_seed_weights
   - sub_balancing.geography=TRACT
+  - sub_balancing.geography=BLOCKGROUP
   - sub_balancing.geography=TAZ
   # expand household and person records with final weights
   # to one household and one person record per weight with unique IDs

@@ -57,6 +57,6 @@ pipeline.run(models=MODELS, resume_after=resume_after)
 
 
 # tables will no longer be available after pipeline is closed
-pipeline.close()
+pipeline.close_pipeline()
 
 t0 = ("all models", t0)

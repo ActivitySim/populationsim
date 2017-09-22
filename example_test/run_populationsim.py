@@ -57,7 +57,7 @@ if True:
         pipeline.get_table(table_name).to_csv(file_path, index=True)
 
 # tables will no longer be available after pipeline is closed
-pipeline.close()
+pipeline.close_pipeline()
 
 # write checkpoints (this can be called whether or not pipeline is open)
 file_path = os.path.join(orca.get_injectable("output_dir"), "checkpoints.csv")
