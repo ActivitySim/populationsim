@@ -1,14 +1,13 @@
 import os
 import logging
 
-import orca
-
-
 from activitysim.core import inject_defaults
 from populationsim import steps
 
 from activitysim.core import tracing
 from activitysim.core import pipeline
+from activitysim.core import inject
+
 from activitysim.core.config import handle_standard_args
 from activitysim.core.tracing import print_elapsed_time
 
@@ -19,6 +18,8 @@ from populationsim.util import setting
 #     --config : specify path to config_dir
 #     --output : specify path to output_dir
 #     --data   : specify path to data_dir
+#     --models : specify run_list name
+#     --resume : resume_after
 handle_standard_args()
 
 tracing.config_logger()
@@ -37,23 +38,27 @@ logger.info("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: %s"
             % setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS'))
 logger.info("SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: %s"
             % setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS'))
-logger.info("LOW_BALANCE_WITH_FLOAT_SEED_WEIGHTS: %s"
-            % setting('LOW_BALANCE_WITH_FLOAT_SEED_WEIGHTS'))
 logger.info("meta_control_data: %s"
             % setting('meta_control_data'))
 logger.info("control_file_name: %s"
             % setting('control_file_name'))
 
 
-MODELS = setting('models')
+# get the run list (name was possibly specified on the command line)
+run_list_name = inject.get_injectable('run_list_name', 'run_list')
 
-# If you provide a resume_after argument to pipeline.run
-# the pipeline manager will attempt to load checkpointed tables from the checkpoint store
-# and resume pipeline processing on the next submodel step after the specified checkpoint
-resume_after = None
-# resume_after = 'sub_balancing.geography=TRACT'
+# run list from settings file is dict with list of 'steps' and optional 'resume_after'
+run_list = setting(run_list_name)
+assert 'steps' in run_list, "Did not find steps in run_list"
 
-pipeline.run(models=MODELS, resume_after=resume_after)
+# list of steps and possible resume_after in run_list
+steps = run_list.get('steps')
+resume_after = run_list.get('resume_after', None)
+
+if resume_after:
+    print "resume_after", resume_after
+
+pipeline.run(models=steps, resume_after=resume_after)
 
 
 # tables will no longer be available after pipeline is closed

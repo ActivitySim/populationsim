@@ -4,9 +4,9 @@
 import logging
 import os
 
-import orca
 import pandas as pd
-import numpy as np
+
+from activitysim.core import inject
 
 from ..integerizer import do_integerizing
 from helper import get_control_table
@@ -17,7 +17,7 @@ from populationsim.util import setting
 logger = logging.getLogger(__name__)
 
 
-@orca.step()
+@inject.step()
 def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_table):
 
     crosswalk_df = crosswalk.to_frame()
@@ -38,6 +38,7 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
 
     # run balancer for each seed geography
     weight_list = []
+
     seed_ids = crosswalk_df[seed_geography].unique()
     for seed_id in seed_ids:
 
@@ -65,4 +66,4 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
     # bulk concat all seed level results
     integer_seed_weights = pd.concat(weight_list)
 
-    orca.add_column(weight_table_name(seed_geography), 'integer_weight', integer_seed_weights)
+    inject.add_column(weight_table_name(seed_geography), 'integer_weight', integer_seed_weights)

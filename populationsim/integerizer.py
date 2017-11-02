@@ -453,7 +453,8 @@ def do_integerizing(
         as defined in integerizer.STATUS_TEXT and STATUS_SUCCESS
     """
 
-    assert len(control_spec.index) == len(incidence_table.columns)
+    # incidence table should only have control columns
+    incidence_table = incidence_table[control_spec.target]
 
     if total_hh_control_col not in incidence_table.columns:
         raise RuntimeError("total_hh_control column '%s' not found in incidence table"
@@ -540,6 +541,6 @@ def do_integerizing(
     elif status != 'OPTIMAL':
         logger.warn("Integerizer status non-optimal for %s status %s." % (trace_label, status))
 
-    integerized_weights = pd.Series(0.0, index=zero_weight_rows.index)
+    integerized_weights = pd.Series(0, index=zero_weight_rows.index)
     integerized_weights.update(integerizer.weights['integerized_weight'])
     return integerized_weights, status

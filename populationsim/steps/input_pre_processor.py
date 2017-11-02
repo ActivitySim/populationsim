@@ -4,11 +4,11 @@
 import logging
 import os
 
-import orca
 import pandas as pd
 import numpy as np
 
-from activitysim.core import assign
+from activitysim.core import inject
+from activitysim.core import pipeline
 
 from populationsim.util import data_dir_from_settings
 from populationsim.util import setting
@@ -17,31 +17,28 @@ from populationsim.util import setting
 logger = logging.getLogger(__name__)
 
 
-@orca.step()
+@inject.step()
 def input_pre_processor():
+
+    # alternate table list name may have been provided as a model argument
+    table_list_name = inject.get_step_arg('table_list', default='input_table_list')
+    table_list = setting(table_list_name)
+    assert table_list is not None, "table list '%s' not in settings." % table_list_name
 
     data_dir = data_dir_from_settings()
 
-    table_list = setting('input_pre_processor')
+    for table_info in table_list:
 
-    if not table_list:
-        logger.warn('No input_pre_processor table list in settings.')
-        return
+        tablename = table_info['tablename']
 
-    for table in table_list:
-        logger.info("input_pre_processor processing %s" % table)
-
-        table_info = setting(table)
-        if not table_info:
-            logger.warn('No table info for %s in settings. Skipping table' % (table,))
-            continue
+        logger.info("input_pre_processor processing %s" % tablename)
 
         # read the csv file
         data_filename = table_info.get('filename', None)
         data_file_path = os.path.join(data_dir, data_filename)
         if not os.path.exists(data_file_path):
             raise RuntimeError("input_pre_processor %s - input file not found: %s"
-                               % (table, data_file_path, ))
+                               % (tablename, data_file_path, ))
 
         logger.info("Reading csv file %s" % data_file_path)
         df = pd.read_csv(data_file_path, comment='#')
@@ -60,26 +57,26 @@ def input_pre_processor():
                 df.index.names = [index_col]
 
         # read expression file
-        expression_filename = table_info.get('expression_filename', None)
-        if expression_filename:
-            assert False
-            expression_file_path = os.path.join(configs_dir, expression_filename)
-            if not os.path.exists(expression_file_path):
-                raise RuntimeError("input_pre_processor %s - expression file not found: %s"
-                                   % (table, expression_file_path, ))
-            spec = assign.read_assignment_spec(expression_file_path)
+        # expression_filename = table_info.get('expression_filename', None)
+        # if expression_filename:
+        #     assert False
+        #     expression_file_path = os.path.join(configs_dir, expression_filename)
+        #     if not os.path.exists(expression_file_path):
+        #         raise RuntimeError("input_pre_processor %s - expression file not found: %s"
+        #                            % (table, expression_file_path, ))
+        #     spec = assign.read_assignment_spec(expression_file_path)
+        #
+        #     df_alias = table_info.get('df_alias', table)
+        #
+        #     locals_d = {}
+        #
+        #     results, trace_results, trace_assigned_locals \
+        #         = assign.assign_variables(spec, df, locals_d, df_alias=df_alias)
+        #     # for column in results.columns:
+        #     #     orca.add_column(table, column, results[column])
+        #
+        #     df = pd.concat([df, results], axis=1)
 
-            df_alias = table_info.get('df_alias', table)
+        logger.info("adding table %s" % tablename)
 
-            locals_d = {}
-
-            results, trace_results, trace_assigned_locals \
-                = assign.assign_variables(spec, df, locals_d, df_alias=df_alias)
-            # for column in results.columns:
-            #     orca.add_column(table, column, results[column])
-
-            df = pd.concat([df, results], axis=1)
-
-        logger.info("adding table %s" % table)
-
-        orca.add_table(table, df)
+        inject.add_table(tablename, df)

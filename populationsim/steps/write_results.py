@@ -2,28 +2,29 @@
 # See full license in LICENSE.txt.
 
 import logging
-
 import os
-import orca
-import pandas as pd
 
 from activitysim.core import pipeline
+from activitysim.core import inject
 
 from populationsim.util import setting
 
 logger = logging.getLogger(__name__)
 
 
-@orca.step()
+@inject.step()
 def write_results(output_dir):
 
     output_tables = setting('output_tables')
     if output_tables is None:
         output_tables = pipeline.checkpointed_tables()
 
+    # explicit list of tables to skip (or [] to skip none)
     skip_output_tables = setting('skip_output_tables')
+
+    # if not specified, skip only the input tables
     if skip_output_tables is None:
-        skip_output_tables = []
+        skip_output_tables = setting('input_table_list')
 
     output_tables = [t for t in output_tables if t not in skip_output_tables]
 
@@ -36,5 +37,5 @@ def write_results(output_dir):
         df.to_csv(file_path, index=write_index)
 
     # # write checkpoints (this can be called whether or not pipeline is open)
-    # file_path = os.path.join(orca.get_injectable("output_dir"), "checkpoints.csv")
+    # file_path = os.path.join(inject.get_injectable("output_dir"), "checkpoints.csv")
     # pipeline.get_checkpoints().to_csv(file_path)

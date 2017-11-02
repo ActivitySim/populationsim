@@ -2,9 +2,9 @@
 # See full license in LICENSE.txt.
 
 import logging
-import orca
 
 from activitysim.core import pipeline
+from activitysim.core import inject
 
 
 def control_table_name(geography):
@@ -13,6 +13,11 @@ def control_table_name(geography):
 
 def get_control_table(geography):
     return pipeline.get_table(control_table_name(geography))
+
+
+def get_control_data_table(geography):
+    control_data_table_name = '%s_control_data' % geography
+    return pipeline.get_table(control_data_table_name)
 
 
 def weight_table_name(geography, sparse=False):
@@ -24,7 +29,7 @@ def weight_table_name(geography, sparse=False):
 
 def get_weight_table(geography, sparse=False):
     name = weight_table_name(geography, sparse)
-    if orca.is_table(name):
-        return pipeline.get_table(name)
-    else:
-        return None
+    weight_table = inject.get_table(name, default=None)
+    if weight_table is not None:
+        weight_table = weight_table.to_frame()
+    return weight_table

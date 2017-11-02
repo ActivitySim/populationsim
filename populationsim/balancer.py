@@ -197,28 +197,25 @@ def np_balancer(
     return weights_final, relaxation_factors, status
 
 
-def do_seed_balancing(seed_geography, seed_control_spec, seed_id,
-                      total_hh_control_col, max_expansion_factor,
-                      incidence_df, seed_controls_df):
-
-    # slice incidence rows for this seed geography
-    incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
-
-    # initial hh weights
-    initial_weights = incidence_df['sample_weight']
+def do_balancing(control_spec,
+                 total_hh_control_col, max_expansion_factor,
+                 incidence_df, control_totals, initial_weights):
 
     # incidence table should only have control columns
-    incidence_df = incidence_df[seed_control_spec.target]
-
-    control_totals = seed_controls_df.loc[seed_id].values
-
-    control_importance_weights = seed_control_spec.importance
+    incidence_df = incidence_df[control_spec.target]
 
     # master_control_index is total_hh_control_col
     if total_hh_control_col not in incidence_df.columns:
         raise RuntimeError("total_hh_control column '%s' not found in incidence table"
                            % total_hh_control_col)
     total_hh_control_index = incidence_df.columns.get_loc(total_hh_control_col)
+
+    # control_totals series rows and incidence_df columns should be aligned
+    assert total_hh_control_index == control_totals.index.get_loc(total_hh_control_col)
+
+    control_totals = control_totals.values
+
+    control_importance_weights = control_spec.importance
 
     lb_weights = 0
     if max_expansion_factor:
@@ -246,5 +243,22 @@ def do_seed_balancing(seed_geography, seed_control_spec, seed_id,
     )
 
     status, weights, controls = balancer.balance()
+
+    return status, weights, controls
+
+
+def do_seed_balancing(seed_geography, seed_control_spec, seed_id,
+                      total_hh_control_col, max_expansion_factor,
+                      incidence_df, seed_controls_df):
+
+    incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
+
+    status, weights, controls = do_balancing(
+        seed_control_spec,
+        total_hh_control_col=total_hh_control_col,
+        max_expansion_factor=max_expansion_factor,
+        incidence_df=incidence_df,
+        control_totals=seed_controls_df.loc[seed_id],
+        initial_weights=incidence_df['sample_weight'])
 
     return status, weights, controls

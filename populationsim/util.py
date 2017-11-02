@@ -2,14 +2,16 @@
 # See full license in LICENSE.txt.
 
 import logging
-import orca
+
+from activitysim.core import inject
+
 
 logger = logging.getLogger(__name__)
 
 
 def setting(key, default=None):
 
-    settings = orca.get_injectable('settings')
+    settings = inject.get_injectable('settings')
 
     return settings.get(key, default)
 
@@ -26,9 +28,9 @@ def data_dir_from_settings():
     data_dir = setting('data_dir', None)
 
     if data_dir:
-        orca.add_injectable('data_dir', data_dir)
+        inject.add_injectable('data_dir', data_dir)
     else:
-        data_dir = orca.get_injectable('data_dir')
+        data_dir = inject.get_injectable('data_dir')
 
     logger.info("data_dir: %s" % data_dir)
     return data_dir

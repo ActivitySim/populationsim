@@ -15,14 +15,12 @@ data_dir: data_calm
 # if output_tables is commented out, then all tables will be output EXCEPT skip_output_tables
 #output_tables:
 #  - expanded_household_ids
-#  - REGION_1_summary
-#  - TRACT_summary
-#  - TAZ_summary
 
 # list of tables to skip if output_tables not specified
-skip_output_tables:
-  - households
-  - persons
+#skip_output_tables:
+#  - households
+#  - persons
+skip_output_tables: []
 
 
 trace_geography:
@@ -34,74 +32,67 @@ household_id_col: hh_id
 total_hh_control: num_hh
 max_expansion_factor: 30
 
-# ordered list
-input_pre_processor:
-  - households
-  - persons
-  - geo_cross_walk
-  # the following will eventually be created by setup_data_structures step
-  - taz_control_data
-  - tract_control_data
-  - meta_control_data
-
-households:
-  filename : seed_households.csv
-  index_col: hh_id
-  column_map:
-    hhnum: hh_id
-
-persons:
-  # expression_filename: seed_persons_expressions.csv
-  filename : seed_persons.csv
-  column_map:
-    hhnum: hh_id
-    SPORDER: per_num
-
-geo_cross_walk:
-  filename : geo_cross_walk.csv
-  column_map:
-    TRACTCE: TRACT
-
-taz_control_data:
-  filename : control_totals_taz.csv
-
-tract_control_data:
-  filename : control_totals_tract.csv
-
-meta_control_data:
-  #filename : control_totals_meta.csv
-  filename : scaled_control_totals_meta.csv
+# input_pre_processor input_table_list
+input_table_list:
+  - tablename: households
+    filename : seed_households.csv
+    index_col: hh_id
+    column_map:
+      SERIALNO: hh_id
+  - tablename: persons
+    # expression_filename: seed_persons_expressions.csv
+    filename : seed_persons.csv
+    column_map:
+      SERIALNO: hh_id
+      SPORDER: per_num
+  - tablename: geo_cross_walk
+    filename : geo_cross_walk.csv
+    column_map:
+      TRACTCE: TRACT
+  - tablename: TAZ_control_data
+    filename : control_totals_taz.csv
+  - tablename: TRACT_control_data
+    filename : control_totals_tract.csv
+  - tablename: REGION_control_data
+    #filename : control_totals_meta.csv
+    filename : scaled_control_totals_meta.csv
 
 geographies: [REGION, PUMA, TRACT, TAZ]
 seed_geography: PUMA
-crosswalk_data_table: geo_cross_walk
 
-geography_settings:
-  REGION:
-    control_data_table: meta_control_data
-    id_column: REGION
-  PUMA:
-    controls_table: seed_controls
-    id_column: PUMA
-  TRACT:
-    control_data_table: tract_control_data
-    id_column: TRACT
-  TAZ:
-    control_data_table: taz_control_data
-    id_column: TAZ
+run_list:
+  steps:
+    - input_pre_processor
+    - setup_data_structures
+    - initial_seed_balancing
+    - meta_control_factoring
+    - final_seed_balancing
+    - integerize_final_seed_weights
+    - sub_balancing.geography=TRACT
+    - sub_balancing.geography=TAZ
+    - expand_population
+    - write_results
+    - summarize
 
-models:
-  - input_pre_processor
-  - setup_data_structures
-  - initial_seed_balancing
-  - meta_control_factoring
-  - final_seed_balancing
-  - integerize_final_seed_weights
-  - sub_balancing.geography=TRACT
-  - sub_balancing.geography=TAZ
-  # expand household and person records with final weights
-  # to one household and one person record per weight with unique IDs
-  - expand_population
-  - summarize
-  # write the household and person files to CSV files
-  - write_results
+  # resume_after: write_results
+
+repop:
+  steps:
+    - input_pre_processor.table_list=repop_input_table_list
+    - repop_setup_data_structures
+    - initial_seed_balancing.final=true
+    - integerize_final_seed_weights.repop
+    - repop_balancing
+    # expand_population options are append or replace
+    - expand_population.repop;append
+    - write_results.repop
+    - summarize.repop
+
+  resume_after: summarize
+
+repop_control_file_name: repop_controls.csv
+
+repop_input_table_list:
+  - taz_control_data:
+    filename : repop_control_totals_taz.csv
+    tablename: TAZ_control_data

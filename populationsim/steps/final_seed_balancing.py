@@ -3,18 +3,20 @@
 
 import logging
 import os
-import orca
 import pandas as pd
 
-from ..balancer import do_seed_balancing
+from activitysim.core import inject
+
+from ..balancer import do_balancing
 from helper import get_control_table
 from helper import weight_table_name
 from helper import get_weight_table
 
+
 logger = logging.getLogger(__name__)
 
 
-@orca.step()
+@inject.step()
 def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
     crosswalk_df = crosswalk.to_frame()
@@ -22,6 +24,17 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     control_spec = control_spec.to_frame()
 
     seed_geography = settings.get('seed_geography')
+    seed_weight_table_name = weight_table_name(seed_geography)
+
+    # if there are no meta controls, then balanced_weight is simply preliminary_balanced_weight
+    geographies = settings['geographies']
+    if not (control_spec.geography == geographies[0]).any():
+        logger.warning("no need for final_seed_balancing because no meta controls")
+        seed_weights_df = get_weight_table(seed_geography)
+        if 'balanced_weight' not in seed_weights_df:
+            final_seed_weights = seed_weights_df['preliminary_balanced_weight']
+            inject.add_column(seed_weight_table_name, 'balanced_weight', final_seed_weights)
+        return
 
     # we use all control_spec rows, so no need to filter on geography as for initial_seed_balancing
     seed_controls_df = get_control_table(seed_geography)
@@ -36,19 +49,21 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
     # run balancer for each seed geography
     weight_list = []
+
     seed_ids = crosswalk_df[seed_geography].unique()
     for seed_id in seed_ids:
 
         logger.info("initial_seed_balancing seed id %s" % seed_id)
 
-        status, weights_df, controls_df = do_seed_balancing(
-            seed_geography=seed_geography,
-            seed_control_spec=control_spec,
-            seed_id=seed_id,
+        seed_incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
+
+        status, weights_df, controls_df = do_balancing(
+            control_spec=control_spec,
             total_hh_control_col=total_hh_control_col,
             max_expansion_factor=max_expansion_factor,
-            incidence_df=incidence_df,
-            seed_controls_df=seed_controls_df)
+            incidence_df=seed_incidence_df,
+            control_totals=seed_controls_df.loc[seed_id],
+            initial_weights=seed_incidence_df['sample_weight'])
 
         logger.info("seed_balancer status: %s" % status)
         if not status['converged']:
@@ -61,4 +76,4 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     # bulk concat all seed level results
     final_seed_weights = pd.concat(weight_list)
 
-    orca.add_column(weight_table_name(seed_geography), 'balanced_weight', final_seed_weights)
+    inject.add_column(seed_weight_table_name, 'balanced_weight', final_seed_weights)

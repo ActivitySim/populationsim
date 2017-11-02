@@ -3,11 +3,11 @@
 
 import logging
 
-import orca
 import pandas as pd
 import numpy as np
 
 from activitysim.core import pipeline
+from activitysim.core import inject
 
 from populationsim.util import setting
 from helper import get_control_table
@@ -18,7 +18,7 @@ from helper import weight_table_name
 logger = logging.getLogger(__name__)
 
 
-@orca.step()
+@inject.step()
 def expand_population():
 
     geographies = setting('geographies')
@@ -71,4 +71,21 @@ def expand_population():
         del expanded_weights['group_id']
         del expanded_weights['integer_weight']
 
-    orca.add_table('expanded_household_ids', expanded_weights)
+    append = inject.get_step_arg('append', False)
+    replace = inject.get_step_arg('replace', False)
+    assert not (append and replace), "can't specify both append and replace for expand_population"
+
+    print "\nexpanded_weights taz_hh_counts\n", expanded_weights.groupby('TAZ').size()
+
+    if append or replace:
+        t = inject.get_table('expanded_household_ids').to_frame()
+        print "\nprior taz_hh_counts\n", t.groupby('TAZ').size()
+        if replace:
+            # FIXME - should really get from crosswalk table?
+            low_ids_to_replace = expanded_weights[low_geography].unique()
+            t = t[~t[low_geography].isin(low_ids_to_replace)]
+        expanded_weights = pd.concat([t, expanded_weights], ignore_index=True)
+
+    print "\nexpanded_weights taz_hh_counts\n", expanded_weights.groupby('TAZ').size()
+
+    inject.add_table('expanded_household_ids', expanded_weights)

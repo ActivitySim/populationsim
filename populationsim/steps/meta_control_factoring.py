@@ -4,15 +4,14 @@
 import logging
 import os
 
-import orca
 import pandas as pd
 
 from activitysim.core import pipeline
+from activitysim.core import inject
 
 from helper import get_control_table
 from helper import control_table_name
 from helper import get_weight_table
-from populationsim.util import setting
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +23,7 @@ def dump_table(table_name, table):
     print "\n%s\n" % table_name, table
 
 
-@orca.step()
+@inject.step()
 def meta_control_factoring(settings, control_spec, incidence_table):
     """
     Apply simple factoring to summed household fractional weights based on original
@@ -53,18 +52,34 @@ def meta_control_factoring(settings, control_spec, incidence_table):
     seed_geography = settings.get('seed_geography')
     meta_geography = geographies[0]
 
-    meta_controls_df = get_control_table(meta_geography)
+    # - if there are no meta controls, then we don't have to do anything
+    if not (control_spec.geography == meta_geography).any():
+        logger.warn("meta_control_factoring: no meta targets so nothing to do")
+        return
 
+    meta_controls_df = get_control_table(meta_geography)
+    dump_table("meta_controls_df", meta_controls_df)
+
+    # slice control_spec to select only the rows for meta level controls
     meta_controls_spec = control_spec[control_spec.geography == meta_geography]
     meta_control_targets = meta_controls_spec['target']
 
-    # weights of meta targets at hh (incidence table) level
-    seed_weights_df = get_weight_table(seed_geography)
+    logger.info("meta_control_factoring %s targets" % len(meta_control_targets))
 
+    dump_table("meta_controls_spec", meta_controls_spec)
+    dump_table("meta_control_targets", meta_control_targets)
+
+    # seed level weights of all households (rows aligned with incidence_df rows)
+    seed_weights_df = get_weight_table(seed_geography)
+    assert len(incidence_df.index) == len(seed_weights_df.index)
+
+    # expand person weights by incidence (incidnece will simply be 1 for household targets)
     hh_level_weights = incidence_df[[seed_geography, meta_geography]].copy()
     for target in meta_control_targets:
         hh_level_weights[target] = \
             incidence_df[target] * seed_weights_df['preliminary_balanced_weight']
+
+    dump_table("hh_level_weights", hh_level_weights)
 
     # weights of meta targets at seed level
     factored_seed_weights = \
@@ -93,7 +108,6 @@ def meta_control_factoring(settings, control_spec, incidence_table):
         scaling_factor = factored_seed_weights[meta_geography].map(meta_factors[target])
         # scale the seed_level_meta_controls by meta_level scaling_factor
         seed_level_meta_controls[target] = factored_seed_weights[target] * scaling_factor
-        print "target", target
         # FIXME - why round scaled factored seed_weights to int prior to final seed balancing?
         seed_level_meta_controls[target] = seed_level_meta_controls[target].round().astype(int)
     dump_table("seed_level_meta_controls", seed_level_meta_controls)
@@ -108,5 +122,7 @@ def meta_control_factoring(settings, control_spec, incidence_table):
     # ensure columns are in right order for orca-extended table
     seed_controls_df = seed_controls_df[control_spec.target]
     assert (seed_controls_df.columns == control_spec.target).all()
+
+    dump_table("seed_controls_df", seed_controls_df)
 
     pipeline.replace_table(control_table_name(seed_geography), seed_controls_df)

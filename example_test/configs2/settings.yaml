@@ -1,7 +1,6 @@
 
 INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
-LOW_BALANCE_WITH_FLOAT_SEED_WEIGHTS: True
 GROUP_BY_INCIDENCE_SIGNATURE: True
 USE_SIMUL_INTEGERIZER: True
 USE_CVXPY: True
@@ -15,8 +14,8 @@ household_id_col: hh_id
 total_hh_control: num_hh
 max_expansion_factor: 5
 
-# ordered list
-input_pre_processor:
+# input_pre_processor input_table_list
+input_table_list:
   - households
   - persons
   - geo_cross_walk

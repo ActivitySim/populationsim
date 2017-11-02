@@ -4,10 +4,12 @@
 import logging
 import os
 
-import orca
 import pandas as pd
 
 from ..simul_balancer import SimultaneousListBalancer
+
+from activitysim.core import inject
+from activitysim.core import pipeline
 
 from populationsim.util import setting
 
@@ -252,8 +254,11 @@ def balance_and_integerize(
     return integerized_sub_zone_weights_df
 
 
-@orca.step()
-def sub_balancing(settings, crosswalk, control_spec, incidence_table, geography):
+@inject.step()
+def sub_balancing(settings, crosswalk, control_spec, incidence_table):
+
+    # geography is an injected model step arg
+    geography = inject.get_step_arg('geography')
 
     crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()
@@ -325,12 +330,12 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table, geography)
 
     integer_weights_df = pd.concat(integer_weights_list)
 
-    orca.add_table(weight_table_name(geography),
-                   integer_weights_df)
-    orca.add_table(weight_table_name(geography, sparse=True),
-                   integer_weights_df[integer_weights_df['integer_weight'] > 0])
+    inject.add_table(weight_table_name(geography),
+                     integer_weights_df)
+    inject.add_table(weight_table_name(geography, sparse=True),
+                     integer_weights_df[integer_weights_df['integer_weight'] > 0])
 
     if 'trace_geography' in settings and geography in settings['trace_geography']:
         trace_geography_id = settings.get('trace_geography')[geography]
         df = integer_weights_df[integer_weights_df[geography] == trace_geography_id]
-        orca.add_table('trace_%s' % weight_table_name(geography), df)
+        inject.add_table('trace_%s' % weight_table_name(geography), df)
