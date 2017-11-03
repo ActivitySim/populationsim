@@ -41,21 +41,6 @@ input_table_list:
     filename : region_controls.csv
 
 
-# output_tables can specify either a list of output tables to include or to skip
-# if neither is specified, then all checkpointed tables will be written
-#
-#output_tables:
-#  action: skip
-#  tables:
-#    - households
-#    - persons
-#
-#output_tables:
-#  action: include
-#  tables:
-#    - expanded_household_ids
-
-
 run_list:
   steps:
     - input_pre_processor
@@ -66,13 +51,14 @@ run_list:
     - integerize_final_seed_weights
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
-    - expand_population
+    - expand_households
+    - synthesize_population
     - write_results
     - summarize
 
   # resume_after: write_results
 
-# expand_population options are append or replace
+# expand_households options are append or replace
 repop:
   steps:
     - input_pre_processor.table_list=repop_input_table_list
@@ -80,7 +66,7 @@ repop:
     - initial_seed_balancing.final=true
     - integerize_final_seed_weights.repop
     - repop_balancing
-    - expand_population.repop;replace=True
+    - expand_households.repop;replace=True
     - write_results.repop
     - summarize.repop
 
@@ -92,3 +78,32 @@ repop_input_table_list:
   - taz_control_data:
     filename : repop_taz_controls.csv
     tablename: TAZ_control_data
+
+
+
+# output_tables can specify either a list of output tables to include or to skip
+# if neither is specified, then all checkpointed tables will be written
+#
+#output_tables:
+#  action: skip
+#  tables:
+#    - households
+#    - persons
+#
+output_tables:
+  action: include
+  tables:
+    - expanded_household_ids
+    - synthetic_households
+    - synthetic_persons
+
+synthetic_tables:
+  households:
+    action: skip
+    columns:
+      - expanded_household_ids
+  persons:
+    action: include
+    columns:
+      - OSUTAG
+      - OCCP

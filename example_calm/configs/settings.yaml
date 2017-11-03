@@ -64,6 +64,7 @@ input_table_list:
 #  tables:
 #    - expanded_household_ids
 
+
 run_list:
   steps:
     - input_pre_processor
@@ -74,8 +75,8 @@ run_list:
     - integerize_final_seed_weights
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
-    - expand_population
-    - write_results
+    - expand_households
+    - write_tables
     - summarize
 
   # resume_after: write_results
@@ -87,9 +88,9 @@ repop:
     - initial_seed_balancing.final=true
     - integerize_final_seed_weights.repop
     - repop_balancing
-    # expand_population options are append or replace
-    - expand_population.repop;append
-    - write_results.repop
+    # expand_households options are append or replace
+    - expand_households.repop;append
+    - write_tables.repop
     - summarize.repop
 
   resume_after: summarize

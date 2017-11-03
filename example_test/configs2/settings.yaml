@@ -54,13 +54,13 @@ run_list:
     - sub_balancing.geography=DISTRICT
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
-    - expand_population
+    - expand_households
     - write_results
     - summarize
 
   # resume_after: write_results
 
-# expand_population options are append or replace
+# expand_households options are append or replace
 repop:
   steps:
     - input_pre_processor.table_list=repop_input_table_list
@@ -68,7 +68,7 @@ repop:
     - initial_seed_balancing.final=true
     - integerize_final_seed_weights.repop
     - repop_balancing
-    - expand_population.repop;replace=True
+    - expand_households.repop;replace=True
     - write_results.repop
     - summarize.repop
 

@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 @inject.step()
-def expand_population():
+def expand_households():
 
     geographies = setting('geographies')
     household_id_col = setting('household_id_col')
@@ -59,6 +59,7 @@ def expand_population():
             probs = list(df.sample_weight / df.sample_weight.sum())
             group_hh_probs[group_id] = [hh_ids, probs]
 
+        # FIXME - should sample without replacement?
         # now make a hh_id choice for each group_id in expanded_weights
         def chooser(group_id):
             hh_ids = group_hh_probs[group_id][HH_IDS]
@@ -73,7 +74,7 @@ def expand_population():
 
     append = inject.get_step_arg('append', False)
     replace = inject.get_step_arg('replace', False)
-    assert not (append and replace), "can't specify both append and replace for expand_population"
+    assert not (append and replace), "can't specify both append and replace for expand_households"
 
     if append or replace:
         t = inject.get_table('expanded_household_ids').to_frame()

@@ -5,21 +5,6 @@ GROUP_BY_INCIDENCE_SIGNATURE: True
 USE_SIMUL_INTEGERIZER: False
 USE_CVXPY: False
 
-#control_file_name: controls.csv
-#data_dir: data
-
-
-# if output_tables is commented out, then all tables will be output EXCEPT skip_output_tables
-#output_tables:
-#  - expanded_household_ids
-
-# list of tables to skip if output_tables not specified
-#skip_output_tables:
-#  - households
-#  - persons
-#skip_output_tables: []
-
-
 household_weight_col: WGTP
 household_id_col: hh_id
 total_hh_control: num_hh
@@ -53,39 +38,7 @@ input_table_list:
 geographies: [DISTRICT, PUMA, TRACT, TAZ]
 seed_geography: PUMA
 
-run_list:
-  steps:
-    - input_pre_processor
-    - setup_data_structures
-    - initial_seed_balancing
-    - meta_control_factoring
-    - final_seed_balancing
-    - integerize_final_seed_weights
-    - sub_balancing.geography=TRACT
-    - sub_balancing.geography=TAZ
-    - expand_population
-    - write_results
-    - summarize
-
-  # resume_after: write_results
-
-# expand_population options are append or replace
-repop:
-  steps:
-    - input_pre_processor.table_list=repop_input_table_list
-    - repop_setup_data_structures
-    - initial_seed_balancing.final=true
-    - integerize_final_seed_weights.repop
-    - repop_balancing
-    - expand_population.repop;replace
-    - write_results.repop
-    - summarize.repop
-
-  resume_after: summarize
-
 repop_control_file_name: repop_controls.csv
-
-#REPOP_OVERWRITE: False
 
 repop_input_table_list:
   - taz_control_data:

@@ -81,6 +81,6 @@ run_list:
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=BLOCKGROUP
     - sub_balancing.geography=TAZ
-    - expand_population
-    - write_results
+    - expand_households
+    - write_tables
     - summarize

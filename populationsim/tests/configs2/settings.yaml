@@ -5,9 +5,6 @@ GROUP_BY_INCIDENCE_SIGNATURE: True
 USE_SIMUL_INTEGERIZER: False
 USE_CVXPY: False
 
-#control_file_name: controls.csv
-#data_dir: data
-
 household_weight_col: WGTP
 household_id_col: hh_id
 total_hh_control: num_hh

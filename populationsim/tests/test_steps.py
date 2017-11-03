@@ -44,7 +44,7 @@ def test_full_run1():
         'integerize_final_seed_weights',
         'sub_balancing.geography = TRACT',
         'sub_balancing.geography=TAZ',
-        'expand_population',
+        'expand_households',
         'write_results',
         'summarize'
     ]
@@ -86,7 +86,7 @@ def test_full_run2_repop_replace():
         'initial_seed_balancing.final=true',
         'integerize_final_seed_weights.repop',
         'repop_balancing',
-        'expand_population.repop;replace',
+        'expand_households.repop;replace',
         'write_results.repop',
         'summarize.repop'
     ]
@@ -128,7 +128,7 @@ def test_full_run2_repop_append():
         'initial_seed_balancing.final=true',
         'integerize_final_seed_weights.repop',
         'repop_balancing',
-        'expand_population.repop;append',
+        'expand_households.repop;append',
         'write_results.repop',
         'summarize.repop'
     ]

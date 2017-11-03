@@ -39,7 +39,13 @@ def write_results(output_dir):
     # output_tables.append("checkpoints.csv")
 
     for table_name in output_tables:
-        df = pipeline.get_table(table_name)
+        table = inject.get_table(table_name, None)
+
+        if table is None:
+            logger.warn("Skipping '%s': Table not found." % table_name)
+            continue
+
+        df = table.to_frame()
         file_name = "%s.csv" % table_name
         logger.info("writing output file %s" % file_name)
         file_path = os.path.join(output_dir, file_name)
