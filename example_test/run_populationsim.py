@@ -35,13 +35,6 @@ resume_after = inject.get_injectable('resume_after', resume_after)
 
 pipeline.run(models=steps, resume_after=resume_after)
 
-expanded_household_ids = pipeline.get_table('expanded_household_ids')
-
-taz_hh_counts = expanded_household_ids.groupby('TAZ').size()
-print taz_hh_counts
-print len(taz_hh_counts)
-print taz_hh_counts.loc[100]
-
 # tables will no longer be available after pipeline is closed
 pipeline.close_pipeline()
 

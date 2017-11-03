@@ -5,25 +5,16 @@ GROUP_BY_INCIDENCE_SIGNATURE: True
 USE_SIMUL_INTEGERIZER: True
 USE_CVXPY: True
 
-#control_file_name: controls.csv
-#data_dir: data
-
-
-# if output_tables is commented out, then all tables will be output EXCEPT skip_output_tables
-#output_tables:
-#  - expanded_household_ids
-
-# list of tables to skip if output_tables not specified
-#skip_output_tables:
-#  - households
-#  - persons
-#skip_output_tables: []
-
+geographies: [DISTRICT, PUMA, TRACT, TAZ]
+seed_geography: PUMA
 
 household_weight_col: WGTP
 household_id_col: hh_id
 total_hh_control: num_hh
 max_expansion_factor: 5
+
+#control_file_name: controls.csv
+#data_dir: data
 
 # input_pre_processor input_table_list
 input_table_list:
@@ -50,8 +41,20 @@ input_table_list:
     filename : region_controls.csv
 
 
-geographies: [DISTRICT, PUMA, TRACT, TAZ]
-seed_geography: PUMA
+# output_tables can specify either a list of output tables to include or to skip
+# if neither is specified, then all checkpointed tables will be written
+#
+#output_tables:
+#  action: skip
+#  tables:
+#    - households
+#    - persons
+#
+#output_tables:
+#  action: include
+#  tables:
+#    - expanded_household_ids
+
 
 run_list:
   steps:
@@ -84,8 +87,6 @@ repop:
   resume_after: summarize
 
 repop_control_file_name: repop_controls.csv
-
-#REPOP_OVERWRITE: False
 
 repop_input_table_list:
   - taz_control_data:

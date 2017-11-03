@@ -15,18 +15,28 @@ logger = logging.getLogger(__name__)
 @inject.step()
 def write_results(output_dir):
 
-    output_tables = setting('output_tables')
-    if output_tables is None:
-        output_tables = pipeline.checkpointed_tables()
+    output_tables_settings_name = 'output_tables'
 
-    # explicit list of tables to skip (or [] to skip none)
-    skip_output_tables = setting('skip_output_tables')
+    output_tables_settings = setting(output_tables_settings_name)
 
-    # if not specified, skip only the input tables
-    if skip_output_tables is None:
-        skip_output_tables = setting('input_table_list')
+    output_tables = pipeline.checkpointed_tables()
 
-    output_tables = [t for t in output_tables if t not in skip_output_tables]
+    if output_tables_settings is not None:
+
+        action = output_tables_settings.get('action')
+        tables = output_tables_settings.get('tables')
+
+        if action not in ['include', 'skip']:
+            raise "expected %s action '%s' to be either 'include' or 'skip'" % \
+                  (output_tables_settings_name, action)
+
+        if action == 'include':
+            output_tables = tables
+        elif action == 'skip':
+            output_tables = [t for t in output_tables if t not in tables]
+
+    # should provide option to also write checkpoints?
+    # output_tables.append("checkpoints.csv")
 
     for table_name in output_tables:
         df = pipeline.get_table(table_name)
@@ -35,7 +45,3 @@ def write_results(output_dir):
         file_path = os.path.join(output_dir, file_name)
         write_index = df.index.name is not None
         df.to_csv(file_path, index=write_index)
-
-    # # write checkpoints (this can be called whether or not pipeline is open)
-    # file_path = os.path.join(inject.get_injectable("output_dir"), "checkpoints.csv")
-    # pipeline.get_checkpoints().to_csv(file_path)

@@ -75,8 +75,6 @@ def expand_population():
     replace = inject.get_step_arg('replace', False)
     assert not (append and replace), "can't specify both append and replace for expand_population"
 
-    print "\nexpanded_weights taz_hh_counts\n", expanded_weights.groupby('TAZ').size()
-
     if append or replace:
         t = inject.get_table('expanded_household_ids').to_frame()
         print "\nprior taz_hh_counts\n", t.groupby('TAZ').size()
@@ -85,7 +83,5 @@ def expand_population():
             low_ids_to_replace = expanded_weights[low_geography].unique()
             t = t[~t[low_geography].isin(low_ids_to_replace)]
         expanded_weights = pd.concat([t, expanded_weights], ignore_index=True)
-
-    print "\nexpanded_weights taz_hh_counts\n", expanded_weights.groupby('TAZ').size()
 
     inject.add_table('expanded_household_ids', expanded_weights)

@@ -5,32 +5,24 @@ GROUP_BY_INCIDENCE_SIGNATURE: True
 USE_SIMUL_INTEGERIZER: False
 USE_CVXPY: False
 
-#control_file_name: controls_original.csv
-control_file_name: controls.csv
-
-# scaled/unscaled meta_control_data file name specified below
-
-data_dir: data_calm
-
-# if output_tables is commented out, then all tables will be output EXCEPT skip_output_tables
-#output_tables:
-#  - expanded_household_ids
-
-# list of tables to skip if output_tables not specified
-#skip_output_tables:
-#  - households
-#  - persons
-skip_output_tables: []
-
-
-trace_geography:
-  TAZ: 100
-  TRACT: 10200
+geographies: [REGION, PUMA, TRACT, TAZ]
+seed_geography: PUMA
 
 household_weight_col: WGTP
 household_id_col: hh_id
 total_hh_control: num_hh
 max_expansion_factor: 30
+
+#control_file_name: controls_original.csv
+control_file_name: controls.csv
+
+# scaled/unscaled meta_control_data file name specified below
+data_dir: data_calm
+
+trace_geography:
+  TAZ: 100
+  TRACT: 10200
+
 
 # input_pre_processor input_table_list
 input_table_list:
@@ -57,8 +49,20 @@ input_table_list:
     #filename : control_totals_meta.csv
     filename : scaled_control_totals_meta.csv
 
-geographies: [REGION, PUMA, TRACT, TAZ]
-seed_geography: PUMA
+
+# output_tables can specify either a list of output tables to include or to skip
+# if neither is specified, then all checkpointed tables will be written
+
+#output_tables:
+#  action: skip
+#  tables:
+#    - households
+#    - persons
+#
+#output_tables:
+#  action: include
+#  tables:
+#    - expanded_household_ids
 
 run_list:
   steps:
