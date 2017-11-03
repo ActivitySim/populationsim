@@ -50,7 +50,7 @@ def test_full_run2():
 
     assert isinstance(pipeline.get_table('expanded_household_ids'), pd.DataFrame)
 
-    assert os.path.exists(os.path.join(output_dir, 'summary_district.csv'))
+    assert os.path.exists(os.path.join(output_dir, 'summary_DISTRICT.csv'))
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
