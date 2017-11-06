@@ -1,25 +1,37 @@
 import os
 import logging
 
-import orca
-
-
 from activitysim.core import inject_defaults
 from populationsim import steps
 
 from activitysim.core import tracing
 from activitysim.core import pipeline
+from activitysim.core import inject
+
+from activitysim.core.config import handle_standard_args
 from activitysim.core.tracing import print_elapsed_time
+
 from populationsim.util import setting
+
+
+# Add (and handle) 'standard' activitysim arguments:
+#     --config : specify path to config_dir
+#     --output : specify path to output_dir
+#     --data   : specify path to data_dir
+#     --models : specify run_list name
+#     --resume : resume_after
+handle_standard_args()
 
 tracing.config_logger()
 
 t0 = print_elapsed_time()
 
-
 logger = logging.getLogger('populationsim')
 
-
+logger.info("USE_CVXPY: %s"
+            % setting('USE_CVXPY'))
+logger.info("USE_SIMUL_INTEGERIZER: %s"
+            % setting('USE_SIMUL_INTEGERIZER'))
 logger.info("GROUP_BY_INCIDENCE_SIGNATURE: %s"
             % setting('GROUP_BY_INCIDENCE_SIGNATURE'))
 logger.info("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: %s"
@@ -32,30 +44,24 @@ logger.info("control_file_name: %s"
             % setting('control_file_name'))
 
 
-_MODELS = [
-    'input_pre_processor',
-    'setup_data_structures',
-    'initial_seed_balancing',
-    'meta_control_factoring',
-    'final_seed_balancing',
-    'integerize_final_seed_weights',
-    'sub_balancing',
-    'low_balancing',
-    'expand_population',
-    'summarize',
-    'write_results'
-]
+# get the run list (name was possibly specified on the command line)
+run_list_name = inject.get_injectable('run_list_name', 'run_list')
 
-# If you provide a resume_after argument to pipeline.run
-# the pipeline manager will attempt to load checkpointed tables from the checkpoint store
-# and resume pipeline processing on the next submodel step after the specified checkpoint
-resume_after = None
-# resume_after = 'summarize'
+# run list from settings file is dict with list of 'steps' and optional 'resume_after'
+run_list = setting(run_list_name)
+assert 'steps' in run_list, "Did not find steps in run_list"
 
-pipeline.run(models=_MODELS, resume_after=resume_after)
+# list of steps and possible resume_after in run_list
+steps = run_list.get('steps')
+resume_after = run_list.get('resume_after', None)
+
+if resume_after:
+    print "resume_after", resume_after
+
+pipeline.run(models=steps, resume_after=resume_after)
 
 
 # tables will no longer be available after pipeline is closed
-pipeline.close()
+pipeline.close_pipeline()
 
 t0 = ("all models", t0)

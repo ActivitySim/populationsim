@@ -2,16 +2,35 @@
 # See full license in LICENSE.txt.
 
 import logging
+import os
 
-import orca
 import pandas as pd
 import numpy as np
+
+from activitysim.core import inject
 
 from helper import get_control_table
 from helper import get_weight_table
 from populationsim.util import setting
 
 logger = logging.getLogger(__name__)
+
+AS_CSV = True
+
+
+def out_table(table_name, df):
+
+    table_name = "summary_%s" % table_name
+
+    if AS_CSV:
+        file_name = "%s.csv" % table_name
+        output_dir = inject.get_injectable('output_dir')
+        file_path = os.path.join(output_dir, file_name)
+        logger.info("writing output file %s" % file_path)
+        write_index = df.index.name is not None
+        df.to_csv(file_path, index=write_index)
+    else:
+        inject.add_table(table_name, df)
 
 
 def summarize_geography(geography, weight_col,
@@ -80,14 +99,19 @@ def meta_summary(incidence_df, control_spec, top_geography, top_id, sub_geograph
     # controls for this geography as series
     controls = controls_df[control_cols].loc[top_id]
 
-    seed_weight_cols = ['initial_seed_weight', 'final_seed_weight', 'integer_seed_weight']
     incidence = incidence_df[control_cols]
 
     summary = pd.DataFrame(index=control_cols)
     summary['control'] = controls
+
+    seed_geography = setting('seed_geography')
+    seed_weights_df = get_weight_table(seed_geography)
+    seed_weight_cols = ['preliminary_balanced_weight', 'balanced_weight', 'integer_weight']
     for c in seed_weight_cols:
-        if c in incidence_df:
-            summary[c] = incidence.multiply(incidence_df[c], axis="index").sum(axis=0)
+        if c in seed_weights_df:
+            summary_col_name = '%s_%s' % (top_geography, c)
+            summary[summary_col_name] = \
+                incidence.multiply(seed_weights_df[c], axis="index").sum(axis=0)
 
     for g in sub_geographies:
 
@@ -103,12 +127,13 @@ def meta_summary(incidence_df, control_spec, top_geography, top_id, sub_geograph
         sub_weights = sub_weights[['hh_id'] + sub_weight_cols].groupby('hh_id').sum()
 
         for c in sub_weight_cols:
-            summary['%s_%s' % (g, c)] = incidence.multiply(sub_weights[c], axis="index").sum(axis=0)
+            summary['%s_%s' % (g, c)] = \
+                incidence.multiply(sub_weights[c], axis="index").sum(axis=0)
 
     return summary
 
 
-@orca.step()
+@inject.step()
 def summarize(crosswalk, incidence_table, control_spec):
 
     crosswalk_df = crosswalk.to_frame()
@@ -124,9 +149,14 @@ def summarize(crosswalk, incidence_table, control_spec):
     for meta_id in meta_ids:
         meta_summary_df = \
             meta_summary(incidence_df, control_spec, meta_geography, meta_id, sub_geographies)
-        orca.add_table('%s_%s_summary' % (meta_geography, meta_id), meta_summary_df)
+        out_table('%s_%s' % (meta_geography, meta_id), meta_summary_df)
 
-    hh_weights_summary = incidence_df[['final_seed_weight', 'integer_seed_weight']].copy()
+    hh_weights_summary = pd.DataFrame(index=incidence_df.index)
+
+    # add seed level summaries
+    seed_weights_df = get_weight_table(seed_geography)
+    hh_weights_summary['%s_balanced_weight' % seed_geography] = seed_weights_df['balanced_weight']
+    hh_weights_summary['%s_integer_weight' % seed_geography] = seed_weights_df['integer_weight']
 
     for geography in sub_geographies:
 
@@ -145,20 +175,25 @@ def summarize(crosswalk, incidence_table, control_spec):
         aggegrate_weights = weights_df.groupby([seed_geography, hh_id_col], as_index=False).sum()
         aggegrate_weights.set_index(hh_id_col, inplace=True)
 
-        aggegrate_weights = aggegrate_weights[[seed_geography, 'balanced_weight', 'integer_weight']]
-        aggegrate_weights['sample_weight'] = incidence_df['sample_weight']
-        aggegrate_weights['initial_seed_weight'] = incidence_df['initial_seed_weight']
-        aggegrate_weights['final_seed_weight'] = incidence_df['final_seed_weight']
-        aggegrate_weights['integer_seed_weight'] = incidence_df['integer_seed_weight']
+        aggegrate_weights = \
+            aggegrate_weights[[seed_geography, 'balanced_weight', 'integer_weight']]
+        aggegrate_weights['sample_weight'] = \
+            incidence_df['sample_weight']
+        aggegrate_weights['%s_preliminary_balanced_weight' % seed_geography] = \
+            seed_weights_df['preliminary_balanced_weight']
+        aggegrate_weights['%s_balanced_weight' % seed_geography] = \
+            seed_weights_df['balanced_weight']
+        aggegrate_weights['%s_integer_weight' % seed_geography] = \
+            seed_weights_df['integer_weight']
 
-        orca.add_table('%s_aggregate' % (geography,), aggegrate_weights)
+        out_table('%s_aggregate' % (geography,), aggegrate_weights)
 
         df = summarize_geography(seed_geography, 'integer_weight',
                                  crosswalk_df, weights_df, incidence_df)
-        orca.add_table('%s_%s_summary' % (geography, seed_geography,), df)
+        out_table('%s_%s' % (geography, seed_geography,), df)
 
         df = summarize_geography(geography, 'integer_weight',
                                  crosswalk_df, weights_df, incidence_df)
-        orca.add_table('%s_summary' % (geography,), df)
+        out_table('%s' % (geography,), df)
 
-    orca.add_table('hh_weights_summary', hh_weights_summary)
+    out_table('hh_weights', hh_weights_summary)

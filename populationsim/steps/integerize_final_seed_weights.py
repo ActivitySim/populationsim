@@ -4,17 +4,20 @@
 import logging
 import os
 
-import orca
 import pandas as pd
-import numpy as np
+
+from activitysim.core import inject
 
 from ..integerizer import do_integerizing
 from helper import get_control_table
+from helper import weight_table_name
+from helper import get_weight_table
+from populationsim.util import setting
 
 logger = logging.getLogger(__name__)
 
 
-@orca.step()
+@inject.step()
 def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_table):
 
     crosswalk_df = crosswalk.to_frame()
@@ -24,17 +27,18 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
     seed_geography = settings.get('seed_geography')
     seed_controls_df = get_control_table(seed_geography)
 
+    seed_weights_df = get_weight_table(seed_geography)
+
     # FIXME - I assume we want to integerize using meta controls too?
     control_cols = control_spec.target
-
-    # FIXME - ensure columns are in right order for orca-extended table
-    seed_controls_df = seed_controls_df[control_cols]
+    assert (seed_controls_df.columns == control_cols).all()
 
     # determine master_control_index if specified in settings
     total_hh_control_col = settings.get('total_hh_control')
 
     # run balancer for each seed geography
     weight_list = []
+
     seed_ids = crosswalk_df[seed_geography].unique()
     for seed_id in seed_ids:
 
@@ -43,13 +47,17 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
         # slice incidence rows for this seed geography
         seed_incidence = incidence_df[incidence_df[seed_geography] == seed_id]
 
+        balanced_seed_weights = \
+            seed_weights_df.loc[seed_weights_df[seed_geography] == seed_id, 'balanced_weight']
+
+        trace_label = "%s_%s" % (seed_geography, seed_id)
+
         integer_weights, status = do_integerizing(
-            label=seed_geography,
-            id=seed_id,
+            trace_label=trace_label,
             control_spec=control_spec,
             control_totals=seed_controls_df.loc[seed_id],
             incidence_table=seed_incidence[control_cols],
-            float_weights=seed_incidence['final_seed_weight'],
+            float_weights=balanced_seed_weights,
             total_hh_control_col=total_hh_control_col
         )
 
@@ -58,4 +66,4 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
     # bulk concat all seed level results
     integer_seed_weights = pd.concat(weight_list)
 
-    orca.add_column('incidence_table', 'integer_seed_weight', integer_seed_weights)
+    inject.add_column(weight_table_name(seed_geography), 'integer_weight', integer_seed_weights)

@@ -1,15 +1,24 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
+import os
 import numpy as np
 import pandas as pd
 import orca
-from ..integerizer import do_integerizing
 
-orca.add_injectable('settings', {'INTEGERIZE_WITH_BACKSTOPPED_CONTROLS': True})
+from ..integerizer import do_integerizing
 
 
 def test_integerizer():
+
+    configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
+    orca.add_injectable("configs_dir", configs_dir)
+
+    # data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    # orca.add_injectable("data_dir", data_dir)
+    #
+    # output_dir = os.path.join(os.path.dirname(__file__), 'output')
+    # orca.add_injectable("output_dir", output_dir)
 
     # rows are elements for which factors are calculated, columns are constraints to be satisfied
     incidence_table = pd.DataFrame({
@@ -38,8 +47,7 @@ def test_integerizer():
     control_totals = pd.Series([100, 35, 65, 91, 65, 104], index=control_spec.target.values)
 
     zot = do_integerizing(
-        label='label',
-        id=42,
+        trace_label='label',
         control_spec=control_spec,
         control_totals=control_totals,
         incidence_table=incidence_table[control_cols],

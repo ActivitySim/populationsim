@@ -249,3 +249,6 @@ SERIALNO,SPORDER,PUMA,OSUTAG,OCCP,WGTP
 516,8,605,2,3,5
 516,9,605,2,3,5
 516,10,605,2,3,5
+# this 2 person hh outside of seed zones should get dropped
+600,1,606,2,3,5
+600,2,606,1,3,10

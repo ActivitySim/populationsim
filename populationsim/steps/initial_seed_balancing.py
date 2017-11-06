@@ -2,18 +2,23 @@
 # See full license in LICENSE.txt.
 
 import logging
-import orca
 import pandas as pd
 
-from ..balancer import do_seed_balancing
+from activitysim.core import inject
+from activitysim.core import pipeline
+
+from populationsim.util import setting
+
+from ..balancer import do_balancing
 
 from helper import get_control_table
+from helper import weight_table_name
 
 
 logger = logging.getLogger(__name__)
 
 
-@orca.step()
+@inject.step()
 def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
     crosswalk_df = crosswalk.to_frame()
@@ -35,19 +40,21 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
     # run balancer for each seed geography
     weight_list = []
+
     seed_ids = crosswalk_df[seed_geography].unique()
     for seed_id in seed_ids:
 
         logger.info("initial_seed_balancing seed id %s" % seed_id)
 
-        status, weights_df, controls_df = do_seed_balancing(
-            seed_geography=seed_geography,
-            seed_control_spec=seed_control_spec,
-            seed_id=seed_id,
+        seed_incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
+
+        status, weights_df, controls_df = do_balancing(
+            control_spec=seed_control_spec,
             total_hh_control_col=total_hh_control_col,
             max_expansion_factor=max_expansion_factor,
-            incidence_df=incidence_df,
-            seed_controls_df=seed_controls_df)
+            incidence_df=seed_incidence_df,
+            control_totals=seed_controls_df.loc[seed_id],
+            initial_weights=seed_incidence_df['sample_weight'])
 
         logger.info("seed_balancer status: %s" % status)
         if not status['converged']:
@@ -62,4 +69,15 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     # bulk concat all seed level results
     weights = pd.concat(weight_list)
 
-    orca.add_column('incidence_table', 'initial_seed_weight', weights)
+    # build canonical weights table
+    seed_weights_df = incidence_df[[seed_geography]].copy()
+    seed_weights_df['preliminary_balanced_weight'] = weights
+
+    # copy household_id_col index to named column
+    seed_weights_df[setting('household_id_col')] = seed_weights_df.index
+
+    # this is just a convenience if there are no meta controls
+    if inject.get_step_arg('final', default=False):
+        seed_weights_df['balanced_weight'] = seed_weights_df['preliminary_balanced_weight']
+
+    inject.add_table(weight_table_name(seed_geography), seed_weights_df)

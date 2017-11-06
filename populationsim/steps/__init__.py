@@ -8,6 +8,9 @@ import meta_control_factoring
 import final_seed_balancing
 import integerize_final_seed_weights
 import sub_balancing
-import expand_population
+import expand_households
+import synthesize_population
 import summarize
 import write_results
+
+import repop_balancing

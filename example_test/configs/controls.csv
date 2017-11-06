@@ -7,5 +7,5 @@ hh_size_4_plus,TAZ,households,1000,HHSIZE4,households.NP >= 4
 students_by_housing_type,TAZ,persons,1000,OSUFAM,persons.OSUTAG == 1
 hh_by_type,TRACT,households,100,SF,households.HTYPE == 1
 persons_occ_1,DISTRICT,persons,1000,OCCP1,persons.OCCP == 1
-#persons_occ_2,DISTRICT,persons,100,OCCP2,persons.OCCP == 2
-#persons_occ_3,DISTRICT,persons,100,OCCP3,persons.OCCP == 3
+persons_occ_2,DISTRICT,persons,100,OCCP2,persons.OCCP == 2
+persons_occ_3,DISTRICT,persons,100,OCCP3,persons.OCCP == 3

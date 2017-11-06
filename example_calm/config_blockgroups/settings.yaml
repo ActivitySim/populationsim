@@ -1,0 +1,86 @@
+
+INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
+SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
+GROUP_BY_INCIDENCE_SIGNATURE: True
+USE_SIMUL_INTEGERIZER: True
+USE_CVXPY: True
+
+#control_file_name: controls_original.csv
+control_file_name: controls.csv
+
+# scaled/unscaled meta_control_data file name specified below
+
+data_dir: data_calm
+
+# if output_tables is commented out, then all tables will be output EXCEPT skip_output_tables
+#output_tables:
+#  - expanded_household_ids
+
+# list of tables to skip if output_tables not specified
+#skip_output_tables:
+#  - households
+#  - persons
+#skip_output_tables: []
+
+
+trace_geography:
+  TAZ: 100
+  BLOCKGROUP: 51
+  TRACT: 10200
+
+household_weight_col: WGTP
+household_id_col: hh_id
+total_hh_control: num_hh
+max_expansion_factor: 30
+
+# input_pre_processor input_table_list
+input_table_list:
+  - tablename: households
+    filename : seed_households.csv
+    index_col: hh_id
+    column_map:
+      SERIALNO: hh_id
+  - tablename: persons
+    # expression_filename: seed_persons_expressions.csv
+    filename : seed_persons.csv
+    column_map:
+      SERIALNO: hh_id
+      SPORDER: per_num
+  - tablename: geo_cross_walk
+    filename : geo_cross_walk.csv
+    column_map:
+      TRACTCE: TRACT
+      BLKGRP: BLOCKGROUP
+  - tablename: TAZ_control_data
+    filename : control_totals_taz.csv
+  - tablename: TRACT_control_data
+    filename : control_totals_tract.csv
+  - tablename: REGION_control_data
+    #filename : control_totals_meta.csv
+    filename : scaled_control_totals_meta.csv
+  - tablename: BLOCKGROUP_control_data
+    filename : control_totals_blockgroup.csv
+    column_map:
+      BLKGRP: BLOCKGROUP
+      HHI1BASE: HHSIZE1
+      HHI2BASE: HHSIZE2
+      HHI3BASE: HHSIZE3
+      HHI4BASE: HHSIZE4
+
+geographies: [REGION, PUMA, TRACT, BLOCKGROUP, TAZ]
+seed_geography: PUMA
+
+run_list:
+  steps:
+    - input_pre_processor
+    - setup_data_structures
+    - initial_seed_balancing
+    - meta_control_factoring
+    - final_seed_balancing
+    - integerize_final_seed_weights
+    - sub_balancing.geography=TRACT
+    - sub_balancing.geography=BLOCKGROUP
+    - sub_balancing.geography=TAZ
+    - expand_households
+    - write_tables
+    - summarize
