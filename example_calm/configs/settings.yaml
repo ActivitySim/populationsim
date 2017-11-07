@@ -76,7 +76,7 @@ run_list:
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
     - expand_households
-    - write_tables
+    - write_results
     - summarize
 
   # resume_after: write_results
@@ -90,7 +90,7 @@ repop:
     - repop_balancing
     # expand_households options are append or replace
     - expand_households.repop;append
-    - write_tables.repop
+    - write_results.repop
     - summarize.repop
 
   resume_after: summarize
