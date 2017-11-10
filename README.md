@@ -12,4 +12,4 @@ needs.  PopulationSim is implemented in the
 
 ## Documentation
 
-https://github.com/RSGInc/populationsim/wiki
+https://rsginc.github.io/populationsim/
