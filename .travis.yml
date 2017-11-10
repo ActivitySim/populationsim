@@ -11,7 +11,8 @@ python:
 before_install:
   - 'echo "repo_token: $GH_TOKEN" >> .coveralls.yml'
   - docker build . -t popsim:xenial
-
+  - chmod +x bin/build_docs.sh
+  
 script:
 - docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && pep8 populationsim"
 - docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && py.test populationsim/tests --boxed --cov populationsim && COVERALLS_REPO_TOKEN=nUGQJN49shm2gqGODE1SWQ7WknhAOYraZ coveralls"

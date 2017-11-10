@@ -4,7 +4,7 @@
 #
 # This file automatically deploys changes to http://rsginc.github.io/populationsim/.
 # This will only happen when building a non-pull request build on the master
-# branch of ActivitySim.
+# branch of PopulationSim.
 # It requires an access token which should be present in .travis.yml file.
 #
 # Following is the procedure to get the access token:
