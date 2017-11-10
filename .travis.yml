@@ -16,6 +16,9 @@ script:
 - docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && pep8 populationsim"
 - docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && py.test populationsim/tests --boxed --cov populationsim && COVERALLS_REPO_TOKEN=nUGQJN49shm2gqGODE1SWQ7WknhAOYraZ coveralls"
 
+after_success:
+- bin/build_docs.sh
+
 notifications:
   slack:
     secure: l7FunH4QsSrIumeyfAlihCOCv8MwPBv8UbPKYQWghAkaIcxQaS6YZ5MTPDX9Lx7eIax0vXRl090Or3QqCD/Ap/hLdZS3WaHC0111UjSMi96nyjeQouvW2NYxFuqBLfKJVLWjIVzDsLlMDS7a3Q25YvhnY/s5xjUsUY34fEEFRdKqRM5sUcCEARSXCAJeTVV/OQIgvraKqypmvYFX5LMlxfzhfE5U1H1Qg4vGkHkc42ZS/lSa5ow4nerpurHcLTq5zPLWCTU0XS6ikMhn98Qi8l0z/4mX8DV6Aka79tN0uZit1K3TS/uK1sDN1uoFFEVseu9y2yycJszb4PSBU5hTaurqc4Ui1OTfXN171MVC37WzpltsCyRoGKIm/50/1lWQPJijsszaYXSr6qXuOX7TjmdXZclhkxZCTDXPW0CHSFn+7ShDWMiODcBNeVQKEWlpOVATQDRRLzMnd7TvIYV8yEa3cpMtI2W2v/LxFPKygHynBoq5FY4l4rOvHaPkilUI48vfx/6AP+BuX4PAseyuuqAlLwWwXhSnNE1HHQzjwvhHx9PQ+S/GiCj3oLnxIDUE8t2hQHrD4yYXOUxjfFrjQNF6SiiNWi0+bfI/ZjpiLpFyVxDJBQovXaWRLPAM61LwqRZmoXGyUg3UWDKuEZ8Fs2Dnz5cZx05+ePb8AroaWyI=
