@@ -1,0 +1,578 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Software Implementation &mdash; PopulationSim 0.2.dev1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="PopulationSim 0.2.dev1 documentation" href="index.html"/>
+        <link rel="prev" title="PopulationSim" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PopulationSim
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.dev1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Software Implementation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#set-up-and-run">Set Up and Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#folder-file-setup">Folder &amp; File Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-settings-file">Example Settings File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-controls-file">Example Controls File</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PopulationSim</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Software Implementation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/software.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="software-implementation">
+<h1>Software Implementation<a class="headerlink" href="#software-implementation" title="Permalink to this headline">¶</a></h1>
+<p>PopulationSim is implemented in the <a class="reference external" href="https://github.com/UDST/activitysim">ActivitySim</a>
+framework.  As summarized <a class="reference external" href="https://udst.github.io/activitysim/#software-design">here</a>,
+being implemented in the ActivitySim framework means:</p>
+<ul class="simple">
+<li>Overall Design<ul>
+<li>Implemented in Python, and makes heavy use of the vectorized backend C/C++ libraries in <a class="reference external" href="http://pandas.pydata.org">pandas</a> and <a class="reference external" href="http://www.numpy.org">numpy</a>.</li>
+<li>Vectorization instead of for loops when possible</li>
+<li>Runs sub-models that solve Python expression files that operate on data tables</li>
+</ul>
+</li>
+<li>Data Handling<ul>
+<li>Inputs are in CSV format, with the exception of settings</li>
+<li>CSVs are read-in as pandas tables and stored in an intermediate HDF5 binary file that is used for data I/O throughout the model run</li>
+<li>Key outputs are written to CSV files</li>
+</ul>
+</li>
+<li>Key Data Structures<ul>
+<li><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html">pandas.DataFrame</a> - A data table with rows and columns, similar to an R data frame, Excel worksheet, or database table</li>
+<li><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.html">pandas.Series</a> - a vector of data, a column in a DataFrame table or a 1D array</li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html">numpy.array</a> - an N-dimensional array of items of the same type, such as a matrix</li>
+</ul>
+</li>
+<li>Model Orchestrator<ul>
+<li><a class="reference external" href="https://github.com/UDST/orca">ORCA</a> is used for running the overall model system and for defining dynamic data tables, columns, and injectables (functions). ActivitySim wraps ORCA functionality to make a Data Pipeline tool, which allows for re-starting at any model step.</li>
+</ul>
+</li>
+<li>Expressions<ul>
+<li>Model expressions are in CSV files and contain Python expressions, mainly pandas/numpy expression that operate on the input data tables. This helps to avoid modifying Python code when making changes to the model calculations.</li>
+</ul>
+</li>
+<li><a class="reference external" href="https://udst.github.io/activitysim/development.html">Code Documentation</a><ul>
+<li>Python code according to <a class="reference external" href="http://legacy.python.org/dev/peps/pep-0008">pep8</a> style guide</li>
+<li>Written in <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> markup, built with <a class="reference external" href="http://www.sphinx-doc.org/en/stable">Sphinx</a> and docstrings written in <a class="reference external" href="https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt">numpydoc</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="https://udst.github.io/activitysim/development.html">Testing</a><ul>
+<li>A protected master branch that can only be written to after tests have passed</li>
+<li><a class="reference external" href="https://udst.github.io/activitysim/development.html">pytest</a> for tests</li>
+<li><a class="reference external" href="https://travis-ci.org">TravisCI</a> for building and testing with each commit</li>
+</ul>
+</li>
+</ul>
+<p>PopulationSim also requires an optimization library for balancing and integerizing.  Currently the software makes
+use of the open source and easy to install <a class="reference external" href="https://github.com/google/or-tools">ortools</a> package.</p>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>If you access the internet from behind a firewall, then you will need to configure your proxy server. To do so, create a .condarc file in your Anaconda installation folder (i.e. <code class="docutils literal"><span class="pre">C:\ProgramData\Anaconda2</span></code>), such as:</li>
+</ol>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">proxy_servers</span><span class="p">:</span>
+  <span class="n">http</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">proxynew</span><span class="o">.</span><span class="n">odot</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="ow">or</span><span class="o">.</span><span class="n">us</span><span class="p">:</span><span class="mi">8080</span>
+  <span class="n">https</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">proxynew</span><span class="o">.</span><span class="n">odot</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="ow">or</span><span class="o">.</span><span class="n">us</span><span class="p">:</span><span class="mi">8080</span>
+<span class="n">ssl_verify</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>Install <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python 2.7</a></li>
+<li>Create and activate an Anaconda environment (basically a Python install just for this project)</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>Run <code class="docutils literal"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">popsimtest</span> <span class="pre">python=2.7</span></code></li>
+<li>Run <code class="docutils literal"><span class="pre">activate</span> <span class="pre">popsimtest</span></code> #you can re-use the environment on a later date by re-activating it</li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li>If you access the internet from behind a firewall, then you will need to configure your proxy server when downloading packages. For example:</li>
+</ol>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">host</span> <span class="n">pypi</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">org</span> <span class="o">--</span><span class="n">proxy</span><span class="o">=</span><span class="n">proxynew</span><span class="o">.</span><span class="n">odot</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="ow">or</span><span class="o">.</span><span class="n">us</span><span class="p">:</span><span class="mi">8080</span>  <span class="n">activitysim</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li>Get and install other required libraries, which can be found on the <a class="reference external" href="https://pypi.python.org/pypi">Python Package Index</a>.  Run the following command on the activated conda Python environment: <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&lt;packagename&gt;</span></code> for each package.</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://toolz.readthedocs.org/en/latest">toolz</a></li>
+<li><a class="reference external" href="https://github.com/jiffyclub/zbox">zbox</a></li>
+<li><a class="reference external" href="https://synthicity.github.io/orca">orca</a> - the application orchestration tool (i.e. the module runner)</li>
+<li><a class="reference external" href="https://pypi.python.org/pypi/OpenMatrix/0.2.3">openmatrix</a> - OMX support</li>
+<li><a class="reference external" href="https://pypi.python.org/pypi/activitysim/0.3.dev1">activitysim</a> - ActivitySim framework</li>
+<li><a class="reference external" href="https://github.com/google/or-tools">ortools</a> - Google operations research tools solver</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="set-up-and-run">
+<h2>Set Up and Run<a class="headerlink" href="#set-up-and-run" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Setup / Installation<ul>
+<li>Setup Python and the dependent libraries as noted above</li>
+<li>Clone the repository to your computer</li>
+<li>Cd to the repository folder</li>
+<li>Run <code class="docutils literal"><span class="pre">activate</span> <span class="pre">popsimtest</span></code></li>
+<li>Run <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">develop</span></code> to install the package</li>
+</ul>
+</li>
+<li>Run the existing CALM data example<ul>
+<li>Cd to the <code class="docutils literal"><span class="pre">example_calm</span></code> folder</li>
+<li>Run <code class="docutils literal"><span class="pre">python</span> <span class="pre">run_populationsim.py</span></code></li>
+<li>Takes approximately 30 minutes to run</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="folder-file-setup">
+<h2>Folder &amp; File Setup<a class="headerlink" href="#folder-file-setup" title="Permalink to this headline">¶</a></h2>
+<p>The example folder is setup as follows:</p>
+<ul class="simple">
+<li>run_populationsim.py - runs PopulationSim, which runs the steps described above</li>
+<li>configs folder - configuration settings<ul>
+<li>settings.yaml - settings such as input table names, table key fields, expression files, etc.  The <code class="docutils literal"><span class="pre">geographies</span></code> setting specifies the system geographies in order from largest to smallest - meta, seed, first lower, second lower, etc.  For example, <code class="docutils literal"><span class="pre">[REGION,</span> <span class="pre">PUMA,</span> <span class="pre">TRACT,</span> <span class="pre">TAZ]</span></code> means REGION is the meta geography, PUMA is the seed geography, TRACT is the first lower geography, and TAZ is the second lower geography.  Any number of lower geographies is allowed.  Here is an [example settings file](#settings-file).</li>
+<li>controls.csv - control variables input file which specifies the controls used for expanding the population.  Like ActivitySim, Python expressions are used for specifying control constraints.  Here is an [example control file](#controls-file).</li>
+</ul>
+</li>
+<li>data folder - scenario input files<ul>
+<li>seed households records table</li>
+<li>seed persons records table</li>
+<li>meta zones data table (i.e. controls and other data)</li>
+<li>lower level zone data tables (i.e. controls and other data)</li>
+<li>geographic crosswalk</li>
+</ul>
+</li>
+<li>outputs folder - key outputs<ul>
+<li>households.csv - expanded households</li>
+<li>persons.csv - expanded persons</li>
+<li>pipeline.hdf5 - HDF5 data pipeline / data store</li>
+<li>summary / trace files</li>
+</ul>
+</li>
+</ul>
+<div class="section" id="example-settings-file">
+<h3>Example Settings File<a class="headerlink" href="#example-settings-file" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#setup</span>
+<span class="n">control_file_name</span><span class="p">:</span> <span class="n">controls</span><span class="o">.</span><span class="n">csv</span>
+<span class="n">household_weight_col</span><span class="p">:</span> <span class="n">WGTP</span>
+<span class="n">household_id_col</span><span class="p">:</span> <span class="n">hh_id</span>
+<span class="n">total_hh_control</span><span class="p">:</span> <span class="n">num_hh</span>
+<span class="n">max_expansion_factor</span><span class="p">:</span> <span class="mi">30</span>
+<span class="n">data_dir</span><span class="p">:</span> <span class="n">data_calm</span>
+<span class="n">trace_geography</span><span class="p">:</span>
+  <span class="n">TAZ</span><span class="p">:</span> <span class="mi">100</span>
+  <span class="n">TRACT</span><span class="p">:</span> <span class="mi">10200</span>
+
+<span class="c1">#geography setup</span>
+<span class="n">geographies</span><span class="p">:</span> <span class="p">[</span><span class="n">REGION</span><span class="p">,</span> <span class="n">PUMA</span><span class="p">,</span> <span class="n">TRACT</span><span class="p">,</span> <span class="n">TAZ</span><span class="p">]</span>
+<span class="n">seed_geography</span><span class="p">:</span> <span class="n">PUMA</span>
+<span class="n">crosswalk_data_table</span><span class="p">:</span> <span class="n">geo_cross_walk</span>
+<span class="n">geography_settings</span><span class="p">:</span>
+  <span class="n">REGION</span><span class="p">:</span>
+    <span class="n">control_data_table</span><span class="p">:</span> <span class="n">meta_control_data</span>
+    <span class="n">id_column</span><span class="p">:</span> <span class="n">REGION</span>
+  <span class="n">PUMA</span><span class="p">:</span>
+    <span class="n">controls_table</span><span class="p">:</span> <span class="n">seed_controls</span>
+    <span class="n">id_column</span><span class="p">:</span> <span class="n">PUMA</span>
+  <span class="n">TRACT</span><span class="p">:</span>
+    <span class="n">control_data_table</span><span class="p">:</span> <span class="n">mid_control_data</span>
+    <span class="n">id_column</span><span class="p">:</span> <span class="n">TRACT</span>
+  <span class="n">TAZ</span><span class="p">:</span>
+    <span class="n">control_data_table</span><span class="p">:</span> <span class="n">low_control_data</span>
+    <span class="n">id_column</span><span class="p">:</span> <span class="n">TAZ</span>
+
+<span class="c1"># input data tables</span>
+<span class="n">input_pre_processor</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">households</span>
+  <span class="o">-</span> <span class="n">persons</span>
+  <span class="o">-</span> <span class="n">geo_cross_walk</span>
+  <span class="o">-</span> <span class="n">low_control_data</span>
+  <span class="o">-</span> <span class="n">mid_control_data</span>
+  <span class="o">-</span> <span class="n">meta_control_data</span>
+
+<span class="n">households</span><span class="p">:</span>
+  <span class="n">expression_filename</span><span class="p">:</span> <span class="n">seed_households_expressions</span><span class="o">.</span><span class="n">csv</span>
+  <span class="n">filename</span> <span class="p">:</span> <span class="n">seed_households</span><span class="o">.</span><span class="n">csv</span>
+  <span class="n">index_col</span><span class="p">:</span> <span class="n">hh_id</span>
+  <span class="n">column_map</span><span class="p">:</span>
+    <span class="n">hhnum</span><span class="p">:</span> <span class="n">hh_id</span>
+
+<span class="n">persons</span><span class="p">:</span>
+  <span class="n">expression_filename</span><span class="p">:</span> <span class="n">seed_persons_expressions</span><span class="o">.</span><span class="n">csv</span>
+  <span class="n">filename</span> <span class="p">:</span> <span class="n">seed_persons</span><span class="o">.</span><span class="n">csv</span>
+  <span class="n">column_map</span><span class="p">:</span>
+    <span class="n">hhnum</span><span class="p">:</span> <span class="n">hh_id</span>
+    <span class="n">SPORDER</span><span class="p">:</span> <span class="n">per_num</span>
+
+<span class="n">geo_cross_walk</span><span class="p">:</span>
+  <span class="n">filename</span> <span class="p">:</span> <span class="n">geo_cross_walk</span><span class="o">.</span><span class="n">csv</span>
+  <span class="n">column_map</span><span class="p">:</span>
+    <span class="n">TRACTCE</span><span class="p">:</span> <span class="n">TRACT</span>
+
+<span class="n">low_control_data</span><span class="p">:</span>
+  <span class="n">filename</span> <span class="p">:</span> <span class="n">control_totals_maz</span><span class="o">.</span><span class="n">csv</span>
+
+<span class="n">mid_control_data</span><span class="p">:</span>
+  <span class="n">filename</span> <span class="p">:</span> <span class="n">control_totals_taz</span><span class="o">.</span><span class="n">csv</span>
+
+<span class="n">meta_control_data</span><span class="p">:</span>
+  <span class="n">filename</span> <span class="p">:</span> <span class="n">control_totals_meta</span><span class="o">.</span><span class="n">csv</span>
+
+<span class="c1">#output files</span>
+<span class="n">expanded_households</span><span class="p">:</span>
+  <span class="n">filename</span> <span class="p">:</span> <span class="n">households</span><span class="o">.</span><span class="n">csv</span>
+  <span class="n">output_fields</span> <span class="p">:</span> <span class="n">serialno</span><span class="p">,</span> <span class="n">np</span><span class="p">,</span> <span class="n">nwrkrs_esr</span><span class="p">,</span> <span class="n">hincp</span>
+<span class="n">expanded_persons</span><span class="p">:</span>
+  <span class="n">filename</span> <span class="p">:</span> <span class="n">persons</span><span class="o">.</span><span class="n">csv</span>
+  <span class="n">output_fields</span> <span class="p">:</span> <span class="n">sporder</span><span class="p">,</span> <span class="n">agep</span><span class="p">,</span> <span class="n">relp</span><span class="p">,</span> <span class="n">employed</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-controls-file">
+<h3>Example Controls File<a class="headerlink" href="#example-controls-file" title="Permalink to this headline">¶</a></h3>
+<p>The control variables input file specifies the controls used for expanding the population.  Like ActivitySim, Python expressions are used for specifying control constraints.  An example file is below.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="10%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">target</th>
+<th class="head">geography</th>
+<th class="head">seed_table</th>
+<th class="head">importance</th>
+<th class="head">control_field</th>
+<th class="head">expression</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>num_hh</td>
+<td>TAZ</td>
+<td>households</td>
+<td>1000000000</td>
+<td>HHBASE</td>
+<td>(households.WGTP &gt; 0) &amp; (households.WGTP &lt; np.inf)</td>
+</tr>
+<tr class="row-odd"><td>hh_size_4_plus</td>
+<td>TAZ</td>
+<td>households</td>
+<td>5000</td>
+<td>HHSIZE4</td>
+<td>households.NP &gt;= 4</td>
+</tr>
+<tr class="row-even"><td>hh_age_15_24</td>
+<td>TAZ</td>
+<td>households</td>
+<td>500</td>
+<td>HHAGE1</td>
+<td>(households.AGEHOH &gt; 15) &amp; (households.AGEHOH &lt;= 24)</td>
+</tr>
+<tr class="row-odd"><td>hh_inc_15</td>
+<td>TAZ</td>
+<td>households</td>
+<td>500</td>
+<td>HHINC1</td>
+<td>(households.HHINCADJ &gt; -999999999) &amp; (households.HHINCADJ &lt;= 21297)</td>
+</tr>
+<tr class="row-even"><td>students_fam_housing</td>
+<td>TAZ</td>
+<td>persons</td>
+<td>500</td>
+<td>OSUFAM</td>
+<td>persons.OSUTAG == 1</td>
+</tr>
+<tr class="row-odd"><td>hh_wrks_3_plus</td>
+<td>TRACT</td>
+<td>households</td>
+<td>1000</td>
+<td>HHWORK3</td>
+<td>households.NWESR &gt;= 3</td>
+</tr>
+<tr class="row-even"><td>hh_by_type_sf</td>
+<td>TRACT</td>
+<td>households</td>
+<td>1000</td>
+<td>SF</td>
+<td>households.HTYPE == 1</td>
+</tr>
+<tr class="row-odd"><td>persons_occ_8</td>
+<td>REGION</td>
+<td>persons</td>
+<td>1000</td>
+<td>OCCP8</td>
+<td>persons.OCCP == 8</td>
+</tr>
+</tbody>
+</table>
+<p>Where:</p>
+<ul class="simple">
+<li>target is the name of the control in PopulationSim</li>
+<li>geography is the geographic level of the control, as specified in <code class="docutils literal"><span class="pre">geographies</span></code></li>
+<li>seed_table is the seed table the control applies to and it can be <code class="docutils literal"><span class="pre">households</span></code> or <code class="docutils literal"><span class="pre">persons</span></code>.  If persons, then persons are aggregated to households using the count operator</li>
+<li>importance is the importance weight for the control</li>
+<li>control_field is the field in the control data input files that this control applies to</li>
+<li>expression is a valid Python/Pandas expression that identifies seed households or persons that this control applies to</li>
+</ul>
+</div>
+</div>
+<div class="section" id="outputs">
+<h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
+<p>The outputs from a PopulationSim run are:</p>
+<ul class="simple">
+<li>Synthetic population<ul>
+<li>Expanded household and person files in CSV format, as specified in the settings file</li>
+</ul>
+</li>
+<li>System &amp; data management<ul>
+<li>pipeline.h5 - HDF5 data pipeline, with a copy of each table after each model step in pandas format</li>
+<li>checkpoints.csv - List of data tables in the data pipeline</li>
+<li>asim.log - log file</li>
+</ul>
+</li>
+<li>Copies of input files<ul>
+<li>control_spec.csv, crosswalk.csv, geo_cross_walk.csv, low_control_data.csv, mid_control_data.csv, meta_control_data.csv, TAZ_controls.csv, TRACT_controls.csv, PUMA_controls.csv, REGION_controls.csv</li>
+</ul>
+</li>
+<li>Household data by model step<ul>
+<li>hh_weights_summary.csv - household weights by model step</li>
+<li>incidence_table.csv - household control data incidence table</li>
+</ul>
+</li>
+<li>Balanced and intergerized weights for individual households by zone<ul>
+<li>TAZ_weights.csv, TAZ_weights_sparse.csv, TRACT_weights.csv, TRACT_weights_sparse.csv</li>
+</ul>
+</li>
+<li>Aggregate final household totals versus control totals<ul>
+<li>REGION_summary.csv, TAZ_PUMA_summary.csv, TAZ_summary.csv, TRACT_PUMA_summary.csv, TRACT_summary.csv</li>
+</ul>
+</li>
+<li>Expanded household and person tables<ul>
+<li>households.csv, persons.csv</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="PopulationSim" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright contributing authors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.2.dev1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
