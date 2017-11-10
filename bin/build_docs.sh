@@ -2,7 +2,7 @@
 
 # Copied from github.com/sympy/sympy
 #
-# This file automatically deploys changes to http://udst.github.io/activitysim/.
+# This file automatically deploys changes to http://rsginc.github.io/populationsim/.
 # This will only happen when building a non-pull request build on the master
 # branch of ActivitySim.
 # It requires an access token which should be present in .travis.yml file.
