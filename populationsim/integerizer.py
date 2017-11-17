@@ -9,24 +9,25 @@ from util import setting
 
 from activitysim.core import tracing
 
+USE_CVXPY = False
+USE_ORTOOLS = not USE_CVXPY
 
-try:
-    import cylp
+CVX_SOLVER = 'CBC'
+# CVX_SOLVER = 'GLPK_MI
+
+
+if USE_CVXPY:
+    if CVX_SOLVER == 'GLPK_MI':
+        import cylp
     import cvxpy as cvx
-    HAVE_CVX = True
-except ImportError:
-    HAVE_CVX = False
-
-try:
+else:
     from ortools.linear_solver import pywraplp
-    HAVE_ORTOOLS = True
-except ImportError:
-    HAVE_ORTOOLS = False
+
 
 STATUS_TEXT = {}
 STATUS_SUCCESS = ['OPTIMAL', 'FEASIBLE', 'OPTIMAL_INACCURATE']
 
-if HAVE_CVX:
+if USE_CVXPY:
     STATUS_TEXT.update({
         cvx.OPTIMAL: 'OPTIMAL',
         cvx.INFEASIBLE: 'INFEASIBLE',
@@ -38,15 +39,10 @@ if HAVE_CVX:
     })
 
     STATUS_SUCCESS += ['OPTIMAL', 'OPTIMAL_INACCURATE']
-
-    # - solver list: http://www.cvxpy.org/en/latest/tutorial/advanced/
-    # cvx.installed_solvers(): ['ECOS_BB', 'SCS', 'ECOS', 'LS']
-    # ['CBC', 'CVXOPT', 'ECOS_BB', 'GLPK_MI', 'SCS', 'ECOS', 'GLPK', 'LS']
-    CVX_SOLVER = cvx.ECOS
-    CVX_SOLVER = cvx.GLPK_MI
+    DEFAULT_CVX_SOLVER = 'CBC'
     CVX_MAX_ITERS = 300
 
-if HAVE_ORTOOLS:
+else:
 
     STATUS_TEXT.update({
         pywraplp.Solver.OPTIMAL: 'OPTIMAL',
@@ -157,9 +153,7 @@ class Integerizer(object):
         assert len(control_is_hh_based) == control_count
         assert len(self.incidence_table.columns) == control_count
 
-        if setting('USE_CVXPY'):
-
-            assert HAVE_CVX
+        if USE_CVXPY:
 
             int_weights, resid_weights, status = np_integerizer_cvx(
                 incidence=incidence,
@@ -171,8 +165,6 @@ class Integerizer(object):
                 control_is_hh_based=control_is_hh_based
             )
         else:
-
-            assert HAVE_ORTOOLS
 
             int_weights, resid_weights, status = np_integerizer_cbc(
                 incidence=incidence,
@@ -278,6 +270,11 @@ def np_integerizer_cvx(incidence,
     ]
 
     prob = cvx.Problem(objective, constraints)
+
+    CVX_SOLVER = setting('CVX_SOLVER', DEFAULT_CVX_SOLVER)
+    assert CVX_SOLVER in cvx.installed_solvers(), \
+        "CVX Solver '%s' not in installed solvers %s." % (CVX_SOLVER, cvx.installed_solvers())
+    logger.info("integerizing with '%s' solver." % CVX_SOLVER)
 
     try:
         prob.solve(solver=CVX_SOLVER, verbose=True, max_iters=CVX_MAX_ITERS)

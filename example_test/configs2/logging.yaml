@@ -42,8 +42,8 @@ logging:
       class: logging.StreamHandler
       stream: ext://sys.stdout
       formatter: simpleFormatter
-      level: !!python/name:logging.NOTSET
-      #level: !!python/name:logging.INFO
+      #level: !!python/name:logging.NOTSET
+      level: !!python/name:logging.WARN
 
   formatters:
 

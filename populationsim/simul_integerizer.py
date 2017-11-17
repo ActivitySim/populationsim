@@ -6,18 +6,17 @@ import logging
 import numpy as np
 import pandas as pd
 
-from activitysim.core import tracing
+from util import setting
+
 from .integerizer import smart_round
+from .integerizer import USE_CVXPY
 from .sequential_integerizer import do_sequential_integerizing
 
-try:
+HAVE_SIMUL_INTEGERIZER = False
+if USE_CVXPY:
+
     import cylp
     import cvxpy as cvx
-    HAVE_SIMUL_INTEGERIZER = True
-except ImportError:
-    HAVE_SIMUL_INTEGERIZER = False
-
-if HAVE_SIMUL_INTEGERIZER:
 
     STATUS_TEXT = {
         cvx.OPTIMAL: 'OPTIMAL',
@@ -30,13 +29,10 @@ if HAVE_SIMUL_INTEGERIZER:
     }
 
     STATUS_SUCCESS = ['OPTIMAL', 'OPTIMAL_INACCURATE']
-
-    # - solver list: http://www.cvxpy.org/en/latest/tutorial/advanced/
-    # cvx.installed_solvers(): ['ECOS_BB', 'SCS', 'ECOS', 'LS']
-    # ['CBC', 'CVXOPT', 'ECOS_BB', 'GLPK_MI', 'SCS', 'ECOS', 'GLPK', 'LS']
-    # CVX_SOLVER = cvx.ECOS
-    CVX_SOLVER = cvx.GLPK_MI
+    DEFAULT_CVX_SOLVER = 'CBC'
     CVX_MAX_ITERS = 1000
+
+    HAVE_SIMUL_INTEGERIZER = True
 
 
 logger = logging.getLogger(__name__)
@@ -218,11 +214,15 @@ class SimulIntegerizer(object):
 
         prob = cvx.Problem(objective, constraints)
 
+        CVX_SOLVER = setting('CVX_SOLVER', DEFAULT_CVX_SOLVER)
+        assert CVX_SOLVER in cvx.installed_solvers(), \
+            "CVX Solver '%s' not in installed solvers %s." % (CVX_SOLVER, cvx.installed_solvers())
+        logger.info("integerizing with '%s' solver." % CVX_SOLVER)
+
         try:
-            print "prob.solve..."
             prob.solve(solver=CVX_SOLVER, verbose=True, max_iters=CVX_MAX_ITERS)
         except cvx.SolverError as e:
-            logging.exception('Solver error in SimulIntegerizer: %s' % e)
+            logging.warning('Solver error in SimulIntegerizer: %s' % e)
 
         # if we got a result
         if np.any(x.value):
@@ -442,7 +442,7 @@ def do_simul_integerizing(
         # so the best we can do is return sequentially_integerized_weights_df
         logger.warn("do_simul_integerizing failed but found no infeasible sub zones %s. "
                     % trace_label)
-        logger.info("do_simul_integerizing %s falling back to sequential integerizing for %s."
+        logger.info("do_simul_integerizing falling back to sequential integerizing for %s."
                     % trace_label)
         return sequentially_integerized_weights_df
 

@@ -12,6 +12,7 @@ from activitysim.core.config import handle_standard_args
 from activitysim.core.tracing import print_elapsed_time
 
 from populationsim.util import setting
+from populationsim import integerizer
 
 
 # Add (and handle) 'standard' activitysim arguments:
@@ -28,8 +29,10 @@ t0 = print_elapsed_time()
 
 logger = logging.getLogger('populationsim')
 
-logger.info("USE_CVXPY: %s"
-            % setting('USE_CVXPY'))
+logger.info("USE_CVXPY: %s" % integerizer.USE_CVXPY)
+if integerizer.USE_CVXPY:
+    logger.info("CVX_SOLVER: %s" % integerizer.CVX_SOLVER)
+
 logger.info("USE_SIMUL_INTEGERIZER: %s"
             % setting('USE_SIMUL_INTEGERIZER'))
 logger.info("GROUP_BY_INCIDENCE_SIGNATURE: %s"

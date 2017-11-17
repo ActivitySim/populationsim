@@ -138,7 +138,10 @@ def integerize(
         plus columns for household id, parent and sub_geography zone ids
     """
 
-    if setting('USE_SIMUL_INTEGERIZER'):
+    if setting('USE_SIMUL_INTEGERIZER') and not HAVE_SIMUL_INTEGERIZER:
+        logger.warn("Can't USE_SIMUL_INTEGERIZER: supporting packages not enabled")
+
+    if setting('USE_SIMUL_INTEGERIZER') and HAVE_SIMUL_INTEGERIZER:
 
         integer_weights_df = do_simul_integerizing(
             trace_label="%s_%s" % (parent_geography, parent_id),

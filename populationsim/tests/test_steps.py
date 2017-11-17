@@ -15,6 +15,7 @@ def teardown_function(func):
     orca.clear_cache()
     inject.reinject_decorated_tables()
 
+
 TAZ_COUNT = 36
 TAZ_100_HH_COUNT = 25
 TAZ_100_HH_REPOP_COUNT = 26

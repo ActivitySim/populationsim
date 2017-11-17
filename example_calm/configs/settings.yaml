@@ -2,8 +2,7 @@
 INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
 GROUP_BY_INCIDENCE_SIGNATURE: True
-USE_SIMUL_INTEGERIZER: False
-USE_CVXPY: False
+USE_SIMUL_INTEGERIZER: True
 
 geographies: [REGION, PUMA, TRACT, TAZ]
 seed_geography: PUMA
@@ -75,11 +74,11 @@ run_list:
     - integerize_final_seed_weights
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
-    - expand_households
+#    - expand_households
     - write_results
     - summarize
 
-  # resume_after: write_results
+  resume_after: sub_balancing.geography=TRACT
 
 repop:
   steps:

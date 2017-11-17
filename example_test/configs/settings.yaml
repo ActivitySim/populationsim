@@ -3,7 +3,7 @@ INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
 GROUP_BY_INCIDENCE_SIGNATURE: True
 USE_SIMUL_INTEGERIZER: True
-USE_CVXPY: True
+
 
 geographies: [DISTRICT, PUMA, TRACT, TAZ]
 seed_geography: PUMA
@@ -56,7 +56,7 @@ run_list:
     - write_results
     - summarize
 
-  # resume_after: write_results
+  #resume_after: integerize_final_seed_weights
 
 # expand_households options are append or replace
 repop:
