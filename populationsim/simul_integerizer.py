@@ -35,6 +35,7 @@ if USE_CVXPY:
     HAVE_SIMUL_INTEGERIZER = True
 
 
+
 logger = logging.getLogger(__name__)
 
 

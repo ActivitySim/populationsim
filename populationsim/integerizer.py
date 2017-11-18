@@ -9,7 +9,7 @@ from util import setting
 
 from activitysim.core import tracing
 
-USE_CVXPY = False
+USE_CVXPY = True
 USE_ORTOOLS = not USE_CVXPY
 
 CVX_SOLVER = 'CBC'
