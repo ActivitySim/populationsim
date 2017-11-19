@@ -29,12 +29,10 @@ t0 = print_elapsed_time()
 
 logger = logging.getLogger('populationsim')
 
-logger.info("USE_CVXPY: %s" % integerizer.USE_CVXPY)
-if integerizer.USE_CVXPY:
-    logger.info("CVX_SOLVER: %s" % integerizer.CVX_SOLVER)
+logger.info("USE_CVXPY: %s" % setting('USE_CVXPY'))
+logger.info("CVX_SOLVER: %s" % setting('CVX_SOLVER'))
+logger.info("USE_SIMUL_INTEGERIZER: %s" % setting('USE_SIMUL_INTEGERIZER'))
 
-logger.info("USE_SIMUL_INTEGERIZER: %s"
-            % setting('USE_SIMUL_INTEGERIZER'))
 logger.info("GROUP_BY_INCIDENCE_SIGNATURE: %s"
             % setting('GROUP_BY_INCIDENCE_SIGNATURE'))
 logger.info("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: %s"

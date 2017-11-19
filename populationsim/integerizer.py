@@ -9,56 +9,9 @@ from util import setting
 
 from activitysim.core import tracing
 
-USE_CVXPY = True
-USE_ORTOOLS = not USE_CVXPY
-
-CVX_SOLVER = 'CBC'
-# CVX_SOLVER = 'GLPK_MI
-
-
-if USE_CVXPY:
-    if CVX_SOLVER == 'GLPK_MI':
-        import cylp
-    import cvxpy as cvx
-else:
-    from ortools.linear_solver import pywraplp
-
-
-STATUS_TEXT = {}
-STATUS_SUCCESS = ['OPTIMAL', 'FEASIBLE', 'OPTIMAL_INACCURATE']
-
-if USE_CVXPY:
-    STATUS_TEXT.update({
-        cvx.OPTIMAL: 'OPTIMAL',
-        cvx.INFEASIBLE: 'INFEASIBLE',
-        cvx.UNBOUNDED: 'UNBOUNDED',
-        cvx.OPTIMAL_INACCURATE: 'OPTIMAL_INACCURATE',
-        cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
-        cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
-        None: 'FAILED'
-    })
-
-    STATUS_SUCCESS += ['OPTIMAL', 'OPTIMAL_INACCURATE']
-    DEFAULT_CVX_SOLVER = 'CBC'
-    CVX_MAX_ITERS = 300
-
-else:
-
-    STATUS_TEXT.update({
-        pywraplp.Solver.OPTIMAL: 'OPTIMAL',
-        pywraplp.Solver.FEASIBLE: 'FEASIBLE',
-        pywraplp.Solver.INFEASIBLE: 'INFEASIBLE',
-        pywraplp.Solver.UNBOUNDED: 'UNBOUNDED',
-        pywraplp.Solver.ABNORMAL: 'ABNORMAL',
-        pywraplp.Solver.NOT_SOLVED: 'NOT_SOLVED',
-    })
-
-    STATUS_SUCCESS += ['OPTIMAL', 'FEASIBLE']
-
-    CBC_TIMEOUT_IN_SECONDS = 60
-
-
 logger = logging.getLogger(__name__)
+
+STATUS_SUCCESS = ['OPTIMAL', 'FEASIBLE']
 
 
 def smart_round(int_weights, resid_weights, target_sum):
@@ -153,7 +106,7 @@ class Integerizer(object):
         assert len(control_is_hh_based) == control_count
         assert len(self.incidence_table.columns) == control_count
 
-        if USE_CVXPY:
+        if setting('USE_CVXPY'):
 
             int_weights, resid_weights, status = np_integerizer_cvx(
                 incidence=incidence,
@@ -194,6 +147,19 @@ def np_integerizer_cvx(incidence,
                        total_hh_control_value,
                        total_hh_control_index,
                        control_is_hh_based):
+
+    import cvxpy as cvx
+    STATUS_TEXT = {
+        cvx.OPTIMAL: 'OPTIMAL',
+        cvx.INFEASIBLE: 'INFEASIBLE',
+        cvx.UNBOUNDED: 'UNBOUNDED',
+        cvx.OPTIMAL_INACCURATE: 'FEASIBLE',  # for compatability with ortools
+        cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
+        cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
+        None: 'FAILED'
+    }
+    CVX_MAX_ITERS = 300
+    CVX_SOLVER = setting('CVX_SOLVER')
 
     assert not np.isnan(incidence).any()
     assert not np.isnan(float_weights).any()
@@ -271,7 +237,6 @@ def np_integerizer_cvx(incidence,
 
     prob = cvx.Problem(objective, constraints)
 
-    CVX_SOLVER = setting('CVX_SOLVER', DEFAULT_CVX_SOLVER)
     assert CVX_SOLVER in cvx.installed_solvers(), \
         "CVX Solver '%s' not in installed solvers %s." % (CVX_SOLVER, cvx.installed_solvers())
     logger.info("integerizing with '%s' solver." % CVX_SOLVER)
@@ -301,6 +266,18 @@ def np_integerizer_cbc(incidence,
                        total_hh_control_value,
                        total_hh_control_index,
                        control_is_hh_based):
+
+    from ortools.linear_solver import pywraplp
+
+    STATUS_TEXT = {
+        pywraplp.Solver.OPTIMAL: 'OPTIMAL',
+        pywraplp.Solver.FEASIBLE: 'FEASIBLE',
+        pywraplp.Solver.INFEASIBLE: 'INFEASIBLE',
+        pywraplp.Solver.UNBOUNDED: 'UNBOUNDED',
+        pywraplp.Solver.ABNORMAL: 'ABNORMAL',
+        pywraplp.Solver.NOT_SOLVED: 'NOT_SOLVED',
+    }
+    CBC_TIMEOUT_IN_SECONDS = 60
 
     control_count, sample_count = incidence.shape
 

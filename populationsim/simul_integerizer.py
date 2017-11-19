@@ -9,31 +9,11 @@ import pandas as pd
 from util import setting
 
 from .integerizer import smart_round
-from .integerizer import USE_CVXPY
 from .sequential_integerizer import do_sequential_integerizing
 
-HAVE_SIMUL_INTEGERIZER = False
-if USE_CVXPY:
 
-    import cylp
-    import cvxpy as cvx
-
-    STATUS_TEXT = {
-        cvx.OPTIMAL: 'OPTIMAL',
-        cvx.INFEASIBLE: 'INFEASIBLE',
-        cvx.UNBOUNDED: 'UNBOUNDED',
-        cvx.OPTIMAL_INACCURATE: 'OPTIMAL_INACCURATE',
-        cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
-        cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
-        None: 'FAILED'
-    }
-
-    STATUS_SUCCESS = ['OPTIMAL', 'OPTIMAL_INACCURATE']
-    DEFAULT_CVX_SOLVER = 'CBC'
-    CVX_MAX_ITERS = 1000
-
-    HAVE_SIMUL_INTEGERIZER = True
-
+STATUS_SUCCESS = ['OPTIMAL', 'OPTIMAL_INACCURATE']
+CVX_MAX_ITERS = 1000
 
 
 logger = logging.getLogger(__name__)
@@ -75,6 +55,20 @@ class SimulIntegerizer(object):
         self.parent_countrol_importance = parent_control_spec.importance
 
     def integerize(self):
+
+        import cvxpy as cvx
+
+        STATUS_TEXT = {
+            cvx.OPTIMAL: 'OPTIMAL',
+            cvx.INFEASIBLE: 'INFEASIBLE',
+            cvx.UNBOUNDED: 'UNBOUNDED',
+            cvx.OPTIMAL_INACCURATE: 'FEASIBLE',  # for compatability with ortools
+            cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
+            cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
+            None: 'FAILED'
+        }
+        CVX_MAX_ITERS = 1000
+        CVX_SOLVER = setting('CVX_SOLVER')
 
         # - subzone
 
@@ -215,7 +209,6 @@ class SimulIntegerizer(object):
 
         prob = cvx.Problem(objective, constraints)
 
-        CVX_SOLVER = setting('CVX_SOLVER', DEFAULT_CVX_SOLVER)
         assert CVX_SOLVER in cvx.installed_solvers(), \
             "CVX Solver '%s' not in installed solvers %s." % (CVX_SOLVER, cvx.installed_solvers())
         logger.info("integerizing with '%s' solver." % CVX_SOLVER)
@@ -402,7 +395,8 @@ def do_simul_integerizing(
         plus columns for household id, and sub_geography zone ids
     """
 
-    assert HAVE_SIMUL_INTEGERIZER
+    assert setting('USE_CVXPY'), \
+        "simul integerizer requires CVX but setting 'USE_CVXPY' = %s" % setting('USE_CVXPY')
 
     # try simultaneous integerization of all subzones
     status,  integerized_weights_df = try_simul_integerizing(
