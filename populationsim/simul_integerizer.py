@@ -9,14 +9,26 @@ import pandas as pd
 from util import setting
 
 from .integerizer import smart_round
+from .integerizer import use_cvxpy
 from .sequential_integerizer import do_sequential_integerizing
 
 
 STATUS_SUCCESS = ['OPTIMAL', 'OPTIMAL_INACCURATE']
 CVX_MAX_ITERS = 1000
 
+CVX_SOLVER = 'CBC'
+# CVX_SOLVER = 'GLPK_MI
+# CVX_SOLVER = 'ECOS_BB'
 
 logger = logging.getLogger(__name__)
+
+
+def log_settings():
+    logger.info("have_simul_integerizer: %s" % have_simul_integerizer())
+
+
+def have_simul_integerizer():
+    return use_cvxpy()
 
 
 class SimulIntegerizer(object):
@@ -56,20 +68,6 @@ class SimulIntegerizer(object):
 
     def integerize(self):
 
-        import cvxpy as cvx
-
-        STATUS_TEXT = {
-            cvx.OPTIMAL: 'OPTIMAL',
-            cvx.INFEASIBLE: 'INFEASIBLE',
-            cvx.UNBOUNDED: 'UNBOUNDED',
-            cvx.OPTIMAL_INACCURATE: 'FEASIBLE',  # for compatability with ortools
-            cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
-            cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
-            None: 'FAILED'
-        }
-        CVX_MAX_ITERS = 1000
-        CVX_SOLVER = setting('CVX_SOLVER')
-
         # - subzone
 
         total_hh_sub_control_index = \
@@ -77,9 +75,6 @@ class SimulIntegerizer(object):
 
         sub_incidence = self.incidence_df[self.sub_controls_df.columns]
         sub_incidence = sub_incidence.as_matrix().astype(np.float64)
-
-        sample_count, sub_control_count = sub_incidence.shape
-        sub_zone_count = len(self.sub_weights.columns)
 
         sub_float_weights = self.sub_weights.as_matrix().transpose().astype(np.float64)
         sub_int_weights = sub_float_weights.astype(int)
@@ -105,11 +100,8 @@ class SimulIntegerizer(object):
         total_hh_right_hand_side = lp_right_hand_side[:, total_hh_sub_control_index]
 
         # - parent
-
         parent_incidence = self.incidence_df[self.parent_countrol_cols]
         parent_incidence = parent_incidence.as_matrix().astype(np.float64)
-
-        _, parent_control_count = parent_incidence.shape
 
         # note:
         # sum(sub_int_weights) might be different from parent_float_weights.astype(int)
@@ -141,92 +133,33 @@ class SimulIntegerizer(object):
         # how could this not be the case?
         assert (parent_hh_constraint_ge_bound == parent_max_possible_control_values).all()
 
-        #################################################
-
-        # - Decision variables for optimization
-        x = cvx.Variable(sub_zone_count, sample_count)
-
-        # x range is 0.0 to 1.0 unless resid_weights is zero, in which case constrain x to 0.0
-        x_max = (~(sub_float_weights == sub_int_weights)).astype(float)
-
-        # - Create positive continuous constraint relaxation variables
-        relax_le = cvx.Variable(sub_zone_count, sub_control_count)
-        relax_ge = cvx.Variable(sub_zone_count, sub_control_count)
-
-        parent_relax_le = cvx.Variable(parent_control_count)
-        parent_relax_ge = cvx.Variable(parent_control_count)
-
-        # - Set objective
-
-        LOG_OVERFLOW = -725
-        log_resid_weights = np.log(np.maximum(sub_resid_weights, np.exp(LOG_OVERFLOW))).flatten('F')
-        assert not np.isnan(log_resid_weights).any()
-
-        log_parent_resid_weights = \
-            np.log(np.maximum(parent_resid_weights, np.exp(LOG_OVERFLOW))).flatten('F')
-        assert not np.isnan(log_parent_resid_weights).any()
-
-        # subzone and parent objective and relaxation penalties
-        # note: cvxpy overloads * so * in following is matrix multiplication
-        objective = cvx.Maximize(
-            cvx.sum_entries(cvx.mul_elemwise(log_resid_weights, cvx.vec(x))) +
-            cvx.sum_entries(cvx.mul_elemwise(log_parent_resid_weights, cvx.vec(cvx.sum_entries(x, axis=0)))) -        # nopep8
-            cvx.sum_entries(relax_le * sub_countrol_importance) -
-            cvx.sum_entries(relax_ge * sub_countrol_importance) -
-            cvx.sum_entries(cvx.mul_elemwise(parent_countrol_importance, parent_relax_le)) -
-            cvx.sum_entries(cvx.mul_elemwise(parent_countrol_importance, parent_relax_ge))
-            )
-
-        constraints = [
-            (x * sub_incidence) - relax_le >= 0,
-            (x * sub_incidence) - relax_le <= lp_right_hand_side,
-            (x * sub_incidence) + relax_ge >= lp_right_hand_side,
-            (x * sub_incidence) + relax_ge <= hh_constraint_ge_bound,
-
-            x >= 0.0,
-            x <= x_max,
-
-            relax_le >= 0.0,
-            relax_le <= lp_right_hand_side,
-
-            relax_ge >= 0.0,
-            relax_ge <= relax_ge_upper_bound,
-
-            # # equality constraint for the total households control
-            cvx.sum_entries(x, axis=1) == total_hh_right_hand_side,
-
-            cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) - parent_relax_le >= 0,                              # nopep8
-            cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) - parent_relax_le <= parent_lp_right_hand_side,      # nopep8
-            cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) + parent_relax_ge >= parent_lp_right_hand_side,      # nopep8
-            cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) + parent_relax_ge <= parent_hh_constraint_ge_bound,  # nopep8
-
-            parent_relax_le >= 0.0,
-            parent_relax_le <= parent_lp_right_hand_side,
-
-            parent_relax_ge >= 0.0,
-            parent_relax_ge <= parent_relax_ge_upper_bound,
-        ]
-
-        prob = cvx.Problem(objective, constraints)
-
-        assert CVX_SOLVER in cvx.installed_solvers(), \
-            "CVX Solver '%s' not in installed solvers %s." % (CVX_SOLVER, cvx.installed_solvers())
-        logger.info("integerizing with '%s' solver." % CVX_SOLVER)
-
-        try:
-            prob.solve(solver=CVX_SOLVER, verbose=True, max_iters=CVX_MAX_ITERS)
-        except cvx.SolverError as e:
-            logging.warning('Solver error in SimulIntegerizer: %s' % e)
-
-        # if we got a result
-        if np.any(x.value):
-            resid_weights_out = np.asarray(x.value)
+        if use_cvxpy():
+            integerizer_func = np_integerize_cvx
         else:
-            resid_weights_out = sub_resid_weights
+            integerizer_func = np_integerize_ortools
+
+        resid_weights_out, status_text = \
+            integerizer_func(sub_int_weights,
+                             parent_countrol_importance,
+                             parent_relax_ge_upper_bound,
+                             sub_countrol_importance,
+                             sub_float_weights,
+                             sub_resid_weights,
+                             lp_right_hand_side,
+                             parent_hh_constraint_ge_bound,
+                             sub_incidence,
+                             parent_incidence,
+                             total_hh_right_hand_side,
+                             relax_ge_upper_bound,
+                             parent_lp_right_hand_side,
+                             hh_constraint_ge_bound,
+                             parent_resid_weights)
 
         # smart round resid_weights_out for each sub_zone
         total_household_controls = sub_control_totals[:, total_hh_sub_control_index].flatten()
         integerized_weights = np.empty_like(sub_int_weights)
+
+        sub_zone_count = len(self.sub_weights.columns)
         for i in range(sub_zone_count):
             integerized_weights[i] = \
                 smart_round(sub_int_weights[i], resid_weights_out[i], total_household_controls[i])
@@ -236,7 +169,165 @@ class SimulIntegerizer(object):
                                                 columns=self.sub_weights.columns,
                                                 index=self.incidence_df.index)
 
-        return STATUS_TEXT[prob.status]
+        return status_text
+
+
+def np_integerize_cvx(sub_int_weights,
+                      parent_countrol_importance,
+                      parent_relax_ge_upper_bound,
+                      sub_countrol_importance,
+                      sub_float_weights,
+                      sub_resid_weights,
+                      lp_right_hand_side,
+                      parent_hh_constraint_ge_bound,
+                      sub_incidence,
+                      parent_incidence,
+                      total_hh_right_hand_side,
+                      relax_ge_upper_bound,
+                      parent_lp_right_hand_side,
+                      hh_constraint_ge_bound,
+                      parent_resid_weights):
+
+    import cvxpy as cvx
+
+    STATUS_TEXT = {
+        cvx.OPTIMAL: 'OPTIMAL',
+        cvx.INFEASIBLE: 'INFEASIBLE',
+        cvx.UNBOUNDED: 'UNBOUNDED',
+        cvx.OPTIMAL_INACCURATE: 'FEASIBLE',  # for compatability with ortools
+        cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
+        cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
+        None: 'FAILED'
+    }
+    CVX_MAX_ITERS = 1000
+
+    sample_count, sub_control_count = sub_incidence.shape
+    _, parent_control_count = parent_incidence.shape
+    sub_zone_count, _ = sub_float_weights.shape
+
+    # - Decision variables for optimization
+    x = cvx.Variable(sub_zone_count, sample_count)
+
+    # x range is 0.0 to 1.0 unless resid_weights is zero, in which case constrain x to 0.0
+    x_max = (~(sub_float_weights == sub_int_weights)).astype(float)
+
+    # - Create positive continuous constraint relaxation variables
+    relax_le = cvx.Variable(sub_zone_count, sub_control_count)
+    relax_ge = cvx.Variable(sub_zone_count, sub_control_count)
+
+    parent_relax_le = cvx.Variable(parent_control_count)
+    parent_relax_ge = cvx.Variable(parent_control_count)
+
+    # - Set objective
+
+    LOG_OVERFLOW = -725
+    log_resid_weights = np.log(np.maximum(sub_resid_weights, np.exp(LOG_OVERFLOW))).flatten('F')
+    assert not np.isnan(log_resid_weights).any()
+
+    log_parent_resid_weights = \
+        np.log(np.maximum(parent_resid_weights, np.exp(LOG_OVERFLOW))).flatten('F')
+    assert not np.isnan(log_parent_resid_weights).any()
+
+    # subzone and parent objective and relaxation penalties
+    # note: cvxpy overloads * so * in following is matrix multiplication
+    objective = cvx.Maximize(
+        cvx.sum_entries(cvx.mul_elemwise(log_resid_weights, cvx.vec(x))) +
+        cvx.sum_entries(cvx.mul_elemwise(log_parent_resid_weights, cvx.vec(cvx.sum_entries(x, axis=0)))) -  # nopep8
+        cvx.sum_entries(relax_le * sub_countrol_importance) -
+        cvx.sum_entries(relax_ge * sub_countrol_importance) -
+        cvx.sum_entries(cvx.mul_elemwise(parent_countrol_importance, parent_relax_le)) -
+        cvx.sum_entries(cvx.mul_elemwise(parent_countrol_importance, parent_relax_ge))
+    )
+
+    constraints = [
+        (x * sub_incidence) - relax_le >= 0,
+        (x * sub_incidence) - relax_le <= lp_right_hand_side,
+        (x * sub_incidence) + relax_ge >= lp_right_hand_side,
+        (x * sub_incidence) + relax_ge <= hh_constraint_ge_bound,
+
+        x >= 0.0,
+        x <= x_max,
+
+        relax_le >= 0.0,
+        relax_le <= lp_right_hand_side,
+
+        relax_ge >= 0.0,
+        relax_ge <= relax_ge_upper_bound,
+
+        # # equality constraint for the total households control
+        cvx.sum_entries(x, axis=1) == total_hh_right_hand_side,
+
+        cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) - parent_relax_le >= 0,                              # nopep8
+        cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) - parent_relax_le <= parent_lp_right_hand_side,      # nopep8
+        cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) + parent_relax_ge >= parent_lp_right_hand_side,      # nopep8
+        cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) + parent_relax_ge <= parent_hh_constraint_ge_bound,  # nopep8
+
+        parent_relax_le >= 0.0,
+        parent_relax_le <= parent_lp_right_hand_side,
+
+        parent_relax_ge >= 0.0,
+        parent_relax_ge <= parent_relax_ge_upper_bound,
+    ]
+
+    prob = cvx.Problem(objective, constraints)
+
+    assert CVX_SOLVER in cvx.installed_solvers(), \
+        "CVX Solver '%s' not in installed solvers %s." % (
+        CVX_SOLVER, cvx.installed_solvers())
+    logger.info("integerizing with '%s' solver." % CVX_SOLVER)
+
+    try:
+        prob.solve(solver=CVX_SOLVER, verbose=True, max_iters=CVX_MAX_ITERS)
+    except cvx.SolverError as e:
+        logging.warning('Solver error in SimulIntegerizer: %s' % e)
+
+    # if we got a result
+    if np.any(x.value):
+        resid_weights_out = np.asarray(x.value)
+    else:
+        resid_weights_out = sub_resid_weights
+
+    status_text = STATUS_TEXT[prob.status]
+
+    return resid_weights_out, status_text
+
+
+def np_integerize_ortools(sub_int_weights,
+                          parent_countrol_importance,
+                          parent_relax_ge_upper_bound,
+                          sub_countrol_importance,
+                          sub_float_weights,
+                          sub_resid_weights,
+                          lp_right_hand_side,
+                          parent_hh_constraint_ge_bound,
+                          sub_incidence,
+                          parent_incidence,
+                          total_hh_right_hand_side,
+                          relax_ge_upper_bound,
+                          parent_lp_right_hand_side,
+                          hh_constraint_ge_bound,
+                          parent_resid_weights):
+
+    from ortools.linear_solver import pywraplp
+
+    STATUS_TEXT = {
+        pywraplp.Solver.OPTIMAL: 'OPTIMAL',
+        pywraplp.Solver.FEASIBLE: 'FEASIBLE',
+        pywraplp.Solver.INFEASIBLE: 'INFEASIBLE',
+        pywraplp.Solver.UNBOUNDED: 'UNBOUNDED',
+        pywraplp.Solver.ABNORMAL: 'ABNORMAL',
+        pywraplp.Solver.NOT_SOLVED: 'NOT_SOLVED',
+    }
+    CBC_TIMEOUT_IN_SECONDS = 60
+
+    sample_count, sub_control_count = sub_incidence.shape
+    _, parent_control_count = parent_incidence.shape
+    sub_zone_count, _ = sub_float_weights.shape
+
+    # - Instantiate a mixed-integer solver
+    solver = pywraplp.Solver('IntegerizeCbc', pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
+
+    return resid_weights_out, status_text
 
 
 def try_simul_integerizing(
@@ -394,9 +485,6 @@ def do_simul_integerizing(
         canonical form weight table, with columns for 'balanced_weight', 'integer_weight'
         plus columns for household id, and sub_geography zone ids
     """
-
-    assert setting('USE_CVXPY'), \
-        "simul integerizer requires CVX but setting 'USE_CVXPY' = %s" % setting('USE_CVXPY')
 
     # try simultaneous integerization of all subzones
     status,  integerized_weights_df = try_simul_integerizing(

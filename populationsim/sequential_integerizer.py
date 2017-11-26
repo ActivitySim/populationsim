@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 def do_sequential_integerizing(
         trace_label,
         incidence_df,
-        sub_weights, sub_controls,
+        sub_weights, sub_controls_df,
         control_spec, total_hh_control_col,
         sub_control_zones,
         sub_geography,
@@ -84,7 +84,7 @@ def do_sequential_integerizing(
         integer_weights, status = do_integerizing(
             trace_label=sub_trace_label,
             control_spec=control_spec,
-            control_totals=sub_controls.loc[zone_id],
+            control_totals=sub_controls_df.loc[zone_id],
             incidence_table=incidence_df[control_spec.target],
             float_weights=weights,
             total_hh_control_col=total_hh_control_col

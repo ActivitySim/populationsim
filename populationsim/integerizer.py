@@ -8,10 +8,25 @@ import pandas as pd
 from util import setting
 
 from activitysim.core import tracing
+from activitysim.core import inject
 
 logger = logging.getLogger(__name__)
 
 STATUS_SUCCESS = ['OPTIMAL', 'FEASIBLE']
+
+# CVX_SOLVER = 'CBC'
+CVX_SOLVER = 'GLPK_MI'
+# CVX_SOLVER = 'ECOS_BB'
+
+
+def log_settings():
+
+    logger.info("USE_CVXPY: %s" % use_cvxpy())
+
+
+def use_cvxpy():
+
+    return inject.get_injectable('USE_CVXPY', default=setting('USE_CVXPY', False))
 
 
 def smart_round(int_weights, resid_weights, target_sum):
@@ -106,7 +121,7 @@ class Integerizer(object):
         assert len(control_is_hh_based) == control_count
         assert len(self.incidence_table.columns) == control_count
 
-        if setting('USE_CVXPY'):
+        if use_cvxpy():
 
             int_weights, resid_weights, status = np_integerizer_cvx(
                 incidence=incidence,
@@ -159,7 +174,6 @@ def np_integerizer_cvx(incidence,
         None: 'FAILED'
     }
     CVX_MAX_ITERS = 300
-    CVX_SOLVER = setting('CVX_SOLVER')
 
     assert not np.isnan(incidence).any()
     assert not np.isnan(float_weights).any()

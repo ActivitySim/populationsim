@@ -3,11 +3,7 @@ INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
 GROUP_BY_INCIDENCE_SIGNATURE: True
 
-USE_SIMUL_INTEGERIZER: True
 USE_CVXPY: True
-CVX_SOLVER: 'CBC'
-# CVX_SOLVER: 'GLPK_MI
-# CVX_SOLVER: 'ECOS_BB'
 
 
 geographies: [DISTRICT, PUMA, TRACT, TAZ]
@@ -61,7 +57,7 @@ run_list:
     - write_results
     - summarize
 
-  #resume_after: integerize_final_seed_weights
+  #resume_after: final_seed_balancing
 
 # expand_households options are append or replace
 repop:
@@ -95,12 +91,12 @@ repop_input_table_list:
 #    - households
 #    - persons
 #
-output_tables:
-  action: include
-  tables:
-    - expanded_household_ids
-    - synthetic_households
-    - synthetic_persons
+#output_tables:
+#  action: include
+#  tables:
+#    - expanded_household_ids
+#    - synthetic_households
+#    - synthetic_persons
 
 synthetic_tables:
   households:

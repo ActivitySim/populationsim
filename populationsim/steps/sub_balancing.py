@@ -17,6 +17,7 @@ from helper import get_control_table
 from helper import weight_table_name
 from helper import get_weight_table
 
+from ..simul_integerizer import have_simul_integerizer
 from ..simul_integerizer import do_simul_integerizing
 
 from ..sequential_integerizer import do_sequential_integerizing
@@ -137,7 +138,7 @@ def integerize(
         plus columns for household id, parent and sub_geography zone ids
     """
 
-    if setting('USE_SIMUL_INTEGERIZER'):
+    if have_simul_integerizer():
 
         integer_weights_df = do_simul_integerizing(
             trace_label="%s_%s" % (parent_geography, parent_id),
@@ -149,13 +150,14 @@ def integerize(
             sub_geography=sub_geography,
             sub_control_zones=sub_control_zones
         )
+
     else:
 
         integer_weights_df = do_sequential_integerizing(
             trace_label="%s_%s" % (parent_geography, parent_id),
             incidence_df=incidence_df,
             sub_weights=sub_zone_weights,
-            sub_controls=sub_controls_df,
+            sub_controls_df=sub_controls_df,
             control_spec=control_spec,
             total_hh_control_col=total_hh_control_col,
             sub_geography=sub_geography,
@@ -163,6 +165,16 @@ def integerize(
         )
 
     integer_weights_df[parent_geography] = parent_id
+
+    # output_dir = inject.get_injectable('output_dir')
+    # incidence_df.to_csv(os.path.join(output_dir, 'incidence_df.csv'), index=True)
+    # sub_zone_weights.to_csv(os.path.join(output_dir, 'sub_weights.csv'), index=True)
+    # sub_controls_df.to_csv(os.path.join(output_dir, 'sub_controls_df.csv'), index=True)
+    # control_spec.to_csv(os.path.join(output_dir, 'control_spec.csv'), index=True)
+    # incidence_df.to_csv(os.path.join(output_dir, 'incidence_df.csv'), index=True)
+    # sub_control_zones.to_csv(os.path.join(output_dir, 'sub_control_zones.csv'), index=True)
+    # integer_weights_df.to_csv(os.path.join(output_dir, 'integer_weights_df.csv'), index=True)
+    # assert False
 
     return integer_weights_df
 

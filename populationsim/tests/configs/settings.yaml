@@ -3,12 +3,6 @@ INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
 GROUP_BY_INCIDENCE_SIGNATURE: True
 
-USE_SIMUL_INTEGERIZER: False
-USE_CVXPY: False
-CVX_SOLVER: 'CBC'
-# CVX_SOLVER: 'GLPK_MI
-# CVX_SOLVER: 'ECOS_BB': False
-
 household_weight_col: WGTP
 household_id_col: hh_id
 total_hh_control: num_hh

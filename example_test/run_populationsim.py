@@ -13,6 +13,7 @@ from activitysim.core.config import handle_standard_args
 from populationsim import steps
 from populationsim.util import setting
 from populationsim import integerizer
+from populationsim import simul_integerizer
 
 
 handle_standard_args()
@@ -22,10 +23,6 @@ tracing.config_logger()
 t0 = print_elapsed_time()
 
 logger = logging.getLogger('populationsim')
-
-logger.info("USE_CVXPY: %s" % setting('USE_CVXPY'))
-logger.info("CVX_SOLVER: %s" % setting('CVX_SOLVER'))
-logger.info("USE_SIMUL_INTEGERIZER: %s" % setting('USE_SIMUL_INTEGERIZER'))
 
 logger.info("GROUP_BY_INCIDENCE_SIGNATURE: %s"
             % setting('GROUP_BY_INCIDENCE_SIGNATURE'))
@@ -37,6 +34,10 @@ logger.info("meta_control_data: %s"
             % setting('meta_control_data'))
 logger.info("control_file_name: %s"
             % setting('control_file_name'))
+
+integerizer.log_settings()
+simul_integerizer.log_settings()
+
 
 # get the run list (name was possibly specified on the command line)
 run_list_name = inject.get_injectable('run_list_name', 'run_list')
