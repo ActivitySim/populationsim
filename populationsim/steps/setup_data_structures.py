@@ -207,6 +207,9 @@ def build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
     group_incidence_table['group_size'] = hh_grouper.count()['sample_weight']
     group_incidence_table = group_incidence_table.reset_index()
 
+    print "\nhh_groupby_cols\n", hh_groupby_cols
+    inject.add_table('hh_incidence_table', hh_incidence_table)
+
     logger.info("grouped incidence table has %s entries, ungrouped has %s"
                 % (len(group_incidence_table.index), len(hh_incidence_table.index)))
 

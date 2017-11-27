@@ -43,6 +43,14 @@ def input_pre_processor():
         logger.info("Reading csv file %s" % data_file_path)
         df = pd.read_csv(data_file_path, comment='#')
 
+        print df.columns
+
+        drop_columns = table_info.get('drop_columns', None)
+        if drop_columns:
+            for c in drop_columns:
+                logger.info("dropping column '%s'" % c)
+                del df[c]
+
         # rename columns
         column_map = table_info.get('column_map', None)
         if column_map:
@@ -52,6 +60,7 @@ def input_pre_processor():
         index_col = table_info.get('index_col', None)
         if index_col is not None:
             if index_col in df.columns:
+                assert not df.duplicated(index_col).any()
                 df.set_index(index_col, inplace=True)
             else:
                 df.index.names = [index_col]

@@ -29,13 +29,26 @@ input_table_list:
     filename : seed_households.csv
     index_col: hh_id
     column_map:
-      SERIALNO: hh_id
+      # not sure what SERIALNO is, but it is not unique
+      #SERIALNO: hh_id
+      hhnum: hh_id
   - tablename: persons
     # expression_filename: seed_persons_expressions.csv
     filename : seed_persons.csv
     column_map:
-      SERIALNO: hh_id
+      # SERIALNO: hh_id
+      hhnum: hh_id
       SPORDER: per_num
+    # drop mixed type fields that appear to have been incorrectly generated
+    drop_columns:
+      - indp02
+      - naicsp02
+      - occp02
+      - socp00
+      - occp10
+      - socp10
+      - indp07
+      - naicsp07
   - tablename: geo_cross_walk
     filename : geo_cross_walk.csv
     column_map:
@@ -52,11 +65,11 @@ input_table_list:
 # output_tables can specify either a list of output tables to include or to skip
 # if neither is specified, then all checkpointed tables will be written
 
-#output_tables:
-#  action: skip
-#  tables:
-#    - households
-#    - persons
+output_tables:
+  action: skip
+  tables:
+    - households
+    - persons
 #
 #output_tables:
 #  action: include
@@ -72,8 +85,8 @@ run_list:
     - meta_control_factoring
     - final_seed_balancing
     - integerize_final_seed_weights
-    - sub_balancing.geography=TRACT
-    - sub_balancing.geography=TAZ
+#    - sub_balancing.geography=TRACT
+#    - sub_balancing.geography=TAZ
 #    - expand_households
     - write_results
     - summarize
