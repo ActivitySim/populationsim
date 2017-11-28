@@ -17,7 +17,7 @@ from helper import get_control_table
 from helper import weight_table_name
 from helper import get_weight_table
 
-from ..simul_integerizer import have_simul_integerizer
+from ..simul_integerizer import use_simul_integerizer
 from ..simul_integerizer import do_simul_integerizing
 
 from ..sequential_integerizer import do_sequential_integerizing
@@ -138,7 +138,7 @@ def integerize(
         plus columns for household id, parent and sub_geography zone ids
     """
 
-    if have_simul_integerizer():
+    if use_simul_integerizer():
 
         integer_weights_df = do_simul_integerizing(
             trace_label="%s_%s" % (parent_geography, parent_id),

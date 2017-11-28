@@ -16,8 +16,8 @@ from .sequential_integerizer import do_sequential_integerizing
 STATUS_SUCCESS = ['OPTIMAL', 'OPTIMAL_INACCURATE']
 CVX_MAX_ITERS = 1000
 
-CVX_SOLVER = 'CBC'
-# CVX_SOLVER = 'GLPK_MI
+# CVX_SOLVER = 'CBC'
+CVX_SOLVER = 'GLPK_MI'
 # CVX_SOLVER = 'ECOS_BB'
 
 logger = logging.getLogger(__name__)
@@ -25,10 +25,23 @@ logger = logging.getLogger(__name__)
 
 def log_settings():
     logger.info("have_simul_integerizer: %s" % have_simul_integerizer())
+    logger.info("use_simul_integerizer: %s" % use_simul_integerizer())
 
 
 def have_simul_integerizer():
+
     return use_cvxpy()
+
+
+def use_simul_integerizer():
+
+    # use_simul_integerizer it if we can it unless told not to
+    _use_simul_integerizer = setting('USE_SIMUL_INTEGERIZER', have_simul_integerizer())
+
+    if _use_simul_integerizer:
+        assert have_simul_integerizer()
+
+    return _use_simul_integerizer
 
 
 class SimulIntegerizer(object):
@@ -274,7 +287,7 @@ def np_integerize_cvx(sub_int_weights,
     assert CVX_SOLVER in cvx.installed_solvers(), \
         "CVX Solver '%s' not in installed solvers %s." % (
         CVX_SOLVER, cvx.installed_solvers())
-    logger.info("integerizing with '%s' solver." % CVX_SOLVER)
+    logger.info("simul_integerizing with '%s' solver." % CVX_SOLVER)
 
     try:
         prob.solve(solver=CVX_SOLVER, verbose=True, max_iters=CVX_MAX_ITERS)

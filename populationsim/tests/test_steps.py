@@ -148,3 +148,4 @@ def test_full_run2_repop_append():
     pipeline.close_pipeline()
 
     orca.clear_cache()
+
