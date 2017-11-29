@@ -3,12 +3,15 @@
 
 import logging
 
+import os
+
 import numpy as np
 import pandas as pd
 from util import setting
 
 from activitysim.core import tracing
 from activitysim.core import inject
+from activitysim.core.tracing import print_elapsed_time
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +111,34 @@ class Integerizer(object):
 
         self.trace_label = trace_label
 
+    def regress(self, float_weights, resid_weights, integerized_weights):
+
+        #return
+
+        data_file_path = "./regress/integerize_%s.csv" % self.trace_label
+
+        WRITE_REGRESS = not os.path.exists(data_file_path)
+
+        if WRITE_REGRESS:
+            regress = pd.DataFrame(index=self.incidence_table.index)
+            regress['integerized_weight'] = integerized_weights
+            regress['float_weights'] = float_weights
+            regress['resid_weights'] = resid_weights
+            regress.to_csv(data_file_path, index=True)
+        else:
+            regress = pd.read_csv(data_file_path, comment='#')
+            regress.set_index('hh_id', inplace=True)
+            regress['new_resid_weights'] = resid_weights
+            digits = 10
+            dif = (regress.resid_weights.round(digits).astype(str) !=
+                   regress.new_resid_weights.round(digits).astype(str)).sum()
+
+            if dif > 0:
+                regress.to_csv(data_file_path, index=True)
+                assert False, "regression error %s resid weights do not match, check %s" % \
+                              (dif, data_file_path)
+
+
     def integerize(self):
 
         sample_count = len(self.incidence_table.index)
@@ -127,6 +158,7 @@ class Integerizer(object):
         assert (relaxed_control_totals == np.round(relaxed_control_totals)).all()
         assert not np.isnan(incidence).any()
         assert not np.isnan(float_weights).any()
+        assert (incidence[self.total_hh_control_index] == 1).all()
 
         int_weights = float_weights.astype(int)
         resid_weights = float_weights % 1.0
@@ -169,61 +201,33 @@ class Integerizer(object):
             logger.warn("Integerizer: %s zero resid_weights" % ((resid_weights == 0).sum(),))
             assert False
 
-
         if use_cvxpy():
-
-            int_weights, resid_weights, status = np_integerizer_cvx(
-                incidence=incidence,
-                float_weights=float_weights,
-                int_weights=int_weights,
-                resid_weights=resid_weights,
-                log_resid_weights=log_resid_weights,
-                control_importance_weights=control_importance_weights,
-                total_hh_control_index=self.total_hh_control_index,
-                lp_right_hand_side=lp_right_hand_side,
-                relax_ge_upper_bound=relax_ge_upper_bound,
-                hh_constraint_ge_bound=hh_constraint_ge_bound
-            )
+            integerizer_func = np_integerizer_cvx
         else:
+            integerizer_func = np_integerizer_cbc
 
-            int_weights, resid_weights, status = np_integerizer_cbc(
-                incidence=incidence,
-                float_weights=float_weights,
-                int_weights=int_weights,
-                resid_weights=resid_weights,
-                log_resid_weights=log_resid_weights,
-                control_importance_weights=control_importance_weights,
-                total_hh_control_index=self.total_hh_control_index,
-                lp_right_hand_side=lp_right_hand_side,
-                relax_ge_upper_bound=relax_ge_upper_bound,
-                hh_constraint_ge_bound=hh_constraint_ge_bound
-            )
+        int_weights, resid_weights, status = integerizer_func(
+            incidence=incidence,
+            float_weights=float_weights,
+            int_weights=int_weights,
+            resid_weights=resid_weights,
+            log_resid_weights=log_resid_weights,
+            control_importance_weights=control_importance_weights,
+            total_hh_control_index=self.total_hh_control_index,
+            lp_right_hand_side=lp_right_hand_side,
+            relax_ge_upper_bound=relax_ge_upper_bound,
+            hh_constraint_ge_bound=hh_constraint_ge_bound
+        )
 
         integerized_weights = smart_round(int_weights, resid_weights, self.total_hh_control_value)
+
+        self.regress(float_weights, resid_weights, integerized_weights)
 
         self.weights = pd.DataFrame(index=self.incidence_table.index)
         self.weights['integerized_weight'] = integerized_weights
 
         delta = (integerized_weights != np.round(float_weights)).sum()
         logger.debug("Integerizer: %s out of %s different from round" % (delta, len(float_weights)))
-
-        #REGRESS
-        data_file_path = "./regress/integerize_%s.csv" % self.trace_label
-        WRITE_REGRESS = False
-        REGRESS = not WRITE_REGRESS
-        if WRITE_REGRESS:
-            self.weights['float_weights'] = float_weights
-            self.weights['resid_weights'] = resid_weights
-            self.weights.to_csv(data_file_path, index=True)
-        if REGRESS:
-            regress = pd.read_csv(data_file_path, comment='#')
-            regress.set_index('hh_id', inplace=True)
-            self.weights['resid_weights'] = resid_weights
-            if not (regress.resid_weights.round(10) == self.weights.resid_weights.round(10)).all():
-                regress['new_resid_weights'] = resid_weights
-                regress.to_csv(data_file_path, index=True)
-                assert False, "resid weights do not match, check %s" % data_file_path
-        # REGRESS
 
         return status
 
@@ -278,6 +282,7 @@ def np_integerizer_cvx(incidence,
     x_max = (~(float_weights == int_weights)).astype(float).reshape((1, -1))
 
     constraints = [
+        # - inequality constraints
         cvx.vec(x * incidence) - relax_le >= 0,
         cvx.vec(x * incidence) - relax_le <= lp_right_hand_side,
         cvx.vec(x * incidence) + relax_ge >= lp_right_hand_side,
@@ -292,7 +297,7 @@ def np_integerizer_cvx(incidence,
         relax_ge >= 0.0,
         relax_ge <= relax_ge_upper_bound,
 
-        # equality constraint for the total households control
+        # - equality constraint for the total households control
         cvx.sum_entries(x) == total_hh_constraint,
     ]
 
@@ -348,21 +353,12 @@ def np_integerizer_cbc(incidence,
     # - Instantiate a mixed-integer solver
     solver = pywraplp.Solver('IntegerizeCbc', pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
 
-    #### objective = cvx.Maximize(
-    ####     cvx.sum_entries(cvx.mul_elemwise(log_resid_weights, cvx.vec(x))) -
-    ####     cvx.sum_entries(cvx.mul_elemwise(control_importance_weights, relax_le)) -
-    ####     cvx.sum_entries(cvx.mul_elemwise(control_importance_weights, relax_ge))
-    #### )
-
     # - Create binary integer variables
     x = [[]] * sample_count
     for hh in range(0, sample_count):
-        # if final_weights is an int
-        if float_weights[hh] == int_weights[hh]:
-            # FIXME - or should we slice them out beforehand?
-            x[hh] = solver.NumVar(0.0, 0.0, 'x_' + str(hh))
-        else:
-            x[hh] = solver.NumVar(0.0, 1.0, 'x_' + str(hh))
+        # max_x == 0.0 if float_weights is an int, otherwise 1.0
+        max_x = 1.0 - (resid_weights[hh] == 0.0)
+        x[hh] = solver.NumVar(0.0, max_x, 'x_' + str(hh))
 
     # - Create positive continuous constraint relaxation variables
     relax_le = [[]] * control_count
@@ -375,13 +371,19 @@ def np_integerizer_cbc(incidence,
 
     # - Set objective function coefficients
     # use negative for objective and positive for relaxation penalties since solver is minimizing
-    objective = solver.Objective()
-    for hh in range(0, sample_count):
-        objective.SetCoefficient(x[hh], -log_resid_weights[hh])
-    for c in range(0, control_count):
-        if c != total_hh_control_index:
-            objective.SetCoefficient(relax_le[c], control_importance_weights[c])
-            objective.SetCoefficient(relax_ge[c], control_importance_weights[c])
+    # objective = solver.Objective()
+    # for hh in range(sample_count):
+    #     objective.SetCoefficient(x[hh], -1.0 * log_resid_weights[hh])
+    # for c in range(control_count):
+    #     if c != total_hh_control_index:
+    #         objective.SetCoefficient(relax_le[c], control_importance_weights[c])
+    #         objective.SetCoefficient(relax_ge[c], control_importance_weights[c])
+
+    z = solver.Sum(x[hh] * log_resid_weights[hh] for hh in range(sample_count)) - \
+        solver.Sum(relax_le[c] * control_importance_weights[c] for c in range(control_count) if c != total_hh_control_index) - \
+        solver.Sum(relax_ge[c] * control_importance_weights[c] for c in range(control_count) if c != total_hh_control_index)
+
+    objective = solver.Maximize(z)
 
     # - inequality constraints
     hh_constraint_ge = [[]] * control_count
@@ -402,16 +404,32 @@ def np_integerizer_cbc(incidence,
             hh_constraint_ge[c].SetCoefficient(x[hh], incidence[c, hh])
             hh_constraint_ge[c].SetCoefficient(relax_ge[c], 1.0)
 
-    # - add an equality constraint for the total households control
+    # using Add and Sum is easier to read but a lot slower
+    # for c in range(control_count):
+    #     if c == total_hh_control_index:
+    #         continue
+    #     solver.Add(solver.Sum(x[hh]*incidence[c, hh] for hh in range(sample_count)) - relax_le[c]
+    #                >= 0)
+    #     solver.Add(solver.Sum(x[hh]*incidence[c, hh] for hh in range(sample_count)) - relax_le[c]
+    #                <= lp_right_hand_side[c])
+    #     solver.Add(solver.Sum(x[hh]*incidence[c, hh] for hh in range(sample_count)) + relax_ge[c]
+    #                >= lp_right_hand_side[c])
+    #     solver.Add(solver.Sum(x[hh]*incidence[c, hh] for hh in range(sample_count)) + relax_ge[c]
+    #                <= hh_constraint_ge_bound[c])
+
+    # - equality constraint for the total households control
     total_hh_constraint = lp_right_hand_side[total_hh_control_index]
     constraint_eq = solver.Constraint(total_hh_constraint, total_hh_constraint)
     for hh in range(0, sample_count):
-        constraint_eq.SetCoefficient(x[hh], incidence[total_hh_control_index, hh])
+        constraint_eq.SetCoefficient(x[hh], 1.0)
 
     solver.set_time_limit(CBC_TIMEOUT_IN_SECONDS * 1000)
 
     solver.EnableOutput()
+
+    t0 = print_elapsed_time()
     result_status = solver.Solve()
+    t0 = print_elapsed_time("solver.Solve", t0)
 
     status_text = STATUS_TEXT[result_status]
 

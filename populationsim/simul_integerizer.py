@@ -2,11 +2,14 @@
 # See full license in LICENSE.txt.
 
 import logging
+import os
 
 import numpy as np
 import pandas as pd
 
 from util import setting
+
+from activitysim.core.tracing import print_elapsed_time
 
 from .integerizer import smart_round
 from .integerizer import use_cvxpy
@@ -30,7 +33,8 @@ def log_settings():
 
 def have_simul_integerizer():
 
-    return use_cvxpy()
+    #return use_cvxpy()
+    return True
 
 
 def use_simul_integerizer():
@@ -49,7 +53,8 @@ class SimulIntegerizer(object):
     def __init__(self,
                  incidence_df,
                  sub_weights, sub_controls_df,
-                 control_spec, total_hh_control_col
+                 control_spec, total_hh_control_col,
+                 trace_label=''
                  ):
 
         sample_count = len(sub_weights.index)
@@ -79,6 +84,41 @@ class SimulIntegerizer(object):
         self.parent_countrol_cols = parent_control_spec.target.values
         self.parent_countrol_importance = parent_control_spec.importance
 
+        self.trace_label = trace_label
+
+    def regress(self, float_weights, resid_weights, integerized_weights):
+
+        #return
+
+        data_file_path = "./regress/simul_integerize_%s.csv" % self.trace_label
+
+        WRITE_REGRESS = not os.path.exists(data_file_path)
+
+        # one column of resid_weights per sub_zone
+        regress = pd.DataFrame(data=resid_weights.T,
+                               columns=self.sub_weights.columns,
+                               index=self.incidence_df.index)
+
+        if WRITE_REGRESS:
+            regress.to_csv(data_file_path, index=True)
+        else:
+            previous = pd.read_csv(data_file_path, comment='#')
+            previous.set_index('hh_id', inplace=True)
+
+            # print self.trace_label
+            # print "\nregress\n", regress
+            # print "\nprevious\n", previous
+
+            digits = 6
+            dif = 0
+            for z in previous.columns:
+                dif += (previous[z].round(digits) != regress[z].round(digits)).sum()
+            if dif:
+                new_data_file_path = "./regress/simul_integerize_%s_new.csv" % self.trace_label
+                regress.to_csv(new_data_file_path, index=True)
+                assert False, "regression error %s resid weights do not match, check %s" % \
+                              (dif, new_data_file_path)
+
     def integerize(self):
 
         # - subzone
@@ -86,12 +126,19 @@ class SimulIntegerizer(object):
         total_hh_sub_control_index = \
             self.sub_controls_df.columns.get_loc(self.total_hh_control_col),
 
+        total_hh_parent_control_index = \
+            self.sub_controls_df.columns.get_loc(self.total_hh_control_col)
+
         sub_incidence = self.incidence_df[self.sub_controls_df.columns]
         sub_incidence = sub_incidence.as_matrix().astype(np.float64)
 
         sub_float_weights = self.sub_weights.as_matrix().transpose().astype(np.float64)
         sub_int_weights = sub_float_weights.astype(int)
         sub_resid_weights = sub_float_weights % 1.0
+
+        # print "sub_float_weights\n", sub_float_weights
+        # print "sub_int_weights\n", sub_int_weights
+        # print "sub_resid_weights\n", sub_resid_weights
 
         sub_control_totals = np.asanyarray(self.sub_controls_df).astype(np.int)
         sub_countrol_importance = np.asanyarray(self.sub_countrol_importance).astype(np.float64)
@@ -122,6 +169,10 @@ class SimulIntegerizer(object):
         parent_float_weights = np.sum(sub_float_weights, axis=0)
         parent_int_weights = np.sum(sub_int_weights, axis=0)
         parent_resid_weights = np.sum(sub_resid_weights, axis=0)
+
+        # print "parent_float_weights\n", parent_float_weights
+        # print "parent_int_weights\n", parent_int_weights
+        # print "parent_resid_weights\n", parent_resid_weights
 
         # - parent control totals based on sub_zone balanced weights
         relaxed_parent_control_totals = np.dot(parent_float_weights, parent_incidence)
@@ -166,7 +217,12 @@ class SimulIntegerizer(object):
                              relax_ge_upper_bound,
                              parent_lp_right_hand_side,
                              hh_constraint_ge_bound,
-                             parent_resid_weights)
+                             parent_resid_weights,
+                             total_hh_sub_control_index,
+                             total_hh_parent_control_index)
+
+        print "\n\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %s %s\n" % (self.trace_label, status_text)
+        print "resid_weights_out\n", resid_weights_out
 
         # smart round resid_weights_out for each sub_zone
         total_household_controls = sub_control_totals[:, total_hh_sub_control_index].flatten()
@@ -181,6 +237,8 @@ class SimulIntegerizer(object):
         self.integerized_weights = pd.DataFrame(data=integerized_weights.T,
                                                 columns=self.sub_weights.columns,
                                                 index=self.incidence_df.index)
+
+        self.regress(sub_float_weights, resid_weights_out, integerized_weights)
 
         return status_text
 
@@ -199,7 +257,9 @@ def np_integerize_cvx(sub_int_weights,
                       relax_ge_upper_bound,
                       parent_lp_right_hand_side,
                       hh_constraint_ge_bound,
-                      parent_resid_weights):
+                      parent_resid_weights,
+                      total_hh_sub_control_index,
+                      total_hh_parent_control_index):
 
     import cvxpy as cvx
 
@@ -267,7 +327,7 @@ def np_integerize_cvx(sub_int_weights,
         relax_ge >= 0.0,
         relax_ge <= relax_ge_upper_bound,
 
-        # # equality constraint for the total households control
+        # - equality constraint for the total households control
         cvx.sum_entries(x, axis=1) == total_hh_right_hand_side,
 
         cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) - parent_relax_le >= 0,                              # nopep8
@@ -319,7 +379,9 @@ def np_integerize_ortools(sub_int_weights,
                           relax_ge_upper_bound,
                           parent_lp_right_hand_side,
                           hh_constraint_ge_bound,
-                          parent_resid_weights):
+                          parent_resid_weights,
+                          total_hh_sub_control_index,
+                          total_hh_parent_control_index):
 
     from ortools.linear_solver import pywraplp
 
@@ -337,13 +399,196 @@ def np_integerize_ortools(sub_int_weights,
     _, parent_control_count = parent_incidence.shape
     sub_zone_count, _ = sub_float_weights.shape
 
+    # print "sub_zone_count", sub_zone_count
+    # print "sample_count", sample_count
+    # print "sub_control_count", sub_control_count
+    # print "parent_control_count", parent_control_count
+    # print "sub_incidence.shape", sub_incidence.shape
+    # print "sub_float_weights.shape", sub_float_weights.shape
+    # print "lp_right_hand_side.shape", lp_right_hand_side.shape
+    # print "relax_ge_upper_bound.shape", relax_ge_upper_bound.shape
+    # print "hh_constraint_ge_bound.shape", hh_constraint_ge_bound.shape
+    # print "total_hh_right_hand_side.shape", total_hh_right_hand_side.shape
+    # print "parent_lp_right_hand_side.shape", parent_lp_right_hand_side.shape
+
+    #bug
+    #total_hh_sub_control_index = total_hh_parent_control_index = -1
+
     # - Instantiate a mixed-integer solver
     solver = pywraplp.Solver('IntegerizeCbc', pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
+
+    # constraints = [
+    #     x >= 0.0,
+    #     x <= x_max,
+    #
+    #     relax_le >= 0.0,
+    #     relax_le <= lp_right_hand_side,
+    #     relax_ge >= 0.0,
+    #     relax_ge <= relax_ge_upper_bound,
+    #
+    #     parent_relax_le >= 0.0,
+    #     parent_relax_le <= parent_lp_right_hand_side,
+    #     parent_relax_ge >= 0.0,
+    #     parent_relax_ge <= parent_relax_ge_upper_bound,
+    # ]
+
+    # x_max is 1.0 unless resid_weights is zero, in which case constrain x to 0.0
+    x_max = (~(sub_float_weights == sub_int_weights)).astype(float)
+
+    # - Create resid weight variables
+    x = {}
+    for z in range(sub_zone_count):
+        for hh in range(sample_count):
+            x[z, hh] = solver.NumVar(0.0, x_max[z, hh], 'x[%s,%s]' % (z, hh))
+
+    # - Create positive continuous constraint relaxation variables
+    relax_le = {}
+    relax_ge = {}
+    for z in range(sub_zone_count):
+        for c in range(sub_control_count):
+            # no relaxation for total households control
+            if c == total_hh_sub_control_index:
+                continue
+            relax_le[z, c] = solver.NumVar(0.0, lp_right_hand_side[z, c], 'relax_le[%s,%s]' % (z, c))
+            relax_ge[z, c] = solver.NumVar(0.0, relax_ge_upper_bound[z, c], 'relax_ge[%s,%s]' % (z, c))
+
+    parent_relax_le = {}
+    parent_relax_ge = {}
+    for c in range(parent_control_count):
+        parent_relax_le[c] = solver.NumVar(0.0, parent_lp_right_hand_side[c], 'parent_relax_le[%s]' % c)
+        parent_relax_ge[c] = solver.NumVar(0.0, parent_relax_ge_upper_bound[c], 'parent_relax_ge[%s]' % c)
+
+    LOG_OVERFLOW = -725
+    log_resid_weights = np.log(np.maximum(sub_resid_weights, np.exp(LOG_OVERFLOW))) #.flatten('F')
+    assert not np.isnan(log_resid_weights).any()
+
+    log_parent_resid_weights = \
+        np.log(np.maximum(parent_resid_weights, np.exp(LOG_OVERFLOW))) #.flatten('F')
+    assert not np.isnan(log_parent_resid_weights).any()
+
+
+    # objective = cvx.Maximize(
+    #     cvx.sum_entries(cvx.mul_elemwise(log_resid_weights, cvx.vec(x))) +
+    #     cvx.sum_entries(cvx.mul_elemwise(log_parent_resid_weights, cvx.vec(cvx.sum_entries(x, axis=0)))) -  # nopep8
+    #     cvx.sum_entries(relax_le * sub_countrol_importance) -
+    #     cvx.sum_entries(relax_ge * sub_countrol_importance) -
+    #     cvx.sum_entries(cvx.mul_elemwise(parent_countrol_importance, parent_relax_le)) -
+    #     cvx.sum_entries(cvx.mul_elemwise(parent_countrol_importance, parent_relax_ge))
+    # )
+
+    # solver.Sum(solver.Sum(x[z, hh] for hh in range(sample_count)) * log_parent_resid_weights[hh]
+    #            for z in range(sub_zone_count)) - \
+
+    z = solver.Sum(x[z, hh] * log_resid_weights[z, hh]
+                   for z in range(sub_zone_count)
+                   for hh in range(sample_count)) + \
+        solver.Sum(x[z, hh] * log_parent_resid_weights[hh]
+                   for hh in range(sample_count)
+                   for z in range(sub_zone_count)) - \
+        solver.Sum(relax_le[z, c] * sub_countrol_importance[c]
+                   for z in range(sub_zone_count)
+                   for c in range(sub_control_count)) - \
+        solver.Sum(relax_ge[z, c] * sub_countrol_importance[c]
+                   for z in range(sub_zone_count)
+                   for c in range(sub_control_count)) - \
+        solver.Sum(parent_relax_le[c] * parent_countrol_importance[c]
+                   for c in range(parent_control_count)) - \
+        solver.Sum(parent_relax_ge[c] * parent_countrol_importance[c]
+                   for c in range(parent_control_count))
+
+    objective = solver.Maximize(z)
+
+    # constraints = [
+    #     # - sub inequality constraints
+    #     (x * sub_incidence) - relax_le >= 0,
+    #     (x * sub_incidence) - relax_le <= lp_right_hand_side,
+    #     (x * sub_incidence) + relax_ge >= lp_right_hand_side,
+    #     (x * sub_incidence) + relax_ge <= hh_constraint_ge_bound,
+    #
+    #     # - equality constraint for the total households control
+    #     cvx.sum_entries(x, axis=1) == total_hh_right_hand_side,
+    #
+    #     cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) - parent_relax_le >= 0,                              # nopep8
+    #     cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) - parent_relax_le <= parent_lp_right_hand_side,      # nopep8
+    #     cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) + parent_relax_ge >= parent_lp_right_hand_side,      # nopep8
+    #     cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) + parent_relax_ge <= parent_hh_constraint_ge_bound,  # nopep8
+    # ]
+
+    # - sub inequality constraints
+    sub_constraint_ge = {}
+    sub_constraint_le = {}
+    for z in range(sub_zone_count):
+        for c in range(sub_control_count):
+
+            # don't add inequality constraints for total households control
+            if c == total_hh_sub_control_index:
+                continue
+
+            sub_constraint_le[z, c] = solver.Constraint(0, lp_right_hand_side[z, c])
+            for hh in range(sample_count):
+                sub_constraint_le[z, c].SetCoefficient(x[z, hh], sub_incidence[hh, c])
+                sub_constraint_le[z, c].SetCoefficient(relax_le[z, c], -1.0)
+
+            sub_constraint_ge[z, c] = solver.Constraint(lp_right_hand_side[z, c], hh_constraint_ge_bound[z, c])
+            for hh in range(sample_count):
+                sub_constraint_ge[z, c].SetCoefficient(x[z, hh], sub_incidence[hh, c])
+                sub_constraint_ge[z, c].SetCoefficient(relax_ge[z, c], 1.0)
+
+    # - equality constraint for the total households control
+    constraint_eq = {}
+    for z in range(sub_zone_count):
+        total_hh_constraint = total_hh_right_hand_side[z][0]
+
+        constraint_eq[z] = solver.Constraint(total_hh_constraint, total_hh_constraint)
+        for hh in range(sample_count):
+            constraint_eq[z].SetCoefficient(x[z, hh], 1.0)
+
+    # - sub inequality constraints
+    parent_constraint_le = {}
+    parent_constraint_ge = {}
+    for c in range(parent_control_count):
+
+        if c == total_hh_parent_control_index:
+            continue
+
+        parent_constraint_le[c] = solver.Constraint(0, parent_lp_right_hand_side[c])
+        parent_constraint_ge[c] = solver.Constraint(parent_lp_right_hand_side[c], parent_hh_constraint_ge_bound[c])
+
+        for z in range(sub_zone_count):
+            for hh in range(sample_count):
+                parent_constraint_le[c].SetCoefficient(x[z, hh], parent_incidence[hh, c])
+                parent_constraint_le[c].SetCoefficient(relax_le[z, c], -1.0)
+
+                parent_constraint_ge[c].SetCoefficient(x[z, hh], parent_incidence[hh, c])
+                parent_constraint_ge[c].SetCoefficient(relax_le[z, c], 1.0)
+
+
+    #solver.set_time_limit(CBC_TIMEOUT_IN_SECONDS * 1000)
+
+    solver.EnableOutput()
+
+    t0 = print_elapsed_time()
+    result_status = solver.Solve()
+    t0 = print_elapsed_time("solver.Solve", t0)
+
+    status_text = STATUS_TEXT[result_status]
+
+    if status_text in STATUS_SUCCESS:
+        resid_weights_out = np.zeros(sub_resid_weights.shape)
+
+        for z in range(sub_zone_count):
+            for hh in range(sample_count):
+                resid_weights_out[z, hh] = x[z, hh].solution_value()
+
+        resid_weights_out = resid_weights_out.astype(np.float64)
+    else:
+        resid_weights_out = sub_resid_weights
 
     return resid_weights_out, status_text
 
 
 def try_simul_integerizing(
+        trace_label,
         incidence_df,
         sub_weights, sub_controls_df,
         sub_geography,
@@ -384,7 +629,8 @@ def try_simul_integerizing(
         sub_weights[~zero_weight_rows],
         sub_controls_df,
         control_spec,
-        total_hh_control_col
+        total_hh_control_col,
+        trace_label
     )
 
     status = integerizer.integerize()
@@ -501,6 +747,7 @@ def do_simul_integerizing(
 
     # try simultaneous integerization of all subzones
     status,  integerized_weights_df = try_simul_integerizing(
+        trace_label,
         incidence_df,
         sub_weights, sub_controls_df,
         sub_geography,
@@ -559,6 +806,7 @@ def do_simul_integerizing(
                 % (len(rounded_zone_ids), trace_label))
 
     status, integerized_weights_df = try_simul_integerizing(
+        "retry_%s" % trace_label,
         incidence_df,
         sub_weights, sub_controls_df,
         sub_geography,

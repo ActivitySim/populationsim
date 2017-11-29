@@ -20,7 +20,7 @@ handle_standard_args()
 
 tracing.config_logger()
 
-t0 = print_elapsed_time()
+t0 = √()
 
 logger = logging.getLogger('populationsim')
 
