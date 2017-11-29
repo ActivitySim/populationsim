@@ -41,8 +41,8 @@ logger.info("meta_control_data: %s"
 logger.info("control_file_name: %s"
             % setting('control_file_name'))
 
-integerizer.log_settings()
-simul_integerizer.log_settings()
+logger.info("USE_CVXPY: %s" % integerizer.use_cvxpy())
+logger.info("USE_SIMUL_INTEGERIZER: %s" % simul_integerizer.use_simul_integerizer())
 
 
 # get the run list (name was possibly specified on the command line)

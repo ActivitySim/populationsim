@@ -93,7 +93,7 @@ run_list:
     - write_results
     - summarize
 
-  resume_after: sub_balancing.geography=TRACT
+  #resume_after: integerize_final_seed_weights
 
 repop:
   steps:

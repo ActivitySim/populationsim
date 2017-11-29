@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 import orca
 
-from populationsim.simul_integerizer import have_simul_integerizer
 from populationsim.simul_integerizer import do_simul_integerizing
 from populationsim.sequential_integerizer import do_sequential_integerizing
 
@@ -63,9 +62,6 @@ sub_control_zones = pd.Series(['TRACT_1', 'TRACT_2'], index=[1, 2])
 
 
 def test_simul_integerizer():
-
-    if not have_simul_integerizer():
-        return
 
     configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
     orca.add_injectable("configs_dir", configs_dir)

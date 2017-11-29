@@ -21,16 +21,12 @@ STATUS_SUCCESS = ['OPTIMAL', 'FEASIBLE']
 CVX_SOLVER = 'GLPK_MI'
 # CVX_SOLVER = 'ECOS_BB'
 
-
-def log_settings():
-
-    logger.info("USE_CVXPY: %s" % use_cvxpy())
+REGRESS = False
 
 
 def use_cvxpy():
 
     return setting('USE_CVXPY', False)
-    #return inject.get_injectable('USE_CVXPY', default=setting('USE_CVXPY', False))
 
 
 def smart_round(int_weights, resid_weights, target_sum):
@@ -113,31 +109,41 @@ class Integerizer(object):
 
     def regress(self, float_weights, resid_weights, integerized_weights):
 
-        #return
+        if not REGRESS:
+            return
 
         data_file_path = "./regress/integerize_%s.csv" % self.trace_label
 
         WRITE_REGRESS = not os.path.exists(data_file_path)
 
+        current = pd.DataFrame(index=self.incidence_table.index)
+        current['integerized_weight'] = integerized_weights
+        current['float_weights'] = float_weights
+        current['resid_weights'] = resid_weights
+
         if WRITE_REGRESS:
-            regress = pd.DataFrame(index=self.incidence_table.index)
-            regress['integerized_weight'] = integerized_weights
-            regress['float_weights'] = float_weights
-            regress['resid_weights'] = resid_weights
-            regress.to_csv(data_file_path, index=True)
+            current.to_csv(data_file_path, index=True)
         else:
-            regress = pd.read_csv(data_file_path, comment='#')
-            regress.set_index('hh_id', inplace=True)
-            regress['new_resid_weights'] = resid_weights
-            digits = 10
-            dif = (regress.resid_weights.round(digits).astype(str) !=
-                   regress.new_resid_weights.round(digits).astype(str)).sum()
+            previous = pd.read_csv(data_file_path, comment='#')
+            previous.set_index('hh_id', inplace=True)
 
-            if dif > 0:
-                regress.to_csv(data_file_path, index=True)
-                assert False, "regression error %s resid weights do not match, check %s" % \
-                              (dif, data_file_path)
+            ok = True
+            try:
+                digits = 6
+                dif = (previous.resid_weights.round(digits) !=
+                       current.resid_weights.round(digits)).sum()
+                if dif > 0:
+                    logger.warn("regression error %s resid weights do not match" % dif)
+                    ok = False
+            except Exception as err:
+                logger.error("regression error: %s: %s" % (type(err).__name__, str(err)))
+                ok = False
 
+            if not ok:
+                new_data_file_path = "./regress/simul_integerize_%s_new.csv" % self.trace_label
+                current.to_csv(new_data_file_path, index=True)
+                logger.warn("regression error %s, check %s" %
+                            (self.trace_label, new_data_file_path))
 
     def integerize(self):
 
@@ -167,7 +173,7 @@ class Integerizer(object):
         lp_right_hand_side = relaxed_control_totals - np.dot(int_weights, incidence.T)
         lp_right_hand_side = np.maximum(lp_right_hand_side, 0.0)
 
-        #- max_incidence_value of each control
+        # - max_incidence_value of each control
         max_incidence_value = np.amax(incidence, axis=1)
         assert (max_incidence_value[control_is_hh_based] <= 1).all()
 
@@ -184,9 +190,8 @@ class Integerizer(object):
         # // Set objective: min sum{c(n)*x(n)} + 999*y(i) - 999*z(i)}
         # objective_function_coefficients = -1.0 * np.log(resid_weights)
         # objective_function_coefficients[(resid_weights <= np.exp(-999))] = 999
-        # so I am opting for an alternate interpretation of what they meant to do: avoid log overflow
+        # I am opting for an alternate interpretation of what they meant to do: avoid log overflow
         # There is not much difference in effect...
-        # LOG_OVERFLOW = -700
         LOG_OVERFLOW = -725
         log_resid_weights = np.log(np.maximum(resid_weights, np.exp(LOG_OVERFLOW)))
         assert not np.isnan(log_resid_weights).any()
@@ -379,9 +384,12 @@ def np_integerizer_cbc(incidence,
     #         objective.SetCoefficient(relax_le[c], control_importance_weights[c])
     #         objective.SetCoefficient(relax_ge[c], control_importance_weights[c])
 
-    z = solver.Sum(x[hh] * log_resid_weights[hh] for hh in range(sample_count)) - \
-        solver.Sum(relax_le[c] * control_importance_weights[c] for c in range(control_count) if c != total_hh_control_index) - \
-        solver.Sum(relax_ge[c] * control_importance_weights[c] for c in range(control_count) if c != total_hh_control_index)
+    z = solver.Sum(x[hh] * log_resid_weights[hh]
+                   for hh in range(sample_count)) - \
+        solver.Sum(relax_le[c] * control_importance_weights[c]
+                   for c in range(control_count) if c != total_hh_control_index) - \
+        solver.Sum(relax_ge[c] * control_importance_weights[c]
+                   for c in range(control_count) if c != total_hh_control_index)
 
     objective = solver.Maximize(z)
 
