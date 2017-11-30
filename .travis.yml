@@ -27,7 +27,7 @@ install:
 - pip install .
 script:
 - pycodestyle populationsim
-- py.test --boxed --cov populationsim --cov-report term-missing
+- py.test --cov populationsim --cov-report term-missing
 after_success:
 - coveralls
 #- bin/build_docs.sh
