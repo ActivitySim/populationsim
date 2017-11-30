@@ -104,7 +104,6 @@ repop:
     # expand_households options are append or replace
     - expand_households.repop;append
     - write_results.repop
-    - summarize.repop
 
   resume_after: summarize
 

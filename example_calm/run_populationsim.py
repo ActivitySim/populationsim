@@ -45,7 +45,7 @@ logger.info("USE_CVXPY: %s" % integerizer.use_cvxpy())
 logger.info("USE_SIMUL_INTEGERIZER: %s" % simul_integerizer.use_simul_integerizer())
 
 
-# get the run list (name was possibly specified on the command line)
+# get the run list (name was possibly specified on the command line with the -m option)
 run_list_name = inject.get_injectable('run_list_name', 'run_list')
 
 # run list from settings file is dict with list of 'steps' and optional 'resume_after'

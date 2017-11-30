@@ -70,7 +70,6 @@ repop:
     - repop_balancing
     - expand_households.repop;replace=True
     - write_results.repop
-    - summarize.repop
 
   resume_after: summarize
 

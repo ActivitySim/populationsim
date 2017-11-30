@@ -89,12 +89,9 @@ def test_full_run2_repop_replace():
         'repop_balancing',
         'expand_households.repop;replace',
         'write_results.repop',
-        'summarize.repop'
     ]
 
     pipeline.run(models=_MODELS, resume_after='summarize')
-
-    assert os.path.exists(os.path.join(output_dir, 'summary_DISTRICT_1.csv'))
 
     expanded_household_ids = pipeline.get_table('expanded_household_ids')
     assert isinstance(expanded_household_ids, pd.DataFrame)
@@ -131,12 +128,9 @@ def test_full_run2_repop_append():
         'repop_balancing',
         'expand_households.repop;append',
         'write_results.repop',
-        'summarize.repop'
     ]
 
     pipeline.run(models=_MODELS, resume_after='summarize')
-
-    assert os.path.exists(os.path.join(output_dir, 'summary_DISTRICT_1.csv'))
 
     expanded_household_ids = pipeline.get_table('expanded_household_ids')
     assert isinstance(expanded_household_ids, pd.DataFrame)
