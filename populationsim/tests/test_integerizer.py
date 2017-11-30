@@ -56,20 +56,13 @@ def test_integerizer():
     )
 
     print "do_integerizing status", status
-    print "use_cvxpy", integerizer.use_cvxpy()
-    if integerizer.use_cvxpy():
-        print "CVX_SOLVER", integerizer.CVX_SOLVER
     print "sum", integerized_weights.sum()
     print "do_integerizing integerized_weights\n", integerized_weights
 
+    assert integerized_weights.sum() == 100
+
+    # exact outcome is variable from version to version of ortools integerizer!
     # ortools cbc
-    assert (integerized_weights.values == [
-         1, 26, 8, 28, 18, 8, 2, 9,
-    ]).all()
-
     # assert (integerized_weights.values == [
-    #      1, 26, 8, 28, 19, 8, 1, 9,
+    #      1, 26, 8, 28, 18, 8, 2, 9,
     # ]).all()
-
-
-test_integerizer()

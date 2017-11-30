@@ -138,8 +138,3 @@ def test_sequential_integerizer():
         46,
         29
     ]).all()
-
-
-test_simul_integerizer()
-
-test_sequential_integerizer()
