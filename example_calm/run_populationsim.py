@@ -12,7 +12,7 @@ from activitysim.core.config import handle_standard_args
 from activitysim.core.tracing import print_elapsed_time
 
 from populationsim.util import setting
-from populationsim import integerizer
+from populationsim import lp
 from populationsim import multi_integerizer
 
 
@@ -41,7 +41,7 @@ logger.info("meta_control_data: %s"
 logger.info("control_file_name: %s"
             % setting('control_file_name'))
 
-logger.info("USE_CVXPY: %s" % integerizer.use_cvxpy())
+logger.info("USE_CVXPY: %s" % lp.use_cvxpy())
 logger.info("USE_SIMUL_INTEGERIZER: %s" % multi_integerizer.use_simul_integerizer())
 
 

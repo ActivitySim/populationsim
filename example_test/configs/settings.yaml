@@ -58,7 +58,7 @@ run_list:
 
   #resume_after: sub_balancing.geography=TRACT
 
-# "-m repop" option allows specification of repop run_list:`
+# "-m repop" command line option allows specification of repop run_list`
 # expand_households options are append or replace
 repop:
   steps:
@@ -67,7 +67,8 @@ repop:
     - initial_seed_balancing.final=true
     - integerize_final_seed_weights.repop
     - repop_balancing
-    - expand_households.repop;replace=True
+    - expand_households.repop;replace
+    - synthesize_population.repop
     - write_results.repop
 
   resume_after: summarize

@@ -46,6 +46,7 @@ def test_full_run1():
         'sub_balancing.geography = TRACT',
         'sub_balancing.geography=TAZ',
         'expand_households',
+        'synthesize_population',
         'write_results',
         'summarize'
     ]

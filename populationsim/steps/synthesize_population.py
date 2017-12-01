@@ -46,11 +46,22 @@ def merge_seed_data(expanded_household_ids, seed_data_df, options, trace_label):
     if seed_geography in df_columns:
         df_columns.remove(seed_geography)
 
+    # join to seed_data on either index or hh_col (for persons)
+    right_index = (seed_data_df.index.name == hh_col)
+    right_on = hh_col if hh_col in seed_data_df.columns and not right_index else None
+    assert right_index or right_on
+
+    if right_on and hh_col not in df_columns:
+        df_columns.append(hh_col)
+
     merged_df = pd.merge(
+        how="left",
         left=expanded_household_ids,
         right=seed_data_df[df_columns],
         left_on=hh_col,
-        right_index=True)
+        right_index=right_index,
+        right_on=right_on
+    )
 
     return merged_df
 

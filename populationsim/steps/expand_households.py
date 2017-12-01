@@ -78,11 +78,20 @@ def expand_households():
 
     if append or replace:
         t = inject.get_table('expanded_household_ids').to_frame()
-        print "\nprior taz_hh_counts\n", t.groupby('TAZ').size()
+        prev_hhs = len(t.index)
+        added_hhs = len(expanded_weights.index)
+
         if replace:
             # FIXME - should really get from crosswalk table?
             low_ids_to_replace = expanded_weights[low_geography].unique()
             t = t[~t[low_geography].isin(low_ids_to_replace)]
+
         expanded_weights = pd.concat([t, expanded_weights], ignore_index=True)
+
+        dropped_hhs = prev_hhs - len(t.index)
+        final_hhs = len(expanded_weights.index)
+        op = 'append' if append else 'replace'
+        logger.info("expand_households op: %s prev hh count %s dropped %s added %s final %s" %
+                    (op, prev_hhs, dropped_hhs, added_hhs, final_hhs))
 
     inject.add_table('expanded_household_ids', expanded_weights)

@@ -177,6 +177,9 @@ def build_control_table(geo, control_spec, crosswalk_df):
 
 
 def build_crosswalk_table():
+    """
+    build crosswalk table filtered to include only zones in lowest geography
+    """
 
     geographies = setting('geographies')
 
@@ -319,36 +322,31 @@ def repop_setup_data_structures(settings, configs_dir, households, persons):
     geographies = setting('geographies')
     low_geography = geographies[-1]
 
-    households_df = households.to_frame()
-    persons_df = persons.to_frame()
-
     # replace crosswalk table
     crosswalk_df = build_crosswalk_table()
     pipeline.replace_table('crosswalk', crosswalk_df)
-
-    # filter and replace households (dropping any not in crosswalk)
-    households_df, persons_df = filter_households(households_df, persons_df, crosswalk_df)
-    pipeline.replace_table('households', households_df)
-    pipeline.replace_table('persons', persons_df)
 
     # replace control_spec
     control_file_name = setting('repop_control_file_name', 'repop_controls.csv')
     control_spec = read_control_spec(control_file_name, configs_dir)
     pipeline.replace_table('control_spec', control_spec)
 
-    incidence_table = \
-        build_incidence_table(control_spec, households_df, persons_df, crosswalk_df)
-
+    # build incidence_table with repop controls and households in repop zones
+    # filter households (dropping any not in crosswalk) in order to build incidence_table
+    # We DO NOT REPLACE households and persons as we need full tables to synthesize population
+    households_df = households.to_frame()
+    persons_df = persons.to_frame()
+    households_df, repop_persons_df = filter_households(households_df, persons_df, crosswalk_df)
+    incidence_table = build_incidence_table(control_spec, households_df, persons_df, crosswalk_df)
     incidence_table = add_geography_columns(incidence_table, households_df, crosswalk_df)
+    # add sample_weight col to incidence table
+    hh_weight_col = setting('household_weight_col')
+    incidence_table['sample_weight'] = households_df[hh_weight_col]
 
     # rebuild control tables with only the low level controls (aggregated at higher levels)
     for g in geographies:
         controls = build_control_table(g, control_spec, crosswalk_df)
         pipeline.replace_table(control_table_name(g), controls)
-
-    # add sample_weight col to incidence table
-    hh_weight_col = setting('household_weight_col')
-    incidence_table['sample_weight'] = households_df[hh_weight_col]
 
     if setting('GROUP_BY_INCIDENCE_SIGNATURE'):
         group_incidence_table, household_groups \
