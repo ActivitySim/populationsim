@@ -17,10 +17,7 @@ from helper import get_control_table
 from helper import weight_table_name
 from helper import get_weight_table
 
-from ..simul_integerizer import use_simul_integerizer
-from ..simul_integerizer import do_simul_integerizing
-
-from ..sequential_integerizer import do_sequential_integerizing
+from ..multi_integerizer import multi_integerize
 
 
 logger = logging.getLogger(__name__)
@@ -97,88 +94,6 @@ def balance(
     return balancer.sub_zone_weights
 
 
-def integerize(
-        incidence_df,
-        sub_zone_weights,
-        sub_controls_df,
-        control_spec,
-        total_hh_control_col,
-        parent_geography,
-        parent_id,
-        sub_geography,
-        sub_control_zones):
-    """
-
-    Parameters
-    ----------
-    incidence_df : pandas.Dataframe
-        full incidence_df for all hh samples in seed zone
-    sub_zone_weights : pandas.DataFame
-        balanced subzone household sample weights to integerize
-    sub_controls_df : pandas.Dataframe
-        sub_geography controls (one row per zone indexed by sub_zone id)
-    control_spec : pandas.Dataframe
-        full control spec with columns 'target', 'seed_table', 'importance', ...
-    total_hh_control_col : str
-        name of total_hh column (so we can preferentially match this control)
-    parent_geography : str
-        parent geography zone name
-    parent_id : int
-        parent geography zone id
-    sub_geography : str
-        subzone geography name (e.g. 'TAZ')
-    sub_control_zones : pandas.Series
-        index is zone id and value is zone label (e.g. TAZ_101)
-        for use in sub_controls_df column names
-
-    Returns
-    -------
-    integer_weights_df : pandas.DataFrame
-        canonical form weight table, with columns for 'balanced_weight', 'integer_weight'
-        plus columns for household id, parent and sub_geography zone ids
-    """
-
-    if use_simul_integerizer():
-
-        integer_weights_df = do_simul_integerizing(
-            trace_label="%s_%s" % (parent_geography, parent_id),
-            incidence_df=incidence_df,
-            sub_weights=sub_zone_weights,
-            sub_controls_df=sub_controls_df,
-            control_spec=control_spec,
-            total_hh_control_col=total_hh_control_col,
-            sub_geography=sub_geography,
-            sub_control_zones=sub_control_zones
-        )
-
-    else:
-
-        integer_weights_df = do_sequential_integerizing(
-            trace_label="%s_%s" % (parent_geography, parent_id),
-            incidence_df=incidence_df,
-            sub_weights=sub_zone_weights,
-            sub_controls_df=sub_controls_df,
-            control_spec=control_spec,
-            total_hh_control_col=total_hh_control_col,
-            sub_geography=sub_geography,
-            sub_control_zones=sub_control_zones,
-        )
-
-    integer_weights_df[parent_geography] = parent_id
-
-    # output_dir = inject.get_injectable('output_dir')
-    # incidence_df.to_csv(os.path.join(output_dir, 'incidence_df.csv'), index=True)
-    # sub_zone_weights.to_csv(os.path.join(output_dir, 'sub_weights.csv'), index=True)
-    # sub_controls_df.to_csv(os.path.join(output_dir, 'sub_controls_df.csv'), index=True)
-    # control_spec.to_csv(os.path.join(output_dir, 'control_spec.csv'), index=True)
-    # incidence_df.to_csv(os.path.join(output_dir, 'incidence_df.csv'), index=True)
-    # sub_control_zones.to_csv(os.path.join(output_dir, 'sub_control_zones.csv'), index=True)
-    # integer_weights_df.to_csv(os.path.join(output_dir, 'integer_weights_df.csv'), index=True)
-    # assert False
-
-    return integer_weights_df
-
-
 def balance_and_integerize(
         incidence_df,
         parent_weights,
@@ -251,7 +166,7 @@ def balance_and_integerize(
         sub_control_zones=sub_control_zones
         )
 
-    integerized_sub_zone_weights_df = integerize(
+    integerized_sub_zone_weights_df = multi_integerize(
         incidence_df=incidence_df,
         sub_zone_weights=balanced_sub_zone_weights,
         sub_controls_df=sub_controls_df,
@@ -261,6 +176,8 @@ def balance_and_integerize(
         parent_id=parent_id,
         sub_geography=sub_geography,
         sub_control_zones=sub_control_zones)
+
+    integerized_sub_zone_weights_df[parent_geography] = parent_id
 
     return integerized_sub_zone_weights_df
 

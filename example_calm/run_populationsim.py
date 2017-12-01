@@ -13,7 +13,7 @@ from activitysim.core.tracing import print_elapsed_time
 
 from populationsim.util import setting
 from populationsim import integerizer
-from populationsim import simul_integerizer
+from populationsim import multi_integerizer
 
 
 # Add (and handle) 'standard' activitysim arguments:
@@ -42,7 +42,7 @@ logger.info("control_file_name: %s"
             % setting('control_file_name'))
 
 logger.info("USE_CVXPY: %s" % integerizer.use_cvxpy())
-logger.info("USE_SIMUL_INTEGERIZER: %s" % simul_integerizer.use_simul_integerizer())
+logger.info("USE_SIMUL_INTEGERIZER: %s" % multi_integerizer.use_simul_integerizer())
 
 
 # get the run list (name was possibly specified on the command line with the -m option)

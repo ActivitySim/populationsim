@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 import orca
 
-from populationsim.simul_integerizer import do_simul_integerizing
-from populationsim.sequential_integerizer import do_sequential_integerizing
+from populationsim.multi_integerizer import do_simul_integerizing
+from populationsim.multi_integerizer import do_sequential_integerizing
 
 incidence_df = pd.DataFrame({
     'hh_id': [0, 6, 12, 18, 24, 30],

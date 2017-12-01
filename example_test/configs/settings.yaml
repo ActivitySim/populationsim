@@ -58,7 +58,7 @@ run_list:
 
   #resume_after: sub_balancing.geography=TRACT
 
-# "-m repop" option allows specification of repop run_list:
+# "-m repop" option allows specification of repop run_list:`
 # expand_households options are append or replace
 repop:
   steps:
