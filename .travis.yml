@@ -1,23 +1,35 @@
-services:
-  - docker
-
 language: python
 
-sudo: required
+sudo: false
 
 python:
 - '2.7'
 
-before_install:
-  - 'echo "repo_token: $GH_TOKEN" >> .coveralls.yml'
-  - docker build . -t popsim:xenial
-  - chmod +x bin/build_docs.sh
-  
+install:
+- if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh
+  -O miniconda.sh; else wget http://repo.continuum.io/miniconda/Miniconda3-3.7.0-Linux-x86_64.sh
+  -O miniconda.sh; fi
+- bash miniconda.sh -b -p $HOME/miniconda
+- export PATH="$HOME/miniconda/bin:$PATH"
+- hash -r
+- conda config --set always_yes yes --set changeps1 no
+- conda update -q conda
+- conda update -q conda
+- |
+  conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION cytoolz numpy pandas pip pytables pyyaml
+- source activate test-environment
+- pip install orca openmatrix zbox psutil
+#- easy_install -U --user ortools
+- pip install ortools
+- pip install pytest pytest-cov coveralls pycodestyle
+#- pip install sphinx numpydoc
+- pip install https://github.com/RSGInc/activitysim/zipball/master
+- pip install .
 script:
-- docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && pep8 populationsim"
-- docker run popsim:xenial /bin/bash -c "source /vagrant/miniconda/bin/activate test-environment && py.test populationsim/tests --boxed --cov populationsim && COVERALLS_REPO_TOKEN=nUGQJN49shm2gqGODE1SWQ7WknhAOYraZ coveralls"
-
+- pycodestyle populationsim
+- py.test --cov populationsim --cov-report term-missing
 after_success:
+- coveralls
 - bin/build_docs.sh
 
 notifications:

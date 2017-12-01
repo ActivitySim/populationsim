@@ -1,5 +1,5 @@
 sandbox/
-example/data/*
+regress/
 .idea
 .ipynb_checkpoints
 

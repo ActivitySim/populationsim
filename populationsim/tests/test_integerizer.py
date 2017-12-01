@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import orca
 
-from ..integerizer import do_integerizing
+from populationsim import integerizer
 
 
 def test_integerizer():
@@ -46,7 +46,7 @@ def test_integerizer():
     # column totals which the final weighted incidence table sums must satisfy
     control_totals = pd.Series([100, 35, 65, 91, 65, 104], index=control_spec.target.values)
 
-    zot = do_integerizing(
+    integerized_weights, status = integerizer.do_integerizing(
         trace_label='label',
         control_spec=control_spec,
         control_totals=control_totals,
@@ -54,3 +54,15 @@ def test_integerizer():
         float_weights=incidence_table['float_weights'],
         total_hh_control_col='num_hh'
     )
+
+    print "do_integerizing status", status
+    print "sum", integerized_weights.sum()
+    print "do_integerizing integerized_weights\n", integerized_weights
+
+    assert integerized_weights.sum() == 100
+
+    # exact outcome is variable from version to version of ortools integerizer!
+    # ortools cbc
+    # assert (integerized_weights.values == [
+    #      1, 26, 8, 28, 18, 8, 2, 9,
+    # ]).all()

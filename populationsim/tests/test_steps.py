@@ -15,6 +15,7 @@ def teardown_function(func):
     orca.clear_cache()
     inject.reinject_decorated_tables()
 
+
 TAZ_COUNT = 36
 TAZ_100_HH_COUNT = 25
 TAZ_100_HH_REPOP_COUNT = 26
@@ -45,6 +46,7 @@ def test_full_run1():
         'sub_balancing.geography = TRACT',
         'sub_balancing.geography=TAZ',
         'expand_households',
+        'synthesize_population',
         'write_results',
         'summarize'
     ]
@@ -88,12 +90,9 @@ def test_full_run2_repop_replace():
         'repop_balancing',
         'expand_households.repop;replace',
         'write_results.repop',
-        'summarize.repop'
     ]
 
     pipeline.run(models=_MODELS, resume_after='summarize')
-
-    assert os.path.exists(os.path.join(output_dir, 'summary_DISTRICT_1.csv'))
 
     expanded_household_ids = pipeline.get_table('expanded_household_ids')
     assert isinstance(expanded_household_ids, pd.DataFrame)
@@ -130,12 +129,9 @@ def test_full_run2_repop_append():
         'repop_balancing',
         'expand_households.repop;append',
         'write_results.repop',
-        'summarize.repop'
     ]
 
     pipeline.run(models=_MODELS, resume_after='summarize')
-
-    assert os.path.exists(os.path.join(output_dir, 'summary_DISTRICT_1.csv'))
 
     expanded_household_ids = pipeline.get_table('expanded_household_ids')
     assert isinstance(expanded_household_ids, pd.DataFrame)

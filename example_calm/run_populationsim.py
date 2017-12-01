@@ -12,6 +12,8 @@ from activitysim.core.config import handle_standard_args
 from activitysim.core.tracing import print_elapsed_time
 
 from populationsim.util import setting
+from populationsim import lp
+from populationsim import multi_integerizer
 
 
 # Add (and handle) 'standard' activitysim arguments:
@@ -28,10 +30,6 @@ t0 = print_elapsed_time()
 
 logger = logging.getLogger('populationsim')
 
-logger.info("USE_CVXPY: %s"
-            % setting('USE_CVXPY'))
-logger.info("USE_SIMUL_INTEGERIZER: %s"
-            % setting('USE_SIMUL_INTEGERIZER'))
 logger.info("GROUP_BY_INCIDENCE_SIGNATURE: %s"
             % setting('GROUP_BY_INCIDENCE_SIGNATURE'))
 logger.info("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: %s"
@@ -43,8 +41,11 @@ logger.info("meta_control_data: %s"
 logger.info("control_file_name: %s"
             % setting('control_file_name'))
 
+logger.info("USE_CVXPY: %s" % lp.use_cvxpy())
+logger.info("USE_SIMUL_INTEGERIZER: %s" % multi_integerizer.use_simul_integerizer())
 
-# get the run list (name was possibly specified on the command line)
+
+# get the run list (name was possibly specified on the command line with the -m option)
 run_list_name = inject.get_injectable('run_list_name', 'run_list')
 
 # run list from settings file is dict with list of 'steps' and optional 'resume_after'

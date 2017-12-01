@@ -3,66 +3,19 @@
 
 import logging
 
+import os
+
 import numpy as np
 import pandas as pd
 from util import setting
 
-from activitysim.core import tracing
-
-
-try:
-    import cylp
-    import cvxpy as cvx
-    HAVE_CVX = True
-except ImportError:
-    HAVE_CVX = False
-
-try:
-    from ortools.linear_solver import pywraplp
-    HAVE_ORTOOLS = True
-except ImportError:
-    HAVE_ORTOOLS = False
-
-STATUS_TEXT = {}
-STATUS_SUCCESS = ['OPTIMAL', 'FEASIBLE', 'OPTIMAL_INACCURATE']
-
-if HAVE_CVX:
-    STATUS_TEXT.update({
-        cvx.OPTIMAL: 'OPTIMAL',
-        cvx.INFEASIBLE: 'INFEASIBLE',
-        cvx.UNBOUNDED: 'UNBOUNDED',
-        cvx.OPTIMAL_INACCURATE: 'OPTIMAL_INACCURATE',
-        cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
-        cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
-        None: 'FAILED'
-    })
-
-    STATUS_SUCCESS += ['OPTIMAL', 'OPTIMAL_INACCURATE']
-
-    # - solver list: http://www.cvxpy.org/en/latest/tutorial/advanced/
-    # cvx.installed_solvers(): ['ECOS_BB', 'SCS', 'ECOS', 'LS']
-    # ['CBC', 'CVXOPT', 'ECOS_BB', 'GLPK_MI', 'SCS', 'ECOS', 'GLPK', 'LS']
-    CVX_SOLVER = cvx.ECOS
-    CVX_SOLVER = cvx.GLPK_MI
-    CVX_MAX_ITERS = 300
-
-if HAVE_ORTOOLS:
-
-    STATUS_TEXT.update({
-        pywraplp.Solver.OPTIMAL: 'OPTIMAL',
-        pywraplp.Solver.FEASIBLE: 'FEASIBLE',
-        pywraplp.Solver.INFEASIBLE: 'INFEASIBLE',
-        pywraplp.Solver.UNBOUNDED: 'UNBOUNDED',
-        pywraplp.Solver.ABNORMAL: 'ABNORMAL',
-        pywraplp.Solver.NOT_SOLVED: 'NOT_SOLVED',
-    })
-
-    STATUS_SUCCESS += ['OPTIMAL', 'FEASIBLE']
-
-    CBC_TIMEOUT_IN_SECONDS = 60
+from lp import get_single_integerizer
+from lp import STATUS_SUCCESS
 
 
 logger = logging.getLogger(__name__)
+
+REGRESS = False
 
 
 def smart_round(int_weights, resid_weights, target_sum):
@@ -113,7 +66,8 @@ class Integerizer(object):
                  relaxed_control_totals,
                  total_hh_control_value,
                  total_hh_control_index,
-                 control_is_hh_based):
+                 control_is_hh_based,
+                 trace_label=''):
         """
 
         Parameters
@@ -140,6 +94,46 @@ class Integerizer(object):
         self.total_hh_control_index = total_hh_control_index
         self.control_is_hh_based = control_is_hh_based
 
+        self.trace_label = trace_label
+
+    def regress(self, float_weights, resid_weights, integerized_weights):
+
+        if not REGRESS:
+            return
+
+        data_file_path = "./regress/integerize_%s.csv" % self.trace_label
+
+        WRITE_REGRESS = not os.path.exists(data_file_path)
+
+        current = pd.DataFrame(index=self.incidence_table.index)
+        current['integerized_weight'] = integerized_weights
+        current['float_weights'] = float_weights
+        current['resid_weights'] = resid_weights
+
+        if WRITE_REGRESS:
+            current.to_csv(data_file_path, index=True)
+        else:
+            previous = pd.read_csv(data_file_path, comment='#')
+            previous.set_index('hh_id', inplace=True)
+
+            ok = True
+            try:
+                digits = 6
+                dif = (previous.resid_weights.round(digits) !=
+                       current.resid_weights.round(digits)).sum()
+                if dif > 0:
+                    logger.warn("regression error %s resid weights do not match" % dif)
+                    ok = False
+            except Exception as err:
+                logger.error("regression error: %s: %s" % (type(err).__name__, str(err)))
+                ok = False
+
+            if not ok:
+                new_data_file_path = "./regress/simul_integerize_%s_new.csv" % self.trace_label
+                current.to_csv(new_data_file_path, index=True)
+                logger.warn("regression error %s, check %s" %
+                            (self.trace_label, new_data_file_path))
+
     def integerize(self):
 
         sample_count = len(self.incidence_table.index)
@@ -156,35 +150,69 @@ class Integerizer(object):
         assert len(relaxed_control_totals) == control_count
         assert len(control_is_hh_based) == control_count
         assert len(self.incidence_table.columns) == control_count
+        assert (relaxed_control_totals == np.round(relaxed_control_totals)).all()
+        assert not np.isnan(incidence).any()
+        assert not np.isnan(float_weights).any()
+        assert (incidence[self.total_hh_control_index] == 1).all()
 
-        if setting('USE_CVXPY'):
+        int_weights = float_weights.astype(int)
+        resid_weights = float_weights % 1.0
 
-            assert HAVE_CVX
+        # - lp_right_hand_side - relaxed_control_shortfall
+        lp_right_hand_side = relaxed_control_totals - np.dot(int_weights, incidence.T)
+        lp_right_hand_side = np.maximum(lp_right_hand_side, 0.0)
 
-            int_weights, resid_weights, status = np_integerizer_cvx(
-                incidence=incidence,
-                float_weights=float_weights,
-                control_importance_weights=control_importance_weights,
-                relaxed_control_totals=relaxed_control_totals,
-                total_hh_control_value=self.total_hh_control_value,
-                total_hh_control_index=self.total_hh_control_index,
-                control_is_hh_based=control_is_hh_based
-            )
-        else:
+        # - max_incidence_value of each control
+        max_incidence_value = np.amax(incidence, axis=1)
+        assert (max_incidence_value[control_is_hh_based] <= 1).all()
 
-            assert HAVE_ORTOOLS
+        # - create the inequality constraint upper bounds
+        num_households = relaxed_control_totals[self.total_hh_control_index]
+        relax_ge_upper_bound = np.maximum(max_incidence_value * num_households - lp_right_hand_side,
+                                          0)
+        hh_constraint_ge_bound = \
+            np.maximum(self.total_hh_control_value * max_incidence_value, lp_right_hand_side)
 
-            int_weights, resid_weights, status = np_integerizer_cbc(
-                incidence=incidence,
-                float_weights=float_weights,
-                control_importance_weights=control_importance_weights,
-                relaxed_control_totals=relaxed_control_totals,
-                total_hh_control_value=self.total_hh_control_value,
-                total_hh_control_index=self.total_hh_control_index,
-                control_is_hh_based=control_is_hh_based
-            )
+        # popsim3 does does something rather peculiar, which I am not sure is right
+        # it applies a huge penalty to rounding a near-zero residual upwards
+        # the documentation justifying this is sparse and possibly confused:
+        # // Set objective: min sum{c(n)*x(n)} + 999*y(i) - 999*z(i)}
+        # objective_function_coefficients = -1.0 * np.log(resid_weights)
+        # objective_function_coefficients[(resid_weights <= np.exp(-999))] = 999
+        # I am opting for an alternate interpretation of what they meant to do: avoid log overflow
+        # There is not much difference in effect...
+        LOG_OVERFLOW = -725
+        log_resid_weights = np.log(np.maximum(resid_weights, np.exp(LOG_OVERFLOW)))
+        assert not np.isnan(log_resid_weights).any()
+
+        if (float_weights == 0).any():
+            # not sure this matters...
+            logger.warn("Integerizer: %s zero weights" % ((float_weights == 0).sum(),))
+            assert False
+
+        if (resid_weights == 0.0).any():
+            # not sure this matters...
+            logger.warn("Integerizer: %s zero resid_weights" % ((resid_weights == 0).sum(),))
+            assert False
+
+        integerizer_func = get_single_integerizer()
+
+        int_weights, resid_weights, status = integerizer_func(
+            incidence=incidence,
+            float_weights=float_weights,
+            int_weights=int_weights,
+            resid_weights=resid_weights,
+            log_resid_weights=log_resid_weights,
+            control_importance_weights=control_importance_weights,
+            total_hh_control_index=self.total_hh_control_index,
+            lp_right_hand_side=lp_right_hand_side,
+            relax_ge_upper_bound=relax_ge_upper_bound,
+            hh_constraint_ge_bound=hh_constraint_ge_bound
+        )
 
         integerized_weights = smart_round(int_weights, resid_weights, self.total_hh_control_value)
+
+        self.regress(float_weights, resid_weights, integerized_weights)
 
         self.weights = pd.DataFrame(index=self.incidence_table.index)
         self.weights['integerized_weight'] = integerized_weights
@@ -193,234 +221,6 @@ class Integerizer(object):
         logger.debug("Integerizer: %s out of %s different from round" % (delta, len(float_weights)))
 
         return status
-
-
-def np_integerizer_cvx(incidence,
-                       float_weights,
-                       control_importance_weights,
-                       relaxed_control_totals,
-                       total_hh_control_value,
-                       total_hh_control_index,
-                       control_is_hh_based):
-
-    assert not np.isnan(incidence).any()
-    assert not np.isnan(float_weights).any()
-
-    if (float_weights == 0).any():
-        # not sure this matters...
-        logger.warn("np_integerizer_cvx: %s zero weights" % ((float_weights == 0).sum(),))
-        assert False
-
-    incidence = incidence.T
-
-    sample_count, control_count = incidence.shape
-
-    int_weights = float_weights.astype(int)
-    resid_weights = float_weights % 1.0
-
-    # - lp_right_hand_side - relaxed_control_shortfall
-    lp_right_hand_side = np.round(relaxed_control_totals) - np.dot(int_weights, incidence)
-    lp_right_hand_side = np.maximum(lp_right_hand_side, 0.0)
-
-    # - create the inequality constraint upper bounds
-    max_incidence_value = np.amax(incidence, axis=0)
-    assert (max_incidence_value[control_is_hh_based] <= 1).all()
-    num_households = relaxed_control_totals[total_hh_control_index]
-    relax_ge_upper_bound = np.maximum(max_incidence_value * num_households - lp_right_hand_side, 0)
-
-    # - Decision variables for optimization
-    x = cvx.Variable(1, sample_count)
-
-    # 1.0 unless resid_weights is zero
-    x_max = (~(float_weights == int_weights)).astype(float).reshape((1, -1))
-
-    # - Create positive continuous constraint relaxation variables
-    relax_le = cvx.Variable(control_count)
-    relax_ge = cvx.Variable(control_count)
-
-    # FIXME - ignore as handled by constraint?
-    # control_importance_weights[total_hh_control_index] = 0
-
-    # - Set objective
-
-    LOG_OVERFLOW = -725
-    log_resid_weights = np.log(np.maximum(resid_weights, np.exp(LOG_OVERFLOW)))
-    assert not np.isnan(log_resid_weights).any()
-
-    objective = cvx.Maximize(
-        cvx.sum_entries(cvx.mul_elemwise(log_resid_weights, cvx.vec(x))) -
-        cvx.sum_entries(cvx.mul_elemwise(control_importance_weights, relax_le)) -
-        cvx.sum_entries(cvx.mul_elemwise(control_importance_weights, relax_ge))
-    )
-
-    total_hh_right_hand_side = lp_right_hand_side[total_hh_control_index]
-
-    hh_constraint_ge_bound = \
-        np.maximum(total_hh_control_value * max_incidence_value, lp_right_hand_side)
-
-    constraints = [
-        cvx.vec(x * incidence) - relax_le >= 0,
-        cvx.vec(x * incidence) - relax_le <= lp_right_hand_side,
-        cvx.vec(x * incidence) + relax_ge >= lp_right_hand_side,
-        cvx.vec(x * incidence) + relax_ge <= hh_constraint_ge_bound,
-
-        x >= 0.0,
-        x <= x_max,
-
-        relax_le >= 0.0,
-        relax_le <= lp_right_hand_side,
-
-        relax_ge >= 0.0,
-        relax_ge <= relax_ge_upper_bound,
-
-        # equality constraint for the total households control
-        cvx.sum_entries(x) == total_hh_right_hand_side,
-    ]
-
-    prob = cvx.Problem(objective, constraints)
-
-    try:
-        prob.solve(solver=CVX_SOLVER, verbose=True, max_iters=CVX_MAX_ITERS)
-    except cvx.SolverError:
-        logging.exception(
-            'Solver error encountered in weight discretization. Weights will be rounded.')
-
-    status_text = STATUS_TEXT[prob.status]
-
-    if status_text in STATUS_SUCCESS:
-        assert x.value is not None
-        resid_weights_out = np.asarray(x.value)[0]
-    else:
-        assert x.value is None
-        resid_weights_out = resid_weights
-
-    return int_weights, resid_weights_out, status_text
-
-
-def np_integerizer_cbc(incidence,
-                       float_weights,
-                       control_importance_weights,
-                       relaxed_control_totals,
-                       total_hh_control_value,
-                       total_hh_control_index,
-                       control_is_hh_based):
-
-    control_count, sample_count = incidence.shape
-
-    # - Instantiate a mixed-integer solver
-    solver = pywraplp.Solver('IntegerizeCbc', pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
-
-    int_weights = np.trunc(float_weights)
-    resid_weights = float_weights % 1.0
-
-    # Create binary integer variables
-    x = [[]] * sample_count
-    for hh in range(0, sample_count):
-        # if final_weights is an int
-        if float_weights[hh] == int_weights[hh]:
-            # FIXME - or should we slice them out beforehand?
-            x[hh] = solver.NumVar(0.0, 0.0, 'x_' + str(hh))
-        else:
-            x[hh] = solver.NumVar(0.0, 1.0, 'x_' + str(hh))
-
-    lp_right_hand_side = [0] * control_count
-
-    # lp_right_hand_side
-    relaxed_control_totals = np.round(relaxed_control_totals)
-    for c in range(0, control_count):
-        weighted_incidence = (int_weights * incidence[c]).sum()
-        lp_right_hand_side[c] = relaxed_control_totals[c] - weighted_incidence
-    lp_right_hand_side = np.maximum(lp_right_hand_side, 0.0)
-
-    # max_incidence_value of each control
-    max_incidence_value = np.amax(incidence, axis=1)
-
-    # - create the inequality constraint upper bounds
-    num_households = relaxed_control_totals[total_hh_control_index]
-    relax_ge_upper_bound = [0] * control_count
-    for c in range(0, control_count):
-        if control_is_hh_based[c]:
-            # for household controls only
-            relax_ge_upper_bound[c] = max(num_households - lp_right_hand_side[c], 0)
-        else:
-            # for person controls only
-            relax_ge_upper_bound[c] = max(
-                max_incidence_value[c] * num_households - lp_right_hand_side[c], 0)
-
-    # - Create positive continuous constraint relaxation variables
-    relax_le = [[]] * control_count
-    relax_ge = [[]] * control_count
-    for c in range(0, control_count):
-        # no relaxation for total households control
-        if c != total_hh_control_index:
-            relax_le[c] = solver.NumVar(0.0, lp_right_hand_side[c], 'relax_le_' + str(c))
-            relax_ge[c] = solver.NumVar(0.0, relax_ge_upper_bound[c], 'relax_ge_' + str(c))
-
-    # - Set objective
-    # use negative for coefficients since solver is minimizing
-    objective = solver.Objective()
-
-    # popsim3 does does something rather peculiar, which I am not sure is right
-    # it applies a huge penalty to rounding a near-zero residual upwards
-    # the documentation justifying this is sparse and possibly confused:
-    # // Set objective: min sum{c(n)*x(n)} + 999*y(i) - 999*z(i)}
-    # objective_function_coefficients = -1.0 * np.log(resid_weights)
-    # objective_function_coefficients[(resid_weights <= np.exp(-999))] = 999
-    # so I am opting for an alternate interpretation of what they meant to do: avoid log overflow
-    # There is not much difference in effect...
-    LOG_OVERFLOW = -700
-    objective_function_coefficients = -1.0 * np.log(np.maximum(resid_weights, np.exp(LOG_OVERFLOW)))
-
-    assert not np.isnan(objective_function_coefficients).any()
-
-    for hh in range(0, sample_count):
-        objective.SetCoefficient(x[hh], objective_function_coefficients[hh])
-
-    for c in range(0, control_count):
-        if c != total_hh_control_index:
-            objective.SetCoefficient(relax_le[c], control_importance_weights[c])
-            objective.SetCoefficient(relax_ge[c], control_importance_weights[c])
-
-    # - inequality constraints
-    hh_constraint_ge = [[]] * control_count
-    hh_constraint_le = [[]] * control_count
-    hh_constraint_ge_bound = \
-        np.maximum(total_hh_control_value * max_incidence_value, lp_right_hand_side)
-    for c in range(0, control_count):
-        # don't add inequality constraints for total households control
-        if c == total_hh_control_index:
-            continue
-        # add the lower bound relaxation inequality constraint
-        hh_constraint_le[c] = solver.Constraint(0, lp_right_hand_side[c])
-        for hh in range(0, sample_count):
-            hh_constraint_le[c].SetCoefficient(x[hh], incidence[c, hh])
-            hh_constraint_le[c].SetCoefficient(relax_le[c], -1.0)
-
-        # add the upper bound relaxation inequality constraint
-        hh_constraint_ge[c] = solver.Constraint(lp_right_hand_side[c], hh_constraint_ge_bound[c])
-        for hh in range(0, sample_count):
-            hh_constraint_ge[c].SetCoefficient(x[hh], incidence[c, hh])
-            hh_constraint_ge[c].SetCoefficient(relax_ge[c], 1.0)
-
-    # - add an equality constraint for the total households control
-    total_hh_constraint = lp_right_hand_side[total_hh_control_index]
-    constraint_eq = solver.Constraint(total_hh_constraint, total_hh_constraint)
-    for hh in range(0, sample_count):
-        constraint_eq.SetCoefficient(x[hh], incidence[total_hh_control_index, hh])
-
-    solver.set_time_limit(CBC_TIMEOUT_IN_SECONDS * 1000)
-
-    solver.EnableOutput()
-    result_status = solver.Solve()
-
-    status_text = STATUS_TEXT[result_status]
-
-    if status_text in STATUS_SUCCESS:
-        resid_weights_out = np.asanyarray(map(lambda x: x.solution_value(), x)).astype(np.float64)
-    else:
-        resid_weights_out = resid_weights
-
-    return int_weights.astype(int), resid_weights_out, status_text
 
 
 def do_integerizing(
@@ -495,7 +295,8 @@ def do_integerizing(
             relaxed_control_totals=relaxed_control_totals,
             total_hh_control_value=total_hh_control_value,
             total_hh_control_index=incidence_table.columns.get_loc(total_hh_control_col),
-            control_is_hh_based=control_spec['seed_table'] == 'households'
+            control_is_hh_based=control_spec['seed_table'] == 'households',
+            trace_label='backstopped_%s' % trace_label
         )
 
         # otherwise, solve for the integer weights using the Mixed Integer Programming solver.
@@ -528,7 +329,8 @@ def do_integerizing(
             relaxed_control_totals=relaxed_control_totals,
             total_hh_control_value=total_hh_control_value,
             total_hh_control_index=incidence_table.columns.get_loc(total_hh_control_col),
-            control_is_hh_based=control_spec['seed_table'] == 'households'
+            control_is_hh_based=control_spec['seed_table'] == 'households',
+            trace_label=trace_label
         )
 
         status = integerizer.integerize()

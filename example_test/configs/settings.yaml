@@ -2,8 +2,8 @@
 INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
 GROUP_BY_INCIDENCE_SIGNATURE: True
+
 USE_SIMUL_INTEGERIZER: True
-USE_CVXPY: True
 
 geographies: [DISTRICT, PUMA, TRACT, TAZ]
 seed_geography: PUMA
@@ -56,8 +56,9 @@ run_list:
     - write_results
     - summarize
 
-  # resume_after: write_results
+  #resume_after: sub_balancing.geography=TRACT
 
+# "-m repop" command line option allows specification of repop run_list`
 # expand_households options are append or replace
 repop:
   steps:
@@ -66,9 +67,9 @@ repop:
     - initial_seed_balancing.final=true
     - integerize_final_seed_weights.repop
     - repop_balancing
-    - expand_households.repop;replace=True
+    - expand_households.repop;replace
+    - synthesize_population.repop
     - write_results.repop
-    - summarize.repop
 
   resume_after: summarize
 
@@ -90,12 +91,12 @@ repop_input_table_list:
 #    - households
 #    - persons
 #
-output_tables:
-  action: include
-  tables:
-    - expanded_household_ids
-    - synthetic_households
-    - synthetic_persons
+#output_tables:
+#  action: include
+#  tables:
+#    - expanded_household_ids
+#    - synthetic_households
+#    - synthetic_persons
 
 synthetic_tables:
   households:
