@@ -66,62 +66,6 @@ class SimulIntegerizer(object):
 
         self.trace_label = trace_label
 
-    def regress(self, float_weights, resid_weights, integerized_weights):
-
-        if not REGRESS:
-            return
-
-        data_file_path = "./regress/simul_integerize_%s.csv" % self.trace_label
-
-        WRITE_REGRESS = not os.path.exists(data_file_path)
-
-        # one column of resid_weights per sub_zone
-        current = pd.DataFrame(data=resid_weights.T,
-                               columns=self.sub_weights.columns,
-                               index=self.incidence_df.index)
-
-        if WRITE_REGRESS:
-            current.to_csv(data_file_path, index=True)
-        else:
-            previous = pd.read_csv(data_file_path, comment='#')
-            previous.set_index('hh_id', inplace=True)
-
-            # print self.trace_label
-            # print "\current\n", current
-            # print "\nprevious\n", previous
-
-            ok = True
-
-            if ok:
-                # check columns (zones)
-                ok = len(current.columns) == len(previous.columns) and \
-                     (current.columns == previous.columns).all()
-                if not ok:
-                    logger.warn('regression zones do not match')
-                    logger.warn('previous zones: %s' % previous.columns.values)
-                    logger.warn('current zones: %s' % current.columns.values)
-
-            if ok:
-                # check column values
-                dif_count = 0
-                for z in previous.columns:
-                    digits = 6
-                    try:
-                        dif_count += (previous[z].round(digits) != current[z].round(digits)).sum()
-                    except Exception as err:
-                        logger.error("regression error: %s: %s" % (type(err).__name__, str(err)))
-                        ok = False
-
-                if dif_count > 0:
-                    logger.warn("regression error %s resid weights do not match" % dif_count)
-                    ok = False
-
-            if not ok:
-                new_data_file_path = "./regress/simul_integerize_%s_new.csv" % self.trace_label
-                current.to_csv(new_data_file_path, index=True)
-                logger.warn("regression error %s, check %s" %
-                            (self.trace_label, new_data_file_path))
-
     def integerize(self):
 
         # - subzone
@@ -234,8 +178,6 @@ class SimulIntegerizer(object):
         self.integerized_weights = pd.DataFrame(data=integerized_weights.T,
                                                 columns=self.sub_weights.columns,
                                                 index=self.incidence_df.index)
-
-        self.regress(sub_float_weights, resid_weights_out, integerized_weights)
 
         return status_text
 

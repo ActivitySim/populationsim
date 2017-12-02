@@ -12,14 +12,6 @@ import pandas as pd
 import activitysim.core.tracing as tracing
 
 
-def close_handlers():
-    for logger_name in ['activitysim', 'orca']:
-        logger = logging.getLogger(logger_name)
-        logger.handlers = []
-        logger.propagate = True
-        logger.setLevel(logging.NOTSET)
-
-
 def add_canonical_dirs():
 
     configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
