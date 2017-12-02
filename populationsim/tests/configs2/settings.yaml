@@ -39,5 +39,9 @@ input_table_list:
 geographies: [REGION, PUMA, DISTRICT, TRACT, TAZ]
 seed_geography: PUMA
 
-
-
+output_tables:
+  action: include
+  tables:
+    - expanded_household_ids
+    - synthetic_households
+    - synthetic_persons

@@ -96,44 +96,6 @@ class Integerizer(object):
 
         self.trace_label = trace_label
 
-    def regress(self, float_weights, resid_weights, integerized_weights):
-
-        if not REGRESS:
-            return
-
-        data_file_path = "./regress/integerize_%s.csv" % self.trace_label
-
-        WRITE_REGRESS = not os.path.exists(data_file_path)
-
-        current = pd.DataFrame(index=self.incidence_table.index)
-        current['integerized_weight'] = integerized_weights
-        current['float_weights'] = float_weights
-        current['resid_weights'] = resid_weights
-
-        if WRITE_REGRESS:
-            current.to_csv(data_file_path, index=True)
-        else:
-            previous = pd.read_csv(data_file_path, comment='#')
-            previous.set_index('hh_id', inplace=True)
-
-            ok = True
-            try:
-                digits = 6
-                dif = (previous.resid_weights.round(digits) !=
-                       current.resid_weights.round(digits)).sum()
-                if dif > 0:
-                    logger.warn("regression error %s resid weights do not match" % dif)
-                    ok = False
-            except Exception as err:
-                logger.error("regression error: %s: %s" % (type(err).__name__, str(err)))
-                ok = False
-
-            if not ok:
-                new_data_file_path = "./regress/simul_integerize_%s_new.csv" % self.trace_label
-                current.to_csv(new_data_file_path, index=True)
-                logger.warn("regression error %s, check %s" %
-                            (self.trace_label, new_data_file_path))
-
     def integerize(self):
 
         sample_count = len(self.incidence_table.index)
@@ -197,10 +159,8 @@ class Integerizer(object):
 
         integerizer_func = get_single_integerizer()
 
-        int_weights, resid_weights, status = integerizer_func(
+        resid_weights, status = integerizer_func(
             incidence=incidence,
-            float_weights=float_weights,
-            int_weights=int_weights,
             resid_weights=resid_weights,
             log_resid_weights=log_resid_weights,
             control_importance_weights=control_importance_weights,
@@ -211,8 +171,6 @@ class Integerizer(object):
         )
 
         integerized_weights = smart_round(int_weights, resid_weights, self.total_hh_control_value)
-
-        self.regress(float_weights, resid_weights, integerized_weights)
 
         self.weights = pd.DataFrame(index=self.incidence_table.index)
         self.weights['integerized_weight'] = integerized_weights

@@ -36,6 +36,12 @@ input_table_list:
 geographies: [DISTRICT, PUMA, TRACT, TAZ]
 seed_geography: PUMA
 
+output_tables:
+  action: skip
+  tables:
+    - households
+    - persons
+
 repop_control_file_name: repop_controls.csv
 
 repop_input_table_list:
