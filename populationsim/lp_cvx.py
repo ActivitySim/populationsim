@@ -18,8 +18,6 @@ CVX_SOLVER = 'GLPK_MI'
 
 def np_integerizer_cvx(
         incidence,
-        float_weights,
-        int_weights,
         resid_weights,
         log_resid_weights,
         control_importance_weights,
@@ -27,6 +25,24 @@ def np_integerizer_cvx(
         lp_right_hand_side,
         relax_ge_upper_bound,
         hh_constraint_ge_bound):
+    """
+
+    Parameters
+    ----------
+    incidence : numpy.ndarray(control_count, sample_count) float
+    resid_weights : numpy.ndarray(sample_count,) float
+    log_resid_weights : numpy.ndarray(sample_count,) float
+    control_importance_weights : numpy.ndarray(control_count,) float
+    total_hh_control_index : int
+    lp_right_hand_side : numpy.ndarray(control_count,) float
+    relax_ge_upper_bound : numpy.ndarray(control_count,) float
+    hh_constraint_ge_bound : numpy.ndarray(control_count,) float
+
+    Returns
+    -------
+    resid_weights_out : numpy.ndarray(sample_count,)
+    status_text : str
+    """
 
     import cvxpy as cvx
 
@@ -65,7 +81,7 @@ def np_integerizer_cvx(
     total_hh_constraint = lp_right_hand_side[total_hh_control_index]
 
     # 1.0 unless resid_weights is zero
-    x_max = (~(float_weights == int_weights)).astype(float).reshape((1, -1))
+    max_x = (~(resid_weights == 0.0)).astype(float).reshape((1, -1))
 
     constraints = [
         # - inequality constraints
@@ -75,7 +91,7 @@ def np_integerizer_cvx(
         cvx.vec(x * incidence) + relax_ge <= hh_constraint_ge_bound,
 
         x >= 0.0,
-        x <= x_max,
+        x <= max_x,
 
         relax_le >= 0.0,
         relax_le <= lp_right_hand_side,
@@ -108,7 +124,7 @@ def np_integerizer_cvx(
         assert x.value is None
         resid_weights_out = resid_weights
 
-    return int_weights, resid_weights_out, status_text
+    return resid_weights_out, status_text
 
 
 def np_simul_integerizer_cvx(
@@ -129,6 +145,35 @@ def np_simul_integerizer_cvx(
         parent_resid_weights,
         total_hh_sub_control_index,
         total_hh_parent_control_index):
+    """
+    Parameters
+    ----------
+    sub_int_weights : numpy.ndarray(sub_zone_count, sample_count) int
+    parent_countrol_importance : numpy.ndarray(parent_control_count,) float
+    parent_relax_ge_upper_bound : numpy.ndarray(parent_control_count,) float
+    sub_countrol_importance : numpy.ndarray(sub_control_count,) float
+    sub_float_weights : numpy.ndarray(sub_zone_count, sample_count) float
+    sub_resid_weights : numpy.ndarray(sub_zone_count, sample_count) float
+    lp_right_hand_side : numpy.ndarray(sub_zone_count, sub_control_count) float
+    parent_hh_constraint_ge_bound : numpy.ndarray(parent_control_count,) float
+    sub_incidence : numpy.ndarray(sample_count, sub_control_count) float
+    parent_incidence : numpy.ndarray(sample_count, parent_control_count) float
+    total_hh_right_hand_side : numpy.ndarray(sub_zone_count,) float
+    relax_ge_upper_bound : numpy.ndarray(sub_zone_count, sub_control_count) float
+    parent_lp_right_hand_side : numpy.ndarray(parent_control_count,) float
+    hh_constraint_ge_bound : numpy.ndarray(sub_zone_count, sub_control_count) float
+    parent_resid_weights : numpy.ndarray(sample_count,) float
+    total_hh_sub_control_index : int
+    total_hh_parent_control_index : int
+
+    Returns
+    -------
+    resid_weights_out : numpy.ndarray of float
+        residual weights in range [0..1] as solved,
+        or, in case of failure, sub_resid_weights unchanged
+    status_text : string
+        STATUS_OPTIMAL, STATUS_FEASIBLE in case of success, or a solver-specific failure status
+    """
 
     import cvxpy as cvx
 

@@ -197,10 +197,8 @@ class Integerizer(object):
 
         integerizer_func = get_single_integerizer()
 
-        int_weights, resid_weights, status = integerizer_func(
+        resid_weights, status = integerizer_func(
             incidence=incidence,
-            float_weights=float_weights,
-            int_weights=int_weights,
             resid_weights=resid_weights,
             log_resid_weights=log_resid_weights,
             control_importance_weights=control_importance_weights,

@@ -127,7 +127,7 @@ class SimulIntegerizer(object):
         # - subzone
 
         total_hh_sub_control_index = \
-            self.sub_controls_df.columns.get_loc(self.total_hh_control_col),
+            self.sub_controls_df.columns.get_loc(self.total_hh_control_col)
 
         total_hh_parent_control_index = \
             self.sub_controls_df.columns.get_loc(self.total_hh_control_col)
@@ -154,7 +154,7 @@ class SimulIntegerizer(object):
         lp_right_hand_side = np.maximum(lp_right_hand_side, 0.0)
 
         # inequality constraint upper bounds
-        sub_num_households = relaxed_sub_control_totals[:, total_hh_sub_control_index]
+        sub_num_households = relaxed_sub_control_totals[:, (total_hh_sub_control_index,)]
         sub_max_control_values = np.amax(sub_incidence, axis=0) * sub_num_households
         relax_ge_upper_bound = np.maximum(sub_max_control_values - lp_right_hand_side, 0)
         hh_constraint_ge_bound = np.maximum(sub_max_control_values, lp_right_hand_side)

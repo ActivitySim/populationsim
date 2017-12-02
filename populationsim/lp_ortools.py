@@ -13,8 +13,6 @@ STATUS_SUCCESS = [STATUS_OPTIMAL, STATUS_FEASIBLE]
 
 def np_integerizer_ortools(
         incidence,
-        float_weights,
-        int_weights,
         resid_weights,
         log_resid_weights,
         control_importance_weights,
@@ -22,6 +20,24 @@ def np_integerizer_ortools(
         lp_right_hand_side,
         relax_ge_upper_bound,
         hh_constraint_ge_bound):
+    """
+
+    Parameters
+    ----------
+    incidence : numpy.ndarray(control_count, sample_count) float
+    resid_weights : numpy.ndarray(sample_count,) float
+    log_resid_weights : numpy.ndarray(sample_count,) float
+    control_importance_weights : numpy.ndarray(control_count,) float
+    total_hh_control_index : int
+    lp_right_hand_side : numpy.ndarray(control_count,) float
+    relax_ge_upper_bound : numpy.ndarray(control_count,) float
+    hh_constraint_ge_bound : numpy.ndarray(control_count,) float
+
+    Returns
+    -------
+    resid_weights_out : numpy.ndarray(sample_count,)
+    status_text : str
+    """
 
     from ortools.linear_solver import pywraplp
 
@@ -126,7 +142,7 @@ def np_integerizer_ortools(
     else:
         resid_weights_out = resid_weights
 
-    return int_weights.astype(int), resid_weights_out, status_text
+    return resid_weights_out, status_text
 
 
 def np_simul_integerizer_ortools(
@@ -147,6 +163,36 @@ def np_simul_integerizer_ortools(
         parent_resid_weights,
         total_hh_sub_control_index,
         total_hh_parent_control_index):
+
+    """
+    Parameters
+    ----------
+    sub_int_weights : numpy.ndarray(sub_zone_count, sample_count) int
+    parent_countrol_importance : numpy.ndarray(parent_control_count,) float
+    parent_relax_ge_upper_bound : numpy.ndarray(parent_control_count,) float
+    sub_countrol_importance : numpy.ndarray(sub_control_count,) float
+    sub_float_weights : numpy.ndarray(sub_zone_count, sample_count) float
+    sub_resid_weights : numpy.ndarray(sub_zone_count, sample_count) float
+    lp_right_hand_side : numpy.ndarray(sub_zone_count, sub_control_count) float
+    parent_hh_constraint_ge_bound : numpy.ndarray(parent_control_count,) float
+    sub_incidence : numpy.ndarray(sample_count, sub_control_count) float
+    parent_incidence : numpy.ndarray(sample_count, parent_control_count) float
+    total_hh_right_hand_side : numpy.ndarray(sub_zone_count,) float
+    relax_ge_upper_bound : numpy.ndarray(sub_zone_count, sub_control_count) float
+    parent_lp_right_hand_side : numpy.ndarray(parent_control_count,) float
+    hh_constraint_ge_bound : numpy.ndarray(sub_zone_count, sub_control_count) float
+    parent_resid_weights : numpy.ndarray(sample_count,) float
+    total_hh_sub_control_index : int
+    total_hh_parent_control_index : int
+
+    Returns
+    -------
+    resid_weights_out : numpy.ndarray of float
+        residual weights in range [0..1] as solved,
+        or, in case of failure, sub_resid_weights unchanged
+    status_text : string
+        STATUS_OPTIMAL, STATUS_FEASIBLE in case of success, or a solver-specific failure status
+    """
 
     from ortools.linear_solver import pywraplp
 
@@ -247,10 +293,10 @@ def np_simul_integerizer_ortools(
                    for z in range(sub_zone_count)) - \
         solver.Sum(relax_le[z, c] * sub_countrol_importance[c]
                    for z in range(sub_zone_count)
-                   for c in range(sub_control_count)) - \
+                   for c in range(sub_control_count) if c != total_hh_sub_control_index) - \
         solver.Sum(relax_ge[z, c] * sub_countrol_importance[c]
                    for z in range(sub_zone_count)
-                   for c in range(sub_control_count)) - \
+                   for c in range(sub_control_count) if c != total_hh_sub_control_index) - \
         solver.Sum(parent_relax_le[c] * parent_countrol_importance[c]
                    for c in range(parent_control_count)) - \
         solver.Sum(parent_relax_ge[c] * parent_countrol_importance[c]
@@ -296,7 +342,7 @@ def np_simul_integerizer_ortools(
     # - equality constraint for the total households control
     constraint_eq = {}
     for z in range(sub_zone_count):
-        total_hh_constraint = total_hh_right_hand_side[z][0]
+        total_hh_constraint = total_hh_right_hand_side[z]
 
         constraint_eq[z] = solver.Constraint(total_hh_constraint, total_hh_constraint)
         for hh in range(sample_count):

@@ -28,7 +28,7 @@ set -e
 
 ACTUAL_TRAVIS_JOB_NUMBER=`echo $TRAVIS_JOB_NUMBER| cut -d'.' -f 2`
 
-if [ "$TRAVIS_REPO_SLUG" == "RSGINC/populationsim" ] && \
+if [ "$TRAVIS_REPO_SLUG" == "RSGInc/populationsim" ] && \
         [ "$TRAVIS_BRANCH" == "master" ] && \
         [ "$TRAVIS_PULL_REQUEST" == "false" ] && \
         [ "$ACTUAL_TRAVIS_JOB_NUMBER" == "1" ]; then
@@ -48,7 +48,7 @@ if [ "$TRAVIS_REPO_SLUG" == "RSGINC/populationsim" ] && \
         git config --global user.name "Jeff Doyle"
 
         echo "Cloning repository"
-        git clone --quiet --single-branch --branch=gh-pages https://${GH_TOKEN}@github.com/rsginc/populationsim.git  gh-pages > /dev/null 2>&1
+        git clone --quiet --single-branch --branch=gh-pages https://${GH_TOKEN}@github.com/RSGInc/populationsim.git  gh-pages > /dev/null 2>&1
 
         cd gh-pages
         rm -rf *
