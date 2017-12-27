@@ -18,7 +18,7 @@ max_expansion_factor: 30
 control_file_name: controls.csv
 
 # scaled/unscaled meta_control_data file name specified below
-data_dir: data_calm
+data_dir: data
 
 trace_geography:
   TAZ: 100
