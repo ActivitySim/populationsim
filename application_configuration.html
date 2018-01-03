@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Application &amp; Configuration &mdash; PopulationSim 0.2.dev1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="PopulationSim 0.2.dev1 documentation" href="index.html"/>
+        <link rel="next" title="Validation of Results" href="validation.html"/>
+        <link rel="prev" title="Getting Started" href="getting_started.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PopulationSim
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.dev1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Application &amp; Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#geographies">Geographies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#controls">Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checks-on-data-inputs">Checks on data inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inputs-outputs">Inputs &amp; Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling-debugging">Error Handling &amp; Debugging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="validation.html">Validation of Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software.html">Software Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documents &amp; Resources</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PopulationSim</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Application &amp; Configuration</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/application_configuration.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="application-configuration">
+<h1>Application &amp; Configuration<a class="headerlink" href="#application-configuration" title="Permalink to this headline">¶</a></h1>
+<p>This section describes how to set up a new PopulationSim implementation. The first step is to understand the requirements of the project in terms of geographic resolution and details desired in the synthetic population. Once the requirements of the project have been established, the next step is to prepare the inputs to PopulationSim. Next, PopulationSim needs to be configured for available inputs and features desired in the final synthetic population. After this, the user needs to run PopulationSim and resolve any data related errors. Finally, the output synthetic population needs to be validated against the controls for of precision and variance.</p>
+<div class="section" id="geographies">
+<h2>Geographies<a class="headerlink" href="#geographies" title="Permalink to this headline">¶</a></h2>
+<p>Traditionally, travel forecasting models have followed the sequential four-step model framework. This required the modeling region to be divided into zones. The 4-step forecasting process starts with <em>trip generation</em> in each zone using the available demographic data. Next, <em>trip distribution</em> between zones, and finally, <em>mode choice</em> and <em>route assignment</em>. The zones used in four-step process are typically known as Traffic Analysis Zones (TAZs). The spatial boundaries of TAZs varies across modeling region and ranges from a city block to a large area in the suburb within a modeling region. Smaller TAZs result in additional zones and thus adds to the computational burden.</p>
+<p>ABMs on the other hand are computationally efficient and operate in a micro-simulation framework at the level of persons and households. Most of the advanced ABMs (e.g., DaySim, CT-RAMP, etc.) operate at a finer spatial resolution wherein all location choices (e.g., usual work location, tour destination choice) are modeled at a finer geography. This finer geography typically is the Micro-Analysis Zones (MAZs) which are smaller zones nested within TAZs. This requires the synthetic population to be produced at the level of MAZs.</p>
+<p>As discussed earlier, two main inputs to a population synthesizer are a seed sample and controls. The seed sample can come from a household travel survey or from ACS PUMS with latter being the most common source. In case of a household travel survey, the geographic resolution of the seed sample is determined by the geocoding geography. The PUMS data contains a sample of actual responses to ACS. While PUMS data contain records from disaggregate geographies but data is made available at an aggregate geography called Public Use Microdata Area (PUMA). PUMAs are special non-overlapping areas that partition each state into contiguous geographic units containing no fewer than 100,000 people each.</p>
+<p>Ideally, it is desired that all the controls and seed sample should be available at the same  level of geographic resolution as the travel model. However, this is typically not the case. Some important demographic, socio-economic and land-use development distributions (e.g., employment or occupation data) that dictates population synthesis are only available at a more aggregate geography (e.g., County, District, Region, etc.). Moreover, some distributions which are available at a finer geographic level in the base year may not be available at the same geographic level for a future forecast year. In some cases, even if a control is available at a finer geography, the modeler might want to specify that control (e.g., population by age) at an aggregate geography.</p>
+<p>The flexible number of geographies feature in PopulationSim enables user to make use of data available at different geographic resolutions. In summary, the <strong>choice of geographies for PopulationSim</strong> is decided based on following:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Travel Model Spatial Resolution:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">For most ABMs, this is <strong>MAZ</strong> but can also be <strong>TAZ</strong> or <strong>Block Group</strong></td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Seed Sample Geography:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">Typically, this would be <strong>PUMA</strong> but can be some other geography depending on the source of seed sample</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Marginal Controls Geographies:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">User would need to specify at least one control at the travel model spatial resolution. Geography of other controls would depend upon the availability of data and user preferences.</td>
+</tr>
+</tbody>
+</table>
+<p>The hierarchy of geographies is important when making a decision regarding controls. The hierarchy of geographies in PopulationSim framework is as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Meta (e.g., County)</li>
+<li>Seed (e.g., PUMA)</li>
+<li>Sub-Seed (e.g., TAZ, Block Group, MAZ)</li>
+</ul>
+</div></blockquote>
+<p>Seed geography is the geographic resolution of the seed data. PopulationSim starts at this geography and moves up to the Meta geography. Currently, PopulationSim can handle only one Meta geography. After incorporating controls at the Meta geography, PopulationSim moves down to Sub-Seed geographies. PopulationSim can handle any number of Sub-Seed geographies. While selecting control geographies user should ensure to not select more than one Meta geography. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the <em>Documents &amp; Resources</em> section.</p>
+</div>
+<div class="section" id="controls">
+<h2>Controls<a class="headerlink" href="#controls" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>Data Sources</li>
+<li>How to specify controls</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>Tables</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="checks-on-data-inputs">
+<h2>Checks on data inputs<a class="headerlink" href="#checks-on-data-inputs" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="inputs-outputs">
+<h2>Inputs &amp; Outputs<a class="headerlink" href="#inputs-outputs" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="error-handling-debugging">
+<h2>Error Handling &amp; Debugging<a class="headerlink" href="#error-handling-debugging" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="validation.html" class="btn btn-neutral float-right" title="Validation of Results" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="getting_started.html" class="btn btn-neutral" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright contributing authors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.2.dev1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

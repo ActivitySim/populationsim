@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>PopulationSim &mdash; PopulationSim 0.2.dev1 documentation</title>
+  <title>Introduction &mdash; PopulationSim 0.2.dev1 documentation</title>
   
 
   
@@ -36,7 +36,7 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="PopulationSim 0.2.dev1 documentation" href="#"/>
-        <link rel="next" title="Software Implementation" href="software.html"/> 
+        <link rel="next" title="Getting Started" href="getting_started.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -90,7 +90,11 @@
             
             
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="application_configuration.html">Application &amp; Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validation.html">Validation of Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="software.html">Software Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documents &amp; Resources</a></li>
 </ul>
 
             
@@ -135,7 +139,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>PopulationSim</li>
+      <li>Introduction</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -154,109 +158,99 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="populationsim">
-<h1>PopulationSim<a class="headerlink" href="#populationsim" title="Permalink to this headline">¶</a></h1>
-<p>PopulationSim is an open platform for population synthesis.  It emerged
-from Oregon DOT’s desire to build a shared, open, platform that could be
-easily adapted for statewide, regional, and urban transportation planning needs.</p>
-<div class="section" id="model-steps">
-<h2>Model Steps<a class="headerlink" href="#model-steps" title="Permalink to this headline">¶</a></h2>
-<p>The example PopulationSim model run consists of the following steps:</p>
-<ul class="simple">
-<li>input_pre_processor</li>
-<li>setup_data_structures</li>
-<li>initial_seed_balancing</li>
-<li>meta_control_factoring</li>
-<li>final_seed_balancing</li>
-<li>integerize_final_seed_weights</li>
-<li>sub_balancing.geography=TRACT</li>
-<li>sub_balancing.geography=TAZ</li>
-<li>expand_households</li>
-<li>write_results</li>
-<li>summarize</li>
-</ul>
-<p>Each step is described in detail below.</p>
-<div class="section" id="input-pre-processor">
-<h3>input_pre_processor<a class="headerlink" href="#input-pre-processor" title="Permalink to this headline">¶</a></h3>
-<p>The inputs pre-processor reads each input table, runs pandas expressions (_expressions.csv)
-against the table to create additional required table fields, and save the tables to the datastore.
-For example, it processes raw Census tables to create the required fields for population
-synthesis.  The inputs pre-processor exposes all input tables to the expressions calculator
-so tables can be joined (such as households to persons for example). It reads the geographic
-crosswalk file in order to join meta, mid, and low level zone tables if needed.  The format of
-the expressions file follows ActivitySim, as shown in the example below.  The <code class="docutils literal"><span class="pre">seed_households</span></code>
-expressions file below operates on the <code class="docutils literal"><span class="pre">seed_households</span></code> input file and processes the <code class="docutils literal"><span class="pre">NPF</span></code> field
-to create the <code class="docutils literal"><span class="pre">FAMTAG</span></code> field, which is then used by PopulationSim in later steps.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="38%" />
-<col width="36%" />
-<col width="26%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Description</th>
-<th class="head">Target</th>
-<th class="head">Expression</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>HH is a family</td>
-<td>FAMTAG</td>
-<td>pd.notnull( NPF ) * 1</td>
-</tr>
-</tbody>
-</table>
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>PopulationSim is an open platform for population synthesis.  It emerged from Oregon DOT’s desire to
+build a shared, open, platform that could be easily adapted for statewide, regional, and urban
+transportation planning needs.</p>
+<div class="section" id="what-is-population-synthesis">
+<h2>What is population synthesis?<a class="headerlink" href="#what-is-population-synthesis" title="Permalink to this headline">¶</a></h2>
+<p>Activity Based Models (ABMs) operate in a micro-simulation framework , wherein the travel and activity
+choices of person and household decision-making agents are predicted by applying Monte Carlo methods to
+behavioral models. This requires person and household level attributes of the entire population
+in the modeling region. Moreover, designing a forecasting scenario requires a process to synthesize
+a population fitting the scenario’s demographic assumptions.</p>
+<p>The available inputs are a population sample and marginal distributions. This population sample is
+commonly referred to as the <em>seed or reference sample</em> and the marginal distributions are referred to
+as <em>controls or targets</em>. <strong>The process of expanding the seed sample to match the marginal distribution
+is termed population synthesis.</strong> The software tool which implements this populations synthesis process
+is termed as a <strong>Population Synthesizer</strong>.</p>
 </div>
-<div class="section" id="setup-data-structures">
-<h3>setup_data_structures<a class="headerlink" href="#setup-data-structures" title="Permalink to this headline">¶</a></h3>
-<p>setup geographic correspondence, seeds, control sets, weights, expansion factors, and incidence tables</p>
+<div class="section" id="what-does-a-population-synthesizer-produce">
+<h2>What does a Population Synthesizer produce?<a class="headerlink" href="#what-does-a-population-synthesizer-produce" title="Permalink to this headline">¶</a></h2>
+<p>The objective of a population synthesizer is to generate synthetic population for
+a modeling region. The main outputs from a population synthesizer include lists of persons and households
+representing the entire population of the modeling region. These databases include household and person-level
+attributes of interest. For example, household income, household size, housing type, number of vehicles,
+person age, person occupation, etc. Depending on the use case, a population synthesizer may also
+produce multi-way distribution of demographic variables at different geographies to be used as an input
+to aggregate travel models. Advanced population synthesizers such as PopulationSim includes option to
+modify an existing synthetic population for a smaller geography. In this case, the outputs would
+be a modified list of persons and households.</p>
 </div>
-<div class="section" id="initial-seed-balancing">
-<h3>initial_seed_balancing<a class="headerlink" href="#initial-seed-balancing" title="Permalink to this headline">¶</a></h3>
-<p>seed balancing</p>
-</div>
-<div class="section" id="meta-control-factoring">
-<h3>meta_control_factoring<a class="headerlink" href="#meta-control-factoring" title="Permalink to this headline">¶</a></h3>
-<p>meta level control factoring</p>
-</div>
-<div class="section" id="final-seed-balancing">
-<h3>final_seed_balancing<a class="headerlink" href="#final-seed-balancing" title="Permalink to this headline">¶</a></h3>
-<p>final balancing for each seed zone with aggregated low and mid-level controls and distributed meta-level controls</p>
-</div>
-<div class="section" id="integerize-final-seed-weights">
-<h3>integerize_final_seed_weights<a class="headerlink" href="#integerize-final-seed-weights" title="Permalink to this headline">¶</a></h3>
-<p>for each seed zone integerize the household weights</p>
-</div>
-<div class="section" id="sub-balancing-geography">
-<h3>sub_balancing.geography<a class="headerlink" href="#sub-balancing-geography" title="Permalink to this headline">¶</a></h3>
-<p>iteratively loop through seed zones, balance all lower level zones within the seed zone, and integerize the resulting household weights</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sub_balancing</span><span class="o">.</span><span class="n">geography</span><span class="o">=</span><span class="n">TRACT</span>
-<span class="n">sub_balancing</span><span class="o">.</span><span class="n">geography</span><span class="o">=</span><span class="n">TAZ</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="expand-households">
-<h3>expand_households<a class="headerlink" href="#expand-households" title="Permalink to this headline">¶</a></h3>
-<p>expand household and person records with final weights to one household and one person record per weight with unique IDs</p>
-</div>
-<div class="section" id="write-results">
-<h3>write_results<a class="headerlink" href="#write-results" title="Permalink to this headline">¶</a></h3>
-<p>write the expanded household and person files to CSV files</p>
-</div>
-<div class="section" id="summarize">
-<h3>summarize<a class="headerlink" href="#summarize" title="Permalink to this headline">¶</a></h3>
-<p>write summary files - balancer and integerizer results by geography, etc.</p>
-</div>
+<div class="section" id="how-does-a-population-synthesizer-work">
+<h2>How does a population synthesizer work?<a class="headerlink" href="#how-does-a-population-synthesizer-work" title="Permalink to this headline">¶</a></h2>
+<p>The main inputs to a population synthesizer are disaggregate population samples and marginal control
+distributions. Disaggregate population samples can be obtained from sources like American Community
+Survey (ACS) Public Use Microdata Sample (PUMS) or a household travel survey. Marginal distributions of
+person and household-level attributes of interest are also available from Census. The seed sample should
+include demographic variables corresponding to each marginal control termed as <em>controlled variables</em> (e.g.,
+household size, household income, etc.). Seed sample should also include other variables of interest but not
+necessarily controlled via marginal controls. These are termed as <em>uncontrolled variables</em>. Marginal
+distributions can be for both household or person level variables and are specified at a specific
+geography (e.g., Block Groups, Traffic Analysis Zone or County). Traditionally, all population synthesizers
+required all controls to be specified at the same geographic level. More advanced population synthesizers
+(PopulationSim, PopSynIII, PopGen2) allow controls specification at multiple geographic levels. Seed sample
+also includes an initial weight on each household record. The objective of a population synthesizer is to
+generate household weights which satisfies the marginal control distributions. This is achieved by use of
+a data fitting technique.</p>
+<p>The most common fitting technique used by various population synthesizers is the Iterative Proportional
+Fitting (IPF) procedure. Generally, the IPF procedure is used to obtain joint distributions of demographic
+variables and random sampling from PUMS to generate baseline synthetic population. One of the limitations
+of the IPF method is that it does not incorporate person level attributes while generating the joint
+distributions. PopGen uses a heuristic algorithm called the Iterative Proportional Updating Algorithm (IPU)
+to incorporate both person and household-level variables in the fitting procedure. Besides IPF, entropy
+maximization algorithms have been used as a fitting technique. In most of the entropy based methods,
+the relative entropy is used as the objective function. The relative entropy based optimization ensures
+that the least amount of new information is introduced in finding a feasible solution. The base entropy
+is defined by the initial weights in the seed sample. The weights generated by the entropy maximization
+algorithm preserves the distribution of initial weights while matching the marginal controls. This is an
+advantage of the entropy maximization based procedures over the IPF based procedures. Once the final weights
+have been assigned, seed sample is expanded using these weights to generate a synthetic population. Most
+population synthesizers create distributions using final weights and employ random sampling to expand the
+seed sample. PopulationSim use Linear Programming to convert the final weights to integer values and expands
+the seed sample using these integer weights.</p>
 </div>
 <div class="section" id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="software.html">Software Implementation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="software.html#dependencies">Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="software.html#set-up-and-run">Set Up and Run</a></li>
-<li class="toctree-l2"><a class="reference internal" href="software.html#folder-file-setup">Folder &amp; File Setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="software.html#outputs">Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#beginner-installation-procedure">Beginner Installation Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#advanced-user-installation-procedure">Advanced User Installation Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#run-examples">Run Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="application_configuration.html">Application &amp; Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="application_configuration.html#geographies">Geographies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="application_configuration.html#controls">Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="application_configuration.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="application_configuration.html#checks-on-data-inputs">Checks on data inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="application_configuration.html#inputs-outputs">Inputs &amp; Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="application_configuration.html#error-handling-debugging">Error Handling &amp; Debugging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="validation.html">Validation of Results</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="validation.html#what-to-validate">What to validate?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validation.html#charts-plots">Charts &amp; Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validation.html#resources">Resources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="software.html">Software Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documents &amp; Resources</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docs.html#links-to-documents">Links to documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs.html#link-to-source-code">Link to source code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs.html#external-links">External Links</a></li>
 </ul>
 </li>
 </ul>
@@ -282,7 +276,7 @@ to create the <code class="docutils literal"><span class="pre">FAMTAG</span></co
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="software.html" class="btn btn-neutral float-right" title="Software Implementation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

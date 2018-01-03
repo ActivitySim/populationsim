@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Validation of Results &mdash; PopulationSim 0.2.dev1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="PopulationSim 0.2.dev1 documentation" href="index.html"/>
+        <link rel="next" title="Software Implementation" href="software.html"/>
+        <link rel="prev" title="Application &amp; Configuration" href="application_configuration.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PopulationSim
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.dev1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="application_configuration.html">Application &amp; Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Validation of Results</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-to-validate">What to validate?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#charts-plots">Charts &amp; Plots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#validation-charts">Validation Charts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#frequency-distribution-plots">Frequency Distribution Plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#expansion-factor-distributions">Expansion Factor Distributions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#resources">Resources</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#validation-r-script">Validation R Script</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="software.html">Software Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documents &amp; Resources</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PopulationSim</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Validation of Results</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/validation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="validation-of-results">
+<h1>Validation of Results<a class="headerlink" href="#validation-of-results" title="Permalink to this headline">¶</a></h1>
+<p>The final and one of the most critical steps in population synthesis procedure is validation of final synthetic population. Validation can give us clues about inconsistencies among controls, data processing errors or misspecification of any settings. This section provides general guidelines on validation procedures</p>
+<div class="section" id="what-to-validate">
+<h2>What to validate?<a class="headerlink" href="#what-to-validate" title="Permalink to this headline">¶</a></h2>
+<p>At a regional level, for each control, total number of records (household/person) desired by the control, the total number of records synthesized, the difference between the synthesized totals and the control totals and the percentage difference are reported.
+Statistics that inform us of convergence at a more disaggregate level are also computed – please note that these statistics are being computed for the geography at which the controls are specified i.e. MAZ, TAZ or Meta as the case might be. The following three statistics are computed as a part of this exercise:
+(1)     the average percentage difference between the control totals and the synthesized totals,
+(2)     the standard deviation of the percentage difference – this measure informs us of how much dispersion from the average exists, and
+(3)     the percentage root mean square error (RMSE) - an indicator of the proximity of synthesized and control totals.
+The number of geographies for which the control is non-zero (N) are also reported.</p>
+</div>
+<div class="section" id="charts-plots">
+<h2>Charts &amp; Plots<a class="headerlink" href="#charts-plots" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="validation-charts">
+<h3>Validation Charts<a class="headerlink" href="#validation-charts" title="Permalink to this headline">¶</a></h3>
+<p>The validation chart is a visualization of the disaggregate summary statistics – mean percentage difference, STDEV and RMSE of percentage differences. A form of dot and whisker plot is generated for each control where the dots are the mean percentage differences and horizontal bars are twice the STDEV or RMSE centered around zero.</p>
+</div>
+<div class="section" id="frequency-distribution-plots">
+<h3>Frequency Distribution Plots<a class="headerlink" href="#frequency-distribution-plots" title="Permalink to this headline">¶</a></h3>
+<p>These are simply frequency distribution plots of differences between control and synthesized values across the geography at which the controls were specified.</p>
+</div>
+<div class="section" id="expansion-factor-distributions">
+<h3>Expansion Factor Distributions<a class="headerlink" href="#expansion-factor-distributions" title="Permalink to this headline">¶</a></h3>
+<p>While a synthetic population may match the controls well, it is important to know how uniform the household weights are, and how different they are from the initial weights. The closer the final weights are to the initial PUMS weight, higher is the chance of matching the distribution of uncontrolled variables. An expansion factor is computed for each record in the PUMS data as total final weight/initial weight. A distribution plot of these expansion factors is created for each PUMA. A good synthetic population would have most of these expansion factors as close to one as possible.</p>
+</div>
+</div>
+<div class="section" id="resources">
+<h2>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="validation-r-script">
+<h3>Validation R Script<a class="headerlink" href="#validation-r-script" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="software.html" class="btn btn-neutral float-right" title="Software Implementation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="application_configuration.html" class="btn btn-neutral" title="Application &amp; Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright contributing authors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.2.dev1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
