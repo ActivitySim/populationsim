@@ -192,19 +192,21 @@ being implemented in the ActivitySim framework means:</p>
 </ul>
 </li>
 <li><a class="reference external" href="https://udst.github.io/activitysim/development.html">Code Documentation</a><ul>
-<li>Python code according to <a class="reference external" href="http://legacy.python.org/dev/peps/pep-0008">pep8</a> style guide</li>
+<li>Python code according to <a class="reference external" href="https://pypi.python.org/pypi/pycodestyle">pycodestyle</a> style guide</li>
 <li>Written in <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> markup, built with <a class="reference external" href="http://www.sphinx-doc.org/en/stable">Sphinx</a> and docstrings written in <a class="reference external" href="https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt">numpydoc</a></li>
 </ul>
 </li>
 <li><a class="reference external" href="https://udst.github.io/activitysim/development.html">Testing</a><ul>
 <li>A protected master branch that can only be written to after tests have passed</li>
-<li><a class="reference external" href="https://udst.github.io/activitysim/development.html">pytest</a> for tests</li>
+<li><a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a> for tests</li>
 <li><a class="reference external" href="https://travis-ci.org">TravisCI</a> for building and testing with each commit</li>
 </ul>
 </li>
 </ul>
-<p>PopulationSim also requires an optimization library for balancing and integerizing.  Currently the software makes
-use of the open source and easy to install <a class="reference external" href="https://github.com/google/or-tools">ortools</a> package.</p>
+<p>PopulationSim also requires an optimization library for balancing and integerizing.  The software makes
+use of the open source and easy to install <a class="reference external" href="https://github.com/google/or-tools">ortools</a> package.  The
+ortools integerization results varies from platform to platform since edge case results depend on the
+exact ortools/cbc version.</p>
 </div>
 
 
