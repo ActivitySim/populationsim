@@ -66,8 +66,8 @@ Advanced User Installation Procedure
   * `toolz <http://toolz.readthedocs.org/en/latest>`__
   * `zbox <https://github.com/jiffyclub/zbox>`__
   * `orca <https://synthicity.github.io/orca>`__ - the application orchestration tool (i.e. the module runner)
-  * `openmatrix <https://pypi.python.org/pypi/OpenMatrix/0.2.3>`__ - OMX support
-  * `activitysim <https://pypi.python.org/pypi/activitysim/0.3.dev1>`__ - ActivitySim framework
+  * `openmatrix <https://pypi.python.org/pypi/OpenMatrix>`__ - OMX support
+  * `activitysim <https://pypi.python.org/pypi/activitysim>`__ - ActivitySim framework
   * `ortools <https://github.com/google/or-tools>`__ - Google operations research tools solver
 
 6. After setting up Anaconda Python and dependent libraries, run the following command on the activated conda Python environment to install PopulationSim package:

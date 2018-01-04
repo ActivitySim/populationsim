@@ -37,15 +37,16 @@ being implemented in the ActivitySim framework means:
     
 * `Code Documentation <https://udst.github.io/activitysim/development.html>`__
 
-  * Python code according to `pep8 <http://legacy.python.org/dev/peps/pep-0008>`__ style guide
+  * Python code according to `pycodestyle <https://pypi.python.org/pypi/pycodestyle>`__ style guide
   * Written in `reStructuredText <http://docutils.sourceforge.net/rst.html>`__ markup, built with `Sphinx <http://www.sphinx-doc.org/en/stable>`__ and docstrings written in `numpydoc <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`__
     
 * `Testing <https://udst.github.io/activitysim/development.html>`__
 
   * A protected master branch that can only be written to after tests have passed
-  * `pytest <https://udst.github.io/activitysim/development.html>`__ for tests
+  * `pytest <https://docs.pytest.org/en/latest/>`__ for tests
   * `TravisCI <https://travis-ci.org>`__ for building and testing with each commit
 
-PopulationSim also requires an optimization library for balancing and integerizing.  Currently the software makes 
-use of the open source and easy to install `ortools <https://github.com/google/or-tools>`__ package.
-
+PopulationSim also requires an optimization library for balancing and integerizing.  The software makes 
+use of the open source and easy to install `ortools <https://github.com/google/or-tools>`__ package.  The
+ortools integerization results varies from platform to platform since edge case results depend on the 
+exact ortools/cbc version.
