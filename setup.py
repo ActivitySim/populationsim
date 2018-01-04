@@ -31,7 +31,7 @@ setup(
         'toolz >= 0.7',
         'zbox >= 1.2',
         'psutil >= 4.1',
-        'activitysim == 0.4',
+        'activitysim == 0.5',
         'ortools >= 5.1.4045',
     ]
 )
