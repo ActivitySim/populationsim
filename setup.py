@@ -8,7 +8,7 @@ with open('README.rst') as file:
 
 setup(
     name='populationsim',
-    version='0.2.dev1',
+    version='0.3',
     description='Population Synthesis',
     author='contributing authors',
     author_email='ben.stabler@rsginc.com',
@@ -33,6 +33,5 @@ setup(
         'psutil >= 4.1',
         'activitysim == 0.4',
         'ortools >= 5.1.4045',
-    ],
-    dependency_links=['http://github.com/rsginc/activitysim/tarball/master#egg=activitysim-0.4']
+    ]
 )

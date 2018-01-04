@@ -60,7 +60,7 @@ CALL %CONDA_ACT% popsim
 %PIP_INSTALL% install --upgrade orca
 %PIP_INSTALL% install --upgrade openmatrix
 %PIP_INSTALL% install --upgrade ortools
-%PIP_INSTALL% install --upgrade https://github.com/RSGInc/activitysim/zipball/master
+%PIP_INSTALL% install --upgrade activitysim
 CALL %CONDA_DEA%
 
 
