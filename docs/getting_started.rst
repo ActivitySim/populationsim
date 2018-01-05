@@ -14,7 +14,7 @@ This page describes the getting started procedure for PopulationSim which consis
 Beginner Installation Procedure
 --------------------------------
 
-1. Download `Anaconda installation ZIP <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1d6393b49fd8a4cac8d147b8cb81e3076&authkey=AdAEhJUWa7enF1wjFWpELf4&expiration=2018-06-27T23%3A50%3A17.000Z&e=abff5b90084843fbb9bc4735526b0b29>`_ loaded with all required libraries and PopulationSim package. 
+1. Download `Anaconda installation ZIP <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1d070faa5aa0948dc9e0d21b40ab837c6&authkey=AVs4vsRQWHldr9eNZaGRBYE&expiration=2018-07-04T01%3A22%3A52.000Z&e=3eaf7253a28f478393af925f8cd7d45c>`_ loaded with all required libraries and PopulationSim package. 
 
 *The Anaconda Python 2.7 and dependent libraries used to prepare this installation folder were accessed on 27th Dec 2017*
 
@@ -36,7 +36,7 @@ Advanced User Installation Procedure
 
 2. Install `Anaconda Python 2.7 <https://www.continuum.io/downloads>`__. 
 
-   **Windows users can skip the remaining steps and run** `SetUpPopulationSim.bat <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=18956e115076449b186a59e1a1c47a844&authkey=AUX5h-aFydciypTNpPOfIs8&expiration=2018-06-27T23%3A49%3A33.000Z&e=c4172d5bf5fd4da4b033dcc5e48d0fb2>`_ script. The user would need to set the location of the Anaconda installation directory in the batch script (open in edit mode) as shown below:
+   **Windows users can skip the remaining steps and run** `SetUpPopulationSim.bat <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1a8ce9c8b1e9347688ccf1f619013df9d&authkey=AUxp6iOeXMFnYM8SrOEv79w&expiration=2018-07-04T01%3A23%3A33.000Z&e=1560c9164b1a4b9da628e807dbd8ca0f>`_ script. The user would need to set the location of the Anaconda installation directory in the batch script (open in edit mode) as shown below:
 
  ::
 
@@ -86,7 +86,7 @@ Run Examples
 
 	* Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed. In case the fully loaded Anaconda install was downloaded, then it should have been unzipped to an appropriate location on your computer
  
-	* Download and unzip the `example set ups <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1bd84325c412a4d62933394e20df16a0d&authkey=AQeQ8M7Yo3MrdD4RB-lsYgk&expiration=2018-06-27T23%3A51%3A15.000Z&e=69fd93cdc6004ba8b48805bbaa029ea1>`_ to the *Project Directory* on your computer
+	* Download and unzip the `example set ups <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=111557442bbaa49319f43e44aa13e71b2&authkey=ATY9Qg2vIOMGg7QnhTP5-z8&expiration=2018-07-04T01%3A24%3A01.000Z&e=8976518297724d6980780b41edfbd5ce>`_ to the *Project Directory* on your computer
 
 Data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon, USA was used to create the example set ups. `Example_calm`_ set up runs PopulationSim with base configuration. `Example_calm_repop`_ set up runs PopulationSim in the *repop* configuration. More information on configuration can be found in the **Application & Configuration** section
 
@@ -114,7 +114,7 @@ Example_calm_repop
 
 Repop configuration requires outputs from a base run. Therefore, base configuration should be run before running the repop configuration. Follow the steps below to run **example_calm_repop** set up:
 
-  * Copy the **pipeline.h5** file from the example_calm\output directory to example_calm_repop\output directory (all PopulationSim files are stored in pipeline.h5 file)
+  * Copy the **pipeline.h5** file from the example_calm\\output directory to example_calm_repop\\output directory (all PopulationSim files are stored in pipeline.h5 file)
   * Open the *RunPopulationSim_repop.bat* script from the example_calm_repop folder in edit mode
   * Set the location of the Anaconda installation directory in the batch script as shown below:
 
