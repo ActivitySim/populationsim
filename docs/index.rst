@@ -20,7 +20,7 @@ a population fitting the scenario’s demographic assumptions.
 The available inputs are a population sample and marginal distributions. This population sample is 
 commonly referred to as the *seed or reference sample* and the marginal distributions are referred to 
 as *controls or targets*. **The process of expanding the seed sample to match the marginal distribution 
-is termed population synthesis.** The software tool which implements this populations synthesis process 
+is termed population synthesis.** The software tool which implements this population synthesis process 
 is termed as a **Population Synthesizer**.
 
 What does a Population Synthesizer produce?
@@ -54,7 +54,7 @@ a data fitting technique.
 
 The most common fitting technique used by various population synthesizers is the Iterative Proportional 
 Fitting (IPF) procedure. Generally, the IPF procedure is used to obtain joint distributions of demographic 
-variables and random sampling from PUMS to generate baseline synthetic population. One of the limitations 
+variables and random sampling from PUMS generates the baseline synthetic population. One of the limitations 
 of the IPF method is that it does not incorporate person level attributes while generating the joint 
 distributions. PopGen uses a heuristic algorithm called the Iterative Proportional Updating Algorithm (IPU) 
 to incorporate both person and household-level variables in the fitting procedure. Besides IPF, entropy 
@@ -66,7 +66,7 @@ algorithm preserves the distribution of initial weights while matching the margi
 advantage of the entropy maximization based procedures over the IPF based procedures. Once the final weights 
 have been assigned, seed sample is expanded using these weights to generate a synthetic population. Most 
 population synthesizers create distributions using final weights and employ random sampling to expand the
-seed sample. PopulationSim use Linear Programming to convert the final weights to integer values and expands 
+seed sample. PopulationSim uses Linear Programming to convert the final weights to integer values and expands 
 the seed sample using these integer weights.
 
 Contents

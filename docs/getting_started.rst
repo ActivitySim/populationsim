@@ -86,9 +86,9 @@ Run Examples
 
 	* Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed. In case the fully loaded Anaconda install was downloaded, then it should have been unzipped to an appropriate location on your computer
  
-	* Download and unzip the `example set ups <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=111557442bbaa49319f43e44aa13e71b2&authkey=ATY9Qg2vIOMGg7QnhTP5-z8&expiration=2018-07-04T01%3A24%3A01.000Z&e=8976518297724d6980780b41edfbd5ce>`_ to the *Project Directory* on your computer
+	* Download and unzip the `example set ups <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1077e6f6ed2cb47508ea8d70c41ec007a&authkey=AUvhUAWry3L9KOlRpo5PbGI&expiration=2018-07-14T02%3A58%3A48.000Z&e=TEtaBv>`_ to the *Project Directory* on your computer
 
-Data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon, USA was used to create the example set ups. `Example_calm`_ set up runs PopulationSim with base configuration. `Example_calm_repop`_ set up runs PopulationSim in the *repop* configuration. More information on configuration can be found in the **Application & Configuration** section
+Data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon, USA was used to create the example set ups. `Example_calm`_ set up runs PopulationSim in base mode. `Example_calm_repop`_ set up runs PopulationSim in the *repop* mode. More information on configuration can be found in the **Application & Configuration** section
 
 Example_calm
 ~~~~~~~~~~~~
