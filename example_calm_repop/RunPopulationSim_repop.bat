@@ -6,6 +6,7 @@
 :: Binny Paul, binny.mathewpaul@rsginc.com, 121517
 ::~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @ECHO OFF
+ECHO %startTime%%Time%
 SET BATCH_DIR=%~dp0
 
 :: USER INPUTS
@@ -39,4 +40,5 @@ CALL %CONDA_DEA%
 CD %BATCH_DIR%
 
 ECHO PopulationSim run complete!!
+ECHO %startTime%%Time%
 PAUSE
