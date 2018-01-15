@@ -5,8 +5,8 @@
 Software Implementation 
 =======================
 
-PopulationSim is implemented in the `ActivitySim <https://github.com/UDST/activitysim>`__ 
-framework.  As summarized `here <https://udst.github.io/activitysim/#software-design>`__, 
+PopulationSim is implemented in the `ActivitySim <https://github.com/activitysim/activitysim>`__ 
+framework.  As summarized `here <https://activitysim.github.io/activitysim/#software-design>`__, 
 being implemented in the ActivitySim framework means:
 
 * Overall Design
@@ -35,12 +35,12 @@ being implemented in the ActivitySim framework means:
 
   * Model expressions are in CSV files and contain Python expressions, mainly pandas/numpy expression that operate on the input data tables. This helps to avoid modifying Python code when making changes to the model calculations. 
     
-* `Code Documentation <https://udst.github.io/activitysim/development.html>`__
+* `Code Documentation <https://activitysim.github.io/activitysim/development.html>`__
 
   * Python code according to `pycodestyle <https://pypi.python.org/pypi/pycodestyle>`__ style guide
   * Written in `reStructuredText <http://docutils.sourceforge.net/rst.html>`__ markup, built with `Sphinx <http://www.sphinx-doc.org/en/stable>`__ and docstrings written in `numpydoc <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`__
     
-* `Testing <https://udst.github.io/activitysim/development.html>`__
+* `Testing <https://activitysim.github.io/activitysim/development.html>`__
 
   * A protected master branch that can only be written to after tests have passed
   * `pytest <https://docs.pytest.org/en/latest/>`__ for tests
