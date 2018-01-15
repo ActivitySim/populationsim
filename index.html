@@ -173,7 +173,7 @@ a population fitting the scenario’s demographic assumptions.</p>
 <p>The available inputs are a population sample and marginal distributions. This population sample is
 commonly referred to as the <em>seed or reference sample</em> and the marginal distributions are referred to
 as <em>controls or targets</em>. <strong>The process of expanding the seed sample to match the marginal distribution
-is termed population synthesis.</strong> The software tool which implements this populations synthesis process
+is termed population synthesis.</strong> The software tool which implements this population synthesis process
 is termed as a <strong>Population Synthesizer</strong>.</p>
 </div>
 <div class="section" id="what-does-a-population-synthesizer-produce">
@@ -206,7 +206,7 @@ generate household weights which satisfies the marginal control distributions. T
 a data fitting technique.</p>
 <p>The most common fitting technique used by various population synthesizers is the Iterative Proportional
 Fitting (IPF) procedure. Generally, the IPF procedure is used to obtain joint distributions of demographic
-variables and random sampling from PUMS to generate baseline synthetic population. One of the limitations
+variables and random sampling from PUMS generates the baseline synthetic population. One of the limitations
 of the IPF method is that it does not incorporate person level attributes while generating the joint
 distributions. PopGen uses a heuristic algorithm called the Iterative Proportional Updating Algorithm (IPU)
 to incorporate both person and household-level variables in the fitting procedure. Besides IPF, entropy
@@ -218,7 +218,7 @@ algorithm preserves the distribution of initial weights while matching the margi
 advantage of the entropy maximization based procedures over the IPF based procedures. Once the final weights
 have been assigned, seed sample is expanded using these weights to generate a synthetic population. Most
 population synthesizers create distributions using final weights and employ random sampling to expand the
-seed sample. PopulationSim use Linear Programming to convert the final weights to integer values and expands
+seed sample. PopulationSim uses Linear Programming to convert the final weights to integer values and expands
 the seed sample using these integer weights.</p>
 </div>
 <div class="section" id="contents">
@@ -232,11 +232,9 @@ the seed sample using these integer weights.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="application_configuration.html">Application &amp; Configuration</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="application_configuration.html#geographies">Geographies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="application_configuration.html#controls">Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="application_configuration.html#selecting-geographies">Selecting Geographies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="application_configuration.html#preparing-seed-and-control-data">Preparing seed and control data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="application_configuration.html#configuration">Configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="application_configuration.html#checks-on-data-inputs">Checks on data inputs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="application_configuration.html#inputs-outputs">Inputs &amp; Outputs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="application_configuration.html#error-handling-debugging">Error Handling &amp; Debugging</a></li>
 </ul>
 </li>
@@ -247,12 +245,7 @@ the seed sample using these integer weights.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="software.html">Software Implementation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docs.html">Documents &amp; Resources</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="docs.html#links-to-documents">Links to documents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="docs.html#link-to-source-code">Link to source code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="docs.html#external-links">External Links</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documents &amp; Resources</a></li>
 </ul>
 </div>
 </div>
