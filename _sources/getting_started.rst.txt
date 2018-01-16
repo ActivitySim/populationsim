@@ -5,7 +5,7 @@
 Getting Started
 ===============
 
-This page describes the getting started procedure for PopulationSim which consists of installing and running examples. Users can choose among the following two methods to install PopulationSim
+This page describes the installation procedure for PopulationSim and how to run PopulationSim with sample data. Users can choose among the following two methods to install PopulationSim:
 
 * `Beginner Installation Procedure`_. Download, Unzip, Run!
 * `Advanced User Installation Procedure`_. Install from scratch
@@ -14,7 +14,7 @@ This page describes the getting started procedure for PopulationSim which consis
 Beginner Installation Procedure
 --------------------------------
 
-1. Download `Anaconda installation ZIP <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1d070faa5aa0948dc9e0d21b40ab837c6&authkey=AVs4vsRQWHldr9eNZaGRBYE&expiration=2018-07-04T01%3A22%3A52.000Z&e=3eaf7253a28f478393af925f8cd7d45c>`_ loaded with all required libraries and PopulationSim package. 
+1. Download `Anaconda installation 7ZIP <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1d070faa5aa0948dc9e0d21b40ab837c6&authkey=AVs4vsRQWHldr9eNZaGRBYE&expiration=2018-07-04T01%3A22%3A52.000Z&e=3eaf7253a28f478393af925f8cd7d45c>`_ loaded with all required libraries and PopulationSim package. Note that the ZIP file is a bit over 1 GB and the unzipped directory is approximately 3.3 GB.
 
 *The Anaconda Python 2.7 and dependent libraries used to prepare this installation folder were accessed on 27th Dec 2017*
 
@@ -84,11 +84,11 @@ Advanced User Installation Procedure
 Run Examples
 ------------
 
-	* Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed. In case the fully loaded Anaconda install was downloaded, then it should have been unzipped to an appropriate location on your computer
+	* Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed (see above). If the fully loaded Anaconda install was downloaded, then it should have been unzipped to an appropriate location on your computer
  
-	* Download and unzip the `example set ups <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1077e6f6ed2cb47508ea8d70c41ec007a&authkey=AUvhUAWry3L9KOlRpo5PbGI&expiration=2018-07-14T02%3A58%3A48.000Z&e=TEtaBv>`_ to the *Project Directory* on your computer
+	* Download and unzip the `example set ups <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1077e6f6ed2cb47508ea8d70c41ec007a&authkey=AUvhUAWry3L9KOlRpo5PbGI&expiration=2018-07-14T02%3A58%3A48.000Z&e=TEtaBv>`_ to a folder (referred to later as *Working Directory*) on your computer. It does not have to be the same directory as your Anaconda or PopulationSim install.
 
-Data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon, USA was used to create the example set ups. `Example_calm`_ set up runs PopulationSim in base mode. `Example_calm_repop`_ set up runs PopulationSim in the *repop* mode. More information on configuration can be found in the **Application & Configuration** section
+Data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon, USA was used to create the example set ups. The `Example_calm`_ set-up runs PopulationSim in base mode. The `Example_calm_repop`_ set-up runs PopulationSim in the *repop* mode. More information on the configuration of PopulationSim can be found in the **Application & Configuration** section.
 
 Example_calm
 ~~~~~~~~~~~~
@@ -112,7 +112,7 @@ Follow the steps below to run **example_calm** set up:
 Example_calm_repop
 ~~~~~~~~~~~~~~~~~~
 
-Repop configuration requires outputs from a base run. Therefore, base configuration should be run before running the repop configuration. Follow the steps below to run **example_calm_repop** set up:
+Repop configuration requires outputs from a base run. Therefore, the base configuration should be run before running the repop configuration. Follow the steps below to run **example_calm_repop** set up:
 
   * Copy the **pipeline.h5** file from the example_calm\\output directory to example_calm_repop\\output directory (all PopulationSim files are stored in pipeline.h5 file)
   * Open the *RunPopulationSim_repop.bat* script from the example_calm_repop folder in edit mode

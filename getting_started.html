@@ -170,7 +170,7 @@
             
   <div class="section" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<p>This page describes the getting started procedure for PopulationSim which consists of installing and running examples. Users can choose among the following two methods to install PopulationSim</p>
+<p>This page describes the installation procedure for PopulationSim and how to run PopulationSim with sample data. Users can choose among the following two methods to install PopulationSim:</p>
 <ul class="simple">
 <li><a class="reference internal" href="#beginner-installation-procedure">Beginner Installation Procedure</a>. Download, Unzip, Run!</li>
 <li><a class="reference internal" href="#advanced-user-installation-procedure">Advanced User Installation Procedure</a>. Install from scratch</li>
@@ -178,7 +178,7 @@
 <div class="section" id="beginner-installation-procedure">
 <h2>Beginner Installation Procedure<a class="headerlink" href="#beginner-installation-procedure" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Download <a class="reference external" href="https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1d070faa5aa0948dc9e0d21b40ab837c6&amp;authkey=AVs4vsRQWHldr9eNZaGRBYE&amp;expiration=2018-07-04T01%3A22%3A52.000Z&amp;e=3eaf7253a28f478393af925f8cd7d45c">Anaconda installation ZIP</a> loaded with all required libraries and PopulationSim package.</li>
+<li>Download <a class="reference external" href="https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1d070faa5aa0948dc9e0d21b40ab837c6&amp;authkey=AVs4vsRQWHldr9eNZaGRBYE&amp;expiration=2018-07-04T01%3A22%3A52.000Z&amp;e=3eaf7253a28f478393af925f8cd7d45c">Anaconda installation 7ZIP</a> loaded with all required libraries and PopulationSim package. Note that the ZIP file is a bit over 1 GB and the unzipped directory is approximately 3.3 GB.</li>
 </ol>
 <p><em>The Anaconda Python 2.7 and dependent libraries used to prepare this installation folder were accessed on 27th Dec 2017</em></p>
 <ol class="arabic simple" start="2">
@@ -255,11 +255,11 @@
 <h2>Run Examples<a class="headerlink" href="#run-examples" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
-<li>Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed. In case the fully loaded Anaconda install was downloaded, then it should have been unzipped to an appropriate location on your computer</li>
-<li>Download and unzip the <a class="reference external" href="https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1077e6f6ed2cb47508ea8d70c41ec007a&amp;authkey=AUvhUAWry3L9KOlRpo5PbGI&amp;expiration=2018-07-14T02%3A58%3A48.000Z&amp;e=TEtaBv">example set ups</a> to the <em>Project Directory</em> on your computer</li>
+<li>Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed (see above). If the fully loaded Anaconda install was downloaded, then it should have been unzipped to an appropriate location on your computer</li>
+<li>Download and unzip the <a class="reference external" href="https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1077e6f6ed2cb47508ea8d70c41ec007a&amp;authkey=AUvhUAWry3L9KOlRpo5PbGI&amp;expiration=2018-07-14T02%3A58%3A48.000Z&amp;e=TEtaBv">example set ups</a> to a folder (referred to later as <em>Working Directory</em>) on your computer. It does not have to be the same directory as your Anaconda or PopulationSim install.</li>
 </ul>
 </div></blockquote>
-<p>Data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon, USA was used to create the example set ups. <a class="reference internal" href="#example-calm">Example_calm</a> set up runs PopulationSim in base mode. <a class="reference internal" href="#example-calm-repop">Example_calm_repop</a> set up runs PopulationSim in the <em>repop</em> mode. More information on configuration can be found in the <strong>Application &amp; Configuration</strong> section</p>
+<p>Data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon, USA was used to create the example set ups. The <a class="reference internal" href="#example-calm">Example_calm</a> set-up runs PopulationSim in base mode. The <a class="reference internal" href="#example-calm-repop">Example_calm_repop</a> set-up runs PopulationSim in the <em>repop</em> mode. More information on the configuration of PopulationSim can be found in the <strong>Application &amp; Configuration</strong> section.</p>
 <div class="section" id="example-calm">
 <h3>Example_calm<a class="headerlink" href="#example-calm" title="Permalink to this headline">¶</a></h3>
 <p>Follow the steps below to run <strong>example_calm</strong> set up:</p>
@@ -283,7 +283,7 @@
 </div>
 <div class="section" id="example-calm-repop">
 <h3>Example_calm_repop<a class="headerlink" href="#example-calm-repop" title="Permalink to this headline">¶</a></h3>
-<p>Repop configuration requires outputs from a base run. Therefore, base configuration should be run before running the repop configuration. Follow the steps below to run <strong>example_calm_repop</strong> set up:</p>
+<p>Repop configuration requires outputs from a base run. Therefore, the base configuration should be run before running the repop configuration. Follow the steps below to run <strong>example_calm_repop</strong> set up:</p>
 <blockquote>
 <div><ul class="simple">
 <li>Copy the <strong>pipeline.h5</strong> file from the example_calm\output directory to example_calm_repop\output directory (all PopulationSim files are stored in pipeline.h5 file)</li>
