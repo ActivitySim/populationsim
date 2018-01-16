@@ -88,7 +88,7 @@ Run Examples
  
 	* Download and unzip the `example set ups <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1077e6f6ed2cb47508ea8d70c41ec007a&authkey=AUvhUAWry3L9KOlRpo5PbGI&expiration=2018-07-14T02%3A58%3A48.000Z&e=TEtaBv>`_ to a folder (referred to later as *Working Directory*) on your computer. It does not have to be the same directory as your Anaconda or PopulationSim install.
 
-There are two examples for running PopulationSim, created using data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon. The `Example_calm`_ set-up runs PopulationSim in base mode, where a synthetic population is created for the entire modeling region. The `Example_calm_repop`_ set-up runs PopulationSim in the *repop* mode, which updates the synthetic population for a small part of the region. More information on the configuration of PopulationSim can be found in the **Application & Configuration** section.
+There are two examples for running PopulationSim, created using data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon. The `Example_calm`_ set-up runs PopulationSim in base mode, where a synthetic population is created for the entire modeling region. This takes approximately 12 minutes on a laptop with an Intel i7-4800MQ CPU @ 2.70GHz and 16 GB of RAM. The `Example_calm_repop`_ set-up runs PopulationSim in the *repop* mode, which updates the synthetic population for a small part of the region. More information on the configuration of PopulationSim can be found in the **Application & Configuration** section.
 
 Example_calm
 ~~~~~~~~~~~~
@@ -96,7 +96,7 @@ Example_calm
 Follow the steps below to run **example_calm** set up:
 
   * Open the *RunPopulationSim_base.bat* script from the example_calm folder in edit mode
-  * Set the location of the Anaconda installation directory in the batch script as shown below:
+  * Set the location of the Anaconda installation directory in the batch script as shown below (note: if the path contains spaces, put quotes around the path):
 
   ::
 
@@ -112,11 +112,11 @@ Follow the steps below to run **example_calm** set up:
 Example_calm_repop
 ~~~~~~~~~~~~~~~~~~
 
-Repop configuration requires outputs from a base run. Therefore, the base configuration should be run before running the repop configuration. Follow the steps below to run **example_calm_repop** set up:
+The repop configuration requires outputs from a base run. Therefore, the base configuration must be run before running the repop configuration. Follow the steps below to run **example_calm_repop** set up:
 
   * Copy the **pipeline.h5** file from the example_calm\\output directory to example_calm_repop\\output directory (all PopulationSim files are stored in pipeline.h5 file)
   * Open the *RunPopulationSim_repop.bat* script from the example_calm_repop folder in edit mode
-  * Set the location of the Anaconda installation directory in the batch script as shown below:
+  * Set the location of the Anaconda installation directory in the batch script as shown below (note: if the path contains spaces, put quotes around the path):
 
   ::
 
