@@ -186,7 +186,7 @@ Working Directory Contents:
 
 */output* Sub-directory Contents (populated at the end of a PopulationSim run):
 
-This sub-directory is populated at the end of the PopulationSim run. The table below list all possible outputs from a PopulationSim run. User has the option to specify the output files that should be exported at the end of a run, details can be found in the *Configuring Settings File* section.
+This sub-directory is populated at the end of the PopulationSim run. The table below list all possible outputs from a PopulationSim run. The user has the option to specify the output files that should be exported at the end of a run. Details can be found in the *Configuring Settings File* section.
 
 +---------------------------------+----------------------------+-----------------------------------------------------------------------------------------+
 | File                            | Group                      | Description                                                                             |
@@ -241,9 +241,11 @@ This sub-directory is populated at the end of the PopulationSim run. The table b
 Configuring Settings File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-PopulationSim is configured using the *configs/settings.YAML* file. The user has the flexibility to specify the following settings:
+PopulationSim is configured using the *configs/settings.YAML* file. The user has the flexibility to specify the following settings. 
 
 **Algorithm/Software Configuration**:
+
+These settings control the functionality of the PopulationSim algorithm. The settings shown are currently the defaults as they were the ones used to validate the final PopulationSim application for the CALM region. They should not be changed by the casual user, with the possible exception of the max_expansion_factor setting, as explained below.
 
 :: 
 
@@ -302,7 +304,8 @@ PopulationSim is configured using the *configs/settings.YAML* file. The user has
 |                |                     | Example - [REGION, PUMA, TAZ, MAZ] |br|                                         |
 |                |                     | Any number of geographies are allowed |br|                                      |
 |                |                     | These geography names should be used as prefixes in control data file names |br||
-|                |                     | for the corresponding geographies                                               |
+|                |                     | for the corresponding geographies. Note that SUB_SEED_GEOG_1,2,n are flexible.  |
+|                |                     | Each must be listed in the run_list settings, shown below.                      |
 +----------------+---------------------+---------------------------------------------------------------------------------+
 | seed_geography | SEED_GEOG           | Seed geography name from the list of geographies                                |
 +----------------+---------------------+---------------------------------------------------------------------------------+
@@ -319,9 +322,9 @@ PopulationSim is configured using the *configs/settings.YAML* file. The user has
 +-----------+---------------------------------------------------------------------------------+
 | Attribute | Description                                                                     |
 +===========+=================================================================================+
-| GEOG_1    | ID of GEOG_1 zone that should be traced. Example, TRACT = 100                   |
+| GEOG_1    | ID of SUB_SEED_GEOG_1 zone that should be traced. Example, TRACT = 100          |
 +-----------+---------------------------------------------------------------------------------+
-| GEOG_2    | ID of GEOG_1 zone that should be traced. Example, TAZ = 10200                   |
+| GEOG_2    | ID of SUB_SEED_GEOG_2 zone that should be traced. Example, TAZ = 10200          |
 +-----------+---------------------------------------------------------------------------------+
 
 **data directory**:
@@ -333,7 +336,8 @@ PopulationSim is configured using the *configs/settings.YAML* file. The user has
 +-----------+---------------------------------------------------------------------------------+
 | Attribute | Description                                                                     |
 +===========+=================================================================================+
-| data_dir  | Name of the data_directory within the working directory                         |
+| data_dir  | Name of the data_directory within the working directory. Do not change unless   |
+| data_dir  | the directory structure changes from the template.                              |
 +-----------+---------------------------------------------------------------------------------+
 
 
@@ -346,7 +350,7 @@ This setting is used to specify details of various inputs to PopulationSim. Belo
 	* Geographic CrossWalk 
 	* Control data at each control geography 
 	
-For each input table, user is required to specify an import table name, input CSV file name, index column name and column name map (only for renaming column names). User can also specify a list of columns to be dropped. An example is shown below followed by description of attributes.
+For each input table, the user is required to specify an import table name, input CSV file name, index column name and column name map (only for renaming column names). The user can also specify a list of columns to be dropped from the input synthetic population seed data. An example is shown below followed by description of attributes.
 
 ::
 
@@ -450,7 +454,7 @@ Three columns representing the following needs to be specified:
 
 **Output Tables**:
 
-Inputs & Outputs section listed all possible outputs. This setting is used to specify the list of outputs. User can specify either a list of output tables to include or to skip using the *action* attribute as shown below in the example. if neither is specified, then all check pointed tables will be written. The HDF5 data pipeline and all summary files are written out regardless of this setting.
+The Inputs & Outputs section listed all possible outputs. The output_tables: setting is used to control which outputs to write to disk. The user can specify either a list of output tables to include or to skip using the *action* attribute as shown below in the example. if neither is specified, then all output tables will be written. The HDF5 data pipeline and all summary files are written out regardless of this setting.
 
 ::
 
@@ -472,7 +476,7 @@ Inputs & Outputs section listed all possible outputs. This setting is used to sp
 	
 **Steps for base mode**:	  
 
-This setting lists the sub-modules or steps to be run by the PopulationSim orchestrator. ActivitySim framework allows user to resume a PopulationSim run from a specific point. This is specified using the attribute ``resume_after``. The step, ``sub_balancing.geography`` is repeated for each sub-seed geography.
+This setting lists the sub-modules or steps to be run by the PopulationSim orchestrator. The ActivitySim framework allows user to resume a PopulationSim run from a specific point. This is specified using the attribute ``resume_after``. The step, ``sub_balancing.geography`` is repeated for each sub-seed geography (the example below shows two, but there can be 0 or more).
 
 ::
 
@@ -503,7 +507,7 @@ This setting lists the sub-modules or steps to be run by the PopulationSim orche
 
 **Steps for repop mode**:
 
-When running PoulationSim in repop mode, the steps specified in this setting are run. The repop mode runs over an existing synthetic population and uses the data pipeline HDF5 file from the base run as an input. The default value for the ``resume_after`` setting under the repop mode is *summarize* which is the last step of a base run. In other words, repop mode starts from the last step of the base run and modifies the base synthetic population as per the new controls. User can choose either *append* or *replace* in the ``expand_households.repop`` attribute to modify the existing synthetic population
+When running PoulationSim in repop mode, the steps specified in this setting are run. The repop mode runs over an existing synthetic population and uses the data pipeline HDF5 file from the base run as an input. The default value for the ``resume_after`` setting under the repop mode is *summarize* which is the last step of a base run. In other words, the repop mode starts from the last step of the base run and modifies the base synthetic population as per the new controls. The user can choose either *append* or *replace* in the ``expand_households.repop`` attribute to modify the existing synthetic population. The *append* option adds to the existing synthetic population in the specified geographies, while the *replace* option replaces any existing synthetic population with newly synthesized population in the specified geographies.
 
 ::
 
@@ -547,7 +551,7 @@ When running PoulationSim in repop mode, the steps specified in this setting are
 
 **Input Data Tables for repop mode**
 
-As mentioned earlier, repop mode requires the data pipeline (HDF5 file) from the base run. User should copy the HDF5 file from the base outputs to the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as base mode.
+As mentioned earlier, repop mode requires the data pipeline (HDF5 file) from the base run. User should copy the HDF5 file from the base outputs to the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as base mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).
 
 ::
 
@@ -587,17 +591,17 @@ The controls for a PopulationSim run are specified using the control specificati
 Attribute definitions are as follows:
 
 :target:
-        target is the name of the control in PopulationSim
+        target is the name of the control in PopulationSim.
 :geography:
-        geography is the geographic level of the control, as specified in ``geographies``
+        geography is the geographic level of the control, as specified in ``geographies``.
 :seed_table:
-        seed_table is the seed table the control applies to and it can be ``households`` or ``persons``.  If persons, then persons are aggregated to households using the count operator
+        seed_table is the seed table the control applies to and it can be ``households`` or ``persons``.  If persons, then persons are aggregated to households using the count operator.
 :importance:
-        importance is the importance weight for the control
+        importance is the importance weight for the control. A higher weight will cause PopulationSim to attempt to match the control at the possible expense of matching lower-weight controls.
 :control_field:
-        control_field is the field in the control data input files that this control applies to
+        control_field is the field in the control data input files that this control applies to.
 :expression:
-        expression is a valid Python/Pandas expression that identifies seed households or persons that this control applies to
+        expression is a valid Python/Pandas expression that identifies seed households or persons that this control applies to.
 
   
 
@@ -610,12 +614,12 @@ It is recommended to do appropriate checks on input data before running Populati
 Checks on data inputs
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-While PopulationSim algorithm is designed to work even with imperfect data, but an error-free and consistent data guarantees optimal performance. Poor performance and errors are usually the result of imperfect data and it is the responsibility of the user to do necessary QA//QC on the input data. Some data problems that are frequently encountered are as follows:
+While the PopulationSim algorithm is designed to work even with imperfect data, an error-free and consistent set of input controls guarantees optimal performance. Poor performance and errors are usually the result of inconsistent data and it is the responsibility of the user to do necessary QA//QC on the input data. Some data problems that are frequently encountered are as follows:
 
 	* Miscoding of data 
-	* Inconsistent controls
+	* Inconsistent controls (for example, household-level households by size controls do not match person-level controls on total persons, or household-level workers per household controls do not match person-level workers by occupation)
 	* Controls do not add to total number of households
-	* Controls do not aggregate consistently
+	* Controls do not aggregate consistently across geographies
 	* missing or mislabelled controls
 
 Common run-time errors
