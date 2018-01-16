@@ -88,7 +88,7 @@ Run Examples
  
 	* Download and unzip the `example set ups <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1077e6f6ed2cb47508ea8d70c41ec007a&authkey=AUvhUAWry3L9KOlRpo5PbGI&expiration=2018-07-14T02%3A58%3A48.000Z&e=TEtaBv>`_ to a folder (referred to later as *Working Directory*) on your computer. It does not have to be the same directory as your Anaconda or PopulationSim install.
 
-Data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon, USA was used to create the example set ups. The `Example_calm`_ set-up runs PopulationSim in base mode. The `Example_calm_repop`_ set-up runs PopulationSim in the *repop* mode. More information on the configuration of PopulationSim can be found in the **Application & Configuration** section.
+There are two examples for running PopulationSim, created using data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon. The `Example_calm`_ set-up runs PopulationSim in base mode, where a synthetic population is created for the entire modeling region. The `Example_calm_repop`_ set-up runs PopulationSim in the *repop* mode, which updates the synthetic population for a small part of the region. More information on the configuration of PopulationSim can be found in the **Application & Configuration** section.
 
 Example_calm
 ~~~~~~~~~~~~
