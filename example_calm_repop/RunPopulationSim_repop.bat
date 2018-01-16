@@ -15,6 +15,7 @@ SET BATCH_DIR=%~dp0
 SET ANACONDA_DIR=E:\projects\clients\odot\PopulationSim\Anaconda2
 :: ---------------------------------------------------------------------
 
+SET PATH=%ANACONDA_DIR%\Library\bin;%PATH%
 
 :: setup paths to Python application, Conda script, etc.
 SET CONDA_ACT=%ANACONDA_DIR%\Scripts\activate.bat
