@@ -84,7 +84,7 @@ Advanced User Installation Procedure
 Run Examples
 ------------
 
-	* Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed (see above). If the fully loaded Anaconda install was downloaded, then it should have been unzipped to an appropriate location on your computer
+	* Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed (see above). If the fully loaded Anaconda install was downloaded, then it should have been unzipped to an appropriate location on your computer.
  
 	* Download and unzip the `example set ups <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=1077e6f6ed2cb47508ea8d70c41ec007a&authkey=AUvhUAWry3L9KOlRpo5PbGI&expiration=2018-07-14T02%3A58%3A48.000Z&e=TEtaBv>`_ to a folder (referred to later as *Working Directory*) on your computer. It does not have to be the same directory as your Anaconda or PopulationSim install.
 
