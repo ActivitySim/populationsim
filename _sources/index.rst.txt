@@ -11,21 +11,17 @@ transportation planning needs.
       
 What is population synthesis?
 -----------------------------
-Activity Based Models (ABMs) operate in a micro-simulation framework , wherein the travel and activity 
-choices of person and household decision-making agents are predicted by applying Monte Carlo methods to 
-behavioral models. This requires person and household level attributes of the entire population 
-in the modeling region. Moreover, designing a forecasting scenario requires a process to synthesize 
-a population fitting the scenario’s demographic assumptions.
+Activity Based Models (ABMs) operate in a micro-simulation framework , wherein the travel choices of person and household decision-making agents are predicted by applying Monte Carlo methods to behavioral models. This requires a data set of households and persons representing the entire population in the modeling region. Population synthesis refers to the process used to create this data.
 
-The available inputs are a population sample and marginal distributions. This population sample is 
-commonly referred to as the *seed or reference sample* and the marginal distributions are referred to 
+The required inputs to population synthesis are a population sample and marginal distributions. The population 
+sample is commonly referred to as the *seed or reference sample* and the marginal distributions are referred to 
 as *controls or targets*. **The process of expanding the seed sample to match the marginal distribution 
 is termed population synthesis.** The software tool which implements this population synthesis process 
 is termed as a **Population Synthesizer**.
 
 What does a Population Synthesizer produce?
 -------------------------------------------
-The objective of a population synthesizer is to generate synthetic population for 
+The objective of a population synthesizer is to generate a synthetic population for 
 a modeling region. The main outputs from a population synthesizer include lists of persons and households 
 representing the entire population of the modeling region. These databases include household and person-level 
 attributes of interest. For example, household income, household size, housing type, number of vehicles, 
