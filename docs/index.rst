@@ -24,18 +24,16 @@ What does a Population Synthesizer produce?
 The objective of a population synthesizer is to generate a synthetic population for 
 a modeling region. The main outputs from a population synthesizer include lists of persons and households 
 representing the entire population of the modeling region. These databases include household and person-level 
-attributes of interest. For example, household income, household size, housing type, number of vehicles, 
-person age, person occupation, etc. Depending on the use case, a population synthesizer may also 
+attributes of interest. Examples of attributes at the household level include household income, household size, housing type, and number of vehicles. Examples of person attributes include  
+age, gender, work\school status, and occupation. Depending on the use case, a population synthesizer may also 
 produce multi-way distribution of demographic variables at different geographies to be used as an input 
-to aggregate travel models. Advanced population synthesizers such as PopulationSim includes option to 
-modify an existing synthetic population for a smaller geography. In this case, the outputs would 
-be a modified list of persons and households.
+to aggregate travel models. PopulationSim also includes an option to 
+modify an existing regional synthetic population for a smaller geographical area. In this case, the outputs are a modified list of persons and households.
 
 How does a population synthesizer work?
 ---------------------------------------
 The main inputs to a population synthesizer are disaggregate population samples and marginal control
-distributions. Disaggregate population samples can be obtained from sources like American Community 
-Survey (ACS) Public Use Microdata Sample (PUMS) or a household travel survey. Marginal distributions of 
+distributions. Disaggregate population samples can be obtained from sources like the Public Use Microdata Sample (PUMS), or a household travel survey. Marginal distributions of 
 person and household-level attributes of interest are also available from Census. The seed sample should 
 include demographic variables corresponding to each marginal control termed as *controlled variables* (e.g., 
 household size, household income, etc.). Seed sample should also include other variables of interest but not 
