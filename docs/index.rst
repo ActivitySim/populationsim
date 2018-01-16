@@ -33,24 +33,18 @@ modify an existing regional synthetic population for a smaller geographical area
 How does a population synthesizer work?
 ---------------------------------------
 The main inputs to a population synthesizer are disaggregate population samples and marginal control
-distributions. Disaggregate population samples can be obtained from sources like the Public Use Microdata Sample (PUMS), or a household travel survey. Marginal distributions of 
-person and household-level attributes of interest are also available from Census. The seed sample should 
+distributions. In the United States, the disaggregate population sample is typically obtained from the Census Public Use Microdata Sample (PUMS), but other sources, such as a household travel survey, can also be used. The seed sample should 
 include demographic variables corresponding to each marginal control termed as *controlled variables* (e.g., 
-household size, household income, etc.). Seed sample should also include other variables of interest but not 
-necessarily controlled via marginal controls. These are termed as *uncontrolled variables*. Marginal 
-distributions can be for both household or person level variables and are specified at a specific 
-geography (e.g., Block Groups, Traffic Analysis Zone or County). Traditionally, all population synthesizers
-required all controls to be specified at the same geographic level. More advanced population synthesizers 
-(PopulationSim, PopSynIII, PopGen2) allow controls specification at multiple geographic levels. Seed sample 
-also includes an initial weight on each household record. The objective of a population synthesizer is to 
-generate household weights which satisfies the marginal control distributions. This is achieved by use of 
-a data fitting technique. 
+household size, household income, etc.). The seed sample could also include other variables of interest but not 
+necessarily controlled via marginal controls. These are termed as *uncontrolled variables*. The seed sample should also include an initial weight on each household record. 
 
-The most common fitting technique used by various population synthesizers is the Iterative Proportional 
-Fitting (IPF) procedure. Generally, the IPF procedure is used to obtain joint distributions of demographic 
-variables and random sampling from PUMS generates the baseline synthetic population. One of the limitations 
-of the IPF method is that it does not incorporate person level attributes while generating the joint 
-distributions. PopGen uses a heuristic algorithm called the Iterative Proportional Updating Algorithm (IPU) 
+Base-year marginal distributions of person and household-level attributes of interest are available from Census. For future years, marginal distributions are either held constant, or forecasted.  Marginal distributions can be for both household or person level variables and are specified at a specific geography (e.g., Block Groups, Traffic Analysis Zone or County). PopulationSim allows controls to be specified at multiple geographic levels. 
+
+The objective of a population synthesizer is to 
+generate household weights which satisfies the marginal control distributions. This is achieved by use of 
+a data fitting technique. The most common fitting technique used by various population synthesizers is the Iterative Proportional Fitting (IPF) procedure. Generally, the IPF procedure is used to obtain joint distributions of demographic 
+variables. Then, random sampling from PUMS generates the baseline synthetic population. One of the limitations 
+of the simple IPF method is that it does not incorporate both household and person level attributes simulatenously. Some population synthesizers use a heuristic algorithm called the Iterative Proportional Updating Algorithm (IPU) 
 to incorporate both person and household-level variables in the fitting procedure. Besides IPF, entropy 
 maximization algorithms have been used as a fitting technique. In most of the entropy based methods, 
 the relative entropy is used as the objective function. The relative entropy based optimization ensures 
