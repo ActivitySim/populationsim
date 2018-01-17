@@ -46,8 +46,8 @@ def test_full_run1():
         'sub_balancing.geography = TRACT',
         'sub_balancing.geography=TAZ',
         'expand_households',
-        'synthesize_population',
-        'write_results',
+        'write_synthetic_population',
+        'write_tables',
         'summarize'
     ]
 
@@ -89,7 +89,8 @@ def test_full_run2_repop_replace():
         'integerize_final_seed_weights.repop',
         'repop_balancing',
         'expand_households.repop;replace',
-        'write_results.repop',
+        'write_synthetic_population.repop',
+        'write_tables.repop',
     ]
 
     pipeline.run(models=_MODELS, resume_after='summarize')
@@ -128,7 +129,7 @@ def test_full_run2_repop_append():
         'integerize_final_seed_weights.repop',
         'repop_balancing',
         'expand_households.repop;append',
-        'write_results.repop',
+        'write_synthetic_population.repop',
     ]
 
     pipeline.run(models=_MODELS, resume_after='summarize')

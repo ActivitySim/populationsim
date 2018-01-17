@@ -55,7 +55,8 @@ run_list:
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
     - expand_households
-    - write_results
+    - write_tables
+    - write_synthetic_population
     - summarize
 
   # resume_after: write_results
@@ -79,3 +80,19 @@ repop_input_table_list:
   - taz_control_data:
     filename : repop_taz_controls.csv
     tablename: TAZ_control_data
+
+
+output_synthetic_population:
+  household_id: hh_id
+  households:
+    filename: synthetic_households.csv
+    columns:
+      - NP
+      - WGTP
+      - HTYPE
+  persons:
+    filename: synthetic_persons.csv
+    columns:
+      - per_num
+      - OSUTAG
+      - OCCP

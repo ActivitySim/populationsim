@@ -52,11 +52,11 @@ run_list:
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
     - expand_households
-    - synthesize_population
-    - write_results
+    - write_tables
+    - write_synthetic_population
     - summarize
 
-  #resume_after: sub_balancing.geography=TRACT
+  resume_after: expand_households
 
 # "-m repop" command line option allows specification of repop run_list`
 # expand_households options are append or replace
@@ -68,8 +68,8 @@ repop:
     - integerize_final_seed_weights.repop
     - repop_balancing
     - expand_households.repop;replace
-    - synthesize_population.repop
-    - write_results.repop
+    - write_tables.repop
+    - write_synthetic_population.repop
 
   resume_after: summarize
 
@@ -83,7 +83,7 @@ repop_input_table_list:
 
 
 # output_tables can specify either a list of output tables to include or to skip
-# if neither is specified, then all checkpointed tables will be written
+# if neither is specified, then no checkpointed tables will be written
 #
 #output_tables:
 #  action: skip
@@ -95,16 +95,18 @@ repop_input_table_list:
 #  action: include
 #  tables:
 #    - expanded_household_ids
-#    - synthetic_households
-#    - synthetic_persons
 
-synthetic_tables:
+output_synthetic_population:
+  household_id: hh_id
   households:
-    action: skip
+    filename: synthetic_households.csv
     columns:
-      - expanded_household_ids
+      - NP
+      - WGTP
+      - HTYPE
   persons:
-    action: include
+    filename: synthetic_persons.csv
     columns:
+      - per_num
       - OSUTAG
       - OCCP

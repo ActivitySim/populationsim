@@ -13,32 +13,34 @@ logger = logging.getLogger(__name__)
 
 
 @inject.step()
-def write_results(output_dir):
+def write_tables(output_dir):
 
     output_tables_settings_name = 'output_tables'
 
     output_tables_settings = setting(output_tables_settings_name)
 
-    output_tables = pipeline.checkpointed_tables()
+    output_tables_list = pipeline.checkpointed_tables()
 
-    if output_tables_settings is not None:
+    if output_tables_settings is None:
+        logger.info("No output_tables specified in settings file. Nothing to write.")
+        return
 
-        action = output_tables_settings.get('action')
-        tables = output_tables_settings.get('tables')
+    action = output_tables_settings.get('action')
+    tables = output_tables_settings.get('tables')
 
-        if action not in ['include', 'skip']:
-            raise "expected %s action '%s' to be either 'include' or 'skip'" % \
-                  (output_tables_settings_name, action)
+    if action not in ['include', 'skip']:
+        raise "expected %s action '%s' to be either 'include' or 'skip'" % \
+              (output_tables_settings_name, action)
 
-        if action == 'include':
-            output_tables = tables
-        elif action == 'skip':
-            output_tables = [t for t in output_tables if t not in tables]
+    if action == 'include':
+        output_tables_list = tables
+    elif action == 'skip':
+        output_tables_list = [t for t in output_tables_list if t not in tables]
 
     # should provide option to also write checkpoints?
-    # output_tables.append("checkpoints.csv")
+    # output_tables_list.append("checkpoints.csv")
 
-    for table_name in output_tables:
+    for table_name in output_tables_list:
         table = inject.get_table(table_name, None)
 
         if table is None:
