@@ -9,37 +9,47 @@
 Application & Configuration
 =============================
 
-This section describes how to set up a new PopulationSim implementation. The first step is to understand the requirements of the project in terms of geographic resolution and details desired in the synthetic population. Once the requirements of the project have been established, the next step is to prepare the inputs to PopulationSim. Next, PopulationSim needs to be configured for available inputs and features desired in the final synthetic population. After this, the user needs to run PopulationSim and resolve any data related errors. Finally, the output synthetic population needs to be validated against the controls for precision and variance.
+This section describes how to set up a new PopulationSim implementation. 
+
+In order to create a new PopulationSim implementation, the user must first understand the requirements of the project in terms of geographic resolution and details desired in the synthetic population. Once the requirements of the project have been established, the next step is to prepare the inputs to PopulationSim. Next, PopulationSim needs to be configured for available inputs and features desired in the final synthetic population. After this, the user needs to run PopulationSim and resolve any data related errors. Finally, the user should validate the output synthetic population against the controls to understand the precision of the synthetic population compared to controls and the amount of variance in the population for each control.
 
 Selecting Geographies
 ----------------------
 
-Traditionally, travel forecasting models have followed the sequential four-step model framework. This required the modeling region to be divided into zones. The 4-step forecasting process starts with *trip generation* in each zone using the available demographic data. Next, *trip distribution* between zones, and finally, *mode choice* and *route assignment*. The zones used in four-step process are typically known as Traffic Analysis Zones (TAZs). The spatial boundaries of TAZs varies across modeling region and ranges from a city block to a large area in the suburb within a modeling region. Smaller TAZs result in additional zones and thus adds to the computational burden. 
+PopulationSim can represent both household and person level controls at multiple geographic levels. Therefore the user must define what geographic units to use for each control. This is an art; there is not necessarily any 'right' way to define geographic areas or to determine what geographic level to use for each control. However, there are important considerations for selecting geography, discussed below.
 
-ABMs on the other hand are computationally efficient and operate in a micro-simulation framework at the level of persons and households. Most of the advanced ABMs (e.g., DaySim, CT-RAMP) operate at a finer spatial resolution wherein all location choices (e.g., usual work location, tour destination choice) are modeled at a finer geography. This finer geography typically is the Micro-Analysis Zones (MAZs) which are smaller zones nested within TAZs. This requires the synthetic population to be produced at the level of MAZs.
+Traditionally, travel forecasting models have followed the sequential four-step model framework. This required the modeling region to be divided into zones, typically the size of census block groups or tracts. The zones used in four-step process are typically known as Transportation Analysis Zones (TAZs). The spatial boundaries of TAZs varies across modeling region and ranges from a city block to a large area in the suburb within a modeling region. If building a synthetic population for a trip-based model, or an Activity-based model (ABM) whose smallest geography is the TAZ, then there is no reason to select a smaller geoegraphical unit than the TAZ for any of the controls.
 
-As discussed earlier, two main inputs to a population synthesizer are a seed sample and controls. The seed sample can come from a household travel survey or from ACS PUMS with latter being the most common source. In case of a household travel survey, the geographic resolution of the seed sample is determined by the geocoding geography. The PUMS data contains a sample of actual responses to ACS. While PUMS data contain records from disaggregate geographies but data is made available at an aggregate geography called Public Use Microdata Area (PUMA). PUMAs are special non-overlapping areas that partition each state into contiguous geographic units containing no fewer than 100,000 people each.
+Activity-based models (ABMs) operate in a micro-simulation framework, where travel decisions are modeled explicitly for persons and households in the synthetic population. Many ABMs (e.g., DaySim, CT-RAMP) operate at a finer spatial resolution than TAZs, wherein all location choices (e.g., usual work location, tour destination choice) are modeled at a sub-TAZ geography. This finer geography is typically referred to as Micro-Analysis Zones (MAZs) which are smaller zones nested within TAZs. Models that represent behavior at the MAZ level requires that MAZs are used as the lowest level of control, so that the synthetic population will identify the MAZ that each household resides in.
 
-Ideally, it is desired that all the controls and seed sample should be available at the same  level of geographic resolution as the travel model. However, this is typically not the case. Some important demographic, socio-economic and land-use development distributions (e.g., employment or occupation data) that dictates population synthesis are only available at a more aggregate geography (e.g., County, District, Region, etc.). Moreover, some distributions which are available at a finer geographic level in the base year may not be available at the same geographic level for a future forecast year. In some cases, even if a control is available at a finer geography, the modeler might want to specify that control (e.g., population by age) at an aggregate geography.
+As discussed earlier, two main inputs to a population synthesizer are a seed sample and controls. The seed sample can come from a household travel survey or from American Community Survey (ACS) Public Use Microdata Sample (PUMS), with latter being the most common source. The PUMS data contains a sample of actual responses to the ACS, but the privacy of each household is protected by aggregating all household residential locations into relatively large regions called Public Use Microdata Areas (PUMAs). PUMAs are special non-overlapping areas that partition each state into contiguous geographic units containing no fewer than 100,000 people each. Some larger regions are composed of many PUMAs, while other, smaller regions have only one PUMA, or may even be smaller than a PUMA. It is not a problem to use PopulationSim to generate a synthetic population if the region is smaller than a PUMA; PopulationSim will 'fit' the PUMA-level population to regional control data as an initial step.
+
+Often it is not possible or desirable to specify all the controls at the same level of geographic resolution. Some important demographic, socio-economic and land-use development distributions (e.g., employment or occupation data) which may be adopted for controls are only available at relatively aggregate geographies (e.g., County, District, Region, etc.). Moreover, some distributions which are available at a finer geographic level in the base year may not be available at the same geographic level for a future forecast year. In some cases, even if a control is available at a finer geography, the modeler might want to specify that control (e.g., population by age) at an aggregate geography due to concerns about accuracy, forecastability, etc.
 
 The flexible number of geographies feature in PopulationSim enables user to make use of data available at different geographic resolutions. In summary, the **choice of geographies for PopulationSim** is decided based on following:
 
 :Travel Model Spatial Resolution:
-	For most ABMs, this is **MAZ** but can also be **TAZ** or **Block Group**
+	For most ABMs, this is **MAZ** but can also be **TAZ** or even **Block Group**
 	
+:Availability of Control Data:
+	Different controls are available at different geographic levels; some data is available at the block level (for example, total households), some data is avialable at the block group level, the tract level, the county level, etc.
+	
+:Accuracy of Control Data:
+	Generally there is more error in data specified at smaller geographic units than larger geographic units
+	
+:Desired level of Control:
+	It is possible that the user may not wish to control certain variables at a small geographic level, even if good base-year data were available. For example, the user may not have much faith in the ability to forecast certain variables at a small geogrphic level into the future. In such cases, the user may wish to aggregate available data to larger geographies.
+
 :Seed Sample Geography:
-	Typically, this would be **PUMA** but can be some other geography depending on the source of seed sample
-	
-:Marginal Controls Geographies: 
-	User would need to specify at least one control at the travel model spatial resolution. Geography of other controls would depend upon the availability of data and user preferences. 
+	The level at which seed data is specified automatically determines one of the geographic level (the Seed level).
 
 The hierarchy of geographies is important when making a decision regarding controls. The hierarchy of geographies in PopulationSim framework is as follows:
 	
-  * Meta (e.g., County)
+  * Meta (e.g., the entire modeling region)
   * Seed (e.g., PUMA)
   * Sub-Seed (e.g., TAZ, MAZ)
  
-Seed geography is the geographic resolution of the seed data. PopulationSim starts at this geography and moves up to the Meta geography. Currently, PopulationSim can handle only one Meta geography. After incorporating controls at the Meta geography, PopulationSim moves down to Sub-Seed geographies. PopulationSim can handle any number of Sub-Seed geographies. While selecting control geographies user should not select more than one Meta geography. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the **Documents & Resources** section.
+The Meta geography is the entire region. Currently, PopulationSim can handle only one Meta geography. The Seed geography is the geographic resolution of the seed data. There can be one or more Seed geographies; each Seed geography should have a separate household and person file associated with it. PopulationSim can handle any number of nested Sub-Seed geographies. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the **Documents & Resources** section.
 
 Geographic Cross-walk
 ~~~~~~~~~~~~~~~~~~~~~
@@ -53,35 +63,34 @@ Preparing seed and control data
 Seed sample
 ~~~~~~~~~~~
 
-As mentioned in previous section, seed sample generally is built from the ACS PUMS. One of the main requirements for the seed sample is that it should be representative of the modeling region. In case of ACS PUMS, this can be ensured by selecting PUMAs representing the modeling region both demographically and geographically. PUMA boundaries may not perfectly line up against the modeling region boundaries and overlaps are possible. Each sub-seed geography should be assigned to a PUMA and each PUMA should be assigned to a Meta geography.
+As mentioned in previous section, the seed sample is typically obtained from the ACS PUMS. One of the main requirements for the seed sample is that it should be representative of the modeling region. In case of ACS PUMS, this can be ensured by selecting PUMAs representing the modeling region both demographically and geographically. PUMA boundaries may not perfectly line up against the modeling region boundaries and overlaps are possible. Each sub-seed geography should be assigned to a Seed geography, and each Seed geography should be assigned to a Meta geography.
 
-Next important requirement is that seed sample should contain all control variables and also the variables that are needed for the travel model. For completely segmented population groups such as residential population and group-quarter population, separate seed samples are prepared. PopulationSim can be set up and run separately for these two population segments using the same geographic system. The outputs from the two runs can be combined into a unified synthetic population as a post processing step.
+The seed sample should contain all of the specified control variables, as well as any variables that are needed for the travel model but not specified as controls. For population groups that use completely separate, non-overlapping controls, such as residential population and group-quarter population, separate seed samples are prepared. PopulationSim can be set up and run separately for each population segment using the same geographic system. The outputs from each run can be combined into a unified synthetic population as a post processing step.
 
-Finally, the seed sample should include an initial weight field. PopulationSim algorithm is designed to assign weights as close to the initial weight as possible to minimize the changes in distribution of uncontrolled variables. All the fields in the seed sample should be appropriately recoded to specify controls (see more details in next section). Household-level population variables needs to be computed in advance (for e.g., Number of Workers) and monetary variables should be inflation adjusted (e.g., Household Income)
+Finally, the seed sample should include an initial weight field. The PopulationSim algorithm is designed to assign weights as close to the initial weight as possible to minimize the changes in distribution of uncontrolled variables. All the fields in the seed sample should be appropriately recoded to specify controls (see more details in next section). Household-level population variables must be computed in advance (for e.g., number of workers in each household) and monetary variables should be inflation adjusted to be consistent with year of control data (e.g., Household Income).
 
 Controls
 ~~~~~~~~~
 
-Controls are the marginal distributions that form the constraints for the population synthesis procedure. Controls are also referred to as *targets* and the objective of the population synthesis procedure is to produce a synthetic population whose control fields would match these marginal distributions. Controls can be specified for both household and person variables. The choice of control variables depends on the needs of the project. 
+Controls are the marginal distributions that form the constraints for the population synthesis procedure. Controls are also referred to as *targets* and the objective of the population synthesis procedure is to produce a synthetic population whose attributes match these marginal distributions. Controls can be specified for both household and person variables. The choice of control variables depends on the needs of the project. Ideally, the user would want to specify control for all variables that are important determinant of travel behaviour or would be of interest to policy makers. These would include social, demographic, economic and land-use related variables.
 
-The mandatory requirement for a population synthesizer is to generate the right number of households in each travel model geography. Therefore, it is mandatory to specify a control on total number of households in each geography. This control is specified at the lowest geography and if matched perfectly would ensure that all the upper geographies would also have the correct number of households assigned to them. Ideally, user would want to specify control for all variables that are important determinant of travel behaviour or would be of interest to policy makers. These would include social, demographic, economic and land-use related variables.
+The mandatory requirement for a population synthesizer is to generate the right number of households in each travel model geography. Therefore, it is mandatory to specify a control on total number of households in each geographical unit at the lowest geographical level. If this control is matched perfectly, it ensures that all the upper geographies also have the correct number of households assigned to them. 
 
-There are multiple source to obtain input data to build these controls. The modeling agency may collect important demographic data for the modeling region (e.g., number of households). Some data can also be obtained from a socio-economic or land-use model for the region such as, households by income groups or households by housing type. Most commonly, controls are build from sources such as Census Summary File 1, 2 and 3, ACS PUMS distributions, CTPP, etc. 
+There are multiple source to obtain input data to build these controls. Most commonly, base-year controls are built from Census data, including Summary Files 1, 2 and 3, the American Community Survey, and the Census Transportation Planning Package (CTPP). Data from Census sources are typically available at one of the Census geographies - Census Block, Block Group, Census Tract, County, Metropolitan Statistical Area, etc. The modeling agency may collect important demographic data for the modeling region (e.g., number of households). Some data can also be obtained from a socio-economic or land-use model for the region such as, households by income groups or households by housing type. 
 
-The geography at which a control is specified is determined by the travel model geographies or the geography of the source data. Common travel model geographies are TAZ and MAZ. Outputs from agency socio-economic or land-use model might be available at these geographies that can be used to build control at these geographies for available variables. Data from Census sources are usually available at one of the Census geographies - Block, Block Groups, Census Tract, County, etc. Once the data has been downloaded, the next step is to aggregate/disaggregate the data to the desired geography. 
-
-Disaggregation involves distributing data from the upper geography to lower geographies using a distribution based on area, population or number of households. A simple aggregation is possible when the lower geography boundaries fits perfectly within the upper geography boundary. In case of overlaps, data can again be aggregated in proportion to the area. A more common and intuitive method is to establish a correspondence between the lower and upper geography based on the position of the geometric centroid of the lower geography. If the centroid of the lower geography lies within the upper geography then the whole lower geography is assumed to lie within the upper geography. For some shapes, the geometric centroid might be outside the shape boundary. In such cases, an internal point closest to the geometric centroid but within the shape is used. All Census shape files come with the coordinates of the internal point.  The user would need to download the Census shape files for the associated geography and then establish a correspondence with the desired geography using this methodology. It is recommended that input control data should be obtained at the lowest geography possible and then aggregated to the desired geography. 
+Once the data has been obtained, it may be necessary to aggregate or disaggregate the data to the desired geography. 
+Disaggregation involves distributing data from the upper geography to lower geographies using a distribution based on area, population or number of households. A simple aggregation is possible when the lower geography boundaries fits perfectly within the upper geography boundary. In case of overlaps, data can be aggregated in proportion to the area. A simpler method is to establish a correspondence between the lower and upper geography based on the position of the geometric centroid of the lower geography. If the centroid of the lower geography lies within the upper geography then the whole lower geography is assumed to lie within the upper geography. For some shapes, the geometric centroid might be outside the shape boundary. In such cases, an internal point closest to the geometric centroid but within the shape is used. All Census shape files come with the coordinates of the internal point.  The user would need to download the Census shape files for the associated geography and then establish a correspondence with the desired geography using this methodology. It is recommended that input control data should be obtained at the lowest geography possible and then aggregated to the desired geography. These steps must be performed outside of PopulationSim, typically using a Geographic Information System (GIS) software program or travel modeling software package with GIS capabilities.
 
 
 Configuration
 -------------
 
-Below is PopulationSim's directory structure followed by description of inputs. To set up a PopulationSim run, user would need to create this directory structure. A template directory structure can be downloaded from `here <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=138e31404fd894713b083135b69707f97&authkey=AWwjSOG61Xu-JB6e9Fx6tMM&expiration=2018-07-14T01%3A21%3A15.000Z&e=CbdvmX>`_
+Below is PopulationSim's directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this directory structure. A template directory structure can be downloaded from `here <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=138e31404fd894713b083135b69707f97&authkey=AWwjSOG61Xu-JB6e9Fx6tMM&expiration=2018-07-14T01%3A21%3A15.000Z&e=CbdvmX>`_
 
   .. image:: PopulationSimFolderStructure.png
 
   
-PopulationSim is configured to run using the batch file **RunPopulationSim.bat**. User needs to update the path to the Anaconda install (Anaconda2 folder) on their computer. This batch file activates the *populationsim* environment and then calls the *run_populationsim.py* Python script to launch a PopulationSim run. Open the **RunPopulationSim.bat** file in edit mode and change the path to Anaconda install as follows:
+PopulationSim is configured to run using the batch file **RunPopulationSim.bat**. The user needs to update the path to the Anaconda install (Anaconda2 folder) on their computer. This batch file activates the *populationsim* environment and then calls the *run_populationsim.py* Python script to launch a PopulationSim run. Open the **RunPopulationSim.bat** file in edit mode and change the path to Anaconda install as follows (note: if there are spaces in the path, put quotes around the path):
 
 ::
 
@@ -95,7 +104,7 @@ Two configurations are available to run PopulationSim - **base** and **repop**.
 
 :base configuration:
 
-  base configuration is the default mode and does not require any changes from the user. It runs PopulationSim from beginning to end and produces a new synthetic population. The call to run_populationsim.py script looks as follows:
+  The base configuration is the default mode and does not require any changes from the user. It runs PopulationSim from beginning to end and produces a new synthetic population. The call to run_populationsim.py script looks as follows:
   
 ::
 
@@ -103,7 +112,7 @@ Two configurations are available to run PopulationSim - **base** and **repop**.
 
 :repop configuration:
 
-  repop configuration is used for repopulating a subset of zones for an existing synthetic population. User has the option to *replace* or *append* to the existing synthetic population. These options are specified from the settings file, details can be found in the *Configuring Settings File* section. The call to run_populationsim.py script under *repop* mode looks as follows:
+  The repop configuration is used for repopulating a subset of zones for an existing synthetic population. The user has the option to *replace* or *append* to the existing synthetic population. These options are specified from the settings file, details can be found in the *Configuring Settings File* section. The call to run_populationsim.py script under *repop* mode is:
 
 ::
 
@@ -177,7 +186,7 @@ Working Directory Contents:
 
 */output* Sub-directory Contents (populated at the end of a PopulationSim run):
 
-This sub-directory is populated at the end of the PopulationSim run. The table below list all possible outputs from a PopulationSim run. User has the option to specify the output files that should be exported at the end of a run, details can be found in the *Configuring Settings File* section.
+This sub-directory is populated at the end of the PopulationSim run. The table below list all possible outputs from a PopulationSim run. The user has the option to specify the output files that should be exported at the end of a run. Details can be found in the *Configuring Settings File* section.
 
 +---------------------------------+----------------------------+-----------------------------------------------------------------------------------------+
 | File                            | Group                      | Description                                                                             |
@@ -232,9 +241,11 @@ This sub-directory is populated at the end of the PopulationSim run. The table b
 Configuring Settings File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-PopulationSim is configured using the *configs/settings.YAML* file. The user has the flexibility to specify the following settings:
+PopulationSim is configured using the *configs/settings.YAML* file. The user has the flexibility to specify the following settings. 
 
 **Algorithm/Software Configuration**:
+
+These settings control the functionality of the PopulationSim algorithm. The settings shown are currently the defaults as they were the ones used to validate the final PopulationSim application for the CALM region. They should not be changed by the casual user, with the possible exception of the max_expansion_factor setting, as explained below.
 
 :: 
 
@@ -293,7 +304,8 @@ PopulationSim is configured using the *configs/settings.YAML* file. The user has
 |                |                     | Example - [REGION, PUMA, TAZ, MAZ] |br|                                         |
 |                |                     | Any number of geographies are allowed |br|                                      |
 |                |                     | These geography names should be used as prefixes in control data file names |br||
-|                |                     | for the corresponding geographies                                               |
+|                |                     | for the corresponding geographies. Note that SUB_SEED_GEOG_1,2,n are flexible.  |
+|                |                     | Each must be listed in the run_list settings, shown below.                      |
 +----------------+---------------------+---------------------------------------------------------------------------------+
 | seed_geography | SEED_GEOG           | Seed geography name from the list of geographies                                |
 +----------------+---------------------+---------------------------------------------------------------------------------+
@@ -310,9 +322,9 @@ PopulationSim is configured using the *configs/settings.YAML* file. The user has
 +-----------+---------------------------------------------------------------------------------+
 | Attribute | Description                                                                     |
 +===========+=================================================================================+
-| GEOG_1    | ID of GEOG_1 zone that should be traced. Example, TRACT = 100                   |
+| GEOG_1    | ID of SUB_SEED_GEOG_1 zone that should be traced. Example, TRACT = 100          |
 +-----------+---------------------------------------------------------------------------------+
-| GEOG_2    | ID of GEOG_1 zone that should be traced. Example, TAZ = 10200                   |
+| GEOG_2    | ID of SUB_SEED_GEOG_2 zone that should be traced. Example, TAZ = 10200          |
 +-----------+---------------------------------------------------------------------------------+
 
 **data directory**:
@@ -324,7 +336,8 @@ PopulationSim is configured using the *configs/settings.YAML* file. The user has
 +-----------+---------------------------------------------------------------------------------+
 | Attribute | Description                                                                     |
 +===========+=================================================================================+
-| data_dir  | Name of the data_directory within the working directory                         |
+| data_dir  | Name of the data_directory within the working directory. Do not change unless   |
+| data_dir  | the directory structure changes from the template.                              |
 +-----------+---------------------------------------------------------------------------------+
 
 
@@ -337,7 +350,7 @@ This setting is used to specify details of various inputs to PopulationSim. Belo
 	* Geographic CrossWalk 
 	* Control data at each control geography 
 	
-For each input table, user is required to specify an import table name, input CSV file name, index column name and column name map (only for renaming column names). User can also specify a list of columns to be dropped. An example is shown below followed by description of attributes.
+For each input table, the user is required to specify an import table name, input CSV file name, index column name and column name map (only for renaming column names). The user can also specify a list of columns to be dropped from the input synthetic population seed data. An example is shown below followed by description of attributes.
 
 ::
 
@@ -441,7 +454,7 @@ Three columns representing the following needs to be specified:
 
 **Output Tables**:
 
-Inputs & Outputs section listed all possible outputs. This setting is used to specify the list of outputs. User can specify either a list of output tables to include or to skip using the *action* attribute as shown below in the example. if neither is specified, then all check pointed tables will be written. The HDF5 data pipeline and all summary files are written out regardless of this setting.
+The Inputs & Outputs section listed all possible outputs. The output_tables: setting is used to control which outputs to write to disk. The user can specify either a list of output tables to include or to skip using the *action* attribute as shown below in the example. if neither is specified, then all output tables will be written. The HDF5 data pipeline and all summary files are written out regardless of this setting.
 
 ::
 
@@ -463,7 +476,7 @@ Inputs & Outputs section listed all possible outputs. This setting is used to sp
 	
 **Steps for base mode**:	  
 
-This setting lists the sub-modules or steps to be run by the PopulationSim orchestrator. ActivitySim framework allows user to resume a PopulationSim run from a specific point. This is specified using the attribute ``resume_after``. The step, ``sub_balancing.geography`` is repeated for each sub-seed geography.
+This setting lists the sub-modules or steps to be run by the PopulationSim orchestrator. The ActivitySim framework allows user to resume a PopulationSim run from a specific point. This is specified using the attribute ``resume_after``. The step, ``sub_balancing.geography`` is repeated for each sub-seed geography (the example below shows two, but there can be 0 or more).
 
 ::
 
@@ -494,7 +507,7 @@ This setting lists the sub-modules or steps to be run by the PopulationSim orche
 
 **Steps for repop mode**:
 
-When running PoulationSim in repop mode, the steps specified in this setting are run. The repop mode runs over an existing synthetic population and uses the data pipeline HDF5 file from the base run as an input. The default value for the ``resume_after`` setting under the repop mode is *summarize* which is the last step of a base run. In other words, repop mode starts from the last step of the base run and modifies the base synthetic population as per the new controls. User can choose either *append* or *replace* in the ``expand_households.repop`` attribute to modify the existing synthetic population
+When running PoulationSim in repop mode, the steps specified in this setting are run. The repop mode runs over an existing synthetic population and uses the data pipeline HDF5 file from the base run as an input. The default value for the ``resume_after`` setting under the repop mode is *summarize* which is the last step of a base run. In other words, the repop mode starts from the last step of the base run and modifies the base synthetic population as per the new controls. The user can choose either *append* or *replace* in the ``expand_households.repop`` attribute to modify the existing synthetic population. The *append* option adds to the existing synthetic population in the specified geographies, while the *replace* option replaces any existing synthetic population with newly synthesized population in the specified geographies.
 
 ::
 
@@ -538,7 +551,7 @@ When running PoulationSim in repop mode, the steps specified in this setting are
 
 **Input Data Tables for repop mode**
 
-As mentioned earlier, repop mode requires the data pipeline (HDF5 file) from the base run. User should copy the HDF5 file from the base outputs to the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as base mode.
+As mentioned earlier, repop mode requires the data pipeline (HDF5 file) from the base run. User should copy the HDF5 file from the base outputs to the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as base mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).
 
 ::
 
@@ -578,17 +591,17 @@ The controls for a PopulationSim run are specified using the control specificati
 Attribute definitions are as follows:
 
 :target:
-        target is the name of the control in PopulationSim
+        target is the name of the control in PopulationSim.
 :geography:
-        geography is the geographic level of the control, as specified in ``geographies``
+        geography is the geographic level of the control, as specified in ``geographies``.
 :seed_table:
-        seed_table is the seed table the control applies to and it can be ``households`` or ``persons``.  If persons, then persons are aggregated to households using the count operator
+        seed_table is the seed table the control applies to and it can be ``households`` or ``persons``.  If persons, then persons are aggregated to households using the count operator.
 :importance:
-        importance is the importance weight for the control
+        importance is the importance weight for the control. A higher weight will cause PopulationSim to attempt to match the control at the possible expense of matching lower-weight controls.
 :control_field:
-        control_field is the field in the control data input files that this control applies to
+        control_field is the field in the control data input files that this control applies to.
 :expression:
-        expression is a valid Python/Pandas expression that identifies seed households or persons that this control applies to
+        expression is a valid Python/Pandas expression that identifies seed households or persons that this control applies to.
 
   
 
@@ -601,12 +614,12 @@ It is recommended to do appropriate checks on input data before running Populati
 Checks on data inputs
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-While PopulationSim algorithm is designed to work even with imperfect data, but an error-free and consistent data guarantees optimal performance. Poor performance and errors are usually the result of imperfect data and it is the responsibility of the user to do necessary QA//QC on the input data. Some data problems that are frequently encountered are as follows:
+While the PopulationSim algorithm is designed to work even with imperfect data, an error-free and consistent set of input controls guarantees optimal performance. Poor performance and errors are usually the result of inconsistent data and it is the responsibility of the user to do necessary QA//QC on the input data. Some data problems that are frequently encountered are as follows:
 
 	* Miscoding of data 
-	* Inconsistent controls
+	* Inconsistent controls (for example, household-level households by size controls do not match person-level controls on total persons, or household-level workers per household controls do not match person-level workers by occupation)
 	* Controls do not add to total number of households
-	* Controls do not aggregate consistently
+	* Controls do not aggregate consistently across geographies
 	* missing or mislabelled controls
 
 Common run-time errors
