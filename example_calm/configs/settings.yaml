@@ -100,7 +100,7 @@ output_tables:
 #
 
 output_synthetic_population:
-  household_id: hh_id
+  household_id: household_id
   households:
     filename: synthetic_households.csv
     columns:

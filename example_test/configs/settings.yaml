@@ -56,7 +56,7 @@ run_list:
     - write_synthetic_population
     - summarize
 
-  resume_after: expand_households
+  #resume_after: expand_households
 
 # "-m repop" command line option allows specification of repop run_list`
 # expand_households options are append or replace
@@ -97,7 +97,7 @@ repop_input_table_list:
 #    - expanded_household_ids
 
 output_synthetic_population:
-  household_id: hh_id
+  household_id: household_id
   households:
     filename: synthetic_households.csv
     columns:
