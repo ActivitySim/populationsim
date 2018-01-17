@@ -247,7 +247,7 @@ Disaggregation involves distributing data from the upper geography to lower geog
 </div>
 <div class="section" id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
-<p>Below is PopulationSim’s directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this directory structure. A template directory structure can be downloaded from <a class="reference external" href="https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=138e31404fd894713b083135b69707f97&amp;authkey=AWwjSOG61Xu-JB6e9Fx6tMM&amp;expiration=2018-07-14T01%3A21%3A15.000Z&amp;e=CbdvmX">here</a></p>
+<p>Below is PopulationSim’s directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this directory structure. A template directory structure can be downloaded from <a class="reference external" href="https://resourcesystemsgroupinc-my.sharepoint.com/:u:/g/personal/binny_paul_rsginc_com/EU86zAfKqF5MgOb3ejrIuVEB4iR_gmbGI4K_p-MJXN0hfg?e=iGy3ij">here</a></p>
 <blockquote>
 <div><img alt="_images/PopulationSimFolderStructure.png" src="_images/PopulationSimFolderStructure.png" />
 </div></blockquote>
@@ -493,7 +493,7 @@ weights from allocation at <em>GEOG_NAME</em> level</td>
 </div>
 <div class="section" id="configuring-settings-file">
 <h3>Configuring Settings File<a class="headerlink" href="#configuring-settings-file" title="Permalink to this headline">¶</a></h3>
-<p>PopulationSim is configured using the <em>configs/settings.YAML</em> file. The user has the flexibility to specify the following settings.</p>
+<p>PopulationSim is configured using the <em>configs/settings.YAML</em> file. The user has the flexibility to specify algorithm functionality, list geographies, invoke tracing, provide inputs specifications, select outputs and list the steps to run. The settings shown below are from the PopulationSim application for the CALM region. The meta geography for CALM region is named as <em>Region</em>, the seed geography is <em>PUMA</em> and the two sub-seed geographies are <em>TRACT</em> and <em>TAZ</em>. The settings below are for this four geography application, but the user can configure PopulationSim for any number of geographies and use different geography names.</p>
 <p><strong>Algorithm/Software Configuration</strong>:</p>
 <p>These settings control the functionality of the PopulationSim algorithm. The settings shown are currently the defaults as they were the ones used to validate the final PopulationSim application for the CALM region. They should not be changed by the casual user, with the possible exception of the max_expansion_factor setting, as explained below.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">INTEGERIZE_WITH_BACKSTOPPED_CONTROLS</span><span class="p">:</span> <span class="kc">True</span>
@@ -563,8 +563,8 @@ controls not being matched due to unavailability of records to sample from <br /
 </tbody>
 </table>
 <p><strong>Geographic Settings</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">geographies</span><span class="p">:</span> <span class="p">[</span><span class="n">META_GEOG</span><span class="p">,</span> <span class="n">SEED_GEOG</span><span class="p">,</span> <span class="n">SUB_SEED_GEOG_1</span><span class="p">,</span> <span class="n">SUB_SEED_GEOG_2</span><span class="p">]</span>
-<span class="n">seed_geography</span><span class="p">:</span> <span class="n">SEED_GEOG</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">geographies</span><span class="p">:</span> <span class="p">[</span><span class="n">REGION</span><span class="p">,</span> <span class="n">PUMA</span><span class="p">,</span> <span class="n">TRACT</span><span class="p">,</span> <span class="n">TAZ</span><span class="p">]</span>
+<span class="n">seed_geography</span><span class="p">:</span> <span class="n">PUMA</span>
 </pre></div>
 </div>
 <table border="1" class="docutils">
@@ -582,31 +582,30 @@ controls not being matched due to unavailability of records to sample from <br /
 <tbody valign="top">
 <tr class="row-even"><td>geographies</td>
 <td>List of geographies</td>
-<td>List of geographies at which the controls are specified including the SEED <br />
-geography. The geographies should be in the following order: <br />
-<em>META_GEOG</em> &gt;&gt; <em>SEED_GEOG</em> &gt;&gt; <em>SUB_SEED_GEOG_1</em> &gt;&gt; <em>SUB_SEED_GEOG_2</em> &gt;&gt; … <br />
-Example - [REGION, PUMA, TAZ, MAZ] <br />
+<td>List of geographies at which the controls are specified including the seed <br />
+geography - PUMA. The geographies should be in the hierarchical order: <br />
+<em>REGION</em> &gt;&gt; <em>PUMA</em> &gt;&gt; <em>TRACT</em> &gt;&gt; <em>TAZ</em> &gt;&gt; … <br />
 Any number of geographies are allowed <br />
 These geography names should be used as prefixes in control data file names <br />
-for the corresponding geographies. Note that SUB_SEED_GEOG_1,2,n are flexible.
-Each must be listed in the run_list settings, shown below.</td>
+for the corresponding geographies. Note that number of sub-seed geographies <br />
+are flexible. Each must be listed in the run_list settings, shown below.</td>
 </tr>
 <tr class="row-odd"><td>seed_geography</td>
-<td>SEED_GEOG</td>
+<td>PUMA</td>
 <td>Seed geography name from the list of geographies</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Tracing</strong>:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">trace_geography</span><span class="p">:</span>
-      <span class="n">GEOG_1</span><span class="p">:</span> <span class="mi">100</span>
-      <span class="n">GEOG_2</span><span class="p">:</span> <span class="mi">10200</span>
+      <span class="n">TAZ</span><span class="p">:</span> <span class="mi">100</span>
+      <span class="n">TRACT</span><span class="p">:</span> <span class="mi">10200</span>
 </pre></div>
 </div>
 <table border="1" class="docutils">
 <colgroup>
-<col width="12%" />
-<col width="88%" />
+<col width="24%" />
+<col width="76%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Attribute</th>
@@ -614,11 +613,11 @@ Each must be listed in the run_list settings, shown below.</td>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>GEOG_1</td>
-<td>ID of SUB_SEED_GEOG_1 zone that should be traced. Example, TRACT = 100</td>
+<tr class="row-even"><td>TAZ</td>
+<td>TAZ ID that should be traced.</td>
 </tr>
-<tr class="row-odd"><td>GEOG_2</td>
-<td>ID of SUB_SEED_GEOG_2 zone that should be traced. Example, TAZ = 10200</td>
+<tr class="row-odd"><td>TRACT</td>
+<td>TRACT ID that should be traced.</td>
 </tr>
 </tbody>
 </table>
@@ -637,8 +636,7 @@ Each must be listed in the run_list settings, shown below.</td>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>data_dir
-data_dir</td>
+<tr class="row-even"><td>data_dir</td>
 <td>Name of the data_directory within the working directory. Do not change unless
 the directory structure changes from the template.</td>
 </tr>
@@ -711,7 +709,7 @@ standard: <br />
 names specified in the settings file</div></blockquote>
 <ol class="last arabic simple" start="4">
 <li>Control data at each control geography - <em>GEOG_NAME_control_data</em>, <br />
-where <em>GEOG_NAME</em>  is the name of the control geography</li>
+where <em>GEOG_NAME</em>  is the name of the control geography (TAZ, TRACT and REGION)</li>
 </ol>
 </td>
 </tr>
@@ -910,7 +908,7 @@ Two options for the expand_households.repop step <br />
 </tbody>
 </table>
 <p><strong>Input Data Tables for repop mode</strong></p>
-<p>As mentioned earlier, repop mode requires the data pipeline (HDF5 file) from the base run. User should copy the HDF5 file from the base outputs to the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as base mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).</p>
+<p>As mentioned earlier, repop mode requires the data pipeline (HDF5 file) from the base run. User should copy the HDF5 file from the base outputs to the <em>output</em> folder of the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as base mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">repop_input_table_list</span><span class="p">:</span>
   <span class="o">-</span> <span class="n">taz_control_data</span><span class="p">:</span>
     <span class="n">filename</span> <span class="p">:</span> <span class="n">repop_control_totals_taz</span><span class="o">.</span><span class="n">csv</span>
