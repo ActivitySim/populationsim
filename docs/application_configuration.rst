@@ -85,7 +85,7 @@ Disaggregation involves distributing data from the upper geography to lower geog
 Configuration
 -------------
 
-Below is PopulationSim's directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this directory structure. A template directory structure can be downloaded from `here <https://resourcesystemsgroupinc-my.sharepoint.com/personal/binny_paul_rsginc_com/_layouts/15/guestaccess.aspx?docid=138e31404fd894713b083135b69707f97&authkey=AWwjSOG61Xu-JB6e9Fx6tMM&expiration=2018-07-14T01%3A21%3A15.000Z&e=CbdvmX>`_
+Below is PopulationSim's directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this directory structure. A template directory structure can be downloaded from `here <https://resourcesystemsgroupinc-my.sharepoint.com/:u:/g/personal/binny_paul_rsginc_com/EU86zAfKqF5MgOb3ejrIuVEB4iR_gmbGI4K_p-MJXN0hfg?e=iGy3ij>`_
 
   .. image:: PopulationSimFolderStructure.png
 
@@ -241,7 +241,7 @@ This sub-directory is populated at the end of the PopulationSim run. The table b
 Configuring Settings File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-PopulationSim is configured using the *configs/settings.YAML* file. The user has the flexibility to specify the following settings. 
+PopulationSim is configured using the *configs/settings.YAML* file. The user has the flexibility to specify algorithm functionality, list geographies, invoke tracing, provide inputs specifications, select outputs and list the steps to run. The settings shown below are from the PopulationSim application for the CALM region. The meta geography for CALM region is named as *Region*, the seed geography is *PUMA* and the two sub-seed geographies are *TRACT* and *TAZ*. The settings below are for this four geography application, but the user can configure PopulationSim for any number of geographies and use different geography names.
 
 **Algorithm/Software Configuration**:
 
@@ -292,22 +292,21 @@ These settings control the functionality of the PopulationSim algorithm. The set
 
 :: 
 
-  geographies: [META_GEOG, SEED_GEOG, SUB_SEED_GEOG_1, SUB_SEED_GEOG_2]
-  seed_geography: SEED_GEOG
+  geographies: [REGION, PUMA, TRACT, TAZ]
+  seed_geography: PUMA
 
 +----------------+---------------------+---------------------------------------------------------------------------------+
 | Attribute      | Value               | Description                                                                     |
 +================+=====================+=================================================================================+
-| geographies    | List of geographies | List of geographies at which the controls are specified including the SEED |br| |
-|                |                     | geography. The geographies should be in the following order: |br|               |
-|                |                     | *META_GEOG* >> *SEED_GEOG* >> *SUB_SEED_GEOG_1* >> *SUB_SEED_GEOG_2* >> ... |br||
-|                |                     | Example - [REGION, PUMA, TAZ, MAZ] |br|                                         |
+| geographies    | List of geographies | List of geographies at which the controls are specified including the seed |br| |
+|                |                     | geography - PUMA. The geographies should be in the hierarchical order: |br|     |
+|                |                     | *REGION* >> *PUMA* >> *TRACT* >> *TAZ* >> ... |br|                              |
 |                |                     | Any number of geographies are allowed |br|                                      |
 |                |                     | These geography names should be used as prefixes in control data file names |br||
-|                |                     | for the corresponding geographies. Note that SUB_SEED_GEOG_1,2,n are flexible.  |
-|                |                     | Each must be listed in the run_list settings, shown below.                      |
+|                |                     | for the corresponding geographies. Note that number of sub-seed geographies |br||
+|                |                     | are flexible. Each must be listed in the run_list settings, shown below.        |
 +----------------+---------------------+---------------------------------------------------------------------------------+
-| seed_geography | SEED_GEOG           | Seed geography name from the list of geographies                                |
+| seed_geography | PUMA                | Seed geography name from the list of geographies                                |
 +----------------+---------------------+---------------------------------------------------------------------------------+
 
 
@@ -316,16 +315,16 @@ These settings control the functionality of the PopulationSim algorithm. The set
 :: 
 
   trace_geography:
-	GEOG_1: 100
-	GEOG_2: 10200
+	TAZ: 100
+	TRACT: 10200
 
-+-----------+---------------------------------------------------------------------------------+
-| Attribute | Description                                                                     |
-+===========+=================================================================================+
-| GEOG_1    | ID of SUB_SEED_GEOG_1 zone that should be traced. Example, TRACT = 100          |
-+-----------+---------------------------------------------------------------------------------+
-| GEOG_2    | ID of SUB_SEED_GEOG_2 zone that should be traced. Example, TAZ = 10200          |
-+-----------+---------------------------------------------------------------------------------+
++-----------+----------------------------------+
+| Attribute | Description                      |
++===========+==================================+
+| TAZ       | TAZ ID that should be traced.    |
++-----------+----------------------------------+
+| TRACT     | TRACT ID that should be traced.  |
++-----------+----------------------------------+
 
 **data directory**:
 
@@ -337,7 +336,7 @@ These settings control the functionality of the PopulationSim algorithm. The set
 | Attribute | Description                                                                     |
 +===========+=================================================================================+
 | data_dir  | Name of the data_directory within the working directory. Do not change unless   |
-| data_dir  | the directory structure changes from the template.                              |
+|           | the directory structure changes from the template.                              |
 +-----------+---------------------------------------------------------------------------------+
 
 
@@ -400,7 +399,7 @@ For each input table, the user is required to specify an import table name, inpu
 |              |    names specified in the settings file                                               |
 |              |                                                                                       |
 |              | 4. Control data at each control geography - *GEOG_NAME_control_data*, |br|            |
-|              |    where *GEOG_NAME*  is the name of the control geography                            |
+|              |    where *GEOG_NAME*  is the name of the control geography (TAZ, TRACT and REGION)    |
 |              |                                                                                       |
 +--------------+---------------------------------------------------------------------------------------+
 | filename     | Name of the input CSV file in the data folder                                         |
@@ -551,7 +550,7 @@ When running PoulationSim in repop mode, the steps specified in this setting are
 
 **Input Data Tables for repop mode**
 
-As mentioned earlier, repop mode requires the data pipeline (HDF5 file) from the base run. User should copy the HDF5 file from the base outputs to the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as base mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).
+As mentioned earlier, repop mode requires the data pipeline (HDF5 file) from the base run. User should copy the HDF5 file from the base outputs to the *output* folder of the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as base mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).
 
 ::
 
