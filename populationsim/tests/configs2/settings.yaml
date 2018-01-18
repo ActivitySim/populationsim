@@ -43,5 +43,19 @@ output_tables:
   action: include
   tables:
     - expanded_household_ids
-    - synthetic_households
-    - synthetic_persons
+
+
+output_synthetic_population:
+  household_id: hh_id
+  households:
+    filename: synthetic_households.csv
+    columns:
+      - NP
+      - WGTP
+      - HTYPE
+  persons:
+    filename: synthetic_persons.csv
+    columns:
+      - per_num
+      - OSUTAG
+      - OCCP

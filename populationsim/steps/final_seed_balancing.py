@@ -18,6 +18,26 @@ logger = logging.getLogger(__name__)
 
 @inject.step()
 def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
+    """
+    Balance the household weights for each of the seed geographies (independently)
+    using the seed level controls and the aggregated sub-zone controls totals.
+
+    Create the seed_weights table with one row per household and columns contaiing
+    household_id, seed geography (e.g. PUMA), and float preliminary_balanced_weights
+
+    Adds column balanced_weight  to the seed_weights table
+
+    Parameters
+    ----------
+    settings : dict (settings.yaml as dict)
+    crosswalk : pipeline table
+    control_spec : pipeline table
+    incidence_table : pipeline table
+
+    Returns
+    -------
+
+    """
 
     crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()

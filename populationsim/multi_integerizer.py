@@ -16,9 +16,6 @@ from lp import STATUS_SUCCESS
 from integerizer import smart_round
 from integerizer import do_integerizing
 
-
-REGRESS = False
-
 logger = logging.getLogger(__name__)
 
 

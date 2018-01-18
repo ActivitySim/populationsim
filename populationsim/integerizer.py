@@ -15,8 +15,6 @@ from lp import STATUS_SUCCESS
 
 logger = logging.getLogger(__name__)
 
-REGRESS = False
-
 
 def smart_round(int_weights, resid_weights, target_sum):
     """
