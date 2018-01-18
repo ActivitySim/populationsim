@@ -20,6 +20,14 @@ logger = logging.getLogger(__name__)
 
 @inject.step()
 def expand_households():
+    """
+    Create a complete expanded synthetic household list with their assigned geographic zone ids.
+
+    This is the skeleton synthetic household id list with no household or person attributes,
+    one row per household, with geography columns and seed household table household_id.
+
+    Creates pipeline table expanded_household_ids
+    """
 
     geographies = setting('geographies')
     household_id_col = setting('household_id_col')
