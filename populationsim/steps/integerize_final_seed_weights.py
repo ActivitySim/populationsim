@@ -19,6 +19,23 @@ logger = logging.getLogger(__name__)
 
 @inject.step()
 def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_table):
+    """
+    Final balancing for each seed (puma) zone with aggregated low and mid-level controls and
+    distributed meta-level controls.
+
+    Adds integer_weight column to seed-level weight table
+
+    Parameters
+    ----------
+    settings : dict (settings.yaml as dict)
+    crosswalk : pipeline table
+    control_spec : pipeline table
+    incidence_table : pipeline table
+
+    Returns
+    -------
+
+    """
 
     crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()

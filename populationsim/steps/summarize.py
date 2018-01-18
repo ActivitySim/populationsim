@@ -102,7 +102,10 @@ def meta_summary(incidence_df, control_spec, top_geography, top_id, sub_geograph
     incidence = incidence_df[control_cols]
 
     summary = pd.DataFrame(index=control_cols)
-    summary['control'] = controls
+
+    summary.index.name = 'control_name'
+
+    summary['control_value'] = controls
 
     seed_geography = setting('seed_geography')
     seed_weights_df = get_weight_table(seed_geography)
@@ -135,6 +138,19 @@ def meta_summary(incidence_df, control_spec, top_geography, top_id, sub_geograph
 
 @inject.step()
 def summarize(crosswalk, incidence_table, control_spec):
+    """
+    Write aggregate summary files of controls and weights for all geographic levels to output dir
+
+    Parameters
+    ----------
+    crosswalk : pipeline table
+    incidence_table : pipeline table
+    control_spec : pipeline table
+
+    Returns
+    -------
+
+    """
 
     crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()

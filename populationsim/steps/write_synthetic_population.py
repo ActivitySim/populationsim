@@ -57,6 +57,22 @@ def merge_seed_data(expanded_household_ids, seed_data_df, seed_columns, trace_la
 
 @inject.step()
 def write_synthetic_population(expanded_household_ids, households, persons, output_dir):
+    """
+    Write synthetic households and persons tables to output dir as csv files.
+    The settings file allows specification of output file names, household_id column name,
+    and seed data attribute columns to include in output files.
+
+    Parameters
+    ----------
+    expanded_household_ids : pipeline table
+    households : pipeline table
+    persons : pipeline table
+    output_dir : str
+
+    Returns
+    -------
+
+    """
 
     expanded_household_ids = expanded_household_ids.to_frame()
     households = households.to_frame()

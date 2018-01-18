@@ -184,6 +184,27 @@ def balance_and_integerize(
 
 @inject.step()
 def sub_balancing(settings, crosswalk, control_spec, incidence_table):
+    """
+    Simul-balance and integerize all zones at a specified geographic level
+    in groups by parent zone.
+
+    For instance, if the 'geography' step arg is 'TRACT' and the parent geography is 'SEED',
+    then for each seed zone, we simul-balance the TRACTS it contains.
+
+    Creates a weight table for the target geography
+    with float 'balanced_weight' and 'integer_weight' columns.
+
+    Parameters
+    ----------
+    settings : dict (settings.yaml as dict)
+    crosswalk : pipeline table
+    control_spec : pipeline table
+    incidence_table : pipeline table
+
+    Returns
+    -------
+
+    """
 
     # geography is an injected model step arg
     geography = inject.get_step_arg('geography')
@@ -209,14 +230,18 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
     integer_weights_list = []
 
+    # the incidence table is siloed by seed geography, se we handle each seed zone in turn
     seed_ids = crosswalk_df[seed_geography].unique()
     for seed_id in seed_ids:
 
+        # slice incidence and crosswalk tables for this seed zone
         seed_incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
         seed_crosswalk_df = crosswalk_df[crosswalk_df[seed_geography] == seed_id]
 
         assert len(seed_crosswalk_df[meta_geography].unique()) == 1
 
+        # list of unique parent zone ids in this seed zone
+        # (there will be just one if parent geo is seed)
         parent_ids = seed_crosswalk_df[parent_geography].unique()
 
         for parent_id in parent_ids:
