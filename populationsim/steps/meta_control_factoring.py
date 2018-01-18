@@ -29,14 +29,14 @@ def meta_control_factoring(settings, control_spec, incidence_table):
     Apply simple factoring to summed household fractional weights based on original
     meta control values relative to summed household fractional weights by meta zone.
 
-    The resulting factored meta control weights will be new meta controls, to be
-    appended to the original controls, for final balancing.
+    The resulting factored meta control weights will be new meta controls appended as
+    additional columns to the seed control table, for final balancing.
 
     Parameters
     ----------
-    settings
-    control_spec
-    incidence_table
+    settings : dict (settings.yaml as dict)
+    control_spec : pipeline table
+    incidence_table : pipeline table
 
     Returns
     -------
@@ -116,6 +116,7 @@ def meta_control_factoring(settings, control_spec, incidence_table):
     # add newly created seed_level_meta_controls to the existing set of seed level controls
 
     seed_controls_df = get_control_table(seed_geography)
+
     assert len(seed_controls_df.index) == len(seed_level_meta_controls.index)
     seed_controls_df = pd.concat([seed_controls_df, seed_level_meta_controls], axis=1)
 

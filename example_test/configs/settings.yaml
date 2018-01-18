@@ -85,11 +85,11 @@ repop_input_table_list:
 # output_tables can specify either a list of output tables to include or to skip
 # if neither is specified, then no checkpointed tables will be written
 #
-#output_tables:
-#  action: skip
-#  tables:
-#    - households
-#    - persons
+output_tables:
+  action: skip
+  tables:
+    - households
+    - persons
 #
 #output_tables:
 #  action: include
