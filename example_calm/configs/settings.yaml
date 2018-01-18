@@ -87,14 +87,34 @@ control_file_name: controls.csv
 # Output Tables
 # ------------------------------------------------------------------
 # output_tables can specify either a list of output tables to include or to skip
-# if neither is specified, then all check-pointed tables will be written
+# if neither is specified, then no tables will be written
 
 output_tables:
   action: include
   tables:
-    - households
-    - persons
     - expanded_household_ids
+
+
+# Synthetic Population Output Specification
+# ------------------------------------------------------------------
+#
+
+output_synthetic_population:
+  household_id: household_id
+  households:
+    filename: synthetic_households.csv
+    columns:
+      - NP
+      - AGEHOH
+      - HHINCADJ
+      - NWESR
+  persons:
+    filename: synthetic_persons.csv
+    columns:
+      - per_num
+      - AGEP
+      - OSUTAG
+      - OCCP
 
 
 # Steps for base mode
@@ -110,10 +130,11 @@ run_list:
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
     - expand_households
-    - write_results
+    - write_tables
+    - write_synthetic_population
     - summarize
 
-  #resume_after: integerize_final_seed_weights
+  #resume_after: expand_households
 
   
 # Steps for repop mode

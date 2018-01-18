@@ -204,9 +204,7 @@ This sub-directory is populated at the end of the PopulationSim run. The table b
 | expanded_persons.csv            | Final Synthetic Population | Fully expanded synthetic population of persons. User can specify the attributes to |br| | 
 |                                 |                            | be included from the *seed sample* in the *settings.YAML* file                          |          
 +---------------------------------+----------------------------+-----------------------------------------------------------------------------------------+
-| hh_incidence_table.csv          | Intermediate               | Intermediate household incidence table                                                  |
-+---------------------------------+----------------------------+-----------------------------------------------------------------------------------------+
-| incidence_table.csv             | Intermediate               | Intermediate incidence table                                                            |          
+| incidence_table.csv             | Intermediate               | Intermediate incidence table                                                            |
 +---------------------------------+----------------------------+-----------------------------------------------------------------------------------------+
 | household_groups.csv            | Intermediate               | Unique household group assignments based on controls variables                          |
 +---------------------------------+----------------------------+-----------------------------------------------------------------------------------------+

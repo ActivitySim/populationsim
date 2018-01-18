@@ -49,13 +49,19 @@ repop_input_table_list:
     filename : repop_taz_controls.csv
     tablename: TAZ_control_data
 
-synthetic_tables:
+
+output_synthetic_population:
+  household_id: household_id
   households:
-    action: skip
+    filename: synthetic_households.csv
     columns:
-      - expanded_household_ids
+      - NP
+      - WGTP
+      - HTYPE
   persons:
-    action: include
+    filename: synthetic_persons.csv
     columns:
+      - per_num
       - OSUTAG
       - OCCP
+

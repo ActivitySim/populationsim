@@ -43,7 +43,7 @@ def test_full_run2():
         'sub_balancing.geography=TAZ',
         'expand_households',
         'summarize',
-        'write_results'
+        'write_tables'
     ]
 
     pipeline.run(models=_MODELS, resume_after=None)

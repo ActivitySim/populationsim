@@ -39,13 +39,18 @@ class SimultaneousListBalancer(object):
         Parameters
         ----------
         incidence_table : pandas DataFrame
-        initial_weights :
+            incidence table with only columns for sub contols
+        parent_weights : pandas: Series
+            parent zone balanced (possibly integerized) aggregate target weights
         controls : pandas DataFrame
             parent zone controls
             one row per control,
             columns : name, importance, total + one column per sub_zone
-        sub_control_zones
-        total_hh_control_col
+        sub_control_zones : pandas.Series
+            index is zone id and value is zone label (e.g. TAZ_101)
+            for use in sub_controls_df column names
+        total_hh_control_col : str
+            name of the total_hh control column
         """
         assert isinstance(incidence_table, pd.DataFrame)
         assert len(parent_weights.index) == len(incidence_table.index)
@@ -158,7 +163,11 @@ def np_simul_balancer(
         parent_controls,
         controls_importance,
         sub_controls):
-
+    """
+        Simultaneous balancer using only numpy (no pandas) data types.
+        Separate function to ensure that no pandas data types leak in from object instance variables
+        since they are often silently accepted as numpy arguments but slow things down
+    """
     # initial relaxation factors
     relaxation_factors = np.ones((zone_count, control_count))
 

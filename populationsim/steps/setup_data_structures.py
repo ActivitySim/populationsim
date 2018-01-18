@@ -210,9 +210,6 @@ def build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
     group_incidence_table['group_size'] = hh_grouper.count()['sample_weight']
     group_incidence_table = group_incidence_table.reset_index()
 
-    print "\nhh_groupby_cols\n", hh_groupby_cols
-    inject.add_table('hh_incidence_table', hh_incidence_table)
-
     logger.info("grouped incidence table has %s entries, ungrouped has %s"
                 % (len(group_incidence_table.index), len(hh_incidence_table.index)))
 
@@ -238,6 +235,12 @@ def build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
 
 
 def filter_households(households_df, persons_df, crosswalk_df):
+    """
+    Filter households and persons tables, removing zero weight households
+    and any households not in seed zones.
+
+    Returns filtered households_df and persons_df
+    """
 
     # drop any zero weight households (there are some in calm data)
     hh_weight_col = setting('household_weight_col')
@@ -258,28 +261,40 @@ def filter_households(households_df, persons_df, crosswalk_df):
 
 @inject.step()
 def setup_data_structures(output_dir, settings, configs_dir, households, persons):
+    """
+    Setup geographic correspondence (crosswalk), control sets, and incidence tables.
+
+    If GROUP_BY_INCIDENCE_SIGNATURE setting is enabled, then incidence table rows are
+    household group ids and and additional household_groups table is created mapping hh group ids
+    to actual hh_ids.
+
+    Parameters
+    ----------
+    output_dir: str
+    settings: dict
+        contents of settings.yaml as dict
+    configs_dir: str
+    households: pipeline table
+    persons: pipeline table
+
+    creates pipeline tables:
+        crosswalk
+        controls
+        geography-specific controls
+            e.g.
+        incidence_table
+        household_groups (if GROUP_BY_INCIDENCE_SIGNATURE setting is enabled)
+
+    modifies tables:
+        households
+        persons
+
+    """
 
     seed_geography = setting('seed_geography')
 
     households_df = households.to_frame()
     persons_df = persons.to_frame()
-
-    # # remove mixed type fields
-    # del persons_df["RT"]
-    # del persons_df["indp02"]
-    # del persons_df["naicsp02"]
-    # del persons_df["occp02"]
-    # del persons_df["socp00"]
-    # del persons_df["occp10"]
-    # del persons_df["socp10"]
-    # del persons_df["indp07"]
-    # del persons_df["naicsp07"]
-    #
-    # file_path = os.path.join(output_dir, "cleaned_persons.csv")
-    # write_index = persons_df.index.name is not None
-    # persons_df.to_csv(file_path, index=write_index)
-    #
-    # assert False
 
     crosswalk_df = build_crosswalk_table()
     inject.add_table('crosswalk', crosswalk_df)

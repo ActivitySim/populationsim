@@ -19,6 +19,34 @@ logger = logging.getLogger(__name__)
 
 @inject.step()
 def input_pre_processor():
+    """
+    Read input text files and save them as pipeline tables for use in subsequent steps.
+
+    The files to read as specified by table_list, and array of dicts that specify the
+    input file name, the name of the pipeline table, along with keys allow the specification
+    of pre-processing steps.
+
+    By default, reads table_list from 'input_table_list' in settings.yaml,
+    unless an alternate table_list name is specified as a model step argument 'table_list'.
+    (This allows alternate/additional input files to be read for repop)
+
+    See input_table_list in settings.yaml in the example folder for a working example
+
+    +--------------+----------------------------------------------------------+
+    | key          | description                                              |
+    +==============+=========================================+================+
+    | tablename    |  ame of pipeline table in which to store dataframe       |
+    +--------------+----------------------------------------------------------+
+    | filename     | name of csv file to read (in data_dir)                   |
+    +--------------+----------------------------------------------------------+
+    | column_map   | list of input columns to rename from_name: to_name       |
+    +--------------+----------------------------------------------------------+
+    | index_col    | name of column to set as dataframe index column          |
+    +--------------+----------------------------------------------------------+
+    | drop_columns | list of column names of columns to drop                  |
+    +--------------+----------------------------------------------------------+
+
+    """
 
     # alternate table list name may have been provided as a model argument
     table_list_name = inject.get_step_arg('table_list', default='input_table_list')
@@ -43,7 +71,7 @@ def input_pre_processor():
         logger.info("Reading csv file %s" % data_file_path)
         df = pd.read_csv(data_file_path, comment='#')
 
-        print df.columns
+        logger.info("input file columns: %s" % df.columns.values)
 
         drop_columns = table_info.get('drop_columns', None)
         if drop_columns:
