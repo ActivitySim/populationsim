@@ -247,7 +247,7 @@ Disaggregation involves distributing data from the upper geography to lower geog
 </div>
 <div class="section" id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
-<p>Below is PopulationSim’s directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this directory structure. A template directory structure can be downloaded from <a class="reference external" href="https://resourcesystemsgroupinc-my.sharepoint.com/:u:/g/personal/binny_paul_rsginc_com/EU86zAfKqF5MgOb3ejrIuVEB4iR_gmbGI4K_p-MJXN0hfg?e=iGy3ij">here</a></p>
+<p>Below is PopulationSim’s directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this directory structure. A template directory structure can be downloaded from <a class="reference external" href="https://resourcesystemsgroupinc-my.sharepoint.com/:f:/g/personal/binny_paul_rsginc_com/EmoX8KQNZ_9JoSObDk5HzpsB-sYzwnO33hm-2mopo4wE4Q?e=UXIeHL">here</a></p>
 <blockquote>
 <div><img alt="_images/PopulationSimFolderStructure.png" src="_images/PopulationSimFolderStructure.png" />
 </div></blockquote>
@@ -783,9 +783,7 @@ where <em>GEOG_NAME</em>  is the name of the control geography (TAZ, TRACT and R
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">output_tables</span><span class="p">:</span>
   <span class="n">action</span><span class="p">:</span> <span class="n">include</span>
   <span class="n">tables</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">households</span>
-    <span class="o">-</span> <span class="n">persons</span>
-        <span class="o">-</span> <span class="n">expanded_household_ids</span>
+    <span class="o">-</span> <span class="n">expanded_household_ids</span>
 </pre></div>
 </div>
 <table border="1" class="docutils">
@@ -804,6 +802,49 @@ where <em>GEOG_NAME</em>  is the name of the control geography (TAZ, TRACT and R
 </tr>
 <tr class="row-odd"><td>tables</td>
 <td>List of table to be written out or skipped</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Synthetic Population Output Specification</strong></p>
+<p>This setting allows the user to specify the details of the expanded synthetic population. User can specify the output file names, household ID field and the set of columns to be included from the seed sample.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">output_synthetic_population</span><span class="p">:</span>
+  <span class="n">household_id</span><span class="p">:</span> <span class="n">household_id</span>
+  <span class="n">households</span><span class="p">:</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="n">synthetic_households</span><span class="o">.</span><span class="n">csv</span>
+    <span class="n">columns</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">NP</span>
+      <span class="o">-</span> <span class="n">AGEHOH</span>
+      <span class="o">-</span> <span class="n">HHINCADJ</span>
+      <span class="o">-</span> <span class="n">NWESR</span>
+  <span class="n">persons</span><span class="p">:</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="n">synthetic_persons</span><span class="o">.</span><span class="n">csv</span>
+    <span class="n">columns</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">per_num</span>
+      <span class="o">-</span> <span class="n">AGEP</span>
+      <span class="o">-</span> <span class="n">OSUTAG</span>
+      <span class="o">-</span> <span class="n">OCCP</span>
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Attribute</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>household_id</td>
+<td>Name for the unique household ID field in the expanded synthetic population</td>
+</tr>
+<tr class="row-odd"><td>filename</td>
+<td>CSV file names for the expanded households and persons table</td>
+</tr>
+<tr class="row-even"><td>columns</td>
+<td>Names of seed sample columns to be included in the final synthetic population <br />
+<em>missing or misspelled column names generate error</em></td>
 </tr>
 </tbody>
 </table>
