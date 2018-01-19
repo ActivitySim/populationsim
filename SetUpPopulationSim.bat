@@ -37,7 +37,7 @@ ECHO PYTHON: %PYTHON%
 
 
 :: Remove existing environment [uncomment lines below to remove previously created evironment]
-::%ANACONDA_DIR%\Scripts\conda.exe env remove -n popsimtest
+::%ANACONDA_DIR%\Scripts\conda.exe env remove -n popsim
 
 :: Create Conda environment if doesnt exists
 ECHO Creating Conda environment - popsim

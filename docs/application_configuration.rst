@@ -85,7 +85,7 @@ Disaggregation involves distributing data from the upper geography to lower geog
 Configuration
 -------------
 
-Below is PopulationSim's directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this directory structure. A template directory structure can be downloaded from `here <https://resourcesystemsgroupinc-my.sharepoint.com/:u:/g/personal/binny_paul_rsginc_com/EU86zAfKqF5MgOb3ejrIuVEB4iR_gmbGI4K_p-MJXN0hfg?e=iGy3ij>`_
+Below is PopulationSim's directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this directory structure. A template directory structure can be downloaded from `here <https://resourcesystemsgroupinc-my.sharepoint.com/:f:/g/personal/binny_paul_rsginc_com/EmoX8KQNZ_9JoSObDk5HzpsB-sYzwnO33hm-2mopo4wE4Q?e=UXIeHL>`_
 
   .. image:: PopulationSimFolderStructure.png
 
@@ -458,9 +458,7 @@ The Inputs & Outputs section listed all possible outputs. The output_tables: set
   output_tables:
     action: include
     tables:
-      - households
-      - persons  
-	  - expanded_household_ids
+      - expanded_household_ids
 
 +------------+---------------------------------------------------+
 | Attribute  | Description                                       |
@@ -469,8 +467,45 @@ The Inputs & Outputs section listed all possible outputs. The output_tables: set
 +------------+---------------------------------------------------+
 | tables     | List of table to be written out or skipped        |
 +------------+---------------------------------------------------+
-	  
-	
+
+
+**Synthetic Population Output Specification**
+
+This setting allows the user to specify the details of the expanded synthetic population. User can specify the output file names, household ID field and the set of columns to be included from the seed sample.
+
+::
+
+  output_synthetic_population:
+    household_id: household_id
+    households:
+      filename: synthetic_households.csv
+      columns:
+        - NP
+        - AGEHOH
+        - HHINCADJ
+        - NWESR
+    persons:
+      filename: synthetic_persons.csv
+      columns:
+        - per_num
+        - AGEP
+        - OSUTAG
+        - OCCP 	  
+
+
++--------------+------------------------------------------------------------------------------------+
+| Attribute    | Description                                                                        |
++==============+====================================================================================+
+| household_id | Name for the unique household ID field in the expanded synthetic population        |
++--------------+------------------------------------------------------------------------------------+
+| filename     | CSV file names for the expanded households and persons table                       |
++--------------+------------------------------------------------------------------------------------+
+| columns      | Names of seed sample columns to be included in the final synthetic population |br| |
+|              | *missing or misspelled column names generate error*                                |
++--------------+------------------------------------------------------------------------------------+
+
+
+		
 **Steps for base mode**:	  
 
 This setting lists the sub-modules or steps to be run by the PopulationSim orchestrator. The ActivitySim framework allows user to resume a PopulationSim run from a specific point. This is specified using the attribute ``resume_after``. The step, ``sub_balancing.geography`` is repeated for each sub-seed geography (the example below shows two, but there can be 0 or more).
