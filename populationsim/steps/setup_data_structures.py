@@ -281,7 +281,6 @@ def setup_data_structures(output_dir, settings, configs_dir, households, persons
         crosswalk
         controls
         geography-specific controls
-            e.g.
         incidence_table
         household_groups (if GROUP_BY_INCIDENCE_SIGNATURE setting is enabled)
 

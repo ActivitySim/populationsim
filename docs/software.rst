@@ -5,6 +5,16 @@
 Software Implementation 
 =======================
 
+This page describes the PopulationSim software implementation.  The implementation starts with 
+the ActivitySim framework, which serves as the foundation for the software.  The framework, as briefly described
+below, includes features for data pipeline management, expression handling, testing, etc.  Built upon the 
+framework are additional core components for population synthesis such as balancers and integerizers.   
+Built upon the population synthesis core components are the model steps that make up a PopulationSim run, 
+such as the inputs pre-processor, setting up the data strucutres, doing the initial seed balancing, etc.
+
+ActivitySim Framework
+---------------------
+
 PopulationSim is implemented in the `ActivitySim <https://github.com/activitysim/activitysim>`__ 
 framework.  As summarized `here <https://activitysim.github.io/activitysim/#software-design>`__, 
 being implemented in the ActivitySim framework means:
@@ -50,3 +60,134 @@ PopulationSim also requires an optimization library for balancing and integerizi
 use of the open source and easy to install `ortools <https://github.com/google/or-tools>`__ package.  The
 ortools integerization results varies from platform to platform since edge case results depend on the 
 exact ortools/cbc version.
+
+.. _core_components :
+
+Core Components
+---------------
+
+assign
+^^^^^^
+
+.. automodule:: populationsim.assign
+   :members:
+
+balancer
+^^^^^^^^
+
+.. automodule:: populationsim.balancer
+   :members:
+
+integerizer
+^^^^^^^^^^^
+
+.. automodule:: populationsim.integerizer
+   :members:
+
+lp
+^^
+   
+.. automodule:: populationsim.lp
+   :members:
+   
+lp_cvx
+^^^^^^
+   
+.. automodule:: populationsim.lp_cvx
+   :members:
+
+lp_ortools
+^^^^^^^^^^
+
+.. automodule:: populationsim.lp_ortools
+   :members:
+   
+multi_integerizer
+^^^^^^^^^^^^^^^^^
+
+.. automodule:: populationsim.multi_integerizer
+   :members:
+
+simul_balancer
+^^^^^^^^^^^^^^
+
+.. automodule:: populationsim.simul_balancer
+   :members:
+
+.. _model_steps :
+
+Model Steps
+-----------
+
+input_pre_processor
+^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: populationsim.steps.input_pre_processor
+   :members:
+
+setup_data_structures
+^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: populationsim.steps.setup_data_structures
+   :members:
+
+initial_seed_balancing
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: populationsim.steps.initial_seed_balancing
+   :members:
+
+meta_control_factoring
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: populationsim.steps.meta_control_factoring
+   :members:
+
+final_seed_balancing
+^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: populationsim.steps.final_seed_balancing
+   :members:
+
+integerize_final_seed_weights
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   
+.. automodule:: populationsim.steps.integerize_final_seed_weights
+   :members:
+
+sub_balancing
+^^^^^^^^^^^^^
+   
+.. automodule:: populationsim.steps.sub_balancing
+   :members:
+
+expand_households
+^^^^^^^^^^^^^^^^^
+   
+.. automodule:: populationsim.steps.expand_households
+   :members:
+
+write_tables
+^^^^^^^^^^^^
+
+.. automodule:: populationsim.steps.write_tables
+   :members:
+
+write_synthetic_population
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+   
+.. automodule:: populationsim.steps.write_synthetic_population
+   :members:
+
+summarize
+^^^^^^^^^
+   
+.. automodule:: populationsim.steps.summarize
+   :members:
+
+repop_balancing
+^^^^^^^^^^^^^^^
+
+.. automodule:: populationsim.steps.repop_balancing
+   :members:
+
