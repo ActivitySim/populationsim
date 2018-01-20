@@ -87,7 +87,7 @@ Configuration
 
 Below is PopulationSim's directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this directory structure. A template directory structure can be downloaded from `here <https://resourcesystemsgroupinc-my.sharepoint.com/:f:/g/personal/binny_paul_rsginc_com/EmoX8KQNZ_9JoSObDk5HzpsB-sYzwnO33hm-2mopo4wE4Q?e=UXIeHL>`_
 
-  .. image:: PopulationSimFolderStructure.png
+  .. image:: images/PopulationSimFolderStructure.png
 
   
 PopulationSim is configured to run using the batch file **RunPopulationSim.bat**. The user needs to update the path to the Anaconda install (Anaconda2 folder) on their computer. This batch file activates the *populationsim* environment and then calls the *run_populationsim.py* Python script to launch a PopulationSim run. Open the **RunPopulationSim.bat** file in edit mode and change the path to Anaconda install as follows (note: if there are spaces in the path, put quotes around the path):
@@ -663,4 +663,4 @@ Below is a list of common run-time errors:
 
 User should not use /t (tabs) while configuring the settings.YAML file. Presence of /t would result in the following error:
 
-  .. image:: YAML_Tab_Error.JPG
+  .. image:: images/YAML_Tab_Error.JPG

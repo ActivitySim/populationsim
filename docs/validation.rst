@@ -32,21 +32,21 @@ The validation chart is a visualization of the disaggregate summary statistics â
 
 
 
-	.. image:: validation.jpeg
+	.. image:: images/validation.jpeg
 
 Frequency Distribution Plots
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These are simply frequency distribution plots of differences between control and synthesized values across the geography at which the controls were specified. An example frequency distribution plot is below:
 
-  .. image:: hh_inc_30_60_control.png
+  .. image:: images/hh_inc_30_60_control.png
 
 Expansion Factor Distributions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 While a synthetic population may match the controls well, it is important to know how uniform the household weights are, and how different they are from the initial weights. The closer the final weights are to the initial PUMS weight, the higher the probability of matching the distribution of uncontrolled variables. An expansion factor is computed for each record in the seed data as total final weight/initial weight. A distribution plot of these expansion factors is created for each Seed geography. A good synthetic population would have most of these expansion factors as close to one as possible. An example expansion factor distribution is shown below:
 
-  .. image:: EF-Distribution.png
+  .. image:: images/EF-Distribution.png
 
 Resources
 ---------

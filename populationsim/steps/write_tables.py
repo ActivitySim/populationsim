@@ -31,19 +31,22 @@ def write_tables(output_dir):
 
     To write all output tables EXCEPT the households and persons tables:
 
-    output_tables:
-      action: skip
-      tables:
-        - households
-        - persons
+    ::
+
+      output_tables:
+        action: skip
+        tables:
+          - households
+          - persons
 
     To write ONLY the expanded_household_ids table:
 
-    output_tables:
-     action: include
-     tables:
-       - expanded_household_ids
+    ::
 
+      output_tables:
+        action: include
+        tables:
+           - expanded_household_ids
 
     Parameters
     ----------
