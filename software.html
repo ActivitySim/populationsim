@@ -295,6 +295,17 @@ the result of evaluating expression</p>
 </div>
 <div class="section" id="module-populationsim.balancer">
 <span id="balancer"></span><h3>balancer<a class="headerlink" href="#module-populationsim.balancer" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="populationsim.balancer.ListBalancer">
+<em class="property">class </em><code class="descclassname">populationsim.balancer.</code><code class="descname">ListBalancer</code><span class="sig-paren">(</span><em>incidence_table</em>, <em>initial_weights</em>, <em>control_totals</em>, <em>control_importance_weights</em>, <em>lb_weights</em>, <em>ub_weights</em>, <em>master_control_index</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.balancer.ListBalancer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Single-geography list balancer using Newton-Raphson method with control relaxation.</p>
+<p>Takes a list of households with initial weights assigned to each household, and updates those
+weights in such a way as to match the marginal distribution of control variables while
+minimizing the change to the initial weights. Uses Newton-Raphson method with control
+relaxation.</p>
+<p>The resulting weights are float weights, so need to be integerized to integer household weights</p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-populationsim.integerizer">
 <span id="integerizer"></span><h3>integerizer<a class="headerlink" href="#module-populationsim.integerizer" title="Permalink to this headline">¶</a></h3>
@@ -362,13 +373,84 @@ the result of evaluating expression</p>
 </div>
 <div class="section" id="module-populationsim.lp">
 <span id="lp"></span><h3>lp<a class="headerlink" href="#module-populationsim.lp" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="populationsim.lp.get_simul_integerizer">
+<code class="descclassname">populationsim.lp.</code><code class="descname">get_simul_integerizer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp.get_simul_integerizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return simul-integerizer function using installed/configured Linear Programming library.</p>
+<p>Different LP packages can be used for integerization (e.g. ortools of cvx) and this function
+hides the specifics of the individual packages so they can be swapped with minimal impact.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>integerizer_func</strong> : function pointer to simul-integerizer function with call signature:</p>
+<p>def np_simul_integerizer(</p>
+<blockquote class="last">
+<div><p>sub_int_weights,
+parent_countrol_importance,
+parent_relax_ge_upper_bound,
+sub_countrol_importance,
+sub_float_weights,
+sub_resid_weights,
+lp_right_hand_side,
+parent_hh_constraint_ge_bound,
+sub_incidence,
+parent_incidence,
+total_hh_right_hand_side,
+relax_ge_upper_bound,
+parent_lp_right_hand_side,
+hh_constraint_ge_bound,
+parent_resid_weights,
+total_hh_sub_control_index,
+total_hh_parent_control_index)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="populationsim.lp.get_single_integerizer">
+<code class="descclassname">populationsim.lp.</code><code class="descname">get_single_integerizer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp.get_single_integerizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return single integerizer function using installed/configured Linear Programming library.</p>
+<p>Different LP packages can be used for integerization (e.g. ortools of cvx) and this function
+hides the specifics of the individual packages so they can be swapped with minimal impact.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>integerizer_func</strong> : function pointer to single integerizer function with call signature:</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>def np_integerizer(</dt>
+<dd><p class="first last">incidence,
+resid_weights,
+log_resid_weights,
+control_importance_weights,
+total_hh_control_index,
+lp_right_hand_side,
+relax_ge_upper_bound,
+hh_constraint_ge_bound)</p>
+</dd>
+</dl>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="module-populationsim.lp_cvx">
 <span id="lp-cvx"></span><h3>lp_cvx<a class="headerlink" href="#module-populationsim.lp_cvx" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="populationsim.lp_cvx.np_integerizer_cvx">
 <code class="descclassname">populationsim.lp_cvx.</code><code class="descname">np_integerizer_cvx</code><span class="sig-paren">(</span><em>incidence</em>, <em>resid_weights</em>, <em>log_resid_weights</em>, <em>control_importance_weights</em>, <em>total_hh_control_index</em>, <em>lp_right_hand_side</em>, <em>relax_ge_upper_bound</em>, <em>hh_constraint_ge_bound</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_cvx.np_integerizer_cvx" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dd><p>cvx-based single-integerizer function taking numpy data types and conforming to a
+standard function signature that allows it to be swapped interchangeably with alternate
+LP implementations.</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -393,7 +475,10 @@ the result of evaluating expression</p>
 <dl class="function">
 <dt id="populationsim.lp_cvx.np_simul_integerizer_cvx">
 <code class="descclassname">populationsim.lp_cvx.</code><code class="descname">np_simul_integerizer_cvx</code><span class="sig-paren">(</span><em>sub_int_weights</em>, <em>parent_countrol_importance</em>, <em>parent_relax_ge_upper_bound</em>, <em>sub_countrol_importance</em>, <em>sub_float_weights</em>, <em>sub_resid_weights</em>, <em>lp_right_hand_side</em>, <em>parent_hh_constraint_ge_bound</em>, <em>sub_incidence</em>, <em>parent_incidence</em>, <em>total_hh_right_hand_side</em>, <em>relax_ge_upper_bound</em>, <em>parent_lp_right_hand_side</em>, <em>hh_constraint_ge_bound</em>, <em>parent_resid_weights</em>, <em>total_hh_sub_control_index</em>, <em>total_hh_parent_control_index</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_cvx.np_simul_integerizer_cvx" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dd><p>cvx-based siuml-integerizer function taking numpy data types and conforming to a
+standard function signature that allows it to be swapped interchangeably with alternate
+LP implementations.</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -437,7 +522,10 @@ or, in case of failure, sub_resid_weights unchanged</p>
 <dl class="function">
 <dt id="populationsim.lp_ortools.np_integerizer_ortools">
 <code class="descclassname">populationsim.lp_ortools.</code><code class="descname">np_integerizer_ortools</code><span class="sig-paren">(</span><em>incidence</em>, <em>resid_weights</em>, <em>log_resid_weights</em>, <em>control_importance_weights</em>, <em>total_hh_control_index</em>, <em>lp_right_hand_side</em>, <em>relax_ge_upper_bound</em>, <em>hh_constraint_ge_bound</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_ortools.np_integerizer_ortools" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dd><p>ortools single-integerizer function taking numpy data types and conforming to a
+standard function signature that allows it to be swapped interchangeably with alternate
+LP implementations.</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -462,7 +550,10 @@ or, in case of failure, sub_resid_weights unchanged</p>
 <dl class="function">
 <dt id="populationsim.lp_ortools.np_simul_integerizer_ortools">
 <code class="descclassname">populationsim.lp_ortools.</code><code class="descname">np_simul_integerizer_ortools</code><span class="sig-paren">(</span><em>sub_int_weights</em>, <em>parent_countrol_importance</em>, <em>parent_relax_ge_upper_bound</em>, <em>sub_countrol_importance</em>, <em>sub_float_weights</em>, <em>sub_resid_weights</em>, <em>lp_right_hand_side</em>, <em>parent_hh_constraint_ge_bound</em>, <em>sub_incidence</em>, <em>parent_incidence</em>, <em>total_hh_right_hand_side</em>, <em>relax_ge_upper_bound</em>, <em>parent_lp_right_hand_side</em>, <em>hh_constraint_ge_bound</em>, <em>parent_resid_weights</em>, <em>total_hh_sub_control_index</em>, <em>total_hh_parent_control_index</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_ortools.np_simul_integerizer_ortools" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dd><p>ortools-based siuml-integerizer function taking numpy data types and conforming to a
+standard function signature that allows it to be swapped interchangeably with alternate
+LP implementations.</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -768,6 +859,15 @@ or None if integerization failed</p>
 </div>
 <div class="section" id="module-populationsim.simul_balancer">
 <span id="simul-balancer"></span><h3>simul_balancer<a class="headerlink" href="#module-populationsim.simul_balancer" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="populationsim.simul_balancer.SimultaneousListBalancer">
+<em class="property">class </em><code class="descclassname">populationsim.simul_balancer.</code><code class="descname">SimultaneousListBalancer</code><span class="sig-paren">(</span><em>incidence_table</em>, <em>parent_weights</em>, <em>controls</em>, <em>sub_control_zones</em>, <em>total_hh_control_col</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.simul_balancer.SimultaneousListBalancer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dual-zone simultaneous list balancer using Newton-Raphson method with control relaxation.</p>
+<p>Simultaneously balances the household weights across multiple subzones of a parent zone,
+ensuring that the total weight of each household across sub-zones sums to the parent hh weight.</p>
+<p>The resulting weights are float weights, so need to be integerized to integer household weights</p>
+</dd></dl>
+
 <dl class="function">
 <dt id="populationsim.simul_balancer.np_simul_balancer">
 <code class="descclassname">populationsim.simul_balancer.</code><code class="descname">np_simul_balancer</code><span class="sig-paren">(</span><em>sample_count</em>, <em>control_count</em>, <em>zone_count</em>, <em>master_control_index</em>, <em>incidence</em>, <em>parent_weights</em>, <em>weights_lower_bound</em>, <em>weights_upper_bound</em>, <em>sub_weights</em>, <em>parent_controls</em>, <em>controls_importance</em>, <em>sub_controls</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.simul_balancer.np_simul_balancer" title="Permalink to this definition">¶</a></dt>
@@ -792,6 +892,9 @@ of pre-processing steps.</p>
 <p>By default, reads table_list from ‘input_table_list’ in settings.yaml,
 unless an alternate table_list name is specified as a model step argument ‘table_list’.
 (This allows alternate/additional input files to be read for repop)</p>
+<p>In the case of repop, this step is being run after an initial populationsim run has
+completed, in which case the input_table_list may specify replacement tables.
+(e.g. lowest geography controls that will replace the previous low controls dataframe.)</p>
 <p>See input_table_list in settings.yaml in the example folder for a working example</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -859,9 +962,38 @@ and any households not in seed zones.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="populationsim.steps.setup_data_structures.repop_setup_data_structures">
+<code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">repop_setup_data_structures</code><span class="sig-paren">(</span><em>configs_dir</em>, <em>households</em>, <em>persons</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.repop_setup_data_structures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup geographic correspondence (crosswalk), control sets, and incidence tables for repop run.</p>
+<p>A new lowest-level geography control tables should already have been read in by rerunning
+input_pre_processor with a table_list override. The control table contains one row for
+each zone, with columns specifying control field totals for that control</p>
+<p>This step reads in the repop control file, which specifies which control control fields
+in the control table should be used for balancing, along with their importance and the
+recipe (seed table and expression) for determining household incidence for that control.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>configs_dir</strong> : str</p>
+<p><strong>households: pipeline table</strong></p>
+<p class="last"><strong>persons: pipeline table</strong></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="populationsim.steps.setup_data_structures.setup_data_structures">
-<code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">setup_data_structures</code><span class="sig-paren">(</span><em>output_dir</em>, <em>settings</em>, <em>configs_dir</em>, <em>households</em>, <em>persons</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.setup_data_structures" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">setup_data_structures</code><span class="sig-paren">(</span><em>settings</em>, <em>configs_dir</em>, <em>households</em>, <em>persons</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.setup_data_structures" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup geographic correspondence (crosswalk), control sets, and incidence tables.</p>
+<p>A control tables for target geographies should already have been read in by running
+input_pre_processor. The zone control tables contains one row for each zone, with columns
+specifying control field totals for that control</p>
+<p>This step reads in the global control file, which specifies which control control fields
+in the control table should be used for balancing, along with their importance and the
+recipe (seed table and expression) for determining household incidence for that control.</p>
 <p>If GROUP_BY_INCIDENCE_SIGNATURE setting is enabled, then incidence table rows are
 household group ids and and additional household_groups table is created mapping hh group ids
 to actual hh_ids.</p>
@@ -869,8 +1001,7 @@ to actual hh_ids.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>output_dir: str</strong></p>
-<p><strong>settings: dict</strong></p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>settings: dict</strong></p>
 <blockquote>
 <div><p>contents of settings.yaml as dict</p>
 </div></blockquote>
@@ -1261,6 +1392,26 @@ and seed data attribute columns to include in output files.</p>
 </div>
 <div class="section" id="module-populationsim.steps.repop_balancing">
 <span id="repop-balancing"></span><h3>repop_balancing<a class="headerlink" href="#module-populationsim.steps.repop_balancing" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="populationsim.steps.repop_balancing.repop_balancing">
+<code class="descclassname">populationsim.steps.repop_balancing.</code><code class="descname">repop_balancing</code><span class="sig-paren">(</span><em>settings</em>, <em>crosswalk</em>, <em>control_spec</em>, <em>incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.repop_balancing.repop_balancing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Balance and integerize all zones at a lowest geographic level.</p>
+<p>Creates a weight table for the repop zones target geography
+with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>settings</strong> : dict (settings.yaml as dict)</p>
+<p><strong>crosswalk</strong> : pipeline table</p>
+<p><strong>control_spec: pipeline table</strong></p>
+<p class="last"><strong>incidence_table</strong> : pipeline table</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 </div>
 </div>
