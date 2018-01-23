@@ -27,7 +27,7 @@ representing the entire population of the modeling region. These databases inclu
 attributes of interest. Examples of attributes at the household level include household income, household size, housing type, and number of vehicles. Examples of person attributes include  
 age, gender, work\school status, and occupation. Depending on the use case, a population synthesizer may also 
 produce multi-way distribution of demographic variables at different geographies to be used as an input 
-to aggregate travel models. PopulationSim also includes an option to 
+to aggregate travel models. In the case of PopulationSim specifically, an additional option is also included to 
 modify an existing regional synthetic population for a smaller geographical area. In this case, the outputs are a modified list of persons and households.
 
 How does a population synthesizer work?
