@@ -27,6 +27,14 @@ MAX_INT = (1 << 31)
 
 
 class SimultaneousListBalancer(object):
+    """
+    Dual-zone simultaneous list balancer using Newton-Raphson method with control relaxation.
+
+    Simultaneously balances the household weights across multiple subzones of a parent zone,
+    ensuring that the total weight of each household across sub-zones sums to the parent hh weight.
+
+    The resulting weights are float weights, so need to be integerized to integer household weights
+    """
 
     def __init__(self,
                  incidence_table,

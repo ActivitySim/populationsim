@@ -26,6 +26,9 @@ def np_integerizer_cvx(
         relax_ge_upper_bound,
         hh_constraint_ge_bound):
     """
+    cvx-based single-integerizer function taking numpy data types and conforming to a
+    standard function signature that allows it to be swapped interchangeably with alternate
+    LP implementations.
 
     Parameters
     ----------
@@ -146,6 +149,10 @@ def np_simul_integerizer_cvx(
         total_hh_sub_control_index,
         total_hh_parent_control_index):
     """
+    cvx-based siuml-integerizer function taking numpy data types and conforming to a
+    standard function signature that allows it to be swapped interchangeably with alternate
+    LP implementations.
+
     Parameters
     ----------
     sub_int_weights : numpy.ndarray(sub_zone_count, sample_count) int
