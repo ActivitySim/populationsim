@@ -30,6 +30,10 @@ def input_pre_processor():
     unless an alternate table_list name is specified as a model step argument 'table_list'.
     (This allows alternate/additional input files to be read for repop)
 
+    In the case of repop, this step is being run after an initial populationsim run has
+    completed, in which case the input_table_list may specify replacement tables.
+    (e.g. lowest geography controls that will replace the previous low controls dataframe.)
+
     See input_table_list in settings.yaml in the example folder for a working example
 
     +--------------+----------------------------------------------------------+
@@ -116,4 +120,5 @@ def input_pre_processor():
 
         logger.info("adding table %s" % tablename)
 
+        # add (or replace) pipeline table
         inject.add_table(tablename, df)
