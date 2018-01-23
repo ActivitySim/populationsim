@@ -24,6 +24,16 @@ MAX_INT = (1 << 31)
 
 
 class ListBalancer(object):
+    """
+    Single-geography list balancer using Newton-Raphson method with control relaxation.
+
+    Takes a list of households with initial weights assigned to each household, and updates those
+    weights in such a way as to match the marginal distribution of control variables while
+    minimizing the change to the initial weights. Uses Newton-Raphson method with control
+    relaxation.
+
+    The resulting weights are float weights, so need to be integerized to integer household weights
+    """
 
     def __init__(self,
                  incidence_table,
@@ -33,6 +43,24 @@ class ListBalancer(object):
                  lb_weights,
                  ub_weights,
                  master_control_index):
+        """
+        Parameters
+        ----------
+        incidence_table : pandas DataFrame
+            incidence table with only columns for controls to balance
+        initial_weights : pandas Series
+            initial weights of households in incidence table (in same order)
+        control_totals : pandas Series or numpy array
+            control totals (in same order as incidence_table columns)
+        control_importance_weights : pandas Series
+            importance weights of controls (in same order as incidence_table columns)
+        lb_weights : pandas Series, numpy array, or scalar
+            upper bound on balanced weights for hhs in incidence_table (in same order)
+        ub_weights : pandas Series, numpy array, or scalar
+            lower bound on balanced weights for hhs in incidence_table (in same order)
+        master_control_index
+            index of the total_hh_controsl column in controls (and incidence_table columns)
+        """
 
         assert isinstance(incidence_table, pd.DataFrame)
 
@@ -243,22 +271,5 @@ def do_balancing(control_spec,
     )
 
     status, weights, controls = balancer.balance()
-
-    return status, weights, controls
-
-
-def do_seed_balancing(seed_geography, seed_control_spec, seed_id,
-                      total_hh_control_col, max_expansion_factor,
-                      incidence_df, seed_controls_df):
-
-    incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
-
-    status, weights, controls = do_balancing(
-        seed_control_spec,
-        total_hh_control_col=total_hh_control_col,
-        max_expansion_factor=max_expansion_factor,
-        incidence_df=incidence_df,
-        control_totals=seed_controls_df.loc[seed_id],
-        initial_weights=incidence_df['sample_weight'])
 
     return status, weights, controls

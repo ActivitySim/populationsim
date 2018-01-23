@@ -260,9 +260,17 @@ def filter_households(households_df, persons_df, crosswalk_df):
 
 
 @inject.step()
-def setup_data_structures(output_dir, settings, configs_dir, households, persons):
+def setup_data_structures(settings, configs_dir, households, persons):
     """
     Setup geographic correspondence (crosswalk), control sets, and incidence tables.
+
+    A control tables for target geographies should already have been read in by running
+    input_pre_processor. The zone control tables contains one row for each zone, with columns
+    specifying control field totals for that control
+
+    This step reads in the global control file, which specifies which control control fields
+    in the control table should be used for balancing, along with their importance and the
+    recipe (seed table and expression) for determining household incidence for that control.
 
     If GROUP_BY_INCIDENCE_SIGNATURE setting is enabled, then incidence table rows are
     household group ids and and additional household_groups table is created mapping hh group ids
@@ -270,7 +278,6 @@ def setup_data_structures(output_dir, settings, configs_dir, households, persons
 
     Parameters
     ----------
-    output_dir: str
     settings: dict
         contents of settings.yaml as dict
     configs_dir: str
@@ -331,7 +338,28 @@ def setup_data_structures(output_dir, settings, configs_dir, households, persons
 
 
 @inject.step()
-def repop_setup_data_structures(settings, configs_dir, households, persons):
+def repop_setup_data_structures(configs_dir, households, persons):
+    """
+    Setup geographic correspondence (crosswalk), control sets, and incidence tables for repop run.
+
+    A new lowest-level geography control tables should already have been read in by rerunning
+    input_pre_processor with a table_list override. The control table contains one row for
+    each zone, with columns specifying control field totals for that control
+
+    This step reads in the repop control file, which specifies which control control fields
+    in the control table should be used for balancing, along with their importance and the
+    recipe (seed table and expression) for determining household incidence for that control.
+
+    Parameters
+    ----------
+    configs_dir : str
+    households: pipeline table
+    persons: pipeline table
+
+    Returns
+    -------
+
+    """
 
     seed_geography = setting('seed_geography')
     geographies = setting('geographies')
@@ -344,14 +372,22 @@ def repop_setup_data_structures(settings, configs_dir, households, persons):
     # replace control_spec
     control_file_name = setting('repop_control_file_name', 'repop_controls.csv')
     control_spec = read_control_spec(control_file_name, configs_dir)
+
+    # repop control spec should only specify controls for lowest level geography
+    assert control_spec.geography.unique() == [low_geography]
+
     pipeline.replace_table('control_spec', control_spec)
 
     # build incidence_table with repop controls and households in repop zones
     # filter households (dropping any not in crosswalk) in order to build incidence_table
     # We DO NOT REPLACE households and persons as we need full tables to synthesize population
+    # (There is no problem, however, with overwriting the incidence_table and household_groups
+    # because the expand_households step has ALREADY created the expanded_household_ids table
+    # for the original simulated population. )
+
     households_df = households.to_frame()
     persons_df = persons.to_frame()
-    households_df, repop_persons_df = filter_households(households_df, persons_df, crosswalk_df)
+    households_df, persons_df = filter_households(households_df, persons_df, crosswalk_df)
     incidence_table = build_incidence_table(control_spec, households_df, persons_df, crosswalk_df)
     incidence_table = add_geography_columns(incidence_table, households_df, crosswalk_df)
     # add sample_weight col to incidence table

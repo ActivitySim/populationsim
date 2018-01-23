@@ -21,6 +21,21 @@ logger = logging.getLogger(__name__)
 
 @inject.step()
 def repop_balancing(settings, crosswalk, control_spec, incidence_table):
+    """
+
+    Balance and integerize all zones at a lowest geographic level.
+
+
+    Creates a weight table for the repop zones target geography
+    with float 'balanced_weight' and 'integer_weight' columns.
+
+    Parameters
+    ----------
+    settings : dict (settings.yaml as dict)
+    crosswalk : pipeline table
+    control_spec: pipeline table
+    incidence_table : pipeline table
+    """
 
     crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()
