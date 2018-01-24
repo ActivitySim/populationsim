@@ -34,7 +34,7 @@ CD %ANACONDA_DIR%\envs\popsim\Scripts
 CALL %CONDA_ACT% popsim
 CD %BATCH_DIR%
 
-%PYTHON% run_populationsim.py -m repop
+%PYTHON% run_populationsim.py
 
 CD %ANACONDA_DIR%\envs\popsim\Scripts
 CALL %CONDA_DEA%
