@@ -31,45 +31,14 @@ trace_geography:
 data_dir: data
 
 
-# Input Data Tables
+# Input Data Tables for repop mode
+# (other required tables will already have been read into the
+# pipeline by the input_pre_processor step if the initial run)
 # ------------------------------------------------------------------
-# input_pre_processor input_table_list
 input_table_list:
-  - tablename: households
-    filename : seed_households.csv
-    index_col: hh_id
-    column_map:
-      # not sure what SERIALNO is, but it is not unique
-      #SERIALNO: hh_id
-      hhnum: hh_id
-  - tablename: persons
-    # expression_filename: seed_persons_expressions.csv
-    filename : seed_persons.csv
-    column_map:
-      # SERIALNO: hh_id
-      hhnum: hh_id
-      SPORDER: per_num
-    # drop mixed type fields that appear to have been incorrectly generated
-    drop_columns:
-      - indp02
-      - naicsp02
-      - occp02
-      - socp00
-      - occp10
-      - socp10
-      - indp07
-      - naicsp07
-  - tablename: geo_cross_walk
-    filename : geo_cross_walk.csv
-    column_map:
-      TRACTCE: TRACT
-  - tablename: TAZ_control_data
-    filename : control_totals_taz.csv
-  - tablename: TRACT_control_data
-    filename : control_totals_tract.csv
-  - tablename: REGION_control_data
-    #filename : control_totals_meta.csv
-    filename : scaled_control_totals_meta.csv
+  - taz_control_data:
+    filename : repop_control_totals_taz.csv
+    tablename: TAZ_control_data
 
 
 # Reserved Column Names
@@ -79,9 +48,9 @@ household_id_col: hh_id
 total_hh_control: num_hh
 
 
-# Control Specification File Name
+# Control Specification File Name for repop mode
 # ------------------------------------------------------------------
-control_file_name: controls.csv
+repop_control_file_name: repop_controls.csv
 
 
 # Output Tables
@@ -117,31 +86,11 @@ output_synthetic_population:
       - OCCP
 
 
-# Steps for base mode
+# Steps for repop mode
 # ------------------------------------------------------------------
 run_list:
   steps:
-    - input_pre_processor
-    - setup_data_structures
-    - initial_seed_balancing
-    - meta_control_factoring
-    - final_seed_balancing
-    - integerize_final_seed_weights
-    - sub_balancing.geography=TRACT
-    - sub_balancing.geography=TAZ
-    - expand_households
-    - write_tables
-    - summarize
-
-  #resume_after: integerize_final_seed_weights
-
-  
-# Steps for repop mode
-# ------------------------------------------------------------------
-# "-m repop" command line option allows specification of repop run_list`
-repop:
-  steps:
-    - input_pre_processor.table_list=repop_input_table_list
+    - input_pre_processor.repop
     - repop_setup_data_structures
     - initial_seed_balancing.final=true
     - integerize_final_seed_weights.repop
@@ -154,14 +103,6 @@ repop:
   resume_after: summarize
 
   
-# Control Specification File Name for repop mode
-# ------------------------------------------------------------------
-repop_control_file_name: repop_controls.csv
 
 
-# Input Data Tables for repop mode
-# ------------------------------------------------------------------
-repop_input_table_list:
-  - taz_control_data:
-    filename : repop_control_totals_taz.csv
-    tablename: TAZ_control_data
+
