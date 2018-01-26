@@ -45,8 +45,7 @@ output_tables:
 repop_control_file_name: repop_controls.csv
 
 repop_input_table_list:
-  - taz_control_data:
-    filename : repop_taz_controls.csv
+  - filename : repop_taz_controls.csv
     tablename: TAZ_control_data
 
 

@@ -36,8 +36,7 @@ data_dir: data
 # pipeline by the input_pre_processor step if the initial run)
 # ------------------------------------------------------------------
 input_table_list:
-  - taz_control_data:
-    filename : repop_control_totals_taz.csv
+  - filename : repop_control_totals_taz.csv
     tablename: TAZ_control_data
 
 
