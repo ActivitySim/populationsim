@@ -947,8 +947,7 @@ Two options for the expand_households.repop step <br />
 <p><strong>Input Data Tables for repop mode</strong></p>
 <p>As mentioned earlier, repop mode requires the data pipeline (HDF5 file) from the base run. User should copy the HDF5 file from the base outputs to the <em>output</em> folder of the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as base mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">repop_input_table_list</span><span class="p">:</span>
-  <span class="o">-</span> <span class="n">taz_control_data</span><span class="p">:</span>
-    <span class="n">filename</span> <span class="p">:</span> <span class="n">repop_control_totals_taz</span><span class="o">.</span><span class="n">csv</span>
+  <span class="o">-</span> <span class="n">filename</span> <span class="p">:</span> <span class="n">repop_control_totals_taz</span><span class="o">.</span><span class="n">csv</span>
     <span class="n">tablename</span><span class="p">:</span> <span class="n">TAZ_control_data</span>
 </pre></div>
 </div>

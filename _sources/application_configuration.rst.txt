@@ -588,8 +588,7 @@ As mentioned earlier, repop mode requires the data pipeline (HDF5 file) from the
 ::
 
   repop_input_table_list:
-    - taz_control_data:
-      filename : repop_control_totals_taz.csv
+    - filename : repop_control_totals_taz.csv
       tablename: TAZ_control_data
 
 	  
