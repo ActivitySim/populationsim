@@ -523,8 +523,9 @@ This setting lists the sub-modules or steps to be run by the PopulationSim orche
       - sub_balancing.geography=TRACT
       - sub_balancing.geography=TAZ
       - expand_households
-      - write_results
       - summarize
+      - write_results
+      - write_synthetic_population
   
     #resume_after: integerize_final_seed_weights	  
 	  
