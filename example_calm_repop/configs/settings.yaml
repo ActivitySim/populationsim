@@ -61,6 +61,7 @@ output_tables:
   action: include
   tables:
     - expanded_household_ids
+    - summary_TAZ
 
 
 # Synthetic Population Output Specification
@@ -96,12 +97,9 @@ run_list:
     - repop_balancing
     # expand_households options are append or replace
     - expand_households.repop;append
+    - summarize.repop
     - write_synthetic_population.repop
     - write_tables.repop
 
   resume_after: summarize
-
-  
-
-
 

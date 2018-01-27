@@ -55,9 +55,9 @@ run_list:
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
     - expand_households
+    - summarize
     - write_tables
     - write_synthetic_population
-    - summarize
 
   # resume_after: write_results
 

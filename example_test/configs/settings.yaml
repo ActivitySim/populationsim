@@ -59,9 +59,9 @@ run_list:
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
     - expand_households
+    - summarize
     - write_tables
     - write_synthetic_population
-    - summarize
 
   #resume_after: expand_households
 
@@ -92,10 +92,11 @@ repop_input_table_list:
 # if neither is specified, then no checkpointed tables will be written
 #
 output_tables:
-  action: skip
+  action: include
   tables:
-    - households
-    - persons
+    - summary_TAZ
+    - expanded_household_ids
+
 #
 #output_tables:
 #  action: include
