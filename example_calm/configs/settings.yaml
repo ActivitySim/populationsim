@@ -93,6 +93,8 @@ output_tables:
   action: include
   tables:
     - summary_TAZ
+    - summary_TRACT
+    - summary_TAZ_PUMA
     - expanded_household_ids
 
 
