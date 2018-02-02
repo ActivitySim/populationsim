@@ -92,6 +92,7 @@ control_file_name: controls.csv
 output_tables:
   action: include
   tables:
+    - summary_TAZ
     - expanded_household_ids
 
 
@@ -130,8 +131,8 @@ run_list:
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
     - expand_households
+    - summarize
     - write_tables
     - write_synthetic_population
-    - summarize
 
   #resume_after: expand_households

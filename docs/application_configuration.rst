@@ -523,8 +523,9 @@ This setting lists the sub-modules or steps to be run by the PopulationSim orche
       - sub_balancing.geography=TRACT
       - sub_balancing.geography=TAZ
       - expand_households
-      - write_results
       - summarize
+      - write_results
+      - write_synthetic_population
   
     #resume_after: integerize_final_seed_weights	  
 	  
@@ -588,8 +589,7 @@ As mentioned earlier, repop mode requires the data pipeline (HDF5 file) from the
 ::
 
   repop_input_table_list:
-    - taz_control_data:
-      filename : repop_control_totals_taz.csv
+    - filename : repop_control_totals_taz.csv
       tablename: TAZ_control_data
 
 	  

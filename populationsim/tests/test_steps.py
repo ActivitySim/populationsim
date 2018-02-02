@@ -46,9 +46,9 @@ def test_full_run1():
         'sub_balancing.geography = TRACT',
         'sub_balancing.geography=TAZ',
         'expand_households',
-        'write_synthetic_population',
+        'summarize',
         'write_tables',
-        'summarize'
+        'write_synthetic_population',
     ]
 
     pipeline.run(models=_MODELS, resume_after=None)
@@ -59,6 +59,8 @@ def test_full_run1():
     assert len(taz_hh_counts) == TAZ_COUNT
     assert taz_hh_counts.loc[100] == TAZ_100_HH_COUNT
 
+    # output_tables action: skip
+    assert not os.path.exists(os.path.join(output_dir, 'households.csv'))
     assert os.path.exists(os.path.join(output_dir, 'summary_DISTRICT_1.csv'))
 
     # tables will no longer be available after pipeline is closed

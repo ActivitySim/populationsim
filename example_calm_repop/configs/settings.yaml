@@ -36,8 +36,7 @@ data_dir: data
 # pipeline by the input_pre_processor step if the initial run)
 # ------------------------------------------------------------------
 input_table_list:
-  - taz_control_data:
-    filename : repop_control_totals_taz.csv
+  - filename : repop_control_totals_taz.csv
     tablename: TAZ_control_data
 
 
@@ -62,6 +61,7 @@ output_tables:
   action: include
   tables:
     - expanded_household_ids
+    - summary_TAZ
 
 
 # Synthetic Population Output Specification
@@ -97,12 +97,9 @@ run_list:
     - repop_balancing
     # expand_households options are append or replace
     - expand_households.repop;append
+    - summarize.repop
     - write_synthetic_population.repop
     - write_tables.repop
 
   resume_after: summarize
-
-  
-
-
 

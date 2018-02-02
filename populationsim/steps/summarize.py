@@ -15,7 +15,7 @@ from populationsim.util import setting
 
 logger = logging.getLogger(__name__)
 
-AS_CSV = True
+AS_CSV = False
 
 
 def out_table(table_name, df):
@@ -30,6 +30,7 @@ def out_table(table_name, df):
         write_index = df.index.name is not None
         df.to_csv(file_path, index=write_index)
     else:
+        logger.info("saving summary table %s" % table_name)
         inject.add_table(table_name, df)
 
 

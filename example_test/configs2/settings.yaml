@@ -55,9 +55,9 @@ run_list:
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
     - expand_households
+    - summarize
     - write_tables
     - write_synthetic_population
-    - summarize
 
   # resume_after: write_results
 
@@ -77,8 +77,7 @@ repop:
 repop_control_file_name: repop_controls.csv
 
 repop_input_table_list:
-  - taz_control_data:
-    filename : repop_taz_controls.csv
+  - filename : repop_taz_controls.csv
     tablename: TAZ_control_data
 
 
