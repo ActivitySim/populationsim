@@ -169,7 +169,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="getting-started">
-<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <p>This page describes the installation procedure for PopulationSim and how to run PopulationSim with sample data. Users can choose among the following two methods to install PopulationSim:</p>
 <ul class="simple">
 <li><a class="reference internal" href="#beginner-installation-procedure">Beginner Installation Procedure</a>. Download, Unzip, Run!</li>
@@ -188,16 +188,7 @@
 </div>
 <div class="section" id="advanced-user-installation-procedure">
 <h2>Advanced User Installation Procedure<a class="headerlink" href="#advanced-user-installation-procedure" title="Permalink to this headline">¶</a></h2>
-<ol class="arabic simple">
-<li>If you access the internet from behind a firewall, then you will need to configure your proxy server. To do so, create a .condarc file in your Anaconda installation folder (i.e. <code class="docutils literal"><span class="pre">C:\ProgramData\Anaconda2</span></code>), such as:</li>
-</ol>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">proxy_servers</span><span class="p">:</span>
-  <span class="n">http</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">proxynew</span><span class="o">.</span><span class="n">odot</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="ow">or</span><span class="o">.</span><span class="n">us</span><span class="p">:</span><span class="mi">8080</span>
-  <span class="n">https</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">proxynew</span><span class="o">.</span><span class="n">odot</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="ow">or</span><span class="o">.</span><span class="n">us</span><span class="p">:</span><span class="mi">8080</span>
-<span class="n">ssl_verify</span><span class="p">:</span> <span class="n">false</span>
-</pre></div>
-</div>
-<ol class="arabic" start="2">
+<ol class="arabic">
 <li><p class="first">Install <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python 2.7</a>.</p>
 <p><strong>Windows users can skip the remaining steps and run</strong> <a class="reference external" href="https://resourcesystemsgroupinc-my.sharepoint.com/:f:/g/personal/binny_paul_rsginc_com/Eip4-wyS7zBCoYgY-xO3EPsB-ZtrBOatS-FjwF1Rh8XitQ?e=JWXXf3">SetUpPopulationSim.bat</a> script. The user would need to set the location of the Anaconda installation directory in the batch script (open in edit mode) as shown below:</p>
 </li>
@@ -213,22 +204,33 @@
 <p><em>Please ensure that the user has write permissions to Anaconda installation directory</em></p>
 <p><strong>Users who ran the SetUpPopulationSim.bat script can proceed to</strong> <a class="reference internal" href="#run-examples">Run Examples</a></p>
 </div></blockquote>
+<ol class="arabic simple" start="2">
+<li>If you access the internet from behind a firewall, then you will need to configure your proxy server. To do so, create a .condarc file in your Anaconda installation folder (i.e. <code class="docutils literal"><span class="pre">C:\ProgramData\Anaconda2</span></code>), such as:</li>
+</ol>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">proxy_servers</span><span class="p">:</span>
+  <span class="n">http</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">proxynew</span><span class="o">.</span><span class="n">odot</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="ow">or</span><span class="o">.</span><span class="n">us</span><span class="p">:</span><span class="mi">8080</span>
+  <span class="n">https</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">proxynew</span><span class="o">.</span><span class="n">odot</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="ow">or</span><span class="o">.</span><span class="n">us</span><span class="p">:</span><span class="mi">8080</span>
+<span class="n">ssl_verify</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
 <ol class="arabic simple" start="3">
 <li>Create and activate an Anaconda environment (basically a Python install just for this project)</li>
 </ol>
 <blockquote>
-<div><ul class="simple">
-<li>Run <code class="docutils literal"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">popsim</span> <span class="pre">python=2.7</span></code></li>
-<li>Run <code class="docutils literal"><span class="pre">activate</span> <span class="pre">popsim</span></code> #you can re-use the environment on a later date by re-activating it</li>
-</ul>
-</div></blockquote>
-<ol class="arabic simple" start="4">
-<li>If you access the internet from behind a firewall, then you will need to configure your proxy server when downloading packages. For example:</li>
-</ol>
+<div><ul>
+<li><p class="first">Run <code class="docutils literal"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">popsim</span> <span class="pre">python=2.7</span></code></p>
+</li>
+<li><p class="first">Run <code class="docutils literal"><span class="pre">activate</span> <span class="pre">popsim</span></code> #you can re-use the environment on a later date by re-activating it</p>
+<blockquote>
+<div><p>3.a. If you access the internet from behind a firewall, then you will need to configure your proxy server when downloading packages. For example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">host</span> <span class="n">pypi</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">org</span> <span class="o">--</span><span class="n">proxy</span><span class="o">=</span><span class="n">proxynew</span><span class="o">.</span><span class="n">odot</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="ow">or</span><span class="o">.</span><span class="n">us</span><span class="p">:</span><span class="mi">8080</span>  <span class="n">activitysim</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="5">
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="4">
 <li>Get and install other required libraries, which can be found on the <a class="reference external" href="https://pypi.python.org/pypi">Python Package Index</a>.  Run the following command on the activated conda Python environment: <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&lt;packagename&gt;</span></code> for each package.</li>
 </ol>
 <blockquote>
@@ -241,7 +243,7 @@
 <li><a class="reference external" href="https://github.com/google/or-tools">ortools</a> - Google operations research tools solver</li>
 </ul>
 </div></blockquote>
-<ol class="arabic" start="6">
+<ol class="arabic" start="5">
 <li><p class="first">After setting up Anaconda Python and dependent libraries, run the following command on the activated conda Python environment to install PopulationSim package:</p>
 <p><code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">https://github.com/RSGInc/populationsim/zipball/master</span></code></p>
 </li>
@@ -265,7 +267,7 @@
 <p>Follow the steps below to run <strong>example_calm</strong> set up:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Open the <em>RunPopulationSim_base.bat</em> script from the example_calm folder in edit mode</li>
+<li>Open the <em>RunPopulationSim.bat</em> script from the example_calm folder in edit mode</li>
 <li>Set the location of the Anaconda installation directory in the batch script as shown below (note: if the path contains spaces, put quotes around the path):</li>
 </ul>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">::</span> <span class="n">USER</span> <span class="n">INPUTS</span>
@@ -276,7 +278,7 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li>Close the <em>RunPopulationSim_base.bat</em> script and then double click to launch the run</li>
+<li>Close the <em>RunPopulationSim.bat</em> script and then double click to launch the run</li>
 <li>Close the run window by pressing any key. Check the outputs in the <em>output</em> folder</li>
 </ul>
 </div></blockquote>
@@ -287,7 +289,7 @@
 <blockquote>
 <div><ul class="simple">
 <li>Copy the <strong>pipeline.h5</strong> file from the example_calm\output directory to example_calm_repop\output directory (all PopulationSim files are stored in pipeline.h5 file)</li>
-<li>Open the <em>RunPopulationSim_repop.bat</em> script from the example_calm_repop folder in edit mode</li>
+<li>Open the <em>RunPopulationSim.bat</em> script from the example_calm_repop folder in edit mode</li>
 <li>Set the location of the Anaconda installation directory in the batch script as shown below (note: if the path contains spaces, put quotes around the path):</li>
 </ul>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">::</span> <span class="n">USER</span> <span class="n">INPUTS</span>
@@ -298,7 +300,7 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li>Close the <em>RunPopulationSim_repop.bat</em> script and then double click to launch the run</li>
+<li>Close the <em>RunPopulationSim.bat</em> script and then double click to launch the run</li>
 <li>Close the run window by pressing any key. Check the outputs in the <em>output</em> folder</li>
 </ul>
 </div></blockquote>

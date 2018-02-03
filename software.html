@@ -108,18 +108,18 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#model-steps">Model Steps</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-populationsim.steps.input_pre_processor">input_pre_processor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-populationsim.steps.setup_data_structures">setup_data_structures</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-populationsim.steps.initial_seed_balancing">initial_seed_balancing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-populationsim.steps.meta_control_factoring">meta_control_factoring</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-populationsim.steps.final_seed_balancing">final_seed_balancing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-populationsim.steps.integerize_final_seed_weights">integerize_final_seed_weights</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-populationsim.steps.sub_balancing">sub_balancing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-populationsim.steps.expand_households">expand_households</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-populationsim.steps.write_tables">write_tables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-populationsim.steps.write_synthetic_population">write_synthetic_population</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-populationsim.steps.summarize">summarize</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-populationsim.steps.repop_balancing">repop_balancing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#input-pre-processor">input_pre_processor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-data-structures">setup_data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initial-seed-balancing">initial_seed_balancing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#meta-control-factoring">meta_control_factoring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#final-seed-balancing">final_seed_balancing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#integerize-final-seed-weights">integerize_final_seed_weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sub-balancing">sub_balancing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#expand-households">expand_households</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write-tables">write_tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write-synthetic-population">write_synthetic_population</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#summarize">summarize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#repop-balancing">repop_balancing</a></li>
 </ul>
 </li>
 </ul>
@@ -880,9 +880,9 @@ since they are often silently accepted as numpy arguments but slow things down</
 </div>
 <div class="section" id="model-steps">
 <span id="id2"></span><h2>Model Steps<a class="headerlink" href="#model-steps" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="module-populationsim.steps.input_pre_processor">
-<span id="input-pre-processor"></span><h3>input_pre_processor<a class="headerlink" href="#module-populationsim.steps.input_pre_processor" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<div class="section" id="input-pre-processor">
+<span id="id3"></span><h3>input_pre_processor<a class="headerlink" href="#input-pre-processor" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-populationsim.steps.input_pre_processor"></span><dl class="function">
 <dt id="populationsim.steps.input_pre_processor.input_pre_processor">
 <code class="descclassname">populationsim.steps.input_pre_processor.</code><code class="descname">input_pre_processor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.input_pre_processor.input_pre_processor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read input text files and save them as pipeline tables for use in subsequent steps.</p>
@@ -928,9 +928,9 @@ completed, in which case the input_table_list may specify replacement tables.
 </dd></dl>
 
 </div>
-<div class="section" id="module-populationsim.steps.setup_data_structures">
-<span id="setup-data-structures"></span><h3>setup_data_structures<a class="headerlink" href="#module-populationsim.steps.setup_data_structures" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<div class="section" id="setup-data-structures">
+<span id="id4"></span><h3>setup_data_structures<a class="headerlink" href="#setup-data-structures" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-populationsim.steps.setup_data_structures"></span><dl class="function">
 <dt id="populationsim.steps.setup_data_structures.add_geography_columns">
 <code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">add_geography_columns</code><span class="sig-paren">(</span><em>incidence_table</em>, <em>households_df</em>, <em>crosswalk_df</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.add_geography_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add seed and meta geography columns to incidence_table</p>
@@ -1028,9 +1028,9 @@ persons</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-populationsim.steps.initial_seed_balancing">
-<span id="initial-seed-balancing"></span><h3>initial_seed_balancing<a class="headerlink" href="#module-populationsim.steps.initial_seed_balancing" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<div class="section" id="initial-seed-balancing">
+<span id="id5"></span><h3>initial_seed_balancing<a class="headerlink" href="#initial-seed-balancing" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-populationsim.steps.initial_seed_balancing"></span><dl class="function">
 <dt id="populationsim.steps.initial_seed_balancing.initial_seed_balancing">
 <code class="descclassname">populationsim.steps.initial_seed_balancing.</code><code class="descname">initial_seed_balancing</code><span class="sig-paren">(</span><em>settings</em>, <em>crosswalk</em>, <em>control_spec</em>, <em>incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.initial_seed_balancing.initial_seed_balancing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Balance the household weights for each of the seed geographies (independently)
@@ -1085,9 +1085,9 @@ hh_id</th>
 </dd></dl>
 
 </div>
-<div class="section" id="module-populationsim.steps.meta_control_factoring">
-<span id="meta-control-factoring"></span><h3>meta_control_factoring<a class="headerlink" href="#module-populationsim.steps.meta_control_factoring" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<div class="section" id="meta-control-factoring">
+<span id="id6"></span><h3>meta_control_factoring<a class="headerlink" href="#meta-control-factoring" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-populationsim.steps.meta_control_factoring"></span><dl class="function">
 <dt id="populationsim.steps.meta_control_factoring.meta_control_factoring">
 <code class="descclassname">populationsim.steps.meta_control_factoring.</code><code class="descname">meta_control_factoring</code><span class="sig-paren">(</span><em>settings</em>, <em>control_spec</em>, <em>incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.meta_control_factoring.meta_control_factoring" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply simple factoring to summed household fractional weights based on original
@@ -1108,9 +1108,9 @@ additional columns to the seed control table, for final balancing.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-populationsim.steps.final_seed_balancing">
-<span id="final-seed-balancing"></span><h3>final_seed_balancing<a class="headerlink" href="#module-populationsim.steps.final_seed_balancing" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<div class="section" id="final-seed-balancing">
+<span id="id7"></span><h3>final_seed_balancing<a class="headerlink" href="#final-seed-balancing" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-populationsim.steps.final_seed_balancing"></span><dl class="function">
 <dt id="populationsim.steps.final_seed_balancing.final_seed_balancing">
 <code class="descclassname">populationsim.steps.final_seed_balancing.</code><code class="descname">final_seed_balancing</code><span class="sig-paren">(</span><em>settings</em>, <em>crosswalk</em>, <em>control_spec</em>, <em>incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.final_seed_balancing.final_seed_balancing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Balance the household weights for each of the seed geographies (independently)
@@ -1133,9 +1133,9 @@ household_id, seed geography (e.g. PUMA), and float preliminary_balanced_weights
 </dd></dl>
 
 </div>
-<div class="section" id="module-populationsim.steps.integerize_final_seed_weights">
-<span id="integerize-final-seed-weights"></span><h3>integerize_final_seed_weights<a class="headerlink" href="#module-populationsim.steps.integerize_final_seed_weights" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<div class="section" id="integerize-final-seed-weights">
+<span id="id8"></span><h3>integerize_final_seed_weights<a class="headerlink" href="#integerize-final-seed-weights" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-populationsim.steps.integerize_final_seed_weights"></span><dl class="function">
 <dt id="populationsim.steps.integerize_final_seed_weights.integerize_final_seed_weights">
 <code class="descclassname">populationsim.steps.integerize_final_seed_weights.</code><code class="descname">integerize_final_seed_weights</code><span class="sig-paren">(</span><em>settings</em>, <em>crosswalk</em>, <em>control_spec</em>, <em>incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.integerize_final_seed_weights.integerize_final_seed_weights" title="Permalink to this definition">¶</a></dt>
 <dd><p>Final balancing for each seed (puma) zone with aggregated low and mid-level controls and
@@ -1156,9 +1156,9 @@ distributed meta-level controls.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-populationsim.steps.sub_balancing">
-<span id="sub-balancing"></span><h3>sub_balancing<a class="headerlink" href="#module-populationsim.steps.sub_balancing" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<div class="section" id="sub-balancing">
+<span id="id9"></span><h3>sub_balancing<a class="headerlink" href="#sub-balancing" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-populationsim.steps.sub_balancing"></span><dl class="function">
 <dt id="populationsim.steps.sub_balancing.balance">
 <code class="descclassname">populationsim.steps.sub_balancing.</code><code class="descname">balance</code><span class="sig-paren">(</span><em>incidence_df</em>, <em>parent_weights</em>, <em>sub_controls_df</em>, <em>control_spec</em>, <em>total_hh_control_col</em>, <em>parent_geography</em>, <em>parent_id</em>, <em>sub_geographies</em>, <em>sub_control_zones</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.balance" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -1294,9 +1294,9 @@ with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-populationsim.steps.expand_households">
-<span id="expand-households"></span><h3>expand_households<a class="headerlink" href="#module-populationsim.steps.expand_households" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<div class="section" id="expand-households">
+<span id="id10"></span><h3>expand_households<a class="headerlink" href="#expand-households" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-populationsim.steps.expand_households"></span><dl class="function">
 <dt id="populationsim.steps.expand_households.expand_households">
 <code class="descclassname">populationsim.steps.expand_households.</code><code class="descname">expand_households</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.expand_households.expand_households" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a complete expanded synthetic household list with their assigned geographic zone ids.</p>
@@ -1306,9 +1306,9 @@ one row per household, with geography columns and seed household table household
 </dd></dl>
 
 </div>
-<div class="section" id="module-populationsim.steps.write_tables">
-<span id="write-tables"></span><h3>write_tables<a class="headerlink" href="#module-populationsim.steps.write_tables" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<div class="section" id="write-tables">
+<span id="id11"></span><h3>write_tables<a class="headerlink" href="#write-tables" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-populationsim.steps.write_tables"></span><dl class="function">
 <dt id="populationsim.steps.write_tables.write_tables">
 <code class="descclassname">populationsim.steps.write_tables.</code><code class="descname">write_tables</code><span class="sig-paren">(</span><em>output_dir</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.write_tables.write_tables" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write pipeline tables as csv files (in output directory) as specified by output_tables list
@@ -1347,9 +1347,9 @@ TRACT_weights has balanced_weight and integer_weight for every TRACT.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-populationsim.steps.write_synthetic_population">
-<span id="write-synthetic-population"></span><h3>write_synthetic_population<a class="headerlink" href="#module-populationsim.steps.write_synthetic_population" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<div class="section" id="write-synthetic-population">
+<span id="id12"></span><h3>write_synthetic_population<a class="headerlink" href="#write-synthetic-population" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-populationsim.steps.write_synthetic_population"></span><dl class="function">
 <dt id="populationsim.steps.write_synthetic_population.write_synthetic_population">
 <code class="descclassname">populationsim.steps.write_synthetic_population.</code><code class="descname">write_synthetic_population</code><span class="sig-paren">(</span><em>expanded_household_ids</em>, <em>households</em>, <em>persons</em>, <em>output_dir</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.write_synthetic_population.write_synthetic_population" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write synthetic households and persons tables to output dir as csv files.
@@ -1370,9 +1370,9 @@ and seed data attribute columns to include in output files.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-populationsim.steps.summarize">
-<span id="summarize"></span><h3>summarize<a class="headerlink" href="#module-populationsim.steps.summarize" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<div class="section" id="summarize">
+<span id="id13"></span><h3>summarize<a class="headerlink" href="#summarize" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-populationsim.steps.summarize"></span><dl class="function">
 <dt id="populationsim.steps.summarize.summarize">
 <code class="descclassname">populationsim.steps.summarize.</code><code class="descname">summarize</code><span class="sig-paren">(</span><em>crosswalk</em>, <em>incidence_table</em>, <em>control_spec</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.summarize.summarize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write aggregate summary files of controls and weights for all geographic levels to output dir</p>
@@ -1390,9 +1390,9 @@ and seed data attribute columns to include in output files.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-populationsim.steps.repop_balancing">
-<span id="repop-balancing"></span><h3>repop_balancing<a class="headerlink" href="#module-populationsim.steps.repop_balancing" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<div class="section" id="repop-balancing">
+<span id="id14"></span><h3>repop_balancing<a class="headerlink" href="#repop-balancing" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-populationsim.steps.repop_balancing"></span><dl class="function">
 <dt id="populationsim.steps.repop_balancing.repop_balancing">
 <code class="descclassname">populationsim.steps.repop_balancing.</code><code class="descname">repop_balancing</code><span class="sig-paren">(</span><em>settings</em>, <em>crosswalk</em>, <em>control_spec</em>, <em>incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.repop_balancing.repop_balancing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Balance and integerize all zones at a lowest geographic level.</p>
