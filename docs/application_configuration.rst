@@ -429,6 +429,7 @@ Note that Seed-Households, Seed-Persons and Geographic CrossWalk are all require
 | drop_columns | List of columns to be dropped from the input data                                     |
 +--------------+---------------------------------------------------------------------------------------+
 
+PopulationSim requires that the column names must be unqiue across all the control files. In case there are duplicate column names in the raw control files, user can use the column map feature to rename the columns appropriately.
 
 **Reserved Column Names**:
 
