@@ -101,7 +101,7 @@ Disaggregation involves distributing data from the upper geography to lower geog
 Configuration
 -------------
 
-Below is PopulationSim's directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this `directory structure <https://resourcesystemsgroupinc-my.sharepoint.com/:f:/g/personal/binny_paul_rsginc_com/EmoX8KQNZ_9JoSObDk5HzpsB-sYzwnO33hm-2mopo4wE4Q?e=UXIeHL>`_
+Below is PopulationSim's directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this `directory structure <https://github.com/RSGInc/populationSim_resources/raw/master/template_folder/template.7z>`_
 
   .. image:: images/PopulationSimFolderStructure.png
 

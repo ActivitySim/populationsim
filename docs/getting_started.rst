@@ -16,7 +16,7 @@ This page describes the installation procedure for PopulationSim and how to run 
 Beginner Installation Procedure
 --------------------------------
 
-1. Download `Anaconda installation 7ZIP <https://resourcesystemsgroupinc-my.sharepoint.com/:f:/g/personal/binny_paul_rsginc_com/ElDl-QNAqyxGk5cAr_ugSssBtz4DvEksg4B6fe50IXfu4A?e=wnXRQ9>`_ loaded with all required libraries and PopulationSim package. Note that the ZIP file is a bit over 1 GB and the unzipped directory is approximately 3.3 GB.
+1. Download `Anaconda installation 7ZIP <https://github.com/RSGInc/populationSim_resources/raw/master/complete_setup/Anaconda2.7z>`_ loaded with all required libraries and PopulationSim package. Note that the ZIP file is a bit over 1 GB and the unzipped directory is approximately 3.3 GB.
 
 *The Anaconda Python 2.7 and dependent libraries used to prepare this installation folder were accessed on 27th Dec 2017*
 
@@ -29,7 +29,7 @@ Advanced User Installation Procedure
 -------------------------------------
 1. Install `Anaconda Python 2.7 <https://www.continuum.io/downloads>`__. 
 
-   **Windows users can skip the remaining steps and run** `SetUpPopulationSim.bat <https://resourcesystemsgroupinc-my.sharepoint.com/:f:/g/personal/binny_paul_rsginc_com/Eip4-wyS7zBCoYgY-xO3EPsB-ZtrBOatS-FjwF1Rh8XitQ?e=JWXXf3>`_ script. The user would need to set the location of the Anaconda installation directory in the batch script (open in edit mode) as shown below:
+   **Windows users can skip the remaining steps and run** `SetUpPopulationSim.bat <https://github.com/RSGInc/populationSim_resources/raw/master/setup_help/SetUpPopulationSim.bat>`_ script. The user would need to set the location of the Anaconda installation directory in the batch script (open in edit mode) as shown below:
 
  ::
 
@@ -89,7 +89,7 @@ Run Examples
 
 	* Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed (see above). If the fully loaded Anaconda install was downloaded, then it should have been unzipped to an appropriate location on your computer.
  
-	* Download and unzip the `example set ups <https://resourcesystemsgroupinc-my.sharepoint.com/:f:/g/personal/binny_paul_rsginc_com/ElOgNOMyVudGpDCwZ-zuP7gBrXsm_hKqQw17lvOQh6UJ2Q?e=ttAcb9>`_ to a folder on your computer. It does not have to be the same directory as your Anaconda or PopulationSim install.
+	* Download and unzip the `example set ups <https://github.com/RSGInc/populationSim_resources/raw/master/example_setup/PopulationSimExampleSetUps.7z>`_ to a folder on your computer. It does not have to be the same directory as your Anaconda or PopulationSim install.
 
 There are two examples for running PopulationSim, created using data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon. The `Example_calm`_ set-up runs PopulationSim in base mode, where a synthetic population is created for the entire modeling region. This takes approximately 12 minutes on a laptop with an Intel i7-4800MQ CPU @ 2.70GHz and 16 GB of RAM. The `Example_calm_repop`_ set-up runs PopulationSim in the *repop* mode, which updates the synthetic population for a small part of the region. More information on the configuration of PopulationSim can be found in the **Application & Configuration** section.
 
