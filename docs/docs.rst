@@ -7,14 +7,18 @@
 Documents & Resources
 =====================
 
-Below are link to important documents and resources:
+Below are links to important documents and resources:
 
-1. `Specifications memo <https://resourcesystemsgroupinc-my.sharepoint.com/:f:/g/personal/binny_paul_rsginc_com/Ess2qrP-wHFJolTo69vpEbABApdFwBH_cvFNPYV-_pStTw?e=tXySgh>`_
+1. `Specifications memo <https://github.com/RSGInc/populationSim_resources/raw/master/papers/Draft%20TM1%20-%20Population%20Synthesis%20Technical%20Specifications%202017-03-08.pdf>`_
 
-2. `TRB paper <https://resourcesystemsgroupinc-my.sharepoint.com/:f:/g/personal/binny_paul_rsginc_com/EvrLdZIYHwlBtsBH7il8VA8BM2ihNtiIREigCrpO179VaQ?e=xaJa2Q>`_
+2. `TRB paper <https://github.com/RSGInc/populationSim_resources/raw/master/papers/TRB_Paper_PopulationSim_v6.pdf>`_
 
-3. `TRB poster <https://resourcesystemsgroupinc-my.sharepoint.com/:f:/g/personal/binny_paul_rsginc_com/Emm_NnKuBTBLpmULyK7TrrAB-qVYwzMzXu-c-sMqrPPqXg?e=CjEd85>`_
+3. `TRB poster <https://github.com/RSGInc/populationSim_resources/raw/master/papers/TRBPoster_PaulDoyleStablerFreedmanBettinardi_v5%5B1%5D.pptx>`_
 
-4. `GitHub Repository <https://github.com/RSGInc/populationsim>`_
+4. `Training Package <https://github.com/RSGInc/populationSim_resources/raw/master/training_package/TrainingPackage.7z>`_
 
-5. `ActivitySim <http://www.activitysim.org>`_
+5. `Example CALM PUMS Data Processing <https://github.com/RSGInc/populationSim_resources/raw/master/example_calm_data_prep/example_calm_data_prep.7z>`_
+
+6. `GitHub Repository <https://github.com/RSGInc/populationsim>`_
+
+7. `ActivitySim <http://www.activitysim.org>`_
