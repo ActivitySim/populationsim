@@ -30,6 +30,8 @@
   
 
   
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -531,6 +533,66 @@ weights from allocation at <em>GEOG_NAME</em> level</td>
 <span class="n">max_expansion_factor</span><span class="p">:</span> <span class="mi">30</span>
 </pre></div>
 </div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="9%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Attribute</th>
+<th class="head">Value</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INTEGERIZE_WITH_BACKSTOPPED_CONTROLS</td>
+<td>True/False</td>
+<td>When set to <strong>True</strong>, upper geography controls are imputed for current <br />
+geography and used as additional controls for integerization</td>
+</tr>
+<tr class="row-odd"><td>SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS</td>
+<td>True/False</td>
+<td>When <strong>True</strong>, PopulationSim uses floating weights from upper geography</td>
+</tr>
+<tr class="row-even"><td>GROUP_BY_INCIDENCE_SIGNATURE</td>
+<td>True/False</td>
+<td>When <strong>True</strong>, PopulationSim groups the household incidence by HH group</td>
+</tr>
+<tr class="row-odd"><td>USE_SIMUL_INTEGERIZER</td>
+<td>True/False</td>
+<td><dl class="first docutils">
+<dt>PopulationSim Integerizer can run in two modes: <br /></dt>
+<dd><ol class="first last arabic simple">
+<li>Sequential - Zones are processed in a ascending order of number of <br />
+households in the zone <br /></li>
+<li>Simultaneous - Zones are processed simultaneously <br /></li>
+</ol>
+</dd>
+</dl>
+<p class="last"><em>for more details, refer the TRB paper on Docs page</em></p>
+</td>
+</tr>
+<tr class="row-even"><td>USE_CVXPY</td>
+<td>True/False</td>
+<td>A third-party solver is used for integerization - CVXPY or or-tools <br />
+<strong>CVXPY</strong> is currently not available for Windows</td>
+</tr>
+<tr class="row-odd"><td>max_expansion_factor</td>
+<td>&gt; 0</td>
+<td>Maximum HH expansion factor weight setting. This settings dictates the <br />
+ratio of the final weight of the household record to its initial weight. <br />
+For example, a maxExpansionFactor setting of 5 would mean a household <br />
+having a PUMS weight of x can have a final weight of not more than 5x, <br />
+thus effectively restricting the number of times a record can be sampled. <br />
+The user might need to adjust this setting to enable sampling of a record <br />
+with a rare household configuration. Otherwise, it might result in some <br />
+controls not being matched due to unavailability of records to sample from.
+The maximum expansion factor may have to be adjusted upwards if the target <br />
+is much greater than the seed number of households.                        <br /></td>
+</tr>
+</tbody>
+</table>
 <p><strong>Geographic Settings</strong>:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">geographies</span><span class="p">:</span> <span class="p">[</span><span class="n">REGION</span><span class="p">,</span> <span class="n">PUMA</span><span class="p">,</span> <span class="n">TRACT</span><span class="p">,</span> <span class="n">TAZ</span><span class="p">]</span>
 <span class="n">seed_geography</span><span class="p">:</span> <span class="n">PUMA</span>
@@ -995,12 +1057,12 @@ Two options for the expand_households.repop step <br />
 <p>The controls for a PopulationSim run are specified using the control specification CSV file. Following the ActivitySim framework, Python expressions are used for specifying control constraints.  An example file is below.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="16%" />
+<col width="15%" />
 <col width="8%" />
-<col width="9%" />
-<col width="9%" />
-<col width="11%" />
-<col width="49%" />
+<col width="8%" />
+<col width="8%" />
+<col width="10%" />
+<col width="51%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">target</th>
@@ -1015,9 +1077,9 @@ Two options for the expand_households.repop step <br />
 <tr class="row-even"><td>num_hh</td>
 <td>TAZ</td>
 <td>households</td>
-<td>1000000000</td>
+<td>100000000</td>
 <td>HHBASE</td>
-<td>(households.WGTP &gt; 0) &amp; (households.WGTP &lt; np.inf) <a class="footnote-reference" href="#id3" id="id2">[1]</a></td>
+<td>(households.WGTP &gt; 0) &amp; <br /> (households.WGTP &lt; np.inf) <a class="footnote-reference" href="#id3" id="id2">[1]</a></td>
 </tr>
 <tr class="row-odd"><td>hh_size_4_plus</td>
 <td>TAZ</td>
@@ -1031,16 +1093,16 @@ Two options for the expand_households.repop step <br />
 <td>households</td>
 <td>500</td>
 <td>HHAGE1</td>
-<td>(households.AGEHOH &gt; 15) &amp; (households.AGEHOH &lt;= 24)</td>
+<td>(households.AGEHOH &gt; 15) &amp; <br /> (households.AGEHOH &lt;= 24)</td>
 </tr>
 <tr class="row-odd"><td>hh_inc_15</td>
 <td>TAZ</td>
 <td>households</td>
 <td>500</td>
 <td>HHINC1</td>
-<td>(households.HHINCADJ &gt; -999999999) &amp; (households.HHINCADJ &lt;= 21297)</td>
+<td>(households.HHINCADJ &gt; -999999999) &amp; <br /> (households.HHINCADJ &lt;= 21297)</td>
 </tr>
-<tr class="row-even"><td>students_fam_housing</td>
+<tr class="row-even"><td>student_fam_housing</td>
 <td>TAZ</td>
 <td>persons</td>
 <td>500</td>

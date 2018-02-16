@@ -30,6 +30,8 @@
   
 
   
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -208,8 +210,8 @@
 <li>If you access the internet from behind a firewall, then you will need to configure your proxy server. To do so, create a .condarc file in your Anaconda installation folder (i.e. <code class="docutils literal"><span class="pre">C:\ProgramData\Anaconda2</span></code>), such as:</li>
 </ol>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">proxy_servers</span><span class="p">:</span>
-  <span class="n">http</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">proxynew</span><span class="o">.</span><span class="n">odot</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="ow">or</span><span class="o">.</span><span class="n">us</span><span class="p">:</span><span class="mi">8080</span>
-  <span class="n">https</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">proxynew</span><span class="o">.</span><span class="n">odot</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="ow">or</span><span class="o">.</span><span class="n">us</span><span class="p">:</span><span class="mi">8080</span>
+  <span class="n">http</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>
+  <span class="n">https</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>
 <span class="n">ssl_verify</span><span class="p">:</span> <span class="n">false</span>
 </pre></div>
 </div>
@@ -223,7 +225,7 @@
 <li><p class="first">Run <code class="docutils literal"><span class="pre">activate</span> <span class="pre">popsim</span></code> #you can re-use the environment on a later date by re-activating it</p>
 <blockquote>
 <div><p>3.a. If you access the internet from behind a firewall, then you will need to configure your proxy server when downloading packages. For example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">host</span> <span class="n">pypi</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">org</span> <span class="o">--</span><span class="n">proxy</span><span class="o">=</span><span class="n">proxynew</span><span class="o">.</span><span class="n">odot</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="ow">or</span><span class="o">.</span><span class="n">us</span><span class="p">:</span><span class="mi">8080</span>  <span class="n">activitysim</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">host</span> <span class="n">pypi</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">org</span> <span class="o">--</span><span class="n">proxy</span><span class="o">=</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>  <span class="n">activitysim</span>
 </pre></div>
 </div>
 </div></blockquote>

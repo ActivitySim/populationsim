@@ -48,8 +48,8 @@ Advanced User Installation Procedure
 ::
 
   proxy_servers:
-    http: http://proxynew.odot.state.or.us:8080
-    https: https://proxynew.odot.state.or.us:8080
+    http: http://myproxy.org:8080
+    https: https://myproxy.org:8080
   ssl_verify: false
 
  
@@ -62,7 +62,7 @@ Advanced User Installation Procedure
      
      ::
      
-       pip install --trusted-host pypi.python.org --proxy=proxynew.odot.state.or.us:8080  activitysim
+       pip install --trusted-host pypi.python.org --proxy=myproxy.org:8080  activitysim
  
 4. Get and install other required libraries, which can be found on the `Python Package Index <https://pypi.python.org/pypi>`__.  Run the following command on the activated conda Python environment: ``pip install <packagename>`` for each package.
 
