@@ -287,7 +287,7 @@ These settings control the functionality of the PopulationSim algorithm. The set
 |                                      |            | *for more details, refer the TRB paper on Docs page*                            |
 +--------------------------------------+------------+---------------------------------------------------------------------------------+
 | USE_CVXPY                            | True/False | A third-party solver is used for integerization - CVXPY or or-tools |br|        |
-|                                      |            | **CVXPY** currently is not available for Windows                                |
+|                                      |            | **CVXPY** is currently not available for Windows                                |
 +--------------------------------------+------------+---------------------------------------------------------------------------------+
 | max_expansion_factor                 | > 0        | Maximum HH expansion factor weight setting. This settings dictates the |br|     |
 |                                      |            | ratio of the final weight of the household record to its initial weight. |br|   |
@@ -298,7 +298,7 @@ These settings control the functionality of the PopulationSim algorithm. The set
 |                                      |            | with a rare household configuration. Otherwise, it might result in some |br|    |
 |                                      |            | controls not being matched due to unavailability of records to sample from.     |
 |                                      |            | The maximum expansion factor may have to be adjusted upwards if the target |br| |
-|                                      |            | is much greater than 	the seed number of households.                       |br| |
+|                                      |            | is much greater than the seed number of households.                        |br| |
 +--------------------------------------+------------+---------------------------------------------------------------------------------+
 
         
@@ -669,25 +669,25 @@ Specifying Controls
 
 The controls for a PopulationSim run are specified using the control specification CSV file. Following the ActivitySim framework, Python expressions are used for specifying control constraints.  An example file is below.  
 
-+----------------------+-----------+------------+------------+---------------+---------------------------------------------------------------------+
-| target               | geography | seed_table | importance | control_field |  expression                                                         |
-+======================+===========+============+============+===============+=====================================================================+
-| num_hh               | TAZ       | households | 1000000000 | HHBASE        | (households.WGTP > 0) & (households.WGTP < np.inf) [#]_             |
-+----------------------+-----------+------------+------------+---------------+---------------------------------------------------------------------+
-| hh_size_4_plus       | TAZ       | households | 5000       | HHSIZE4       | households.NP >= 4                                                  |
-+----------------------+-----------+------------+------------+---------------+---------------------------------------------------------------------+
-| hh_age_15_24         | TAZ       | households | 500        | HHAGE1        | (households.AGEHOH > 15) & (households.AGEHOH <= 24)                |
-+----------------------+-----------+------------+------------+---------------+---------------------------------------------------------------------+
-| hh_inc_15            | TAZ       | households | 500        | HHINC1        | (households.HHINCADJ > -999999999) & (households.HHINCADJ <= 21297) |
-+----------------------+-----------+------------+------------+---------------+---------------------------------------------------------------------+
-| students_fam_housing | TAZ       | persons    | 500        | OSUFAM        | persons.OSUTAG == 1                                                 |
-+----------------------+-----------+------------+------------+---------------+---------------------------------------------------------------------+
-| hh_wrks_3_plus       | TRACT     | households | 1000       | HHWORK3       | households.NWESR >= 3                                               |
-+----------------------+-----------+------------+------------+---------------+---------------------------------------------------------------------+
-| hh_by_type_sf        | TRACT     | households | 1000       | SF            | households.HTYPE == 1                                               |
-+----------------------+-----------+------------+------------+---------------+---------------------------------------------------------------------+
-| persons_occ_8        | REGION    | persons    | 1000       | OCCP8         | persons.OCCP == 8                                                   |
-+----------------------+-----------+------------+------------+---------------+---------------------------------------------------------------------+
++----------------------+-----------+------------+------------+---------------+--------------------------------------------------------------------------+
+| target               | geography | seed_table | importance | control_field |  expression                                                              |
++======================+===========+============+============+===============+==========================================================================+
+| num_hh               | TAZ       | households | 100000000  | HHBASE        | (households.WGTP > 0) & |br| (households.WGTP < np.inf) [#]_             |
++----------------------+-----------+------------+------------+---------------+--------------------------------------------------------------------------+
+| hh_size_4_plus       | TAZ       | households | 5000       | HHSIZE4       | households.NP >= 4                                                       |
++----------------------+-----------+------------+------------+---------------+--------------------------------------------------------------------------+
+| hh_age_15_24         | TAZ       | households | 500        | HHAGE1        | (households.AGEHOH > 15) & |br| (households.AGEHOH <= 24)                |
++----------------------+-----------+------------+------------+---------------+--------------------------------------------------------------------------+
+| hh_inc_15            | TAZ       | households | 500        | HHINC1        | (households.HHINCADJ > -999999999) & |br| (households.HHINCADJ <= 21297) |
++----------------------+-----------+------------+------------+---------------+--------------------------------------------------------------------------+
+| student_fam_housing  | TAZ       | persons    | 500        | OSUFAM        | persons.OSUTAG == 1                                                      |
++----------------------+-----------+------------+------------+---------------+--------------------------------------------------------------------------+
+| hh_wrks_3_plus       | TRACT     | households | 1000       | HHWORK3       | households.NWESR >= 3                                                    |
++----------------------+-----------+------------+------------+---------------+--------------------------------------------------------------------------+
+| hh_by_type_sf        | TRACT     | households | 1000       | SF            | households.HTYPE == 1                                                    |
++----------------------+-----------+------------+------------+---------------+--------------------------------------------------------------------------+
+| persons_occ_8        | REGION    | persons    | 1000       | OCCP8         | persons.OCCP == 8                                                        |
++----------------------+-----------+------------+------------+---------------+--------------------------------------------------------------------------+
 
 .. [#] np.inf is the NumPy constant for infinty
 
