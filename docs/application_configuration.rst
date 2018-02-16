@@ -287,7 +287,7 @@ These settings control the functionality of the PopulationSim algorithm. The set
 |                                      |            | *for more details, refer the TRB paper on Docs page*                            |
 +--------------------------------------+------------+---------------------------------------------------------------------------------+
 | USE_CVXPY                            | True/False | A third-party solver is used for integerization - CVXPY or or-tools |br|        |
-|                                      |            | **CVXPY** currently is not available for Windows                                |
+|                                      |            | **CVXPY** is currently not available for Windows                                |
 +--------------------------------------+------------+---------------------------------------------------------------------------------+
 | max_expansion_factor                 | > 0        | Maximum HH expansion factor weight setting. This settings dictates the |br|     |
 |                                      |            | ratio of the final weight of the household record to its initial weight. |br|   |
@@ -298,7 +298,7 @@ These settings control the functionality of the PopulationSim algorithm. The set
 |                                      |            | with a rare household configuration. Otherwise, it might result in some |br|    |
 |                                      |            | controls not being matched due to unavailability of records to sample from.     |
 |                                      |            | The maximum expansion factor may have to be adjusted upwards if the target |br| |
-|                                      |            | is much greater than 	the seed number of households.                       |br| |
+|                                      |            | is much greater than the seed number of households.                        |br| |
 +--------------------------------------+------------+---------------------------------------------------------------------------------+
 
         
