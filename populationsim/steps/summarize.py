@@ -41,13 +41,16 @@ def summarize_geography(geography, weight_col,
     controls_df = get_control_table(geography)
     control_names = controls_df.columns.tolist()
 
+    # only want zones from crosswalk for which non-zero control rows exist
     zone_ids = crosswalk_df[geography].unique()
+    zone_ids = controls_df.index.intersection(zone_ids)
 
     results = []
     controls = []
     for zone_id in zone_ids:
 
         zone_controls = controls_df.loc[zone_id].tolist()
+
         controls.append(zone_controls)
 
         zone_row_map = results_df[geography] == zone_id

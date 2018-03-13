@@ -7,6 +7,8 @@ import pandas as pd
 
 from activitysim.core import inject
 
+from populationsim.util import setting
+
 from ..balancer import do_balancing
 from helper import get_control_table
 from helper import weight_table_name
@@ -61,7 +63,7 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     assert (seed_controls_df.columns == control_spec.target).all()
 
     # determine master_control_index if specified in settings
-    total_hh_control_col = settings.get('total_hh_control')
+    total_hh_control_col = setting('total_hh_control')
 
     max_expansion_factor = settings.get('max_expansion_factor', None)
 
