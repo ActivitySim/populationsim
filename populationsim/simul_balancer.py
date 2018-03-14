@@ -260,8 +260,9 @@ def np_simul_balancer(
         # even if not converged, no point in further iteration if weights aren't changing
         no_progress = delta < ALT_MAX_DELTA
 
-        logger.debug("np_simul_balancer iteration %s delta %s max_gamma_dif %s" %
-                     (iter, delta, max_gamma_dif))
+        if (iter % 100) == 0:
+            logger.debug("np_simul_balancer iteration %s delta %s max_gamma_dif %s" %
+                         (iter, delta, max_gamma_dif))
 
         if converged or no_progress:
             break
