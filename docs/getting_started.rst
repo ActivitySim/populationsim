@@ -98,6 +98,12 @@ Follow the steps below to run **example_calm** set up:
   
   * Close the *RunPopulationSim.bat* script and then double click to launch the run
   * Close the run window by pressing any key. Check the outputs in the *output* folder
+  * If the Conda environment was created in the global Anaconda Install on the user's computer, the setup can be run by opening a CMD window in the setup directory and running the following commands:
+  
+  ::
+
+   activate popsim
+   python run_populationsim.py
 
 Example_calm_repop
 ~~~~~~~~~~~~~~~~~~
@@ -118,5 +124,11 @@ The repop configuration requires outputs from a base run. Therefore, the base co
   
   * Close the *RunPopulationSim.bat* script and then double click to launch the run
   * Close the run window by pressing any key. Check the outputs in the *output* folder
+  * If the Conda environment was created in the global Anaconda Install on the user's computer, the setup can be run by opening a CMD window in the setup directory and running the following commands:
+  
+  ::
+
+   activate popsim
+   python run_populationsim.py
 
 
