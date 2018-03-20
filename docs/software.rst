@@ -216,3 +216,8 @@ repop_balancing
 .. automodule:: populationsim.steps.repop_balancing
    :members:
 
+Release Notes
+-------------
+
+  * v0.3 - first release
+  * v0.3.1 - allow zones with zero households
