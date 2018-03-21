@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Getting Started &mdash; PopulationSim 0.3
+  <title>Getting Started &mdash; PopulationSim 0.3.1
  documentation</title>
   
 
@@ -38,7 +38,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="PopulationSim 0.3
+    <link rel="top" title="PopulationSim 0.3.1
  documentation" href="index.html"/>
         <link rel="next" title="Application &amp; Configuration" href="application_configuration.html"/>
         <link rel="prev" title="Introduction" href="index.html"/> 
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                0.3
+                0.3.1
 
               </div>
             
@@ -183,7 +183,7 @@
 <div class="section" id="beginner-installation-procedure">
 <h2>Beginner Installation Procedure<a class="headerlink" href="#beginner-installation-procedure" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Download <a class="reference external" href="https://github.com/RSGInc/populationSim_resources/raw/master/complete_setup/Anaconda2.7z">Anaconda installation 7ZIP</a> loaded with all required libraries and PopulationSim package. Note that the ZIP file is a bit over 1 GB and the unzipped directory is approximately 3.3 GB.</li>
+<li>Download <a class="reference external" href="https://github.com/RSGInc/populationSim_resources/raw/master/complete_setup/Anaconda2.zip">Anaconda installation ZIP</a> loaded with all required libraries and PopulationSim package. Note that the ZIP file is a bit over 1 GB and the unzipped directory is approximately 3.3 GB.</li>
 </ol>
 <p><em>The Anaconda Python 2.7 and dependent libraries used to prepare this installation folder were accessed on 27th Dec 2017</em></p>
 <ol class="arabic simple" start="2">
@@ -193,26 +193,11 @@
 </div>
 <div class="section" id="advanced-user-installation-procedure">
 <h2>Advanced User Installation Procedure<a class="headerlink" href="#advanced-user-installation-procedure" title="Permalink to this headline">¶</a></h2>
-<ol class="arabic">
-<li><p class="first">Install <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python 2.7</a>.</p>
-<p><strong>Windows users can skip the remaining steps and run</strong> <a class="reference external" href="https://github.com/RSGInc/populationSim_resources/raw/master/setup_help/SetUpPopulationSim.bat">SetUpPopulationSim.bat</a> script. The user would need to set the location of the Anaconda installation directory in the batch script (open in edit mode) as shown below:</p>
-</li>
+<ol class="arabic simple">
+<li>Install <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python 2.7</a>.</li>
+<li>If you access the internet from behind a firewall, then you will need to configure your proxy server. To do so, create a .condarc file in your Anaconda installation folder (i.e. <code class="docutils literal notranslate"><span class="pre">C:\ProgramData\Anaconda2</span></code>), such as:</li>
 </ol>
-<blockquote>
-<div><div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">::</span> <span class="n">USER</span> <span class="n">INPUTS</span>
-<span class="p">::</span> <span class="o">---------------------------------------------------------------------</span>
-<span class="p">::</span> <span class="n">Local</span> <span class="n">Anaconda</span> <span class="n">installation</span> <span class="n">directory</span>
-<span class="n">SET</span> <span class="n">ANACONDA_DIR</span><span class="o">=</span><span class="n">E</span><span class="p">:</span>\<span class="n">path</span>\<span class="n">to</span>\<span class="n">this</span>\<span class="n">directory</span>\<span class="n">Anaconda2</span>
-<span class="p">::</span> <span class="o">---------------------------------------------------------------------</span>
-</pre></div>
-</div>
-<p><em>Please ensure that the user has write permissions to Anaconda installation directory</em></p>
-<p><strong>Users who ran the SetUpPopulationSim.bat script can proceed to</strong> <a class="reference internal" href="#run-examples">Run Examples</a></p>
-</div></blockquote>
-<ol class="arabic simple" start="2">
-<li>If you access the internet from behind a firewall, then you will need to configure your proxy server. To do so, create a .condarc file in your Anaconda installation folder (i.e. <code class="docutils literal"><span class="pre">C:\ProgramData\Anaconda2</span></code>), such as:</li>
-</ol>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">proxy_servers</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">proxy_servers</span><span class="p">:</span>
   <span class="n">http</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>
   <span class="n">https</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>
 <span class="n">ssl_verify</span><span class="p">:</span> <span class="n">false</span>
@@ -223,12 +208,12 @@
 </ol>
 <blockquote>
 <div><ul>
-<li><p class="first">Run <code class="docutils literal"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">popsim</span> <span class="pre">python=2.7</span></code></p>
+<li><p class="first">Run <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">popsim</span> <span class="pre">python=2.7</span></code></p>
 </li>
-<li><p class="first">Run <code class="docutils literal"><span class="pre">activate</span> <span class="pre">popsim</span></code> #you can re-use the environment on a later date by re-activating it</p>
+<li><p class="first">Run <code class="docutils literal notranslate"><span class="pre">activate</span> <span class="pre">popsim</span></code> #you can re-use the environment on a later date by re-activating it</p>
 <blockquote>
 <div><p>3.a. If you access the internet from behind a firewall, then you will need to configure your proxy server when downloading packages. For example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">host</span> <span class="n">pypi</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">org</span> <span class="o">--</span><span class="n">proxy</span><span class="o">=</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>  <span class="n">activitysim</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">host</span> <span class="n">pypi</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">org</span> <span class="o">--</span><span class="n">proxy</span><span class="o">=</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>  <span class="n">activitysim</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -236,23 +221,24 @@
 </ul>
 </div></blockquote>
 <ol class="arabic simple" start="4">
-<li>Get and install other required libraries, which can be found on the <a class="reference external" href="https://pypi.python.org/pypi">Python Package Index</a>.  Run the following command on the activated conda Python environment: <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&lt;packagename&gt;</span></code> for each package.</li>
+<li>Get and install other required libraries, which can be found online.  Run the following command on the activated conda Python environment:</li>
 </ol>
 <blockquote>
 <div><ul class="simple">
-<li><a class="reference external" href="http://toolz.readthedocs.org/en/latest">toolz</a></li>
-<li><a class="reference external" href="https://github.com/jiffyclub/zbox">zbox</a></li>
-<li><a class="reference external" href="https://synthicity.github.io/orca">orca</a> - the application orchestration tool (i.e. the module runner)</li>
-<li><a class="reference external" href="https://pypi.python.org/pypi/OpenMatrix">openmatrix</a> - OMX support</li>
-<li><a class="reference external" href="https://pypi.python.org/pypi/activitysim">activitysim</a> - ActivitySim framework</li>
-<li><a class="reference external" href="https://github.com/google/or-tools">ortools</a> - Google operations research tools solver</li>
+<li><a class="reference external" href="http://www.pytables.org/">conda install pytables</a></li>
+<li><a class="reference external" href="http://toolz.readthedocs.org/en/latest">pip install toolz</a></li>
+<li><a class="reference external" href="https://github.com/jiffyclub/zbox">pip install zbox</a></li>
+<li><a class="reference external" href="https://synthicity.github.io/orca">pip install orca</a></li>
+<li><a class="reference external" href="https://pypi.python.org/pypi/OpenMatrix">pip install openmatrix</a></li>
+<li><a class="reference external" href="https://pypi.python.org/pypi/activitysim">pip install activitysim</a></li>
+<li><a class="reference external" href="https://github.com/google/or-tools">pip install ortools</a></li>
 </ul>
 </div></blockquote>
 <ol class="arabic" start="5">
 <li><p class="first">After setting up Anaconda Python and dependent libraries, run the following command on the activated conda Python environment to install PopulationSim package:</p>
-<p><code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">https://github.com/RSGInc/populationsim/zipball/master</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">https://github.com/RSGInc/populationsim/zipball/master</span></code></p>
 </li>
-<li><p class="first">Run <code class="docutils literal"><span class="pre">deactivate</span></code> to deactivate the active conda Python environment</p>
+<li><p class="first">Run <code class="docutils literal notranslate"><span class="pre">deactivate</span></code> to deactivate the active conda Python environment</p>
 </li>
 <li><p class="first">Now proceed to <a class="reference internal" href="#run-examples">Run Examples</a></p>
 </li>
@@ -275,7 +261,7 @@
 <li>Open the <em>RunPopulationSim.bat</em> script from the example_calm folder in edit mode</li>
 <li>Set the location of the Anaconda installation directory in the batch script as shown below (note: if the path contains spaces, put quotes around the path):</li>
 </ul>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">::</span> <span class="n">USER</span> <span class="n">INPUTS</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">::</span> <span class="n">USER</span> <span class="n">INPUTS</span>
 <span class="p">::</span> <span class="o">---------------------------------------------------------------------</span>
 <span class="p">::</span> <span class="n">Local</span> <span class="n">Anaconda</span> <span class="n">installation</span> <span class="n">directory</span>
 <span class="n">SET</span> <span class="n">ANACONDA_DIR</span><span class="o">=</span><span class="n">E</span><span class="p">:</span>\<span class="n">path</span>\<span class="n">to</span>\<span class="n">this</span>\<span class="n">directory</span>\<span class="n">Anaconda2</span>
@@ -285,7 +271,12 @@
 <ul class="simple">
 <li>Close the <em>RunPopulationSim.bat</em> script and then double click to launch the run</li>
 <li>Close the run window by pressing any key. Check the outputs in the <em>output</em> folder</li>
+<li>If the Conda environment was created in the global Anaconda Install on the user’s computer, the setup can be run by opening a CMD window in the setup directory and running the following commands:</li>
 </ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
+<span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
 </div></blockquote>
 </div>
 <div class="section" id="example-calm-repop">
@@ -297,7 +288,7 @@
 <li>Open the <em>RunPopulationSim.bat</em> script from the example_calm_repop folder in edit mode</li>
 <li>Set the location of the Anaconda installation directory in the batch script as shown below (note: if the path contains spaces, put quotes around the path):</li>
 </ul>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">::</span> <span class="n">USER</span> <span class="n">INPUTS</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">::</span> <span class="n">USER</span> <span class="n">INPUTS</span>
 <span class="p">::</span> <span class="o">---------------------------------------------------------------------</span>
 <span class="p">::</span> <span class="n">Local</span> <span class="n">Anaconda</span> <span class="n">installation</span> <span class="n">directory</span>
 <span class="n">SET</span> <span class="n">ANACONDA_DIR</span><span class="o">=</span><span class="n">E</span><span class="p">:</span>\<span class="n">path</span>\<span class="n">to</span>\<span class="n">this</span>\<span class="n">directory</span>\<span class="n">Anaconda2</span>
@@ -307,7 +298,12 @@
 <ul class="simple">
 <li>Close the <em>RunPopulationSim.bat</em> script and then double click to launch the run</li>
 <li>Close the run window by pressing any key. Check the outputs in the <em>output</em> folder</li>
+<li>If the Conda environment was created in the global Anaconda Install on the user’s computer, the setup can be run by opening a CMD window in the setup directory and running the following commands:</li>
 </ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
+<span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
 </div></blockquote>
 </div>
 </div>
@@ -357,7 +353,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.3',
+            VERSION:'0.3.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

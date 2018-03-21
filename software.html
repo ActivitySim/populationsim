@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Software Implementation &mdash; PopulationSim 0.3
+  <title>Software Implementation &mdash; PopulationSim 0.3.1
  documentation</title>
   
 
@@ -38,7 +38,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="PopulationSim 0.3
+    <link rel="top" title="PopulationSim 0.3.1
  documentation" href="index.html"/>
         <link rel="next" title="Documents &amp; Resources" href="docs.html"/>
         <link rel="prev" title="Validation of Results" href="validation.html"/> 
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                0.3
+                0.3.1
 
               </div>
             
@@ -127,6 +127,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#repop-balancing">repop_balancing</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#release-notes">Release Notes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="docs.html">Documents &amp; Resources</a></li>
@@ -1327,7 +1328,7 @@ tables for the various geographies. For example, if one of your geographies is T
 TRACT_controls has control totals for every TRACT (and aggregated subzone) controls.
 TRACT_weights has balanced_weight and integer_weight for every TRACT.</p>
 <p>To write all output tables EXCEPT the households and persons tables:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">output_tables</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_tables</span><span class="p">:</span>
   <span class="n">action</span><span class="p">:</span> <span class="n">skip</span>
   <span class="n">tables</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">households</span>
@@ -1335,7 +1336,7 @@ TRACT_weights has balanced_weight and integer_weight for every TRACT.</p>
 </pre></div>
 </div>
 <p>To write ONLY the expanded_household_ids table:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">output_tables</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_tables</span><span class="p">:</span>
   <span class="n">action</span><span class="p">:</span> <span class="n">include</span>
   <span class="n">tables</span><span class="p">:</span>
      <span class="o">-</span> <span class="n">expanded_household_ids</span>
@@ -1419,6 +1420,15 @@ with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
 
 </div>
 </div>
+<div class="section" id="release-notes">
+<h2>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>v0.3 - first release</li>
+<li>v0.3.1 - allow zones with zero households</li>
+</ul>
+</div></blockquote>
+</div>
 </div>
 
 
@@ -1465,7 +1475,7 @@ with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.3',
+            VERSION:'0.3.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Application &amp; Configuration &mdash; PopulationSim 0.3
+  <title>Application &amp; Configuration &mdash; PopulationSim 0.3.1
  documentation</title>
   
 
@@ -38,7 +38,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="PopulationSim 0.3
+    <link rel="top" title="PopulationSim 0.3.1
  documentation" href="index.html"/>
         <link rel="next" title="Validation of Results" href="validation.html"/>
         <link rel="prev" title="Getting Started" href="getting_started.html"/> 
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                0.3
+                0.3.1
 
               </div>
             
@@ -307,7 +307,7 @@ Disaggregation involves distributing data from the upper geography to lower geog
 <div><img alt="_images/PopulationSimFolderStructure.png" src="_images/PopulationSimFolderStructure.png" />
 </div></blockquote>
 <p>PopulationSim is run using the batch file <strong>RunPopulationSim.bat</strong>. The user needs to update the path to the Anaconda install (Anaconda2 folder) on their computer. This batch file activates the <em>populationsim</em> environment and then calls the <em>run_populationsim.py</em> Python script to launch a PopulationSim run. Open the <strong>RunPopulationSim.bat</strong> file in edit mode and change the path to Anaconda install as follows (note: if there are spaces in the path, put quotes around the path):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">::</span> <span class="n">USER</span> <span class="n">INPUTS</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">::</span> <span class="n">USER</span> <span class="n">INPUTS</span>
 <span class="p">::</span> <span class="o">---------------------------------------------------------------------</span>
 <span class="p">::</span> <span class="n">Local</span> <span class="n">Anaconda</span> <span class="n">installation</span> <span class="n">directory</span>
 <span class="n">SET</span> <span class="n">ANACONDA_DIR</span><span class="o">=</span><span class="n">E</span><span class="p">:</span>\<span class="n">path</span>\<span class="n">to</span>\<span class="n">this</span>\<span class="n">directory</span>\<span class="n">Anaconda2</span>
@@ -528,7 +528,7 @@ weights from allocation at <em>GEOG_NAME</em> level</td>
 <p>Some of the setting are configured differently for the <em>repop</em> mode. The settings specific to the <em>repop</em> mode are described in the <a class="reference internal" href="#settings-repop"><span class="std std-ref">Configuring Settings File for repop Mode</span></a> section.</p>
 <p><strong>Algorithm/Software Configuration</strong>:</p>
 <p>These settings control the functionality of the PopulationSim algorithm. The settings shown are currently the defaults as they were the ones used to validate the final PopulationSim application for the CALM region. They should not be changed by the casual user, with the possible exception of the max_expansion_factor setting, as explained below.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">INTEGERIZE_WITH_BACKSTOPPED_CONTROLS</span><span class="p">:</span> <span class="kc">True</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INTEGERIZE_WITH_BACKSTOPPED_CONTROLS</span><span class="p">:</span> <span class="kc">True</span>
 <span class="n">SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS</span><span class="p">:</span> <span class="kc">False</span>
 <span class="n">GROUP_BY_INCIDENCE_SIGNATURE</span><span class="p">:</span> <span class="kc">True</span>
 <span class="n">USE_SIMUL_INTEGERIZER</span><span class="p">:</span> <span class="kc">True</span>
@@ -597,7 +597,7 @@ is much greater than the seed number of households.                        <br /
 </tbody>
 </table>
 <p><strong>Geographic Settings</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">geographies</span><span class="p">:</span> <span class="p">[</span><span class="n">REGION</span><span class="p">,</span> <span class="n">PUMA</span><span class="p">,</span> <span class="n">TRACT</span><span class="p">,</span> <span class="n">TAZ</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">geographies</span><span class="p">:</span> <span class="p">[</span><span class="n">REGION</span><span class="p">,</span> <span class="n">PUMA</span><span class="p">,</span> <span class="n">TRACT</span><span class="p">,</span> <span class="n">TAZ</span><span class="p">]</span>
 <span class="n">seed_geography</span><span class="p">:</span> <span class="n">PUMA</span>
 </pre></div>
 </div>
@@ -632,7 +632,7 @@ are flexible. Each must be listed in the run_list settings, shown below.</td>
 </table>
 <p><strong>Tracing</strong>:</p>
 <p>Currently, only one unit can be listed. Only geographies below the seed geography can be traced.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">trace_geography</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trace_geography</span><span class="p">:</span>
       <span class="n">TAZ</span><span class="p">:</span> <span class="mi">100</span>
       <span class="n">TRACT</span><span class="p">:</span> <span class="mi">10200</span>
 </pre></div>
@@ -657,7 +657,7 @@ are flexible. Each must be listed in the run_list settings, shown below.</td>
 </tbody>
 </table>
 <p><strong>data directory</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data_dir</span><span class="p">:</span> <span class="n">data</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_dir</span><span class="p">:</span> <span class="n">data</span>
 </pre></div>
 </div>
 <table border="1" class="docutils">
@@ -688,7 +688,7 @@ the directory structure changes from the template.</td>
 </ul>
 </div></blockquote>
 <p>Note that Seed-Households, Seed-Persons and Geographic CrossWalk are all required tables and must be listed. There must be a control data file specified for each geography other than seed.            For each input table, the user is required to specify an import table name, input CSV file name, index column name and column name map (only for renaming column names). The user can also specify a list of columns to be dropped from the input synthetic population seed data. An example is shown below followed by description of attributes.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">input_table_list</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">input_table_list</span><span class="p">:</span>
 <span class="o">-</span> <span class="n">tablename</span><span class="p">:</span> <span class="n">households</span>
         <span class="n">filename</span> <span class="p">:</span> <span class="n">seed_households</span><span class="o">.</span><span class="n">csv</span>
         <span class="n">index_col</span><span class="p">:</span> <span class="n">hh_id</span>
@@ -756,7 +756,7 @@ where <em>GEOG_NAME</em>  is the name of the control geography (TAZ, TRACT and R
 </tr>
 <tr class="row-odd"><td>column_map</td>
 <td>Column map of fields to be renamed. The format for the column map is as follows: <br />
-<code class="docutils literal"><span class="pre">Name</span> <span class="pre">in</span> <span class="pre">CSV:</span> <span class="pre">New</span> <span class="pre">Name</span></code></td>
+<code class="docutils literal notranslate"><span class="pre">Name</span> <span class="pre">in</span> <span class="pre">CSV:</span> <span class="pre">New</span> <span class="pre">Name</span></code></td>
 </tr>
 <tr class="row-even"><td>drop_columns</td>
 <td>List of columns to be dropped from the input data</td>
@@ -771,7 +771,7 @@ where <em>GEOG_NAME</em>  is the name of the control geography (TAZ, TRACT and R
 <li>Unique household identifier</li>
 <li>Control on total number of households at the lowest geographic level</li>
 </ul>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">household_weight_col</span><span class="p">:</span> <span class="n">WGTP</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">household_weight_col</span><span class="p">:</span> <span class="n">WGTP</span>
 <span class="n">household_id_col</span><span class="p">:</span> <span class="n">hh_id</span>
 <span class="n">total_hh_control</span><span class="p">:</span> <span class="n">num_hh</span>
 </pre></div>
@@ -804,7 +804,7 @@ lowest geography. It is strictly enforced</td>
 </table>
 <p><strong>Control Specification File Name</strong>:</p>
 <p>The control specification file is specified using a different token name for the repop mode as shown below.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">control_file_name</span><span class="p">:</span> <span class="n">controls</span><span class="o">.</span><span class="n">csv</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">control_file_name</span><span class="p">:</span> <span class="n">controls</span><span class="o">.</span><span class="n">csv</span>
 </pre></div>
 </div>
 <table border="1" class="docutils">
@@ -824,8 +824,8 @@ lowest geography. It is strictly enforced</td>
 </tbody>
 </table>
 <p><strong>Output Tables</strong>:</p>
-<p>The <code class="docutils literal"><span class="pre">output_tables:</span></code> setting is used to control which outputs to write to disk. The <a class="reference internal" href="#inputs-outputs"><span class="std std-ref">Inputs &amp; Outputs</span></a> section listed all possible outputs. The user can specify either a list of output tables to include or to skip using the <em>action</em> attribute as shown below in the example. if neither is specified, then all output tables will be written. The HDF5 data pipeline and all summary files are written out regardless of this setting.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">output_tables</span><span class="p">:</span>
+<p>The <code class="docutils literal notranslate"><span class="pre">output_tables:</span></code> setting is used to control which outputs to write to disk. The <a class="reference internal" href="#inputs-outputs"><span class="std std-ref">Inputs &amp; Outputs</span></a> section listed all possible outputs. The user can specify either a list of output tables to include or to skip using the <em>action</em> attribute as shown below in the example. if neither is specified, then all output tables will be written. The HDF5 data pipeline and all summary files are written out regardless of this setting.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_tables</span><span class="p">:</span>
   <span class="n">action</span><span class="p">:</span> <span class="n">include</span>
   <span class="n">tables</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">expanded_household_ids</span>
@@ -852,7 +852,7 @@ lowest geography. It is strictly enforced</td>
 </table>
 <p><strong>Synthetic Population Output Specification</strong></p>
 <p>This setting allows the user to specify the details of the expanded synthetic population. User can specify the output file names, household ID field name and the set of columns to be included from the seed sample.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">output_synthetic_population</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_synthetic_population</span><span class="p">:</span>
   <span class="n">household_id</span><span class="p">:</span> <span class="n">household_id</span>
   <span class="n">households</span><span class="p">:</span>
     <span class="n">filename</span><span class="p">:</span> <span class="n">synthetic_households</span><span class="o">.</span><span class="n">csv</span>
@@ -895,8 +895,8 @@ information of each household is added by default.</td>
 </tbody>
 </table>
 <p><strong>Steps for base mode</strong>:</p>
-<p>This setting lists the sub-modules or steps to be run by the PopulationSim orchestrator. The ActivitySim framework allows user to resume a PopulationSim run from a specific point. This is specified using the attribute <code class="docutils literal"><span class="pre">resume_after</span></code>. The step, <code class="docutils literal"><span class="pre">sub_balancing.geography</span></code> is repeated for each sub-seed geography (the example below shows two, but there can be 0 or more).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">run_list</span><span class="p">:</span>
+<p>This setting lists the sub-modules or steps to be run by the PopulationSim orchestrator. The ActivitySim framework allows user to resume a PopulationSim run from a specific point. This is specified using the attribute <code class="docutils literal notranslate"><span class="pre">resume_after</span></code>. The step, <code class="docutils literal notranslate"><span class="pre">sub_balancing.geography</span></code> is repeated for each sub-seed geography (the example below shows two, but there can be 0 or more).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">run_list</span><span class="p">:</span>
   <span class="n">steps</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">input_pre_processor</span>
     <span class="o">-</span> <span class="n">setup_data_structures</span>
@@ -985,14 +985,14 @@ information of each household is added by default.</td>
 <p>This sections describes the settings that are configured differently for the <em>repop</em> mode.</p>
 <p><strong>Input Data Tables for repop mode</strong></p>
 <p>The repop mode runs over an existing synthetic population and uses the data pipeline (HDF5 file) from the base run as an input. User should copy the HDF5 file from the base outputs to the <em>output</em> folder of the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as base mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">repop_input_table_list</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">repop_input_table_list</span><span class="p">:</span>
   <span class="o">-</span> <span class="n">taz_control_data</span><span class="p">:</span>
     <span class="n">filename</span> <span class="p">:</span> <span class="n">repop_control_totals_taz</span><span class="o">.</span><span class="n">csv</span>
     <span class="n">tablename</span><span class="p">:</span> <span class="n">TAZ_control_data</span>
 </pre></div>
 </div>
 <p><strong>Control Specification File Name for repop mode</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">repop_control_file_name</span><span class="p">:</span> <span class="n">repop_controls</span><span class="o">.</span><span class="n">csv</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">repop_control_file_name</span><span class="p">:</span> <span class="n">repop_controls</span><span class="o">.</span><span class="n">csv</span>
 </pre></div>
 </div>
 <table border="1" class="docutils">
@@ -1014,8 +1014,8 @@ information of each household is added by default.</td>
 <p><strong>Output Tables for repop mode</strong>:</p>
 <p>It should be noted that only the summary_GEOG_NAME.csv summary file is available for the repop mode.</p>
 <p><strong>Steps for repop mode</strong>:</p>
-<p>When running PoulationSim in repop mode, the steps specified in this setting are run. As mentioned earlier, the repop mode runs over an existing synthetic population. The default value for the <code class="docutils literal"><span class="pre">resume_after</span></code> setting under the repop mode is <em>summarize</em> which is the last step of a base run. In other words, the repop mode starts from the last step of the base run and modifies the base synthetic population as per the new controls. The user can choose either <em>append</em> or <em>replace</em> in the <code class="docutils literal"><span class="pre">expand_households.repop</span></code> attribute to modify the existing synthetic population. The <em>append</em> option adds to the existing synthetic population in the specified geographies, while the <em>replace</em> option replaces any existing synthetic population with newly synthesized population in the specified geographies.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">run_list</span><span class="p">:</span>
+<p>When running PoulationSim in repop mode, the steps specified in this setting are run. As mentioned earlier, the repop mode runs over an existing synthetic population. The default value for the <code class="docutils literal notranslate"><span class="pre">resume_after</span></code> setting under the repop mode is <em>summarize</em> which is the last step of a base run. In other words, the repop mode starts from the last step of the base run and modifies the base synthetic population as per the new controls. The user can choose either <em>append</em> or <em>replace</em> in the <code class="docutils literal notranslate"><span class="pre">expand_households.repop</span></code> attribute to modify the existing synthetic population. The <em>append</em> option adds to the existing synthetic population in the specified geographies, while the <em>replace</em> option replaces any existing synthetic population with newly synthesized population in the specified geographies.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">run_list</span><span class="p">:</span>
   <span class="n">steps</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">input_pre_processor</span><span class="o">.</span><span class="n">repop</span>
     <span class="o">-</span> <span class="n">repop_setup_data_structures</span>
@@ -1146,11 +1146,11 @@ Two options for the expand_households.repop step <br />
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">target:</th><td class="field-body">target is the name of the control in PopulationSim. A column by this name is added to the seed table. Note that the <code class="docutils literal"><span class="pre">total_hh_control:</span></code> target must be present in the control specification file. All other controls are flexible.</td>
+<tr class="field-odd field"><th class="field-name">target:</th><td class="field-body">target is the name of the control in PopulationSim. A column by this name is added to the seed table. Note that the <code class="docutils literal notranslate"><span class="pre">total_hh_control:</span></code> target must be present in the control specification file. All other controls are flexible.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">geography:</th><td class="field-body">geography is the geographic level of the control, as specified in <code class="docutils literal"><span class="pre">geographies</span></code>.</td>
+<tr class="field-even field"><th class="field-name">geography:</th><td class="field-body">geography is the geographic level of the control, as specified in <code class="docutils literal notranslate"><span class="pre">geographies</span></code>.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">seed_table:</th><td class="field-body">seed_table is the seed table the control applies to and it can be <code class="docutils literal"><span class="pre">households</span></code> or <code class="docutils literal"><span class="pre">persons</span></code>.  If persons, then persons are aggregated to households using the count operator.</td>
+<tr class="field-odd field"><th class="field-name">seed_table:</th><td class="field-body">seed_table is the seed table the control applies to and it can be <code class="docutils literal notranslate"><span class="pre">households</span></code> or <code class="docutils literal notranslate"><span class="pre">persons</span></code>.  If persons, then persons are aggregated to households using the count operator.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">importance:</th><td class="field-body">importance is the importance weight for the control. A higher weight will cause PopulationSim to attempt to match the control at the possible expense of matching lower-weight controls.</td>
 </tr>
@@ -1243,7 +1243,7 @@ Two options for the expand_households.repop step <br />
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.3',
+            VERSION:'0.3.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -16,7 +16,7 @@ This page describes the installation procedure for PopulationSim and how to run 
 Beginner Installation Procedure
 --------------------------------
 
-1. Download `Anaconda installation 7ZIP <https://github.com/RSGInc/populationSim_resources/raw/master/complete_setup/Anaconda2.7z>`_ loaded with all required libraries and PopulationSim package. Note that the ZIP file is a bit over 1 GB and the unzipped directory is approximately 3.3 GB.
+1. Download `Anaconda installation ZIP <https://github.com/RSGInc/populationSim_resources/raw/master/complete_setup/Anaconda2.zip>`_ loaded with all required libraries and PopulationSim package. Note that the ZIP file is a bit over 1 GB and the unzipped directory is approximately 3.3 GB.
 
 *The Anaconda Python 2.7 and dependent libraries used to prepare this installation folder were accessed on 27th Dec 2017*
 
@@ -28,20 +28,6 @@ Beginner Installation Procedure
 Advanced User Installation Procedure
 -------------------------------------
 1. Install `Anaconda Python 2.7 <https://www.continuum.io/downloads>`__. 
-
-   **Windows users can skip the remaining steps and run** `SetUpPopulationSim.bat <https://github.com/RSGInc/populationSim_resources/raw/master/setup_help/SetUpPopulationSim.bat>`_ script. The user would need to set the location of the Anaconda installation directory in the batch script (open in edit mode) as shown below:
-
- ::
-
-   :: USER INPUTS
-   :: ---------------------------------------------------------------------
-   :: Local Anaconda installation directory
-   SET ANACONDA_DIR=E:\path\to\this\directory\Anaconda2
-   :: ---------------------------------------------------------------------
-
- *Please ensure that the user has write permissions to Anaconda installation directory*
- 
- **Users who ran the SetUpPopulationSim.bat script can proceed to** `Run Examples`_
 
 2. If you access the internet from behind a firewall, then you will need to configure your proxy server. To do so, create a .condarc file in your Anaconda installation folder (i.e. ``C:\ProgramData\Anaconda2``), such as:
 
@@ -64,18 +50,19 @@ Advanced User Installation Procedure
      
        pip install --trusted-host pypi.python.org --proxy=myproxy.org:8080  activitysim
  
-4. Get and install other required libraries, which can be found on the `Python Package Index <https://pypi.python.org/pypi>`__.  Run the following command on the activated conda Python environment: ``pip install <packagename>`` for each package.
+4. Get and install other required libraries, which can be found online.  Run the following command on the activated conda Python environment:
 
-  * `toolz <http://toolz.readthedocs.org/en/latest>`__
-  * `zbox <https://github.com/jiffyclub/zbox>`__
-  * `orca <https://synthicity.github.io/orca>`__ - the application orchestration tool (i.e. the module runner)
-  * `openmatrix <https://pypi.python.org/pypi/OpenMatrix>`__ - OMX support
-  * `activitysim <https://pypi.python.org/pypi/activitysim>`__ - ActivitySim framework
-  * `ortools <https://github.com/google/or-tools>`__ - Google operations research tools solver
+  * `conda install pytables <http://www.pytables.org/>`__
+  * `pip install toolz <http://toolz.readthedocs.org/en/latest>`__
+  * `pip install zbox <https://github.com/jiffyclub/zbox>`__
+  * `pip install orca <https://synthicity.github.io/orca>`__
+  * `pip install openmatrix <https://pypi.python.org/pypi/OpenMatrix>`__
+  * `pip install activitysim <https://pypi.python.org/pypi/activitysim>`__
+  * `pip install ortools <https://github.com/google/or-tools>`__
 
 5. After setting up Anaconda Python and dependent libraries, run the following command on the activated conda Python environment to install PopulationSim package:
 
-   ``pip install --upgrade https://github.com/RSGInc/populationsim/zipball/master``
+   ``pip install https://github.com/RSGInc/populationsim/zipball/master``
  
 6. Run ``deactivate`` to deactivate the active conda Python environment
 
@@ -111,6 +98,12 @@ Follow the steps below to run **example_calm** set up:
   
   * Close the *RunPopulationSim.bat* script and then double click to launch the run
   * Close the run window by pressing any key. Check the outputs in the *output* folder
+  * If the Conda environment was created in the global Anaconda Install on the user's computer, the setup can be run by opening a CMD window in the setup directory and running the following commands:
+  
+  ::
+
+   activate popsim
+   python run_populationsim.py
 
 Example_calm_repop
 ~~~~~~~~~~~~~~~~~~
@@ -131,5 +124,11 @@ The repop configuration requires outputs from a base run. Therefore, the base co
   
   * Close the *RunPopulationSim.bat* script and then double click to launch the run
   * Close the run window by pressing any key. Check the outputs in the *output* folder
+  * If the Conda environment was created in the global Anaconda Install on the user's computer, the setup can be run by opening a CMD window in the setup directory and running the following commands:
+  
+  ::
+
+   activate popsim
+   python run_populationsim.py
 
 
