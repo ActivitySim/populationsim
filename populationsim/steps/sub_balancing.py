@@ -138,7 +138,8 @@ def balance_and_integerize(
 
     # only want subcontrol rows for current geography geo_id
     sub_ids = crosswalk_df.loc[crosswalk_df[parent_geography] == parent_id, sub_geography].unique()
-    sub_controls_df = sub_controls_df.loc[sub_ids]
+    # only want sub-control rows for this parent geography
+    sub_controls_df = sub_controls_df[sub_controls_df.index.isin(sub_ids)]
 
     # only care about the control columns
     incidence_df = incidence_df[control_spec.target]
@@ -221,8 +222,9 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
     sub_geographies = geographies[geographies.index(geography):]
     parent_geographies = geographies[:geographies.index(geography)]
 
-    total_hh_control_col = settings.get('total_hh_control')
+    total_hh_control_col = setting('total_hh_control')
 
+    parent_controls_df = get_control_table(parent_geography)
     sub_controls_df = get_control_table(geography)
 
     weights_df = get_weight_table(parent_geography)
@@ -243,6 +245,8 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
         # list of unique parent zone ids in this seed zone
         # (there will be just one if parent geo is seed)
         parent_ids = seed_crosswalk_df[parent_geography].unique()
+        # only want ones for which there are (non-zero) controls
+        parent_ids = parent_controls_df.index.intersection(parent_ids)
 
         for parent_id in parent_ids:
 

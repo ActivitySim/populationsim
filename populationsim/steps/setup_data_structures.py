@@ -173,6 +173,13 @@ def build_control_table(geo, control_spec, crosswalk_df):
     # reorder columns to match order of control_spec rows
     controls = controls[control_spec.target]
 
+    # drop controls for zero-household geographies
+    total_hh_control_col = setting('total_hh_control')
+    empty = (controls[total_hh_control_col] == 0)
+    if empty.any():
+        controls = controls[~empty]
+        logger.info("dropping %s %s control rows with empty total_hh_control" % (empty.sum(), geo))
+
     return controls
 
 

@@ -51,7 +51,7 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
     assert (seed_controls_df.columns == control_cols).all()
 
     # determine master_control_index if specified in settings
-    total_hh_control_col = settings.get('total_hh_control')
+    total_hh_control_col = setting('total_hh_control')
 
     # run balancer for each seed geography
     weight_list = []

@@ -176,6 +176,10 @@ def np_simul_balancer(
         Separate function to ensure that no pandas data types leak in from object instance variables
         since they are often silently accepted as numpy arguments but slow things down
     """
+
+    logger.debug("np_simul_balancer sample_count %s control_count %s zone_count %s" %
+                 (sample_count, control_count, zone_count))
+
     # initial relaxation factors
     relaxation_factors = np.ones((zone_count, control_count))
 
@@ -255,6 +259,10 @@ def np_simul_balancer(
 
         # even if not converged, no point in further iteration if weights aren't changing
         no_progress = delta < ALT_MAX_DELTA
+
+        if (iter % 100) == 0:
+            logger.debug("np_simul_balancer iteration %s delta %s max_gamma_dif %s" %
+                         (iter, delta, max_gamma_dif))
 
         if converged or no_progress:
             break

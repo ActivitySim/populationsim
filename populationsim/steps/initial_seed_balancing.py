@@ -60,7 +60,7 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     seed_control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
 
     # determine master_control_index if specified in settings
-    total_hh_control_col = settings.get('total_hh_control')
+    total_hh_control_col = setting('total_hh_control')
 
     max_expansion_factor = settings.get('max_expansion_factor', None)
 
