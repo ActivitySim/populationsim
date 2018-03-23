@@ -228,7 +228,7 @@
 <li>Sub-Seed (e.g., TAZ, MAZ)</li>
 </ul>
 </div></blockquote>
-<p>The Meta geography is the entire region. Currently, PopulationSim can handle only one Meta geography. The Seed geography is the geographic resolution of the seed data. There can be one or more Seed geographies; each Seed geography should have a separate household and person file associated with it. PopulationSim can handle any number of nested Sub-Seed geographies. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the <a class="reference internal" href="docs.html#docs"><span class="std std-ref">Documents &amp; Resources</span></a> section.</p>
+<p>The Meta geography is the entire region. Currently, PopulationSim can handle only one Meta geography. The Seed geography is the geographic resolution of the seed data. There can be one or more Seed geographies. PopulationSim can handle any number of nested Sub-Seed geographies. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the <a class="reference internal" href="docs.html#docs"><span class="std std-ref">Documents &amp; Resources</span></a> section.</p>
 <div class="section" id="geographic-cross-walk">
 <h3>Geographic Cross-walk<a class="headerlink" href="#geographic-cross-walk" title="Permalink to this headline">¶</a></h3>
 <p>After selecting the geographies, the next step is to prepare a geographic cross-walk file. The geographic cross-walk file defines the hierarchical structure of geographies. The geographic cross-walk is used to aggregate controls specified at a lower geography to upper geography and to allocate population from an upper geography to a lower geography. An example geographic crosswalk is shown below:</p>
@@ -736,15 +736,24 @@ the directory structure changes from the template.</td>
 <td><p class="first">Name of the imported CSV file in the PopulationSim data pipeline. The input <br />
 names in the PopulationSim data pipeline should be named as per the following <br />
 standard: <br />
-1. Seed-Households - <em>households</em> <br />
-2. Seed-Persons - <em>persons</em> <br />
-3. Geographic CrossWalk - <em>geo_cross_walk</em> <br /></p>
+1. Seed-Households - <em>households</em> <br /></p>
 <blockquote>
-<div>The field names in the geographic cross-walk should be same as the geography <br />
-names specified in the settings file</div></blockquote>
-<ol class="last arabic simple" start="4">
-<li>Control data at each control geography - <em>GEOG_NAME_control_data</em>, <br />
-where <em>GEOG_NAME</em>  is the name of the control geography (TAZ, TRACT and REGION)</li>
+<div>Households across all Seed geographies should be in one file. There should be <br />
+a Seed geography field with name as specified in the settings file. The seed  <br />
+geography identifies which Seed geography unit each household belongs to</div></blockquote>
+<ol class="last arabic" start="2">
+<li><p class="first">Seed-Persons - <em>persons</em> <br /></p>
+<p>Persons across all Seed geographies should be in one file. There should be a <br />
+Seed geography field with name as specified in the settings file. The seed  <br />
+geography identifies which Seed geography unit each person belongs to</p>
+</li>
+<li><p class="first">Geographic CrossWalk - <em>geo_cross_walk</em> <br /></p>
+<p>The field names in the geographic cross-walk should be same as the geography <br />
+names specified in the settings file</p>
+</li>
+<li><p class="first">Control data at each control geography - <em>GEOG_NAME_control_data</em>, <br />
+where <em>GEOG_NAME</em>  is the name of the control geography (TAZ, TRACT and REGION)</p>
+</li>
 </ol>
 </td>
 </tr>
