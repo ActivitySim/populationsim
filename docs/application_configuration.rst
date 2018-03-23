@@ -49,7 +49,7 @@ The hierarchy of geographies is important when making a decision regarding contr
   * Seed (e.g., PUMA)
   * Sub-Seed (e.g., TAZ, MAZ)
  
-The Meta geography is the entire region. Currently, PopulationSim can handle only one Meta geography. The Seed geography is the geographic resolution of the seed data. There can be one or more Seed geographies; each Seed geography should have a separate household and person file associated with it. PopulationSim can handle any number of nested Sub-Seed geographies. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the :ref:`docs` section.
+The Meta geography is the entire region. Currently, PopulationSim can handle only one Meta geography. The Seed geography is the geographic resolution of the seed data. There can be one or more Seed geographies. PopulationSim can handle any number of nested Sub-Seed geographies. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the :ref:`docs` section.
 
 Geographic Cross-walk
 ~~~~~~~~~~~~~~~~~~~~~
@@ -409,7 +409,17 @@ Note that Seed-Households, Seed-Persons and Geographic CrossWalk are all require
 |              | names in the PopulationSim data pipeline should be named as per the following |br|    |
 |              | standard: |br|                                                                        |
 |              | 1. Seed-Households - *households* |br|                                                |
+|              |                                                                                       |
+|              |    Households across all Seed geographies should be in one file. There should be |br| |
+|              |    a Seed geography field with name as specified in the settings file. The seed  |br| |
+|              |    geography identifies which Seed geography unit each household belongs to           |
+|              |                                                                                       |
 |              | 2. Seed-Persons - *persons* |br|                                                      |
+|              |                                                                                       |
+|              |    Persons across all Seed geographies should be in one file. There should be a |br|  |
+|              |    Seed geography field with name as specified in the settings file. The seed  |br|   |
+|              |    geography identifies which Seed geography unit each person belongs to              |
+|              |                                                                                       |
 |              | 3. Geographic CrossWalk - *geo_cross_walk* |br|                                       |
 |              |                                                                                       |
 |              |    The field names in the geographic cross-walk should be same as the geography |br|  |
