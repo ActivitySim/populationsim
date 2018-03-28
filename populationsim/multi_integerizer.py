@@ -72,7 +72,7 @@ class SimulIntegerizer(object):
         total_hh_sub_control_index = \
             self.sub_controls_df.columns.get_loc(self.total_hh_control_col)
 
-        #bug - shouldn't need this?
+        # FIXME - shouldn't need this?
         total_hh_parent_control_index = -1
 
         sub_incidence = self.incidence_df[self.sub_controls_df.columns]
