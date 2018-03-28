@@ -61,6 +61,8 @@ class SimulIntegerizer(object):
         self.parent_countrol_cols = parent_control_spec.target.values
         self.parent_countrol_importance = parent_control_spec.importance
 
+        assert total_hh_control_col not in self.parent_countrol_cols
+
         self.trace_label = trace_label
 
     def integerize(self):
@@ -70,8 +72,8 @@ class SimulIntegerizer(object):
         total_hh_sub_control_index = \
             self.sub_controls_df.columns.get_loc(self.total_hh_control_col)
 
-        total_hh_parent_control_index = \
-            self.sub_controls_df.columns.get_loc(self.total_hh_control_col)
+        #bug - shouldn't need this?
+        total_hh_parent_control_index = -1
 
         sub_incidence = self.incidence_df[self.sub_controls_df.columns]
         sub_incidence = sub_incidence.as_matrix().astype(np.float64)
