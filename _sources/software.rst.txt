@@ -5,7 +5,9 @@
 Software Implementation 
 =======================
 
-This page describes the PopulationSim software implementation.  The implementation starts with 
+This page describes the PopulationSim software implementation and how to contribute to PopulationSim.  
+
+The implementation starts with 
 the ActivitySim framework, which serves as the foundation for the software.  The framework, as briefly described
 below, includes features for data pipeline management, expression handling, testing, etc.  Built upon the 
 framework are additional core components for population synthesis such as balancers and integerizers.   
@@ -216,8 +218,15 @@ repop_balancing
 .. automodule:: populationsim.steps.repop_balancing
    :members:
 
+Contribution Guidelines
+-----------------------
+
+PopulationSim development follows the same `development guidelines <https://activitysim.github.io/activitysim/development.html>`__ as ActivitySim.
+
+
 Release Notes
 -------------
 
   * v0.3 - first release
   * v0.3.1 - allow zones with zero households
+  * v0.3.2 - fix bug in mult-integerizer with total_hh_parent_control_index

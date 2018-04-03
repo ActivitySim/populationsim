@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Application &amp; Configuration &mdash; PopulationSim 0.3.1
+  <title>Application &amp; Configuration &mdash; PopulationSim 0.3.2
  documentation</title>
   
 
@@ -38,7 +38,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="PopulationSim 0.3.1
+    <link rel="top" title="PopulationSim 0.3.2
  documentation" href="index.html"/>
         <link rel="next" title="Validation of Results" href="validation.html"/>
         <link rel="prev" title="Getting Started" href="getting_started.html"/> 
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                0.3.1
+                0.3.2
 
               </div>
             
@@ -1155,7 +1155,7 @@ Two options for the expand_households.repop step <br />
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">target:</th><td class="field-body">target is the name of the control in PopulationSim. A column by this name is added to the seed table. Note that the <code class="docutils literal notranslate"><span class="pre">total_hh_control:</span></code> target must be present in the control specification file. All other controls are flexible.</td>
+<tr class="field-odd field"><th class="field-name">target:</th><td class="field-body">target is the name of the control in PopulationSim. A column by this name is added to the seed table. Note that the <code class="docutils literal notranslate"><span class="pre">total_hh_control:</span></code> target must be present in the control specification file. All other controls are flexible. The target names should be unique even if they are for different geographies.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">geography:</th><td class="field-body">geography is the geographic level of the control, as specified in <code class="docutils literal notranslate"><span class="pre">geographies</span></code>.</td>
 </tr>
@@ -1163,7 +1163,7 @@ Two options for the expand_households.repop step <br />
 </tr>
 <tr class="field-even field"><th class="field-name">importance:</th><td class="field-body">importance is the importance weight for the control. A higher weight will cause PopulationSim to attempt to match the control at the possible expense of matching lower-weight controls.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">control_field:</th><td class="field-body">control_field is the field in the control data input files that this control applies to.</td>
+<tr class="field-odd field"><th class="field-name">control_field:</th><td class="field-body">control_field is the field in the control data input files that this control applies to. Note that the control field names should be unique even if they are for different geographies.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">expression:</th><td class="field-body">expression is a valid Python/Pandas expression that identifies seed households or persons that this control applies to. The household and persons fields used for creating these expressions should exist in the seed tables. User might need to pre-process the seed sample to create the variable required in these expressions. These expressions can be specified for both discrete and continuous variables. For most applications, this involves creating logical relationships such as equalities, inequalities and ranges using the standard logical operators (AND, OR, EQUAL, Greater than, less than).</td>
 </tr>
@@ -1252,7 +1252,7 @@ Two options for the expand_households.repop step <br />
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.3.1',
+            VERSION:'0.3.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
