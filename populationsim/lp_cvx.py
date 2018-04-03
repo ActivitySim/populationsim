@@ -146,8 +146,7 @@ def np_simul_integerizer_cvx(
         parent_lp_right_hand_side,
         hh_constraint_ge_bound,
         parent_resid_weights,
-        total_hh_sub_control_index,
-        total_hh_parent_control_index):
+        total_hh_sub_control_index):
     """
     cvx-based siuml-integerizer function taking numpy data types and conforming to a
     standard function signature that allows it to be swapped interchangeably with alternate
@@ -171,7 +170,6 @@ def np_simul_integerizer_cvx(
     hh_constraint_ge_bound : numpy.ndarray(sub_zone_count, sub_control_count) float
     parent_resid_weights : numpy.ndarray(sample_count,) float
     total_hh_sub_control_index : int
-    total_hh_parent_control_index : int
 
     Returns
     -------
@@ -214,9 +212,8 @@ def np_simul_integerizer_cvx(
 
     # - Set objective
 
-    # could probably ignore as handled by constraint
+    # can probably ignore as handled by constraint
     sub_countrol_importance[total_hh_sub_control_index] = 0
-    parent_countrol_importance[total_hh_parent_control_index] = 0
 
     LOG_OVERFLOW = -725
     log_resid_weights = np.log(np.maximum(sub_resid_weights, np.exp(LOG_OVERFLOW))).flatten('F')

@@ -222,9 +222,11 @@ def np_simul_integerizer_ortools(
     # setting hh_control importance to zero eliminates them from the objective function
     # the latter approach is used by the cvx version
     # total_hh_sub_control_index = -1
-    # total_hh_parent_control_index = -1
     sub_countrol_importance[total_hh_sub_control_index] = 0
-    parent_countrol_importance[total_hh_parent_control_index] = 0
+
+    # FIXME total_hh_parent_control_index should not exist???
+    if total_hh_parent_control_index > 0:
+        parent_countrol_importance[total_hh_parent_control_index] = 0
 
     # - Instantiate a mixed-integer solver
     solver = pywraplp.Solver('SimulIntegerizeCbc', pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)

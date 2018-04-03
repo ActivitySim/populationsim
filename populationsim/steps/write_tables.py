@@ -68,8 +68,8 @@ def write_tables(output_dir):
     tables = output_tables_settings.get('tables')
 
     if action not in ['include', 'skip']:
-        raise "expected %s action '%s' to be either 'include' or 'skip'" % \
-              (output_tables_settings_name, action)
+        raise RuntimeError("expected %s action '%s' to be either 'include' or 'skip'" %
+                           (output_tables_settings_name, action))
 
     if action == 'include':
         output_tables_list = tables

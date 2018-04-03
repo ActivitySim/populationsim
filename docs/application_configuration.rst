@@ -704,7 +704,7 @@ The controls for a PopulationSim run are specified using the control specificati
 Attribute definitions are as follows:
 
 :target:
-        target is the name of the control in PopulationSim. A column by this name is added to the seed table. Note that the ``total_hh_control:`` target must be present in the control specification file. All other controls are flexible.
+        target is the name of the control in PopulationSim. A column by this name is added to the seed table. Note that the ``total_hh_control:`` target must be present in the control specification file. All other controls are flexible. The target names should be unique even if they are for different geographies.
 :geography:
         geography is the geographic level of the control, as specified in ``geographies``.
 :seed_table:
@@ -712,7 +712,7 @@ Attribute definitions are as follows:
 :importance:
         importance is the importance weight for the control. A higher weight will cause PopulationSim to attempt to match the control at the possible expense of matching lower-weight controls.
 :control_field:
-        control_field is the field in the control data input files that this control applies to.
+        control_field is the field in the control data input files that this control applies to. Note that the control field names should be unique even if they are for different geographies.
 :expression:
         expression is a valid Python/Pandas expression that identifies seed households or persons that this control applies to. The household and persons fields used for creating these expressions should exist in the seed tables. User might need to pre-process the seed sample to create the variable required in these expressions. These expressions can be specified for both discrete and continuous variables. For most applications, this involves creating logical relationships such as equalities, inequalities and ranges using the standard logical operators (AND, OR, EQUAL, Greater than, less than). 
 		
