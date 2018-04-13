@@ -141,7 +141,15 @@ class SimulIntegerizer(object):
             np.maximum(parent_max_possible_control_values, parent_lp_right_hand_side)
 
         # how could this not be the case?
-        assert (parent_hh_constraint_ge_bound == parent_max_possible_control_values).all()
+        if not (parent_hh_constraint_ge_bound == parent_max_possible_control_values).all():
+            print "\nSimulIntegerizer integerizing", self.trace_label
+            logger.warn("parent_hh_constraint_ge_bound != parent_max_possible_control_values")
+            logger.warn("parent_hh_constraint_ge_bound:      %s" %
+                        parent_hh_constraint_ge_bound)
+            logger.warn("parent_max_possible_control_values: %s" %
+                        parent_max_possible_control_values)
+            print "\n"
+            # assert (parent_hh_constraint_ge_bound == parent_max_possible_control_values).all()
 
         integerizer_func = get_simul_integerizer()
 
