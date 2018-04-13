@@ -230,3 +230,4 @@ Release Notes
   * v0.3 - first release
   * v0.3.1 - allow zones with zero households
   * v0.3.2 - fix bug in mult-integerizer with total_hh_parent_control_index
+  * v0.3.3 - add disgnostic printouts on assert fail in mult_integerizer
