@@ -290,22 +290,25 @@
 <p>There are multiple source to obtain input data to build these controls. Most commonly, base-year controls are built from Census data, including Summary Files 1, 2 and 3, the American Community Survey, and the Census Transportation Planning Package (CTPP). Data from Census sources are typically available at one of the Census geographies - Census Block, Block Group, Census Tract, County, Metropolitan Statistical Area, etc. The modeling agency may collect important demographic data for the modeling region (e.g., number of households). Some data can also be obtained from a socio-economic or land-use model for the region such as, households by income groups or households by housing type.</p>
 <p>Once the data has been obtained, it may be necessary to aggregate or disaggregate the data to the desired geography.
 Disaggregation involves distributing data from the upper geography to lower geographies using a distribution based on area, population or number of households. A simple aggregation is possible when the lower geography boundaries fits perfectly within the upper geography boundary. In case of overlaps, data can be aggregated in proportion to the area. A simpler method is to establish a correspondence between the lower and upper geography based on the position of the geometric centroid of the lower geography. If the centroid of the lower geography lies within the upper geography then the whole lower geography is assumed to lie within the upper geography. For some shapes, the geometric centroid might be outside the shape boundary. In such cases, an internal point closest to the geometric centroid but within the shape is used. All Census shape files come with the coordinates of the internal point.  The user would need to download the Census shape files for the associated geography and then establish a correspondence with the desired geography using this methodology. It is recommended that input control data should be obtained at the lowest geography possible and then aggregated to the desired geography. These steps must be performed outside of PopulationSim, typically using a Geographic Information System (GIS) software program or travel modeling software package with GIS capabilities.</p>
+<p>Control totals within a variable, such as households of size 1, 2, 3, and 4+, should be integerized and smart rounded if necessary since
+inconsistent controls make convergence more difficult.  For example, if control data is allocated from Census geographies to TAZs, then often
+floating point controls are created.  To correct this, one can calculate the difference between the floating point controls and integerized
+versions, and then add the error to the largest category by subtracting it from the other categories.</p>
 </div>
 </div>
 <div class="section" id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
-<p>Below is PopulationSim’s directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this <a class="reference external" href="https://github.com/RSGInc/populationSim_resources/raw/master/template_folder/template.7z">directory structure</a></p>
+<p>Below is PopulationSim’s directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create the <a class="reference external" href="https://github.com/RSGInc/populationSim_resources/raw/master/example_setup/PopulationSimExampleSetUps.7z">example directory structure</a></p>
 <blockquote>
 <div><img alt="_images/PopulationSimFolderStructure.png" src="_images/PopulationSimFolderStructure.png" />
 </div></blockquote>
-<p>PopulationSim is run using the batch file <strong>RunPopulationSim.bat</strong>. The user needs to update the path to the Anaconda install (Anaconda2 folder) on their computer. This batch file activates the <em>populationsim</em> environment and then calls the <em>run_populationsim.py</em> Python script to launch a PopulationSim run. Open the <strong>RunPopulationSim.bat</strong> file in edit mode and change the path to Anaconda install as follows (note: if there are spaces in the path, put quotes around the path):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">::</span> <span class="n">USER</span> <span class="n">INPUTS</span>
-<span class="p">::</span> <span class="o">---------------------------------------------------------------------</span>
-<span class="p">::</span> <span class="n">Local</span> <span class="n">Anaconda</span> <span class="n">installation</span> <span class="n">directory</span>
-<span class="n">SET</span> <span class="n">ANACONDA_DIR</span><span class="o">=</span><span class="n">E</span><span class="p">:</span>\<span class="n">path</span>\<span class="n">to</span>\<span class="n">this</span>\<span class="n">directory</span>\<span class="n">Anaconda2</span>
-<span class="p">::</span> <span class="o">---------------------------------------------------------------------</span>
+<p>PopulationSim is run via <strong>run_populationsim.py</strong>. The user needs to first activate the <em>popsim</em> environment and then call the <em>run_populationsim.py</em> Python script to launch a PopulationSim run.</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
+<span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
+</div></blockquote>
 <p>PopulationSim is configured using the settings.YAML file. PopulationSim can be configured to run in <strong>base</strong> mode or <strong>repop</strong> mode.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -346,19 +349,16 @@ Disaggregation involves distributing data from the upper geography to lower geog
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>RunPopulationSim.bat</td>
-<td>Batch file to run PopulationSim</td>
-</tr>
-<tr class="row-odd"><td>run_populationsim.py</td>
+<tr class="row-even"><td>run_populationsim.py</td>
 <td>Python script that orchestrates a PopulationSim run</td>
 </tr>
-<tr class="row-even"><td>/configs</td>
+<tr class="row-odd"><td>/configs</td>
 <td>Sub-directory containing control specifications and configuration settings</td>
 </tr>
-<tr class="row-odd"><td>/data</td>
+<tr class="row-even"><td>/data</td>
 <td>Sub-directory containing all input files</td>
 </tr>
-<tr class="row-even"><td>/output</td>
+<tr class="row-odd"><td>/output</td>
 <td>Sub-directory containing all outputs, summaries and intermediate files</td>
 </tr>
 </tbody>
@@ -1264,9 +1264,7 @@ Two options for the expand_households.repop step <br />
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

@@ -88,8 +88,7 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#beginner-installation-procedure">Beginner Installation Procedure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#advanced-user-installation-procedure">Advanced User Installation Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-examples">Run Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#example-calm">Example_calm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#example-calm-repop">Example_calm_repop</a></li>
@@ -167,26 +166,11 @@
             
   <div class="section" id="getting-started">
 <span id="id1"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<p>This page describes the installation procedure for PopulationSim and how to run PopulationSim with sample data. Users can choose among the following two methods to install PopulationSim:</p>
-<ul class="simple">
-<li><a class="reference internal" href="#beginner-installation-procedure">Beginner Installation Procedure</a>. Download, Unzip, Run!</li>
-<li><a class="reference internal" href="#advanced-user-installation-procedure">Advanced User Installation Procedure</a>. Install from scratch</li>
-</ul>
-<div class="section" id="beginner-installation-procedure">
-<h2>Beginner Installation Procedure<a class="headerlink" href="#beginner-installation-procedure" title="Permalink to this headline">¶</a></h2>
+<p>This page describes how to install and run PopulationSim with the provided example.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Download <a class="reference external" href="https://github.com/RSGInc/populationSim_resources/raw/master/complete_setup/Anaconda2.zip">Anaconda installation ZIP</a> loaded with all required libraries and PopulationSim package. Note that the ZIP file is a bit over 1 GB and the unzipped directory is approximately 3.3 GB.</li>
-</ol>
-<p><em>The Anaconda Python 2.7 and dependent libraries used to prepare this installation folder were accessed on 27th Dec 2017</em></p>
-<ol class="arabic simple" start="2">
-<li>Unzip and copy the Anaconda2 folder to any location on your computer.</li>
-<li>Now proceed to <a class="reference internal" href="#run-examples">Run Examples</a></li>
-</ol>
-</div>
-<div class="section" id="advanced-user-installation-procedure">
-<h2>Advanced User Installation Procedure<a class="headerlink" href="#advanced-user-installation-procedure" title="Permalink to this headline">¶</a></h2>
-<ol class="arabic simple">
-<li>Install <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python 2.7</a>.</li>
+<li>Install <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python 2.7</a>.  Anaconda Python is required for PopulationSim.</li>
 <li>If you access the internet from behind a firewall, then you will need to configure your proxy server. To do so, create a .condarc file in your Anaconda installation folder (i.e. <code class="docutils literal notranslate"><span class="pre">C:\ProgramData\Anaconda2</span></code>), such as:</li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">proxy_servers</span><span class="p">:</span>
@@ -199,17 +183,9 @@
 <li>Create and activate an Anaconda environment (basically a Python install just for this project)</li>
 </ol>
 <blockquote>
-<div><ul>
-<li><p class="first">Run <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">popsim</span> <span class="pre">python=2.7</span></code></p>
-</li>
-<li><p class="first">Run <code class="docutils literal notranslate"><span class="pre">activate</span> <span class="pre">popsim</span></code> #you can re-use the environment on a later date by re-activating it</p>
-<blockquote>
-<div><p>3.a. If you access the internet from behind a firewall, then you will need to configure your proxy server when downloading packages. For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">host</span> <span class="n">pypi</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">org</span> <span class="o">--</span><span class="n">proxy</span><span class="o">=</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>  <span class="n">activitysim</span>
-</pre></div>
-</div>
-</div></blockquote>
-</li>
+<div><ul class="simple">
+<li>Run <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">popsim</span> <span class="pre">python=2.7</span></code></li>
+<li>Run <code class="docutils literal notranslate"><span class="pre">activate</span> <span class="pre">popsim</span></code> #you can re-use the environment on a later date by re-activating it or you can skip this step is you don’t want to setup a new Python environment just for PopulationSim</li>
 </ul>
 </div></blockquote>
 <ol class="arabic simple" start="4">
@@ -226,13 +202,15 @@
 <li><a class="reference external" href="https://github.com/google/or-tools">pip install ortools</a></li>
 </ul>
 </div></blockquote>
-<ol class="arabic" start="5">
-<li><p class="first">After setting up Anaconda Python and dependent libraries, run the following command on the activated conda Python environment to install PopulationSim package:</p>
+<ol class="arabic simple" start="5">
+<li>If you access the internet from behind a firewall, then you will need to configure your proxy server when downloading packages. For example:</li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">host</span> <span class="n">pypi</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">org</span> <span class="o">--</span><span class="n">proxy</span><span class="o">=</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>  <span class="n">activitysim</span>
+</pre></div>
+</div>
+<ol class="arabic" start="6">
+<li><p class="first">Get and install the PopulationSim package on the activated conda Python environment:</p>
 <p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">https://github.com/RSGInc/populationsim/zipball/master</span></code></p>
-</li>
-<li><p class="first">Run <code class="docutils literal notranslate"><span class="pre">deactivate</span></code> to deactivate the active conda Python environment</p>
-</li>
-<li><p class="first">Now proceed to <a class="reference internal" href="#run-examples">Run Examples</a></p>
 </li>
 </ol>
 </div>
@@ -240,35 +218,26 @@
 <h2>Run Examples<a class="headerlink" href="#run-examples" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
-<li>Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed (see above). If the fully loaded Anaconda install was downloaded, then it should have been unzipped to an appropriate location on your computer.</li>
-<li>Download and unzip the <a class="reference external" href="https://github.com/RSGInc/populationSim_resources/raw/master/example_setup/PopulationSimExampleSetUps.7z">example set ups</a> to a folder on your computer. It does not have to be the same directory as your Anaconda or PopulationSim install.</li>
+<li>Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed.</li>
+<li>Download and unzip the <a class="reference external" href="https://github.com/RSGInc/populationSim_resources/raw/master/example_setup/PopulationSimExampleSetUps.7z">example setups</a> to a folder on your computer. It does not have to be the same directory as your Anaconda or PopulationSim install.</li>
 </ul>
 </div></blockquote>
-<p>There are two examples for running PopulationSim, created using data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon. The <a class="reference internal" href="#example-calm">Example_calm</a> set-up runs PopulationSim in base mode, where a synthetic population is created for the entire modeling region. This takes approximately 12 minutes on a laptop with an Intel i7-4800MQ CPU &#64; 2.70GHz and 16 GB of RAM. The <a class="reference internal" href="#example-calm-repop">Example_calm_repop</a> set-up runs PopulationSim in the <em>repop</em> mode, which updates the synthetic population for a small part of the region. More information on the configuration of PopulationSim can be found in the <strong>Application &amp; Configuration</strong> section.</p>
+<p>There are two examples for running PopulationSim, created using data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon. The <a class="reference internal" href="#example-calm">example_calm</a> set-up runs PopulationSim in base mode, where a synthetic population is created for the entire modeling region. This takes approximately 12 minutes on a laptop with an Intel i7-4800MQ CPU &#64; 2.70GHz and 16 GB of RAM. The <a class="reference internal" href="#example-calm-repop">example_calm_repop</a> set-up runs PopulationSim in the <em>repop</em> mode, which updates the synthetic population for a small part of the region. More information on the configuration of PopulationSim can be found in the <strong>Application &amp; Configuration</strong> section.</p>
 <div class="section" id="example-calm">
 <h3>Example_calm<a class="headerlink" href="#example-calm" title="Permalink to this headline">¶</a></h3>
 <p>Follow the steps below to run <strong>example_calm</strong> set up:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Open the <em>RunPopulationSim.bat</em> script from the example_calm folder in edit mode</li>
-<li>Set the location of the Anaconda installation directory in the batch script as shown below (note: if the path contains spaces, put quotes around the path):</li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">::</span> <span class="n">USER</span> <span class="n">INPUTS</span>
-<span class="p">::</span> <span class="o">---------------------------------------------------------------------</span>
-<span class="p">::</span> <span class="n">Local</span> <span class="n">Anaconda</span> <span class="n">installation</span> <span class="n">directory</span>
-<span class="n">SET</span> <span class="n">ANACONDA_DIR</span><span class="o">=</span><span class="n">E</span><span class="p">:</span>\<span class="n">path</span>\<span class="n">to</span>\<span class="n">this</span>\<span class="n">directory</span>\<span class="n">Anaconda2</span>
-<span class="p">::</span> <span class="o">---------------------------------------------------------------------</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li>Close the <em>RunPopulationSim.bat</em> script and then double click to launch the run</li>
-<li>Close the run window by pressing any key. Check the outputs in the <em>output</em> folder</li>
-<li>If the Conda environment was created in the global Anaconda Install on the user’s computer, the setup can be run by opening a CMD window in the setup directory and running the following commands:</li>
+<li>Open a command prompt in the example_calm folder</li>
+<li>Run the following commands:</li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
 <span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
+<ul class="simple">
+<li>Review the outputs in the <em>output</em> folder</li>
+</ul>
 </div></blockquote>
 </div>
 <div class="section" id="example-calm-repop">
@@ -277,25 +246,16 @@
 <blockquote>
 <div><ul class="simple">
 <li>Copy the <strong>pipeline.h5</strong> file from the example_calm\output directory to example_calm_repop\output directory (all PopulationSim files are stored in pipeline.h5 file)</li>
-<li>Open the <em>RunPopulationSim.bat</em> script from the example_calm_repop folder in edit mode</li>
-<li>Set the location of the Anaconda installation directory in the batch script as shown below (note: if the path contains spaces, put quotes around the path):</li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">::</span> <span class="n">USER</span> <span class="n">INPUTS</span>
-<span class="p">::</span> <span class="o">---------------------------------------------------------------------</span>
-<span class="p">::</span> <span class="n">Local</span> <span class="n">Anaconda</span> <span class="n">installation</span> <span class="n">directory</span>
-<span class="n">SET</span> <span class="n">ANACONDA_DIR</span><span class="o">=</span><span class="n">E</span><span class="p">:</span>\<span class="n">path</span>\<span class="n">to</span>\<span class="n">this</span>\<span class="n">directory</span>\<span class="n">Anaconda2</span>
-<span class="p">::</span> <span class="o">---------------------------------------------------------------------</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li>Close the <em>RunPopulationSim.bat</em> script and then double click to launch the run</li>
-<li>Close the run window by pressing any key. Check the outputs in the <em>output</em> folder</li>
-<li>If the Conda environment was created in the global Anaconda Install on the user’s computer, the setup can be run by opening a CMD window in the setup directory and running the following commands:</li>
+<li>Open a command prompt in the example_calm_repop folder</li>
+<li>Run the following commands:</li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
 <span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
+<ul class="simple">
+<li>Review the outputs in the <em>output</em> folder</li>
+</ul>
 </div></blockquote>
 </div>
 </div>
@@ -365,9 +325,7 @@
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 
