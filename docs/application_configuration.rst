@@ -86,7 +86,7 @@ The seed sample must contain all of the specified control variables, as well as 
 Finally, the seed sample must include an initial weight field. The PopulationSim algorithm is designed to assign weights as close to the initial weight as possible to minimize the changes in distribution of uncontrolled variables. All the fields in the seed sample should be appropriately recoded to specify controls (see more details in next section). Household-level population variables must be computed in advance (for e.g., number of workers in each household) and monetary variables must be inflation adjusted to be consistent with year of control data (e.g., Household Income). The ACS PUMS data contain 3 or 5 years of household records, where  each record's income is reported in the year in which it was collected. The ACS PUMS data includes the rolling reference factor for the year and the inflation adjustment factor, these must be used to code each household's income to a common income year.
 
 Controls
-~~~~~~~~~	
+~~~~~~~~
 
 Controls are the marginal distributions that form the constraints for the population synthesis procedure. Controls are also referred to as *targets* and the objective of the population synthesis procedure is to produce a synthetic population whose attributes match these marginal distributions. Controls can be specified for both household and person variables. The choice of control variables depends on the needs of the project. Ideally, the user would want to specify control for all variables that are important determinant of travel behaviour or would be of interest to policy makers. These would include social, demographic, economic and land-use related variables.
 
@@ -97,24 +97,25 @@ There are multiple source to obtain input data to build these controls. Most com
 Once the data has been obtained, it may be necessary to aggregate or disaggregate the data to the desired geography. 
 Disaggregation involves distributing data from the upper geography to lower geographies using a distribution based on area, population or number of households. A simple aggregation is possible when the lower geography boundaries fits perfectly within the upper geography boundary. In case of overlaps, data can be aggregated in proportion to the area. A simpler method is to establish a correspondence between the lower and upper geography based on the position of the geometric centroid of the lower geography. If the centroid of the lower geography lies within the upper geography then the whole lower geography is assumed to lie within the upper geography. For some shapes, the geometric centroid might be outside the shape boundary. In such cases, an internal point closest to the geometric centroid but within the shape is used. All Census shape files come with the coordinates of the internal point.  The user would need to download the Census shape files for the associated geography and then establish a correspondence with the desired geography using this methodology. It is recommended that input control data should be obtained at the lowest geography possible and then aggregated to the desired geography. These steps must be performed outside of PopulationSim, typically using a Geographic Information System (GIS) software program or travel modeling software package with GIS capabilities.
 
+Control totals within a variable, such as households of size 1, 2, 3, and 4+, should be integerized and smart rounded if necessary since 
+inconsistent controls make convergence more difficult.  For example, if control data is allocated from Census geographies to TAZs, then often
+floating point controls are created.  To correct this, one can calculate the difference between the floating point controls and integerized 
+versions, and then add the error to the largest category by subtracting it from the other categories.  
 
 Configuration
 -------------
 
-Below is PopulationSim's directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create this `directory structure <https://github.com/RSGInc/populationSim_resources/raw/master/template_folder/template.7z>`_
+Below is PopulationSim's directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create the `example directory structure <https://github.com/RSGInc/populationSim_resources/raw/master/example_setup/PopulationSimExampleSetUps.7z>`_
 
   .. image:: images/PopulationSimFolderStructure.png
 
   
-PopulationSim is run using the batch file **RunPopulationSim.bat**. The user needs to update the path to the Anaconda install (Anaconda2 folder) on their computer. This batch file activates the *populationsim* environment and then calls the *run_populationsim.py* Python script to launch a PopulationSim run. Open the **RunPopulationSim.bat** file in edit mode and change the path to Anaconda install as follows (note: if there are spaces in the path, put quotes around the path):
+PopulationSim is run via **run_populationsim.py**. The user needs to first activate the *popsim* environment and then call the *run_populationsim.py* Python script to launch a PopulationSim run.
 
-::
+  ::
 
-   :: USER INPUTS
-   :: ---------------------------------------------------------------------
-   :: Local Anaconda installation directory
-   SET ANACONDA_DIR=E:\path\to\this\directory\Anaconda2
-   :: ---------------------------------------------------------------------
+   activate popsim
+   python run_populationsim.py
 
 PopulationSim is configured using the settings.YAML file. PopulationSim can be configured to run in **base** mode or **repop** mode.
 
@@ -149,8 +150,6 @@ Working Directory Contents:
 +-----------------------+----------------------------------------------------------------------------+
 | File                  | Description                                                                |
 +=======================+============================================================================+
-| RunPopulationSim.bat  | Batch file to run PopulationSim                                            |
-+-----------------------+----------------------------------------------------------------------------+
 | run_populationsim.py  | Python script that orchestrates a PopulationSim run                        |
 +-----------------------+----------------------------------------------------------------------------+
 | /configs              | Sub-directory containing control specifications and configuration settings |
