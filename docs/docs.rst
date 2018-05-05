@@ -15,10 +15,8 @@ Below are links to important documents and resources:
 
 3. `TRB poster <https://github.com/RSGInc/populationSim_resources/raw/master/papers/TRBPoster_PaulDoyleStablerFreedmanBettinardi_v5%5B1%5D.pptx>`_
 
-4. `Training Package <https://github.com/RSGInc/populationSim_resources/raw/master/training_package/TrainingPackage.7z>`_
+4. `PopulationSim Repository <https://github.com/RSGInc/populationsim>`_
 
-5. `Example CALM PUMS Data Processing <https://github.com/RSGInc/populationSim_resources/raw/master/example_calm_data_prep/example_calm_data_prep.7z>`_
+5. `ActivitySim <http://www.activitysim.org>`_
 
-6. `GitHub Repository <https://github.com/RSGInc/populationsim>`_
-
-7. `ActivitySim <http://www.activitysim.org>`_
+6. `Oregon DOT Training Package <https://github.com/RSGInc/populationSim_resources/raw/master/training_package/TrainingPackage.7z>`_
