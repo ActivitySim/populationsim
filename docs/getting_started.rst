@@ -26,9 +26,9 @@ Installation
 3. Create and activate an Anaconda environment (basically a Python install just for this project)
   
   * Run ``conda create -n popsim python=2.7``
-  * Run ``activate popsim`` #you can re-use the environment on a later date by re-activating it or you can skip this step is you don't want to setup a new Python environment just for PopulationSim
+  * Run ``activate popsim`` (you can re-use the environment on a later date by re-activating it or you can skip this step if you don't want to setup a new Python environment just for PopulationSim)
    
-4. Get and install other required libraries, which can be found online.  Run the following command on the activated conda Python environment:
+4. Get and install other required libraries, which can be found online.  Run the following commands on the activated conda Python environment:
 
   * `conda install pytables <http://www.pytables.org/>`__
   * `pip install toolz <http://toolz.readthedocs.org/en/latest>`__
@@ -46,7 +46,10 @@ Installation
 
 6. Get and install the PopulationSim package on the activated conda Python environment:
 
-   ``pip install https://github.com/RSGInc/populationsim/zipball/master``
+::
+
+  pip install https://github.com/RSGInc/populationsim/zipball/master
+
 
 Run Examples
 ------------
