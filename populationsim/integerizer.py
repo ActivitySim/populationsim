@@ -147,13 +147,15 @@ class Integerizer(object):
 
         if (float_weights == 0).any():
             # not sure this matters...
-            logger.warn("Integerizer: %s zero weights" % ((float_weights == 0).sum(),))
+            logger.warn("Integerizer: %s zero weights out of %s" %
+                        ((float_weights == 0).sum(), sample_count))
             assert False
 
         if (resid_weights == 0.0).any():
             # not sure this matters...
-            logger.warn("Integerizer: %s zero resid_weights" % ((resid_weights == 0).sum(),))
-            assert False
+            logger.info("Integerizer: %s zero resid_weights out of %s" %
+                        ((resid_weights == 0).sum(), sample_count))
+            # assert False
 
         integerizer_func = get_single_integerizer()
 
