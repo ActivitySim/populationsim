@@ -126,7 +126,7 @@ class Integerizer(object):
 
             integerized_weights = int_weights
             status = STATUS_OPTIMAL
-        
+
         else:
 
             # - lp_right_hand_side - relaxed_control_shortfall
