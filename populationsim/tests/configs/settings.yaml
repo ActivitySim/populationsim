@@ -16,7 +16,6 @@ input_table_list:
     column_map:
       SERIALNO: hh_id
   - tablename: persons
-    # expression_filename: seed_persons_expressions.csv
     filename : seed_persons.csv
     column_map:
       SERIALNO: hh_id

@@ -37,6 +37,10 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
 
     """
 
+    if setting('NO_INTEGERIZATION_EVER', False):
+        logger.warning("skipping integerize_final_seed_weights: NO_INTEGERIZATION_EVER")
+        return
+
     crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()
     control_spec = control_spec.to_frame()

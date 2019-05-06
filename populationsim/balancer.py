@@ -11,7 +11,7 @@ from util import setting
 
 logger = logging.getLogger(__name__)
 
-MAX_ITERATIONS = 10000
+DEFAULT_MAX_ITERATIONS = 10000
 
 MAX_GAP = 1.0e-9
 
@@ -42,7 +42,8 @@ class ListBalancer(object):
                  control_importance_weights,
                  lb_weights,
                  ub_weights,
-                 master_control_index):
+                 master_control_index,
+                 max_iterations):
         """
         Parameters
         ----------
@@ -74,6 +75,8 @@ class ListBalancer(object):
         self.lb_weights = lb_weights
         self.ub_weights = ub_weights
         self.master_control_index = master_control_index
+
+        self.max_iterations = max_iterations
 
         assert len(self.incidence_table.columns) == len(self.control_totals)
         assert len(self.incidence_table.columns) == len(self.control_importance_weights)
@@ -116,7 +119,8 @@ class ListBalancer(object):
             weights_lower_bound,
             weights_upper_bound,
             controls_constraint,
-            controls_importance)
+            controls_importance,
+            self.max_iterations)
 
         # weights dataframe
         weights = pd.DataFrame(index=self.incidence_table.index)
@@ -144,7 +148,8 @@ def np_balancer(
         weights_lower_bound,
         weights_upper_bound,
         controls_constraint,
-        controls_importance):
+        controls_importance,
+        max_iterations):
 
     # initial relaxation factors
     relaxation_factors = np.repeat(1.0, control_count)
@@ -162,7 +167,7 @@ def np_balancer(
     # precompute incidence squared
     incidence2 = incidence * incidence
 
-    for iter in range(MAX_ITERATIONS):
+    for iter in range(max_iterations):
 
         weights_previous = weights_final.copy()
 
@@ -226,7 +231,8 @@ def np_balancer(
 
 
 def do_balancing(control_spec,
-                 total_hh_control_col, max_expansion_factor,
+                 total_hh_control_col,
+                 max_expansion_factor, min_expansion_factor,
                  incidence_df, control_totals, initial_weights):
 
     # incidence table should only have control columns
@@ -245,7 +251,20 @@ def do_balancing(control_spec,
 
     control_importance_weights = control_spec.importance
 
-    lb_weights = 0
+    if min_expansion_factor:
+
+        # number_of_households in this seed geograpy as specified in seed_controlss
+        number_of_households = control_totals[total_hh_control_index]
+
+        total_weights = initial_weights.sum()
+        lb_ratio = min_expansion_factor * float(number_of_households) / float(total_weights)
+
+        lb_weights = initial_weights * lb_ratio
+        lb_weights = lb_weights.clip(lower=0)
+
+    else:
+        lb_weights = None
+
     if max_expansion_factor:
 
         # number_of_households in this seed geograpy as specified in seed_controlss
@@ -260,14 +279,17 @@ def do_balancing(control_spec,
     else:
         ub_weights = None
 
+    max_iterations = setting('MAX_BALANCE_ITERATIONS_SEQUENTIAL', DEFAULT_MAX_ITERATIONS)
+
     balancer = ListBalancer(
         incidence_table=incidence_df,
         initial_weights=initial_weights,
-        lb_weights=lb_weights,
-        ub_weights=ub_weights,
         control_totals=control_totals,
         control_importance_weights=control_importance_weights,
-        master_control_index=total_hh_control_index
+        lb_weights=lb_weights,
+        ub_weights=ub_weights,
+        master_control_index=total_hh_control_index,
+        max_iterations=max_iterations
     )
 
     status, weights, controls = balancer.balance()

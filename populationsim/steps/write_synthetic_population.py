@@ -74,6 +74,10 @@ def write_synthetic_population(expanded_household_ids, households, persons, outp
 
     """
 
+    if setting('NO_INTEGERIZATION_EVER', False):
+        logger.warning("skipping write_synthetic_population: NO_INTEGERIZATION_EVER")
+        return
+
     expanded_household_ids = expanded_household_ids.to_frame()
     households = households.to_frame()
     persons = persons.to_frame()

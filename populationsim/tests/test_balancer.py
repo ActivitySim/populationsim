@@ -8,6 +8,7 @@ import numpy.testing as npt
 import pytest
 
 from ..balancer import ListBalancer
+from ..balancer import DEFAULT_MAX_ITERATIONS
 
 
 def test_Konduri():
@@ -40,7 +41,8 @@ def test_Konduri():
         control_importance_weights=control_importance_weights,
         lb_weights=0,
         ub_weights=30,
-        master_control_index=None
+        master_control_index=None,
+        max_iterations=DEFAULT_MAX_ITERATIONS
         )
 
     status, weights, controls = balancer.balance()

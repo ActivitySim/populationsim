@@ -5,7 +5,7 @@
 Introduction
 =============
 
-PopulationSim is an open platform for population synthesis.  It emerged from Oregon DOT's desire to 
+PopulationSim is an open platform for population synthesis and survey weighting.  It emerged from Oregon DOT's desire to 
 build a shared, open, platform that could be easily adapted for statewide, regional, and urban 
 transportation planning needs.
       
@@ -63,6 +63,14 @@ have been assigned, seed sample is expanded using these weights to generate a sy
 population synthesizers create distributions using final weights and employ random sampling to expand the
 seed sample. PopulationSim uses Linear Programming to convert the final weights to integer values and expands 
 the seed sample using these integer weights. For detailed description of PopulationSim algorithm, please refer to the TRB paper link in the :ref:`docs` section. For information on software implementation refer to :ref:`core_components` and :ref:`model_steps`. To learn more about PopulationSim application and configuration, please follow the content index below. 
+
+How does population synthesis work for survey weighting?
+--------------------------------------------------------
+PopulationSim can also be used to solve the household travel survey weighting problem of developing final weights.  Travel surveys typically
+include a set of initial household weights based on the sampling plan.  Often the initial weights are revised to match a set of control totals 
+that describe the overall survey population.  This exercise is like population synthesis, except that the geographic allocation of households is 
+not needed because household locations are surveyed and not synthesized. 
+
 
 Contents
 --------

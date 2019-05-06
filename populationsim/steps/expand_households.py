@@ -29,6 +29,11 @@ def expand_households():
     Creates pipeline table expanded_household_ids
     """
 
+    if setting('NO_INTEGERIZATION_EVER', False):
+        logger.warning("skipping expand_households: NO_INTEGERIZATION_EVER")
+        inject.add_table('expanded_household_ids', pd.DataFrame())
+        return
+
     geographies = setting('geographies')
     household_id_col = setting('household_id_col')
 

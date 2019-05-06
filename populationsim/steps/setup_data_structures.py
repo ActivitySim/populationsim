@@ -333,7 +333,7 @@ def setup_data_structures(settings, configs_dir, households, persons):
     hh_weight_col = setting('household_weight_col')
     incidence_table['sample_weight'] = households_df[hh_weight_col]
 
-    if setting('GROUP_BY_INCIDENCE_SIGNATURE'):
+    if setting('GROUP_BY_INCIDENCE_SIGNATURE') and not setting('NO_INTEGERIZATION_EVER', False):
         group_incidence_table, household_groups \
             = build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
 
@@ -405,7 +405,7 @@ def repop_setup_data_structures(configs_dir, households, persons):
         controls = build_control_table(g, control_spec, crosswalk_df)
         pipeline.replace_table(control_table_name(g), controls)
 
-    if setting('GROUP_BY_INCIDENCE_SIGNATURE'):
+    if setting('GROUP_BY_INCIDENCE_SIGNATURE') and not setting('NO_INTEGERIZATION_EVER', False):
         group_incidence_table, household_groups \
             = build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
 

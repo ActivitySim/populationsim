@@ -207,6 +207,9 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
     """
 
+    NO_INTEGERIZATION_EVER = setting('NO_INTEGERIZATION_EVER', False)
+    SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS = setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS', True)
+
     # geography is an injected model step arg
     geography = inject.get_step_arg('geography')
 
@@ -257,7 +260,7 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
             # using balanced_weight slows down simul and doesn't improve results
             # (float seeds means no zero-weight households to drop)
-            if setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS', True):
+            if NO_INTEGERIZATION_EVER or SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS:
                 initial_weights = initial_weights['balanced_weight']
             else:
                 initial_weights = initial_weights['integer_weight']
@@ -287,10 +290,16 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
     integer_weights_df = pd.concat(integer_weights_list)
 
+    # print "integer_weights_df\n", integer_weights_df.dtypes
+    # print integer_weights_df.head(10)
+    # bug
+
     inject.add_table(weight_table_name(geography),
                      integer_weights_df)
-    inject.add_table(weight_table_name(geography, sparse=True),
-                     integer_weights_df[integer_weights_df['integer_weight'] > 0])
+
+    if not NO_INTEGERIZATION_EVER:
+        inject.add_table(weight_table_name(geography, sparse=True),
+                         integer_weights_df[integer_weights_df['integer_weight'] > 0])
 
     if 'trace_geography' in settings and geography in settings['trace_geography']:
         trace_geography_id = settings.get('trace_geography')[geography]

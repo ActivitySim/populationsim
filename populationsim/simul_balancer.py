@@ -10,7 +10,7 @@ from util import setting
 
 logger = logging.getLogger(__name__)
 
-MAX_ITERATIONS = 1000
+DEFAULT_MAX_ITERATIONS = 1000
 
 MAX_DELTA = 1.0e-9
 MAX_GAMMA = 1.0e-7
@@ -197,7 +197,8 @@ def np_simul_balancer(
     # precompute incidence squared
     incidence2 = incidence * incidence
 
-    for iter in range(MAX_ITERATIONS):
+    max_iterations = setting('MAX_BALANCE_ITERATIONS_SIMULTANEOUS', DEFAULT_MAX_ITERATIONS)
+    for iter in range(max_iterations):
 
         weights_previous = sub_weights.copy()
 

@@ -1,4 +1,7 @@
+# This flag turns off integerization entirely (default False)
+NO_INTEGERIZATION_EVER: True
 
+# These settings are ignored if not integerizing
 INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
 GROUP_BY_INCIDENCE_SIGNATURE: True
@@ -19,6 +22,8 @@ household_weight_col: WGTP
 household_id_col: hh_id
 total_hh_control: num_hh
 max_expansion_factor: 5
+
+min_expansion_factor: 0.2
 
 #control_file_name: controls.csv
 #data_dir: data
@@ -94,8 +99,15 @@ repop_input_table_list:
 output_tables:
   action: include
   tables:
+    - PUMA_weights
+    - TAZ_weights
+    - TRACT_weights
+    - trace_TAZ_weights
+    - trace_TRACT_weights
+    - summary_hh_weights
     - summary_TAZ
-    - expanded_household_ids
+
+#    - expanded_household_ids
 
 #
 #output_tables:

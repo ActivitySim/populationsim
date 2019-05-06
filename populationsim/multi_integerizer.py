@@ -531,6 +531,37 @@ def do_sequential_integerizing(
     return integerized_zone_ids, rounded_zone_ids, integerized_weights_df, rounded_weights_df
 
 
+def do_no_integerizing(
+        trace_label,
+        incidence_df,
+        sub_weights, sub_controls_df,
+        control_spec, total_hh_control_col,
+        sub_control_zones,
+        sub_geography):
+    """
+
+    """
+    integerized_weights_list = []
+    rounded_weights_list = []
+    integerized_zone_ids = []
+    for zone_id, zone_name in sub_control_zones.iteritems():
+
+        logger.info("sequential_integerizing zone_id %s zone_name %s" % (zone_id, zone_name))
+
+        weights = sub_weights[zone_name]
+
+        zone_weights_df = pd.DataFrame(index=range(0, len(weights.index)))
+        zone_weights_df[weights.index.name] = weights.index
+        zone_weights_df[sub_geography] = zone_id
+        zone_weights_df['balanced_weight'] = weights.values
+
+        integerized_weights_list.append(zone_weights_df)
+        integerized_zone_ids.append(zone_id)
+
+    integerized_weights_df = pd.concat(integerized_weights_list + rounded_weights_list)
+    return integerized_weights_df
+
+
 def multi_integerize(
         incidence_df,
         sub_zone_weights,
@@ -574,7 +605,9 @@ def multi_integerize(
 
     trace_label = "%s_%s" % (parent_geography, parent_id)
 
-    if use_simul_integerizer():
+    if setting('NO_INTEGERIZATION_EVER', False):
+        integerizer = do_no_integerizing
+    elif use_simul_integerizer():
         integerizer = do_simul_integerizing
     else:
         integerizer = do_sequential_integerizing
