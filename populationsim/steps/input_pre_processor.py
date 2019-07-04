@@ -121,4 +121,5 @@ def input_pre_processor():
         logger.info("adding table %s" % tablename)
 
         # add (or replace) pipeline table
-        inject.add_table(tablename, df)
+        repop = inject.get_step_arg('repop', default=False)
+        inject.add_table(tablename, df, replace=repop)

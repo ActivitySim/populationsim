@@ -1,3 +1,4 @@
+from __future__ import print_function
 import pandas as pd
 
 # settings
@@ -13,9 +14,9 @@ if __name__ == "__main__":
               'mid_controls.csv': 'mid_control_data',
               'meta_controls.csv': 'meta_control_data'}
 
-    for file_name, df_name in tables.iteritems():
+    for file_name, df_name in tables.items():
 
-        print "copying %s to %s" % (file_name, df_name)
+        print("copying %s to %s" % (file_name, df_name))
 
         df = pd.read_csv(input_folder + file_name)
 

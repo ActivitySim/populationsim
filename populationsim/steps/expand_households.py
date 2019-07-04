@@ -1,3 +1,5 @@
+from __future__ import division
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -10,10 +12,10 @@ from activitysim.core import pipeline
 from activitysim.core import inject
 
 from populationsim.util import setting
-from helper import get_control_table
-from helper import get_weight_table
+from .helper import get_control_table
+from .helper import get_weight_table
 
-from helper import weight_table_name
+from .helper import weight_table_name
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +50,7 @@ def expand_households():
 
     # - expand weights table by integer_weight, so there is one row per desired hh
     weight_cols = weights.columns.values
-    weights_np = np.repeat(weights.as_matrix(), weights.integer_weight.values, axis=0)
+    weights_np = np.repeat(weights.values, weights.integer_weight.values, axis=0)
     expanded_weights = pd.DataFrame(data=weights_np, columns=weight_cols)
 
     if setting('GROUP_BY_INCIDENCE_SIGNATURE'):
@@ -107,4 +109,5 @@ def expand_households():
         logger.info("expand_households op: %s prev hh count %s dropped %s added %s final %s" %
                     (op, prev_hhs, dropped_hhs, added_hhs, final_hhs))
 
-    inject.add_table('expanded_household_ids', expanded_weights)
+    repop = inject.get_step_arg('repop', default=False)
+    inject.add_table('expanded_household_ids', expanded_weights, replace=repop)

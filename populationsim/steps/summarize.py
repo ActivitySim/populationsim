@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -9,8 +10,8 @@ import numpy as np
 
 from activitysim.core import inject
 
-from helper import get_control_table
-from helper import get_weight_table
+from .helper import get_control_table
+from .helper import get_weight_table
 from populationsim.util import setting
 
 logger = logging.getLogger(__name__)
@@ -31,7 +32,8 @@ def out_table(table_name, df):
         df.to_csv(file_path, index=write_index)
     else:
         logger.info("saving summary table %s" % table_name)
-        inject.add_table(table_name, df)
+        repop = inject.get_step_arg('repop', default=False)
+        inject.add_table(table_name, df, replace=repop)
 
 
 def summarize_geography(geography, weight_col,

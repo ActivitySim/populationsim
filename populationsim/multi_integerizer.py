@@ -1,6 +1,10 @@
+from __future__ import print_function
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
+from builtins import range
+from builtins import object
 import logging
 import os
 
@@ -8,13 +12,13 @@ import numpy as np
 import pandas as pd
 
 
-from util import setting
+from .util import setting
 
-from lp import get_simul_integerizer
-from lp import STATUS_SUCCESS
+from .lp import get_simul_integerizer
+from .lp import STATUS_SUCCESS
 
-from integerizer import smart_round
-from integerizer import do_integerizing
+from .integerizer import smart_round
+from .integerizer import do_integerizing
 
 logger = logging.getLogger(__name__)
 
@@ -76,9 +80,9 @@ class SimulIntegerizer(object):
         total_hh_parent_control_index = -1
 
         sub_incidence = self.incidence_df[self.sub_controls_df.columns]
-        sub_incidence = sub_incidence.as_matrix().astype(np.float64)
+        sub_incidence = sub_incidence.values.astype(np.float64)
 
-        sub_float_weights = self.sub_weights.as_matrix().transpose().astype(np.float64)
+        sub_float_weights = self.sub_weights.values.transpose().astype(np.float64)
         sub_int_weights = sub_float_weights.astype(int)
         sub_resid_weights = sub_float_weights % 1.0
 
@@ -107,7 +111,7 @@ class SimulIntegerizer(object):
 
         # - parent
         parent_incidence = self.incidence_df[self.parent_countrol_cols]
-        parent_incidence = parent_incidence.as_matrix().astype(np.float64)
+        parent_incidence = parent_incidence.values.astype(np.float64)
 
         # note:
         # sum(sub_int_weights) might be different from parent_float_weights.astype(int)
@@ -142,13 +146,13 @@ class SimulIntegerizer(object):
 
         # how could this not be the case?
         if not (parent_hh_constraint_ge_bound == parent_max_possible_control_values).all():
-            print "\nSimulIntegerizer integerizing", self.trace_label
+            print("\nSimulIntegerizer integerizing", self.trace_label)
             logger.warn("parent_hh_constraint_ge_bound != parent_max_possible_control_values")
             logger.warn("parent_hh_constraint_ge_bound:      %s" %
                         parent_hh_constraint_ge_bound)
             logger.warn("parent_max_possible_control_values: %s" %
                         parent_max_possible_control_values)
-            print "\n"
+            print("\n")
             # assert (parent_hh_constraint_ge_bound == parent_max_possible_control_values).all()
 
         integerizer_func = get_simul_integerizer()
@@ -286,11 +290,11 @@ def reshape_result(float_weights, integerized_weights, sub_geography, sub_contro
 
     # integerize the sub_zone weights
     integer_weights_list = []
-    for zone_id, zone_name in sub_control_zones.iteritems():
+    for zone_id, zone_name in list(sub_control_zones.items()):
 
         weights = float_weights[zone_name]
 
-        zone_weights_df = pd.DataFrame(index=range(0, len(integerized_weights.index)))
+        zone_weights_df = pd.DataFrame(index=list(range(0, len(integerized_weights.index))))
         zone_weights_df[weights.index.name] = float_weights.index
         zone_weights_df[sub_geography] = zone_id
         zone_weights_df['balanced_weight'] = float_weights[zone_name].values
@@ -491,7 +495,7 @@ def do_sequential_integerizing(
     rounded_weights_list = []
     integerized_zone_ids = []
     rounded_zone_ids = []
-    for zone_id, zone_name in sub_control_zones.iteritems():
+    for zone_id, zone_name in list(sub_control_zones.items()):
 
         logger.info("sequential_integerizing zone_id %s zone_name %s" % (zone_id, zone_name))
 
@@ -508,7 +512,7 @@ def do_sequential_integerizing(
             total_hh_control_col=total_hh_control_col
         )
 
-        zone_weights_df = pd.DataFrame(index=range(0, len(integer_weights.index)))
+        zone_weights_df = pd.DataFrame(index=list(range(0, len(integer_weights.index))))
         zone_weights_df[weights.index.name] = weights.index
         zone_weights_df[sub_geography] = zone_id
         zone_weights_df['balanced_weight'] = weights.values

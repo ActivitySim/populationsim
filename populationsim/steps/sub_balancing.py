@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -13,9 +14,9 @@ from activitysim.core import pipeline
 
 from populationsim.util import setting
 
-from helper import get_control_table
-from helper import weight_table_name
-from helper import get_weight_table
+from .helper import get_control_table
+from .helper import weight_table_name
+from .helper import get_weight_table
 
 from ..multi_integerizer import multi_integerize
 
@@ -72,7 +73,7 @@ def balance(
     controls = pd.DataFrame({'name': sub_control_spec.target})
     controls['importance'] = sub_control_spec.importance
     controls['total'] = sub_controls_df.sum(axis=0).values
-    for zone, zone_name in sub_control_zones.iteritems():
+    for zone, zone_name in sub_control_zones.items():
         controls[zone_name] = sub_controls_df.loc[zone].values
 
     # incidence table should only have control columns

@@ -1,6 +1,8 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
+# from builtins import str
+from builtins import range
 import logging
 import os
 
@@ -142,7 +144,7 @@ def np_integerizer_ortools(
     status_text = STATUS_TEXT[result_status]
 
     if status_text in STATUS_SUCCESS:
-        resid_weights_out = np.asanyarray(map(lambda x: x.solution_value(), x)).astype(np.float64)
+        resid_weights_out = np.asanyarray([x.solution_value() for x in x]).astype(np.float64)
     else:
         resid_weights_out = resid_weights
 

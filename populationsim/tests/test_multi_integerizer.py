@@ -1,10 +1,12 @@
+from __future__ import print_function
 # PopulationSim
 # See full license in LICENSE.txt.
 
 import os
 import numpy as np
 import pandas as pd
-import orca
+
+from activitysim.core import inject
 
 from populationsim.multi_integerizer import do_simul_integerizing
 from populationsim.multi_integerizer import do_sequential_integerizing
@@ -64,13 +66,13 @@ sub_control_zones = pd.Series(['TRACT_1', 'TRACT_2'], index=[1, 2])
 def test_simul_integerizer():
 
     configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
-    orca.add_injectable("configs_dir", configs_dir)
+    inject.add_injectable("configs_dir", configs_dir)
 
     # data_dir = os.path.join(os.path.dirname(__file__), 'data')
-    # orca.add_injectable("data_dir", data_dir)
+    # inject.add_injectable("data_dir", data_dir)
     #
     # output_dir = os.path.join(os.path.dirname(__file__), 'output')
-    # orca.add_injectable("output_dir", output_dir)
+    # inject.add_injectable("output_dir", output_dir)
 
     integer_weights_df = do_simul_integerizing(
         trace_label="label",
@@ -98,18 +100,18 @@ def test_simul_integerizer():
         29
     ]).all()
 
-    print "\ntest_simul_integerizer integer_weights_df\n", integer_weights_df
+    print("\ntest_simul_integerizer integer_weights_df\n", integer_weights_df)
 
 
 def test_sequential_integerizer():
     configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
-    orca.add_injectable("configs_dir", configs_dir)
+    inject.add_injectable("configs_dir", configs_dir)
 
     # data_dir = os.path.join(os.path.dirname(__file__), 'data')
-    # orca.add_injectable("data_dir", data_dir)
+    # inject.add_injectable("data_dir", data_dir)
     #
     # output_dir = os.path.join(os.path.dirname(__file__), 'output')
-    # orca.add_injectable("output_dir", output_dir)
+    # inject.add_injectable("output_dir", output_dir)
 
     integer_weights_df = do_sequential_integerizing(
         trace_label="label",
@@ -122,7 +124,7 @@ def test_sequential_integerizer():
         sub_control_zones=sub_control_zones
     )
 
-    print "\ntest_sequential_integerizer integer_weights_df\n", integer_weights_df
+    print("\ntest_sequential_integerizer integer_weights_df\n", integer_weights_df)
 
     assert (integer_weights_df.integer_weight.values == [
         0,

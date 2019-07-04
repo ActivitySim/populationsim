@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -8,9 +9,9 @@ from activitysim.core import inject
 
 from populationsim.util import setting
 
-from helper import get_control_table
-from helper import weight_table_name
-from helper import get_weight_table
+from .helper import get_control_table
+from .helper import weight_table_name
+from .helper import get_weight_table
 
 from ..balancer import do_balancing
 from ..integerizer import do_integerizing
@@ -140,6 +141,7 @@ def repop_balancing(settings, crosswalk, control_spec, incidence_table):
     low_weights_df = pd.concat([low_weights_df, crosswalk_df], axis=1)
 
     inject.add_table(weight_table_name(low_geography),
-                     low_weights_df)
+                     low_weights_df, replace=True)
     inject.add_table(weight_table_name(low_geography, sparse=True),
-                     low_weights_df[low_weights_df['integer_weight'] > 0])
+                     low_weights_df[low_weights_df['integer_weight'] > 0],
+                     replace=True)

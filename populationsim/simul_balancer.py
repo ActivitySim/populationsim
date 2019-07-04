@@ -1,12 +1,17 @@
+from __future__ import division
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
+from builtins import zip
+from builtins import range
+from builtins import object
 import logging
 import numpy as np
 
 import pandas as pd
 
-from util import setting
+from .util import setting
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +100,7 @@ class SimultaneousListBalancer(object):
         total_hh_controls = self.controls.iloc[self.master_control_index]
         total_hh = int(total_hh_controls['total'])
         sub_zone_hh_fractions = total_hh_controls[self.sub_control_zones] / total_hh
-        for zone, zone_name in self.sub_control_zones.iteritems():
+        for zone, zone_name in list(self.sub_control_zones.items()):
             self.weights[zone_name] = self.weights['parent'] * sub_zone_hh_fractions[zone_name]
 
         self.controls['total'] = np.maximum(self.controls['total'], MIN_CONTROL_VALUE)
@@ -109,7 +114,7 @@ class SimultaneousListBalancer(object):
         zone_count = len(self.sub_control_zones)
 
         master_control_index = self.master_control_index
-        incidence = self.incidence_table.as_matrix().transpose().astype(np.float64)
+        incidence = self.incidence_table.values.transpose().astype(np.float64)
 
         # FIXME - do we also need sample_weights? (as the spec suggests?)
         parent_weights = np.asanyarray(self.weights['parent']).astype(np.float64)
@@ -120,8 +125,8 @@ class SimultaneousListBalancer(object):
         parent_controls = np.asanyarray(self.controls['total']).astype(np.float64)
         controls_importance = np.asanyarray(self.controls['importance']).astype(np.float64)
 
-        sub_controls = self.controls[self.sub_control_zones].as_matrix().astype('float').transpose()
-        sub_weights = self.weights[self.sub_control_zones].as_matrix().astype('float').transpose()
+        sub_controls = self.controls[self.sub_control_zones].values.astype('float').transpose()
+        sub_weights = self.weights[self.sub_control_zones].values.astype('float').transpose()
 
         # balance
         weights_final, relaxation_factors, status = np_simul_balancer(
@@ -140,7 +145,7 @@ class SimultaneousListBalancer(object):
 
         # dataframe with sub_zone_weights in columns, and zero weight rows restored
         self.sub_zone_weights = pd.DataFrame(index=self.positive_weight_rows.index)
-        for i, c in zip(range(len(self.sub_control_zones)), self.sub_control_zones):
+        for i, c in zip(list(range(len(self.sub_control_zones))), self.sub_control_zones):
             self.sub_zone_weights[c] = pd.Series(weights_final[i], self.weights.index)
         self.sub_zone_weights.fillna(value=0.0, inplace=True)
 
@@ -183,13 +188,15 @@ def np_simul_balancer(
     # initial relaxation factors
     relaxation_factors = np.ones((zone_count, control_count))
 
+    # Note: importance_adjustment must always be a float to ensure
+    # correct "true division" in both Python 2 and 3
     importance_adjustment = 1.0
 
     # FIXME - make a copy as we change this (not really necessary as caller doesn't use it...)
     sub_weights = sub_weights.copy()
 
     # array of control indexes for iterating over controls
-    control_indexes = range(control_count)
+    control_indexes = list(range(control_count))
     if master_control_index is not None:
         # reorder indexes so we handle master_control_index last
         control_indexes.append(control_indexes.pop(master_control_index))
@@ -227,8 +234,8 @@ def np_simul_balancer(
                     yy = (sub_weights[z] * incidence2[c]).sum()
                     relaxed_constraint = sub_controls[z, c] * relaxation_factors[z, c]
                     relaxed_constraint = max(relaxed_constraint, MIN_CONTROL_VALUE)
-                    gamma[z, c] \
-                        = 1.0 - (xx - relaxed_constraint) / (yy + relaxed_constraint / importance)
+                    gamma[z, c] = 1.0 - float(xx - relaxed_constraint) / (
+                        yy + (relaxed_constraint / float(importance)))
 
                 # update HH weights
                 sub_weights[z][incidence[c] > 0] *= gamma[z, c]
@@ -252,7 +259,8 @@ def np_simul_balancer(
         max_gamma_dif = np.absolute(gamma - 1).max()
         assert not np.isnan(max_gamma_dif)
 
-        delta = np.absolute(sub_weights - weights_previous).sum() / sample_count
+        # ensure float division
+        delta = np.absolute(sub_weights - weights_previous).sum() / float(sample_count)
         assert not np.isnan(delta)
 
         # standard convergence criteria

@@ -1,12 +1,16 @@
+from __future__ import division
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
+from builtins import range
+from builtins import object
 import logging
 import numpy as np
 
 import pandas as pd
 
-from util import setting
+from .util import setting
 
 
 logger = logging.getLogger(__name__)
@@ -100,7 +104,7 @@ class ListBalancer(object):
         sample_count = len(self.incidence_table.index)
         control_count = len(self.incidence_table.columns)
         master_control_index = self.master_control_index
-        incidence = self.incidence_table.as_matrix().transpose()
+        incidence = self.incidence_table.values.transpose()
         weights_initial = np.asanyarray(self.initial_weights).astype(np.float64)
         weights_lower_bound = np.asanyarray(self.lb_weights).astype(np.float64)
         weights_upper_bound = np.asanyarray(self.ub_weights).astype(np.float64)
@@ -133,7 +137,7 @@ class ListBalancer(object):
         controls['relaxation_factor'] = relaxation_factors
         controls['relaxed_control'] = controls.control * relaxation_factors
         controls['weight_totals'] = \
-            [round((self.incidence_table.ix[:, c] * weights['final']).sum(), 2)
+            [round((self.incidence_table.loc[:, c] * weights['final']).sum(), 2)
              for c in controls.index]
 
         return status, weights, controls
@@ -153,13 +157,16 @@ def np_balancer(
 
     # initial relaxation factors
     relaxation_factors = np.repeat(1.0, control_count)
+
+    # Note: importance_adjustment must always be a float to ensure
+    # correct "true division" in both Python 2 and 3
     importance_adjustment = 1.0
 
     # make a copy as we change this
     weights_final = weights_initial.copy()
 
     # array of control indexes for iterating over controls
-    control_indexes = range(control_count)
+    control_indexes = list(range(control_count))
     if master_control_index is not None:
         # reorder indexes so we handle master_control_index last
         control_indexes.append(control_indexes.pop(master_control_index))
@@ -176,6 +183,7 @@ def np_balancer(
 
         # importance adjustment as number of iterations progress
         if iter > 0 and iter % IMPORTANCE_ADJUST_COUNT == 0:
+            # always a float
             importance_adjustment = importance_adjustment / IMPORTANCE_ADJUST
 
         # for each control
@@ -195,8 +203,9 @@ def np_balancer(
             if xx > 0:
                 relaxed_constraint = controls_constraint[c] * relaxation_factors[c]
                 relaxed_constraint = max(relaxed_constraint, MIN_CONTROL_VALUE)
+                # ensure float division
                 gamma[c] = 1.0 - (xx - relaxed_constraint) / (
-                    yy + relaxed_constraint / importance)
+                    yy + relaxed_constraint / float(importance))
 
             # update HH weights
             weights_final[incidence[c] > 0] *= gamma[c]
@@ -211,7 +220,8 @@ def np_balancer(
 
         max_gamma_dif = np.absolute(gamma - 1).max()
 
-        delta = np.absolute(weights_final - weights_previous).sum() / sample_count
+        # ensure float division
+        delta = np.absolute(weights_final - weights_previous).sum() / float(sample_count)
 
         converged = delta < MAX_GAP and max_gamma_dif < MAX_GAP
 

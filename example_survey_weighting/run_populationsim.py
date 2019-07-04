@@ -1,7 +1,8 @@
+from __future__ import print_function
 import os
 import logging
 
-from activitysim.core import inject_defaults
+from activitysim.core import config
 from populationsim import steps
 
 from activitysim.core import tracing
@@ -57,7 +58,7 @@ steps = run_list.get('steps')
 resume_after = run_list.get('resume_after', None)
 
 if resume_after:
-    print "resume_after", resume_after
+    print("resume_after", resume_after)
 
 pipeline.run(models=steps, resume_after=resume_after)
 

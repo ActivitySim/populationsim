@@ -1,9 +1,8 @@
 import os
 
 import pandas as pd
-import orca
 
-from activitysim.core import inject_defaults
+from activitysim.core import config
 from activitysim.core import tracing
 from activitysim.core import pipeline
 from activitysim.core import inject
@@ -12,23 +11,24 @@ from populationsim import steps
 
 
 def teardown_function(func):
-    orca.clear_cache()
+    inject.clear_cache()
     inject.reinject_decorated_tables()
 
 
 def test_weighting():
 
     configs_dir = os.path.join(os.path.dirname(__file__), '..', '..',
-                               'example_weighting', 'configs')
-    orca.add_injectable("configs_dir", configs_dir)
+                               'example_survey_weighting', 'configs')
+    inject.add_injectable("configs_dir", configs_dir)
 
-    data_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'example_weighting', 'data')
-    orca.add_injectable("data_dir", data_dir)
+    data_dir = os.path.join(os.path.dirname(__file__), '..', '..',
+                            'example_survey_weighting', 'data')
+    inject.add_injectable("data_dir", data_dir)
 
     output_dir = os.path.join(os.path.dirname(__file__), 'output')
-    orca.add_injectable("output_dir", output_dir)
+    inject.add_injectable("output_dir", output_dir)
 
-    orca.clear_cache()
+    inject.clear_cache()
 
     tracing.config_logger()
 
@@ -55,4 +55,4 @@ def test_weighting():
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
 
-    orca.clear_cache()
+    inject.clear_cache()

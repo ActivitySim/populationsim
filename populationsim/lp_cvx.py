@@ -1,10 +1,11 @@
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
 import logging
 
 import numpy as np
-from util import setting
+from .util import setting
 
 logger = logging.getLogger(__name__)
 

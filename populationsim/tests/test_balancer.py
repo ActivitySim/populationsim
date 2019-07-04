@@ -48,7 +48,7 @@ def test_Konduri():
     status, weights, controls = balancer.balance()
 
     weighted_sum = \
-        [round((incidence_table.ix[:, c] * weights.final).sum(), 2) for c in controls.index]
+        [round((incidence_table.loc[:, c] * weights.final).sum(), 2) for c in controls.index]
 
     published_final_weights = [1.36, 25.66, 7.98, 27.79, 18.45, 8.64, 1.47, 8.64]
     published_weighted_sum = [

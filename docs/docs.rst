@@ -19,4 +19,4 @@ Below are links to important documents and resources:
 
 5. `ActivitySim <http://www.activitysim.org>`_
 
-6. `Oregon DOT Training Package <https://github.com/RSGInc/populationSim_resources/raw/master/training_package/TrainingPackage.7z>`_
+6. `Oregon DOT Training Package (Python 2) <https://github.com/RSGInc/populationSim_resources/raw/master/training_package/TrainingPackage.7z>`_

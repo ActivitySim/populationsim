@@ -1,3 +1,6 @@
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -9,9 +12,9 @@ import pandas as pd
 from activitysim.core import pipeline
 from activitysim.core import inject
 
-from helper import get_control_table
-from helper import control_table_name
-from helper import get_weight_table
+from .helper import get_control_table
+from .helper import control_table_name
+from .helper import get_weight_table
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +23,7 @@ def dump_table(table_name, table):
 
     return
 
-    print "\n%s\n" % table_name, table
+    print("\n%s\n" % table_name, table)
 
 
 @inject.step()

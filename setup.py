@@ -8,7 +8,7 @@ with open('README.rst') as file:
 
 setup(
     name='populationsim',
-    version='0.3.4',
+    version='0.3.5',
     description='Population Synthesis',
     author='contributing authors',
     author_email='ben.stabler@rsginc.com',
@@ -17,21 +17,25 @@ setup(
     classifiers=[
         'Development Status :: 4 - Beta',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'License :: OSI Approved :: BSD License'
     ],
     long_description=long_description,
     packages=find_packages(exclude=['*.tests']),
+    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
     install_requires=[
-        'numpy >= 1.12.1',
-        'openmatrix >= 0.2.4',
-        'orca >= 1.1',
-        'pandas >= 0.18.0',
-        'pyyaml >= 3.0, <5.1',
-        'tables >= 3.3.0',
-        'toolz >= 0.7',
+        'numpy >= 1.16.1',
+        'openmatrix >= 0.3.4.1',
+        'pandas >= 0.24.1',
+        'pyyaml >= 5.1',
+        'tables >= 3.5.1',
+        'toolz >= 0.8.1',
         'zbox >= 1.2',
         'psutil >= 4.1',
-        'activitysim == 0.5',
+        'activitysim >= 0.9.1',
         'ortools >= 5.1.4045',
+        'future >= 0.16.0'
     ]
 )

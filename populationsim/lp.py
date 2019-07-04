@@ -1,11 +1,12 @@
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
 import logging
 
-from util import setting
-import lp_cvx
-import lp_ortools
+from .util import setting
+from . import lp_cvx
+from . import lp_ortools
 
 
 STATUS_OPTIMAL = 'OPTIMAL'

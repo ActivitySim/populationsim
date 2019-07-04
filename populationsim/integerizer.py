@@ -1,17 +1,19 @@
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
+from builtins import object
 import logging
 
 import os
 
 import numpy as np
 import pandas as pd
-from util import setting
+from .util import setting
 
-from lp import get_single_integerizer
-from lp import STATUS_SUCCESS
-from lp import STATUS_OPTIMAL
+from .lp import get_single_integerizer
+from .lp import STATUS_SUCCESS
+from .lp import STATUS_OPTIMAL
 
 
 logger = logging.getLogger(__name__)
@@ -100,7 +102,7 @@ class Integerizer(object):
         sample_count = len(self.incidence_table.index)
         control_count = len(self.incidence_table.columns)
 
-        incidence = self.incidence_table.as_matrix().transpose().astype(np.float64)
+        incidence = self.incidence_table.values.transpose().astype(np.float64)
         float_weights = np.asanyarray(self.float_weights).astype(np.float64)
         relaxed_control_totals = np.asanyarray(self.relaxed_control_totals).astype(np.float64)
         control_is_hh_based = np.asanyarray(self.control_is_hh_based).astype(bool)
@@ -250,7 +252,7 @@ def do_integerizing(
         ##########################################
 
         relaxed_control_totals = \
-            np.round(np.dot(np.asanyarray(float_weights), incidence_table.as_matrix()))
+            np.round(np.dot(np.asanyarray(float_weights), incidence_table.values))
         relaxed_control_totals = \
             pd.Series(relaxed_control_totals, index=incidence_table.columns.values)
 
@@ -288,7 +290,7 @@ def do_integerizing(
         control_spec = control_spec[control_spec.target.isin(balanced_control_cols)]
 
         relaxed_control_totals = \
-            np.round(np.dot(np.asanyarray(float_weights), incidence_table.as_matrix()))
+            np.round(np.dot(np.asanyarray(float_weights), incidence_table.values))
         relaxed_control_totals = \
             pd.Series(relaxed_control_totals, index=incidence_table.columns.values)
 

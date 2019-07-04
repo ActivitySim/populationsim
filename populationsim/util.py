@@ -1,6 +1,8 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
+from __future__ import absolute_import
+
 import logging
 
 from activitysim.core import inject

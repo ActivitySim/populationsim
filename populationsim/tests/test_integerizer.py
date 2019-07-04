@@ -1,10 +1,12 @@
+from __future__ import (absolute_import, print_function)
 # PopulationSim
 # See full license in LICENSE.txt.
 
 import os
 import numpy as np
 import pandas as pd
-import orca
+
+from activitysim.core import inject
 
 from populationsim import integerizer
 
@@ -12,13 +14,13 @@ from populationsim import integerizer
 def test_integerizer():
 
     configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
-    orca.add_injectable("configs_dir", configs_dir)
+    inject.add_injectable("configs_dir", configs_dir)
 
     # data_dir = os.path.join(os.path.dirname(__file__), 'data')
-    # orca.add_injectable("data_dir", data_dir)
+    # inject.add_injectable("data_dir", data_dir)
     #
     # output_dir = os.path.join(os.path.dirname(__file__), 'output')
-    # orca.add_injectable("output_dir", output_dir)
+    # inject.add_injectable("output_dir", output_dir)
 
     # rows are elements for which factors are calculated, columns are constraints to be satisfied
     incidence_table = pd.DataFrame({
@@ -55,9 +57,9 @@ def test_integerizer():
         total_hh_control_col='num_hh'
     )
 
-    print "do_integerizing status", status
-    print "sum", integerized_weights.sum()
-    print "do_integerizing integerized_weights\n", integerized_weights
+    print("do_integerizing status", status)
+    print("sum", integerized_weights.sum())
+    print("do_integerizing integerized_weights\n", integerized_weights)
 
     assert integerized_weights.sum() == 100
 

@@ -2,6 +2,7 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
+from builtins import str
 import logging
 import os
 

@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -10,9 +11,9 @@ from activitysim.core import inject
 from populationsim.util import setting
 
 from ..balancer import do_balancing
-from helper import get_control_table
-from helper import weight_table_name
-from helper import get_weight_table
+from .helper import get_control_table
+from .helper import weight_table_name
+from .helper import get_weight_table
 
 
 logger = logging.getLogger(__name__)

@@ -25,7 +25,7 @@ trace_geography:
   TAZ: 100
   TRACT: 10200
 
-  
+
 # Data Directory
 # ------------------------------------------------------------------
 data_dir: data
@@ -92,7 +92,7 @@ run_list:
   steps:
     - input_pre_processor.repop
     - repop_setup_data_structures
-    - initial_seed_balancing.final=true
+    - initial_seed_balancing.final=true;repop
     - integerize_final_seed_weights.repop
     - repop_balancing
     # expand_households options are append or replace
@@ -102,4 +102,3 @@ run_list:
     - write_tables.repop
 
   resume_after: summarize
-

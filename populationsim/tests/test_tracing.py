@@ -1,3 +1,4 @@
+from __future__ import (absolute_import, print_function)
 # ActivitySim
 # See full license in LICENSE.txt.
 
@@ -6,19 +7,20 @@ import logging
 
 import pytest
 
-import orca
 import pandas as pd
 
 import activitysim.core.tracing as tracing
+
+from activitysim.core import inject
 
 
 def add_canonical_dirs():
 
     configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
-    orca.add_injectable("configs_dir", configs_dir)
+    inject.add_injectable("configs_dir", configs_dir)
 
     output_dir = os.path.join(os.path.dirname(__file__), 'output')
-    orca.add_injectable("output_dir", output_dir)
+    inject.add_injectable("output_dir", output_dir)
 
 
 def test_config_logger(capsys):
@@ -33,7 +35,7 @@ def test_config_logger(capsys):
     assert len(file_handlers) == 1
     asim_logger_baseFilename = file_handlers[0].baseFilename
 
-    print "handlers:", logger.handlers
+    print("handlers:", logger.handlers)
 
     logger.info('test_config_logger')
     logger.info('log_info')
@@ -42,7 +44,7 @@ def test_config_logger(capsys):
     out, err = capsys.readouterr()
 
     # don't consume output
-    print out
+    print(out)
 
     assert "could not find conf file" not in out
     assert 'log_warn1' in out
@@ -50,6 +52,6 @@ def test_config_logger(capsys):
 
     with open(asim_logger_baseFilename, 'r') as content_file:
         content = content_file.read()
-        print content
+        print(content)
     assert 'log_warn1' in content
     assert 'log_info' in content

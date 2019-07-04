@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -11,8 +12,8 @@ from populationsim.util import setting
 
 from ..balancer import do_balancing
 
-from helper import get_control_table
-from helper import weight_table_name
+from .helper import get_control_table
+from .helper import weight_table_name
 
 
 logger = logging.getLogger(__name__)
@@ -113,4 +114,5 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     if inject.get_step_arg('final', default=False):
         seed_weights_df['balanced_weight'] = seed_weights_df['preliminary_balanced_weight']
 
-    inject.add_table(weight_table_name(seed_geography), seed_weights_df)
+    repop = inject.get_step_arg('repop', default=False)
+    inject.add_table(weight_table_name(seed_geography), seed_weights_df, replace=repop)

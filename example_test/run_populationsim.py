@@ -1,7 +1,7 @@
 import os
 import logging
 
-from activitysim.core import inject_defaults
+from activitysim.core import config
 
 from activitysim.core import tracing
 from activitysim.core import pipeline
