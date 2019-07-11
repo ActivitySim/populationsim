@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Getting Started &mdash; PopulationSim 0.3.3
+  <title>Getting Started &mdash; PopulationSim 0.3.4
  documentation</title>
   
 
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.3.3
+                0.3.4
 
               </div>
             
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#run-examples">Run Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#example-calm">Example_calm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#example-calm-repop">Example_calm_repop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-weighting">Example_weighting</a></li>
 </ul>
 </li>
 </ul>
@@ -224,7 +225,7 @@
 <li>Download and unzip the <a class="reference external" href="https://github.com/RSGInc/populationSim_resources/raw/master/example_setup/PopulationSimExampleSetUps.7z">example setups</a> to a folder on your computer. It does not have to be the same directory as your Anaconda or PopulationSim install.</li>
 </ul>
 </div></blockquote>
-<p>There are two examples for running PopulationSim, created using data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon. The <a class="reference internal" href="#example-calm">example_calm</a> set-up runs PopulationSim in base mode, where a synthetic population is created for the entire modeling region. This takes approximately 12 minutes on a laptop with an Intel i7-4800MQ CPU &#64; 2.70GHz and 16 GB of RAM. The <a class="reference internal" href="#example-calm-repop">example_calm_repop</a> set-up runs PopulationSim in the <em>repop</em> mode, which updates the synthetic population for a small part of the region. More information on the configuration of PopulationSim can be found in the <strong>Application &amp; Configuration</strong> section.</p>
+<p>There are three examples for running PopulationSim, two created using data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon and the other using data from the Metro Vancouver region in British Columbia. The <a class="reference internal" href="#example-calm">example_calm</a> set-up runs PopulationSim in base mode, where a synthetic population is created for the entire modeling region. This takes approximately 12 minutes on a laptop with an Intel i7-4800MQ CPU &#64; 2.70GHz and 16 GB of RAM. The <a class="reference internal" href="#example-calm-repop">example_calm_repop</a> set-up runs PopulationSim in the <em>repop</em> mode, which updates the synthetic population for a small part of the region. The <a class="reference internal" href="#example-weighting">example_weighting</a> set-up runs PopulationSim for the case of developing final weights for a household travel survey. More information on the configuration of PopulationSim can be found in the <strong>Application &amp; Configuration</strong> section.</p>
 <div class="section" id="example-calm">
 <h3>Example_calm<a class="headerlink" href="#example-calm" title="Permalink to this headline">¶</a></h3>
 <p>Follow the steps below to run <strong>example_calm</strong> set up:</p>
@@ -249,6 +250,23 @@
 <div><ul class="simple">
 <li>Copy the <strong>pipeline.h5</strong> file from the example_calm\output directory to example_calm_repop\output directory (all PopulationSim files are stored in pipeline.h5 file)</li>
 <li>Open a command prompt in the example_calm_repop folder</li>
+<li>Run the following commands:</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
+<span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Review the outputs in the <em>output</em> folder</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="example-weighting">
+<h3>Example_weighting<a class="headerlink" href="#example-weighting" title="Permalink to this headline">¶</a></h3>
+<p>Follow the steps below to run <strong>example_weighting</strong> set up:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Open a command prompt in the example_weighting folder</li>
 <li>Run the following commands:</li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>

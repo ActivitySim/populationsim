@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Introduction &mdash; PopulationSim 0.3.3
+  <title>Introduction &mdash; PopulationSim 0.3.4
  documentation</title>
   
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.3.3
+                0.3.4
 
               </div>
             
@@ -158,7 +158,7 @@
             
   <div class="section" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>PopulationSim is an open platform for population synthesis.  It emerged from Oregon DOT’s desire to
+<p>PopulationSim is an open platform for population synthesis and survey weighting.  It emerged from Oregon DOT’s desire to
 build a shared, open, platform that could be easily adapted for statewide, regional, and urban
 transportation planning needs.</p>
 <div class="section" id="what-is-population-synthesis">
@@ -209,6 +209,13 @@ have been assigned, seed sample is expanded using these weights to generate a sy
 population synthesizers create distributions using final weights and employ random sampling to expand the
 seed sample. PopulationSim uses Linear Programming to convert the final weights to integer values and expands
 the seed sample using these integer weights. For detailed description of PopulationSim algorithm, please refer to the TRB paper link in the <a class="reference internal" href="docs.html#docs"><span class="std std-ref">Documents &amp; Resources</span></a> section. For information on software implementation refer to <a class="reference internal" href="software.html#core-components"><span class="std std-ref">Core Components</span></a> and <a class="reference internal" href="software.html#model-steps"><span class="std std-ref">Model Steps</span></a>. To learn more about PopulationSim application and configuration, please follow the content index below.</p>
+</div>
+<div class="section" id="how-does-population-synthesis-work-for-survey-weighting">
+<h2>How does population synthesis work for survey weighting?<a class="headerlink" href="#how-does-population-synthesis-work-for-survey-weighting" title="Permalink to this headline">¶</a></h2>
+<p>PopulationSim can also be used to solve the household travel survey weighting problem of developing final weights.  Travel surveys typically
+include a set of initial household weights based on the sampling plan.  Often the initial weights are revised to match a set of control totals
+that describe the overall survey population.  This exercise is like population synthesis, except that the geographic allocation of households is
+not needed because household locations are surveyed and not synthesized.</p>
 </div>
 <div class="section" id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
