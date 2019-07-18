@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Software Implementation &mdash; PopulationSim 0.3.4
+  <title>Software Implementation &mdash; PopulationSim 0.3.5
  documentation</title>
   
 
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.3.4
+                0.3.5
 
               </div>
             
@@ -312,6 +312,11 @@ relaxation.</p>
 </div>
 <div class="section" id="module-populationsim.integerizer">
 <span id="integerizer"></span><h3>integerizer<a class="headerlink" href="#module-populationsim.integerizer" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="populationsim.integerizer.Integerizer">
+<em class="property">class </em><code class="descclassname">populationsim.integerizer.</code><code class="descname">Integerizer</code><span class="sig-paren">(</span><em>incidence_table</em>, <em>control_importance_weights</em>, <em>float_weights</em>, <em>relaxed_control_totals</em>, <em>total_hh_control_value</em>, <em>total_hh_control_index</em>, <em>control_is_hh_based</em>, <em>trace_label=''</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.integerizer.Integerizer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="populationsim.integerizer.do_integerizing">
 <code class="descclassname">populationsim.integerizer.</code><code class="descname">do_integerizing</code><span class="sig-paren">(</span><em>trace_label</em>, <em>control_spec</em>, <em>control_totals</em>, <em>incidence_table</em>, <em>float_weights</em>, <em>total_hh_control_col</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.integerizer.do_integerizing" title="Permalink to this definition">¶</a></dt>
@@ -672,6 +677,11 @@ or, in case of failure, sub_resid_weights unchanged</p>
 </div>
 <div class="section" id="module-populationsim.multi_integerizer">
 <span id="multi-integerizer"></span><h3>multi_integerizer<a class="headerlink" href="#module-populationsim.multi_integerizer" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="populationsim.multi_integerizer.SimulIntegerizer">
+<em class="property">class </em><code class="descclassname">populationsim.multi_integerizer.</code><code class="descname">SimulIntegerizer</code><span class="sig-paren">(</span><em>incidence_df</em>, <em>sub_weights</em>, <em>sub_controls_df</em>, <em>control_spec</em>, <em>total_hh_control_col</em>, <em>trace_label=''</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.SimulIntegerizer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="populationsim.multi_integerizer.do_no_integerizing">
 <code class="descclassname">populationsim.multi_integerizer.</code><code class="descname">do_no_integerizing</code><span class="sig-paren">(</span><em>trace_label</em>, <em>incidence_df</em>, <em>sub_weights</em>, <em>sub_controls_df</em>, <em>control_spec</em>, <em>total_hh_control_col</em>, <em>sub_control_zones</em>, <em>sub_geography</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_no_integerizing" title="Permalink to this definition">¶</a></dt>
@@ -1555,6 +1565,7 @@ with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
 <li>v0.3.2 - fix bug in mult-integerizer with total_hh_parent_control_index</li>
 <li>v0.3.3 - add disgnostic printouts on assert fail in mult_integerizer</li>
 <li>v0.3.4 - add survey weighting use case</li>
+<li>v0.3.5 - add Python 3.5+ support</li>
 </ul>
 </div></blockquote>
 </div>
