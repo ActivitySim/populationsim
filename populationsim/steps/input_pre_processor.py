@@ -73,7 +73,7 @@ def input_pre_processor():
                                % (tablename, data_file_path, ))
 
         logger.info("Reading csv file %s" % data_file_path)
-        df = pd.read_csv(data_file_path, comment='#')
+        df = read_csv_with_fallback_encoding(data_file_path)
 
         logger.info("input file columns: %s" % df.columns.values)
 
@@ -123,3 +123,16 @@ def input_pre_processor():
         # add (or replace) pipeline table
         repop = inject.get_step_arg('repop', default=False)
         inject.add_table(tablename, df, replace=repop)
+
+
+def read_csv_with_fallback_encoding(filepath):
+    """read a CSV to a pandas DataFrame using default utf-8 encoding,
+    but try alternate Windows-compatible cp1252 if unicode fails
+
+    """
+    try:
+        return pd.read_csv(filepath, comment='#')
+    except UnicodeDecodeError:
+        logger.warning(
+            "Reading %s with default utf-8 encoding failed, trying cp1252 instead", filepath)
+        return pd.read_csv(filepath, comment='#', encoding='cp1252')
