@@ -15,7 +15,7 @@ Documents & Resources
 
 4. `PopulationSim Software Repository <https://github.com/RSGInc/populationsim>`_
 
-5. `PopulationSim Resources Repository (additional resources such as papers, setups, examples, etc.) <https://github.com/RSGInc/populationsim_resources>`_
+5. `PopulationSim Resources Repository (additional resources such as papers, setups, examples) <https://github.com/RSGInc/populationsim_resources>`_
 
 6. `Complete Python 2 setup for PopulationSim <https://github.com/RSGInc/populationsim_python/archive/master.zip>`_
 
