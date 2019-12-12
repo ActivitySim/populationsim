@@ -5,7 +5,7 @@ from __future__ import absolute_import
 import logging
 
 import numpy as np
-from .util import setting
+from activitysim.core.config import setting
 
 logger = logging.getLogger(__name__)
 

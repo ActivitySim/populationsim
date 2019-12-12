@@ -8,7 +8,7 @@ import pandas as pd
 from activitysim.core import pipeline
 from activitysim.core import inject
 
-from populationsim.util import setting
+from activitysim.core.config import setting
 
 logger = logging.getLogger(__name__)
 

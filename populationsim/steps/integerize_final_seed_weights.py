@@ -13,7 +13,7 @@ from ..integerizer import do_integerizing
 from .helper import get_control_table
 from .helper import weight_table_name
 from .helper import get_weight_table
-from populationsim.util import setting
+from activitysim.core.config import setting
 
 logger = logging.getLogger(__name__)
 

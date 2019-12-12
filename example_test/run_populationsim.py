@@ -11,7 +11,7 @@ from activitysim.core.tracing import print_elapsed_time
 from activitysim.core.config import handle_standard_args
 
 from populationsim import steps
-from populationsim.util import setting
+from activitysim.core.config import setting
 from populationsim import lp
 from populationsim import multi_integerizer
 

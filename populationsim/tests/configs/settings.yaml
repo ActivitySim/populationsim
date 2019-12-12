@@ -37,6 +37,7 @@ seed_geography: PUMA
 
 output_tables:
   action: skip
+  prefix: ''
   tables:
     - households
     - persons
@@ -62,4 +63,3 @@ output_synthetic_population:
       - per_num
       - OSUTAG
       - OCCP
-

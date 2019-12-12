@@ -12,7 +12,7 @@ from ..simul_balancer import SimultaneousListBalancer
 from activitysim.core import inject
 from activitysim.core import pipeline
 
-from populationsim.util import setting
+from activitysim.core.config import setting
 
 from .helper import get_control_table
 from .helper import weight_table_name

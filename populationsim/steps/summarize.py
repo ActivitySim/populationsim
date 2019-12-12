@@ -12,7 +12,7 @@ from activitysim.core import inject
 
 from .helper import get_control_table
 from .helper import get_weight_table
-from populationsim.util import setting
+from activitysim.core.config import setting
 
 logger = logging.getLogger(__name__)
 
