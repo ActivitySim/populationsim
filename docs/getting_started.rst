@@ -35,23 +35,11 @@ Installation
   #Mac
   conda activate popsim
 
-4. Get and install other required libraries, which can be found online.  Run the following command on the activated conda Python environment:
+4. Get and install the PopulationSim package on the activated conda Python environment:
 
 ::
 
-  conda install cytoolz numpy pandas psutil pytables future
-
-5. If you access the internet from behind a firewall, then you will need to configure your proxy server when downloading packages. For example:
-
-::
-
-  pip install --trusted-host pypi.python.org --proxy=myproxy.org:8080  activitysim
-
-6. Get and install the PopulationSim package on the activated conda Python environment:
-
-::
-
-  pip install https://github.com/RSGInc/populationsim/zipball/master
+  pip install populationsim
 
 
 .. _anaconda_notes :

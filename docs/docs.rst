@@ -13,7 +13,7 @@ Documents & Resources
 
 3. `2018 TRB poster <https://github.com/RSGInc/populationSim_resources/raw/master/papers/TRBPoster_PaulDoyleStablerFreedmanBettinardi_v5%5B1%5D.pptx>`_
 
-4. `PopulationSim Software Repository <https://github.com/RSGInc/populationsim>`_
+4. `PopulationSim Software Repository <https://github.com/ActivitySim/populationsim>`_
 
 5. `PopulationSim Resources Repository (additional resources such as papers, setups, examples) <https://github.com/RSGInc/populationsim_resources>`_
 
