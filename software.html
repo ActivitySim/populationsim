@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Software Implementation &mdash; PopulationSim 0.3.5
+  <title>Software Implementation &mdash; PopulationSim 0.4
  documentation</title>
   
 
@@ -37,7 +37,7 @@
   <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Documents &amp; Resources" href="docs.html" />
+    <link rel="next" title="ActivitySim Resources" href="docs.html" />
     <link rel="prev" title="Validation of Results" href="validation.html" /> 
 </head>
 
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.3.5
+                0.4
 
               </div>
             
@@ -123,7 +123,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#release-notes">Release Notes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="docs.html">Documents &amp; Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html">ActivitySim Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html#external-resources">External Resources</a></li>
 </ul>
 
             
@@ -203,41 +204,48 @@ such as the inputs pre-processor, setting up the data strucutres, doing the init
 framework.  As summarized <a class="reference external" href="https://activitysim.github.io/activitysim/#software-design">here</a>,
 being implemented in the ActivitySim framework means:</p>
 <ul class="simple">
-<li>Overall Design<ul>
-<li>Implemented in Python, and makes heavy use of the vectorized backend C/C++ libraries in <a class="reference external" href="http://pandas.pydata.org">pandas</a> and <a class="reference external" href="http://www.numpy.org">numpy</a>.</li>
-<li>Vectorization instead of for loops when possible</li>
-<li>Runs sub-models that solve Python expression files that operate on data tables</li>
+<li><p>Overall Design</p>
+<ul>
+<li><p>Implemented in Python, and makes heavy use of the vectorized backend C/C++ libraries in <a class="reference external" href="http://pandas.pydata.org">pandas</a> and <a class="reference external" href="http://www.numpy.org">numpy</a>.</p></li>
+<li><p>Vectorization instead of for loops when possible</p></li>
+<li><p>Runs sub-models that solve Python expression files that operate on data tables</p></li>
 </ul>
 </li>
-<li>Data Handling<ul>
-<li>Inputs are in CSV format, with the exception of settings</li>
-<li>CSVs are read-in as pandas tables and stored in an intermediate HDF5 binary file that is used for data I/O throughout the model run</li>
-<li>Key outputs are written to CSV files</li>
+<li><p>Data Handling</p>
+<ul>
+<li><p>Inputs are in CSV format, with the exception of settings</p></li>
+<li><p>CSVs are read-in as pandas tables and stored in an intermediate HDF5 binary file that is used for data I/O throughout the model run</p></li>
+<li><p>Key outputs are written to CSV files</p></li>
 </ul>
 </li>
-<li>Key Data Structures<ul>
-<li><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html">pandas.DataFrame</a> - A data table with rows and columns, similar to an R data frame, Excel worksheet, or database table</li>
-<li><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.html">pandas.Series</a> - a vector of data, a column in a DataFrame table or a 1D array</li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html">numpy.array</a> - an N-dimensional array of items of the same type, such as a matrix</li>
+<li><p>Key Data Structures</p>
+<ul>
+<li><p><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html">pandas.DataFrame</a> - A data table with rows and columns, similar to an R data frame, Excel worksheet, or database table</p></li>
+<li><p><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.html">pandas.Series</a> - a vector of data, a column in a DataFrame table or a 1D array</p></li>
+<li><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html">numpy.array</a> - an N-dimensional array of items of the same type, such as a matrix</p></li>
 </ul>
 </li>
-<li>Model Orchestrator<ul>
-<li><a class="reference external" href="https://github.com/UDST/orca">ORCA</a> is used for running the overall model system and for defining dynamic data tables, columns, and injectables (functions). ActivitySim wraps ORCA functionality to make a Data Pipeline tool, which allows for re-starting at any model step.</li>
+<li><p>Model Orchestrator</p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/UDST/orca">ORCA</a> is used for running the overall model system and for defining dynamic data tables, columns, and injectables (functions). ActivitySim wraps ORCA functionality to make a Data Pipeline tool, which allows for re-starting at any model step.</p></li>
 </ul>
 </li>
-<li>Expressions<ul>
-<li>Model expressions are in CSV files and contain Python expressions, mainly pandas/numpy expression that operate on the input data tables. This helps to avoid modifying Python code when making changes to the model calculations.</li>
+<li><p>Expressions</p>
+<ul>
+<li><p>Model expressions are in CSV files and contain Python expressions, mainly pandas/numpy expression that operate on the input data tables. This helps to avoid modifying Python code when making changes to the model calculations.</p></li>
 </ul>
 </li>
-<li><a class="reference external" href="https://activitysim.github.io/activitysim/development.html">Code Documentation</a><ul>
-<li>Python code according to <a class="reference external" href="https://pypi.python.org/pypi/pycodestyle">pycodestyle</a> style guide</li>
-<li>Written in <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> markup, built with <a class="reference external" href="http://www.sphinx-doc.org/en/stable">Sphinx</a> and docstrings written in <a class="reference external" href="https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt">numpydoc</a></li>
+<li><p><a class="reference external" href="https://activitysim.github.io/activitysim/development.html">Code Documentation</a></p>
+<ul>
+<li><p>Python code according to <a class="reference external" href="https://pypi.python.org/pypi/pycodestyle">pycodestyle</a> style guide</p></li>
+<li><p>Written in <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> markup, built with <a class="reference external" href="http://www.sphinx-doc.org/en/stable">Sphinx</a> and docstrings written in <a class="reference external" href="https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt">numpydoc</a></p></li>
 </ul>
 </li>
-<li><a class="reference external" href="https://activitysim.github.io/activitysim/development.html">Testing</a><ul>
-<li>A protected master branch that can only be written to after tests have passed</li>
-<li><a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a> for tests</li>
-<li><a class="reference external" href="https://travis-ci.org">TravisCI</a> for building and testing with each commit</li>
+<li><p><a class="reference external" href="https://activitysim.github.io/activitysim/development.html">Testing</a></p>
+<ul>
+<li><p>A protected master branch that can only be written to after tests have passed</p></li>
+<li><p><a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a> for tests</p></li>
+<li><p><a class="reference external" href="https://travis-ci.org">TravisCI</a> for building and testing with each commit</p></li>
 </ul>
 </li>
 </ul>
@@ -252,7 +260,7 @@ exact ortools/cbc version.</p>
 <span id="assign"></span><h3>assign<a class="headerlink" href="#module-populationsim.assign" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="populationsim.assign.assign_variable">
-<code class="descclassname">populationsim.assign.</code><code class="descname">assign_variable</code><span class="sig-paren">(</span><em>target</em>, <em>expression</em>, <em>df</em>, <em>locals_dict</em>, <em>df_alias=None</em>, <em>trace_rows=None</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.assign.assign_variable" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.assign.</code><code class="sig-name descname">assign_variable</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">expression</em>, <em class="sig-param">df</em>, <em class="sig-param">locals_dict</em>, <em class="sig-param">df_alias=None</em>, <em class="sig-param">trace_rows=None</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.assign.assign_variable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate an expression of a given data table.</p>
 <p>Expressions are evaluated using Python’s eval function.
 Python expressions have access to variables in locals_d (and df being
@@ -260,39 +268,29 @@ accessible as variable df.) They also have access to previously assigned
 targets as the assigned target name.</p>
 <p>Users should take care that expressions should result in
 a Pandas Series (scalars will be automatically promoted to series.)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>assignment_expressions</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame of target assignment expressions</span></dt>
-<dd><p class="first last">target: target column names
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>assignment_expressions</strong><span class="classifier">pandas.DataFrame of target assignment expressions</span></dt><dd><p>target: target column names
 expression: pandas or python expression to evaluate</p>
 </dd>
-<dt><strong>df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame</span></dt>
-<dd></dd>
-<dt><strong>locals_d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Dict</span></dt>
-<dd><p class="first last">This is a dictionary of local variables that will be the environment
+<dt><strong>df</strong><span class="classifier">pandas.DataFrame</span></dt><dd></dd>
+<dt><strong>locals_d</strong><span class="classifier">Dict</span></dt><dd><p>This is a dictionary of local variables that will be the environment
 for an evaluation of “python” expression.</p>
 </dd>
-<dt><strong>trace_rows: series or array of bools to use as mask to select target rows to trace</strong></dt>
-<dd></dd>
+<dt><strong>trace_rows: series or array of bools to use as mask to select target rows to trace</strong></dt><dd></dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>result</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Series</span></dt>
-<dd><p class="first last">Will have the index of <cite>df</cite> and columns named by target and containing
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>result</strong><span class="classifier">pandas.Series</span></dt><dd><p>Will have the index of <cite>df</cite> and columns named by target and containing
 the result of evaluating expression</p>
 </dd>
-<dt><strong>trace_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Series or None</span></dt>
-<dd><p class="first last">a series containing the eval result values for the assignment expression</p>
+<dt><strong>trace_df</strong><span class="classifier">pandas.Series or None</span></dt><dd><p>a series containing the eval result values for the assignment expression</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -300,7 +298,7 @@ the result of evaluating expression</p>
 <span id="balancer"></span><h3>balancer<a class="headerlink" href="#module-populationsim.balancer" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="populationsim.balancer.ListBalancer">
-<em class="property">class </em><code class="descclassname">populationsim.balancer.</code><code class="descname">ListBalancer</code><span class="sig-paren">(</span><em>incidence_table</em>, <em>initial_weights</em>, <em>control_totals</em>, <em>control_importance_weights</em>, <em>lb_weights</em>, <em>ub_weights</em>, <em>master_control_index</em>, <em>max_iterations</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.balancer.ListBalancer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">populationsim.balancer.</code><code class="sig-name descname">ListBalancer</code><span class="sig-paren">(</span><em class="sig-param">incidence_table</em>, <em class="sig-param">initial_weights</em>, <em class="sig-param">control_totals</em>, <em class="sig-param">control_importance_weights</em>, <em class="sig-param">lb_weights</em>, <em class="sig-param">ub_weights</em>, <em class="sig-param">master_control_index</em>, <em class="sig-param">max_iterations</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.balancer.ListBalancer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Single-geography list balancer using Newton-Raphson method with control relaxation.</p>
 <p>Takes a list of households with initial weights assigned to each household, and updates those
 weights in such a way as to match the marginal distribution of control variables while
@@ -312,78 +310,53 @@ relaxation.</p>
 </div>
 <div class="section" id="module-populationsim.integerizer">
 <span id="integerizer"></span><h3>integerizer<a class="headerlink" href="#module-populationsim.integerizer" title="Permalink to this headline">¶</a></h3>
-<dl class="class">
-<dt id="populationsim.integerizer.Integerizer">
-<em class="property">class </em><code class="descclassname">populationsim.integerizer.</code><code class="descname">Integerizer</code><span class="sig-paren">(</span><em>incidence_table</em>, <em>control_importance_weights</em>, <em>float_weights</em>, <em>relaxed_control_totals</em>, <em>total_hh_control_value</em>, <em>total_hh_control_index</em>, <em>control_is_hh_based</em>, <em>trace_label=''</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.integerizer.Integerizer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="function">
 <dt id="populationsim.integerizer.do_integerizing">
-<code class="descclassname">populationsim.integerizer.</code><code class="descname">do_integerizing</code><span class="sig-paren">(</span><em>trace_label</em>, <em>control_spec</em>, <em>control_totals</em>, <em>incidence_table</em>, <em>float_weights</em>, <em>total_hh_control_col</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.integerizer.do_integerizing" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>trace_label</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">trace label indicating geography zone being integerized (e.g. PUMA_600)</p>
+<code class="sig-prename descclassname">populationsim.integerizer.</code><code class="sig-name descname">do_integerizing</code><span class="sig-paren">(</span><em class="sig-param">trace_label</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">control_totals</em>, <em class="sig-param">incidence_table</em>, <em class="sig-param">float_weights</em>, <em class="sig-param">total_hh_control_col</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.integerizer.do_integerizing" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>trace_label</strong><span class="classifier">str</span></dt><dd><p>trace label indicating geography zone being integerized (e.g. PUMA_600)</p>
 </dd>
-<dt><strong>control_spec</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">full control spec with columns ‘target’, ‘seed_table’, ‘importance’, …</p>
+<dt><strong>control_spec</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>full control spec with columns ‘target’, ‘seed_table’, ‘importance’, …</p>
 </dd>
-<dt><strong>control_totals</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Series</span></dt>
-<dd><p class="first last">control totals explicitly specified for this zone</p>
+<dt><strong>control_totals</strong><span class="classifier">pandas.Series</span></dt><dd><p>control totals explicitly specified for this zone</p>
 </dd>
-<dt><strong>incidence_table</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd></dd>
-<dt><strong>float_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Series</span></dt>
-<dd><p class="first last">balanced float weights to integerize</p>
+<dt><strong>incidence_table</strong><span class="classifier">pandas.Dataframe</span></dt><dd></dd>
+<dt><strong>float_weights</strong><span class="classifier">pandas.Series</span></dt><dd><p>balanced float weights to integerize</p>
 </dd>
-<dt><strong>total_hh_control_col</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">name of total_hh column (preferentially constrain to match this control)</p>
+<dt><strong>total_hh_control_col</strong><span class="classifier">str</span></dt><dd><p>name of total_hh column (preferentially constrain to match this control)</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>integerized_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Series</span></dt>
-<dd></dd>
-<dt><strong>status</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">as defined in integerizer.STATUS_TEXT and STATUS_SUCCESS</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>integerized_weights</strong><span class="classifier">pandas.Series</span></dt><dd></dd>
+<dt><strong>status</strong><span class="classifier">str</span></dt><dd><p>as defined in integerizer.STATUS_TEXT and STATUS_SUCCESS</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.integerizer.smart_round">
-<code class="descclassname">populationsim.integerizer.</code><code class="descname">smart_round</code><span class="sig-paren">(</span><em>int_weights</em>, <em>resid_weights</em>, <em>target_sum</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.integerizer.smart_round" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.integerizer.</code><code class="sig-name descname">smart_round</code><span class="sig-paren">(</span><em class="sig-param">int_weights</em>, <em class="sig-param">resid_weights</em>, <em class="sig-param">target_sum</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.integerizer.smart_round" title="Permalink to this definition">¶</a></dt>
 <dd><p>Round weights while ensuring (as far as possible that result sums to target_sum)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>int_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(int)</span></dt>
-<dd></dd>
-<dt><strong>resid_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(float)</span></dt>
-<dd></dd>
-<dt><strong>target_sum</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>int_weights</strong><span class="classifier">numpy.ndarray(int)</span></dt><dd></dd>
+<dt><strong>resid_weights</strong><span class="classifier">numpy.ndarray(float)</span></dt><dd></dd>
+<dt><strong>target_sum</strong><span class="classifier">int</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>rounded_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray array of ints</span></dt>
-<dd></dd>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>rounded_weights</strong><span class="classifier">numpy.ndarray array of ints</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -391,19 +364,15 @@ relaxation.</p>
 <span id="lp"></span><h3>lp<a class="headerlink" href="#module-populationsim.lp" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="populationsim.lp.get_simul_integerizer">
-<code class="descclassname">populationsim.lp.</code><code class="descname">get_simul_integerizer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp.get_simul_integerizer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.lp.</code><code class="sig-name descname">get_simul_integerizer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp.get_simul_integerizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return simul-integerizer function using installed/configured Linear Programming library.</p>
 <p>Different LP packages can be used for integerization (e.g. ortools of cvx) and this function
 hides the specifics of the individual packages so they can be swapped with minimal impact.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>integerizer_func</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function pointer to simul-integerizer function with call signature:</span></dt>
-<dd></dd>
-<dt>def np_simul_integerizer(</dt>
-<dd><p class="first last">sub_int_weights,
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>integerizer_func</strong><span class="classifier">function pointer to simul-integerizer function with call signature:</span></dt><dd></dd>
+<dt>def np_simul_integerizer(</dt><dd><p>sub_int_weights,
 parent_countrol_importance,
 parent_relax_ge_upper_bound,
 sub_countrol_importance,
@@ -422,27 +391,21 @@ total_hh_sub_control_index,
 total_hh_parent_control_index)</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.lp.get_single_integerizer">
-<code class="descclassname">populationsim.lp.</code><code class="descname">get_single_integerizer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp.get_single_integerizer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.lp.</code><code class="sig-name descname">get_single_integerizer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp.get_single_integerizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return single integerizer function using installed/configured Linear Programming library.</p>
 <p>Different LP packages can be used for integerization (e.g. ortools of cvx) and this function
 hides the specifics of the individual packages so they can be swapped with minimal impact.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>integerizer_func</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function pointer to single integerizer function with call signature:</span></dt>
-<dd><dl class="first last docutils">
-<dt>def np_integerizer(</dt>
-<dd><p class="first last">incidence,
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>integerizer_func</strong><span class="classifier">function pointer to single integerizer function with call signature:</span></dt><dd><dl class="simple">
+<dt>def np_integerizer(</dt><dd><p>incidence,
 resid_weights,
 log_resid_weights,
 control_importance_weights,
@@ -454,10 +417,8 @@ hh_constraint_ge_bound)</p>
 </dl>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -465,105 +426,69 @@ hh_constraint_ge_bound)</p>
 <span id="lp-cvx"></span><h3>lp_cvx<a class="headerlink" href="#module-populationsim.lp_cvx" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="populationsim.lp_cvx.np_integerizer_cvx">
-<code class="descclassname">populationsim.lp_cvx.</code><code class="descname">np_integerizer_cvx</code><span class="sig-paren">(</span><em>incidence</em>, <em>resid_weights</em>, <em>log_resid_weights</em>, <em>control_importance_weights</em>, <em>total_hh_control_index</em>, <em>lp_right_hand_side</em>, <em>relax_ge_upper_bound</em>, <em>hh_constraint_ge_bound</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_cvx.np_integerizer_cvx" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.lp_cvx.</code><code class="sig-name descname">np_integerizer_cvx</code><span class="sig-paren">(</span><em class="sig-param">incidence</em>, <em class="sig-param">resid_weights</em>, <em class="sig-param">log_resid_weights</em>, <em class="sig-param">control_importance_weights</em>, <em class="sig-param">total_hh_control_index</em>, <em class="sig-param">lp_right_hand_side</em>, <em class="sig-param">relax_ge_upper_bound</em>, <em class="sig-param">hh_constraint_ge_bound</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_cvx.np_integerizer_cvx" title="Permalink to this definition">¶</a></dt>
 <dd><p>cvx-based single-integerizer function taking numpy data types and conforming to a
 standard function signature that allows it to be swapped interchangeably with alternate
 LP implementations.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>incidence</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(control_count, sample_count) float</span></dt>
-<dd></dd>
-<dt><strong>resid_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sample_count,) float</span></dt>
-<dd></dd>
-<dt><strong>log_resid_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sample_count,) float</span></dt>
-<dd></dd>
-<dt><strong>control_importance_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>total_hh_control_index</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd></dd>
-<dt><strong>lp_right_hand_side</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>relax_ge_upper_bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>hh_constraint_ge_bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(control_count,) float</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>incidence</strong><span class="classifier">numpy.ndarray(control_count, sample_count) float</span></dt><dd></dd>
+<dt><strong>resid_weights</strong><span class="classifier">numpy.ndarray(sample_count,) float</span></dt><dd></dd>
+<dt><strong>log_resid_weights</strong><span class="classifier">numpy.ndarray(sample_count,) float</span></dt><dd></dd>
+<dt><strong>control_importance_weights</strong><span class="classifier">numpy.ndarray(control_count,) float</span></dt><dd></dd>
+<dt><strong>total_hh_control_index</strong><span class="classifier">int</span></dt><dd></dd>
+<dt><strong>lp_right_hand_side</strong><span class="classifier">numpy.ndarray(control_count,) float</span></dt><dd></dd>
+<dt><strong>relax_ge_upper_bound</strong><span class="classifier">numpy.ndarray(control_count,) float</span></dt><dd></dd>
+<dt><strong>hh_constraint_ge_bound</strong><span class="classifier">numpy.ndarray(control_count,) float</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>resid_weights_out</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sample_count,)</span></dt>
-<dd></dd>
-<dt><strong>status_text</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd></dd>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>resid_weights_out</strong><span class="classifier">numpy.ndarray(sample_count,)</span></dt><dd></dd>
+<dt><strong>status_text</strong><span class="classifier">str</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.lp_cvx.np_simul_integerizer_cvx">
-<code class="descclassname">populationsim.lp_cvx.</code><code class="descname">np_simul_integerizer_cvx</code><span class="sig-paren">(</span><em>sub_int_weights</em>, <em>parent_countrol_importance</em>, <em>parent_relax_ge_upper_bound</em>, <em>sub_countrol_importance</em>, <em>sub_float_weights</em>, <em>sub_resid_weights</em>, <em>lp_right_hand_side</em>, <em>parent_hh_constraint_ge_bound</em>, <em>sub_incidence</em>, <em>parent_incidence</em>, <em>total_hh_right_hand_side</em>, <em>relax_ge_upper_bound</em>, <em>parent_lp_right_hand_side</em>, <em>hh_constraint_ge_bound</em>, <em>parent_resid_weights</em>, <em>total_hh_sub_control_index</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_cvx.np_simul_integerizer_cvx" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.lp_cvx.</code><code class="sig-name descname">np_simul_integerizer_cvx</code><span class="sig-paren">(</span><em class="sig-param">sub_int_weights</em>, <em class="sig-param">parent_countrol_importance</em>, <em class="sig-param">parent_relax_ge_upper_bound</em>, <em class="sig-param">sub_countrol_importance</em>, <em class="sig-param">sub_float_weights</em>, <em class="sig-param">sub_resid_weights</em>, <em class="sig-param">lp_right_hand_side</em>, <em class="sig-param">parent_hh_constraint_ge_bound</em>, <em class="sig-param">sub_incidence</em>, <em class="sig-param">parent_incidence</em>, <em class="sig-param">total_hh_right_hand_side</em>, <em class="sig-param">relax_ge_upper_bound</em>, <em class="sig-param">parent_lp_right_hand_side</em>, <em class="sig-param">hh_constraint_ge_bound</em>, <em class="sig-param">parent_resid_weights</em>, <em class="sig-param">total_hh_sub_control_index</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_cvx.np_simul_integerizer_cvx" title="Permalink to this definition">¶</a></dt>
 <dd><p>cvx-based siuml-integerizer function taking numpy data types and conforming to a
 standard function signature that allows it to be swapped interchangeably with alternate
 LP implementations.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>sub_int_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count, sample_count) int</span></dt>
-<dd></dd>
-<dt><strong>parent_countrol_importance</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>parent_relax_ge_upper_bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>sub_countrol_importance</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>sub_float_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count, sample_count) float</span></dt>
-<dd></dd>
-<dt><strong>sub_resid_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count, sample_count) float</span></dt>
-<dd></dd>
-<dt><strong>lp_right_hand_side</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count, sub_control_count) float</span></dt>
-<dd></dd>
-<dt><strong>parent_hh_constraint_ge_bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>sub_incidence</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sample_count, sub_control_count) float</span></dt>
-<dd></dd>
-<dt><strong>parent_incidence</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sample_count, parent_control_count) float</span></dt>
-<dd></dd>
-<dt><strong>total_hh_right_hand_side</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count,) float</span></dt>
-<dd></dd>
-<dt><strong>relax_ge_upper_bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count, sub_control_count) float</span></dt>
-<dd></dd>
-<dt><strong>parent_lp_right_hand_side</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>hh_constraint_ge_bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count, sub_control_count) float</span></dt>
-<dd></dd>
-<dt><strong>parent_resid_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sample_count,) float</span></dt>
-<dd></dd>
-<dt><strong>total_hh_sub_control_index</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sub_int_weights</strong><span class="classifier">numpy.ndarray(sub_zone_count, sample_count) int</span></dt><dd></dd>
+<dt><strong>parent_countrol_importance</strong><span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt><dd></dd>
+<dt><strong>parent_relax_ge_upper_bound</strong><span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt><dd></dd>
+<dt><strong>sub_countrol_importance</strong><span class="classifier">numpy.ndarray(sub_control_count,) float</span></dt><dd></dd>
+<dt><strong>sub_float_weights</strong><span class="classifier">numpy.ndarray(sub_zone_count, sample_count) float</span></dt><dd></dd>
+<dt><strong>sub_resid_weights</strong><span class="classifier">numpy.ndarray(sub_zone_count, sample_count) float</span></dt><dd></dd>
+<dt><strong>lp_right_hand_side</strong><span class="classifier">numpy.ndarray(sub_zone_count, sub_control_count) float</span></dt><dd></dd>
+<dt><strong>parent_hh_constraint_ge_bound</strong><span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt><dd></dd>
+<dt><strong>sub_incidence</strong><span class="classifier">numpy.ndarray(sample_count, sub_control_count) float</span></dt><dd></dd>
+<dt><strong>parent_incidence</strong><span class="classifier">numpy.ndarray(sample_count, parent_control_count) float</span></dt><dd></dd>
+<dt><strong>total_hh_right_hand_side</strong><span class="classifier">numpy.ndarray(sub_zone_count,) float</span></dt><dd></dd>
+<dt><strong>relax_ge_upper_bound</strong><span class="classifier">numpy.ndarray(sub_zone_count, sub_control_count) float</span></dt><dd></dd>
+<dt><strong>parent_lp_right_hand_side</strong><span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt><dd></dd>
+<dt><strong>hh_constraint_ge_bound</strong><span class="classifier">numpy.ndarray(sub_zone_count, sub_control_count) float</span></dt><dd></dd>
+<dt><strong>parent_resid_weights</strong><span class="classifier">numpy.ndarray(sample_count,) float</span></dt><dd></dd>
+<dt><strong>total_hh_sub_control_index</strong><span class="classifier">int</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>resid_weights_out</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray of float</span></dt>
-<dd><p class="first last">residual weights in range [0..1] as solved,
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>resid_weights_out</strong><span class="classifier">numpy.ndarray of float</span></dt><dd><p>residual weights in range [0..1] as solved,
 or, in case of failure, sub_resid_weights unchanged</p>
 </dd>
-<dt><strong>status_text</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd><p class="first last">STATUS_OPTIMAL, STATUS_FEASIBLE in case of success, or a solver-specific failure status</p>
+<dt><strong>status_text</strong><span class="classifier">string</span></dt><dd><p>STATUS_OPTIMAL, STATUS_FEASIBLE in case of success, or a solver-specific failure status</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -571,377 +496,263 @@ or, in case of failure, sub_resid_weights unchanged</p>
 <span id="lp-ortools"></span><h3>lp_ortools<a class="headerlink" href="#module-populationsim.lp_ortools" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="populationsim.lp_ortools.np_integerizer_ortools">
-<code class="descclassname">populationsim.lp_ortools.</code><code class="descname">np_integerizer_ortools</code><span class="sig-paren">(</span><em>incidence</em>, <em>resid_weights</em>, <em>log_resid_weights</em>, <em>control_importance_weights</em>, <em>total_hh_control_index</em>, <em>lp_right_hand_side</em>, <em>relax_ge_upper_bound</em>, <em>hh_constraint_ge_bound</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_ortools.np_integerizer_ortools" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.lp_ortools.</code><code class="sig-name descname">np_integerizer_ortools</code><span class="sig-paren">(</span><em class="sig-param">incidence</em>, <em class="sig-param">resid_weights</em>, <em class="sig-param">log_resid_weights</em>, <em class="sig-param">control_importance_weights</em>, <em class="sig-param">total_hh_control_index</em>, <em class="sig-param">lp_right_hand_side</em>, <em class="sig-param">relax_ge_upper_bound</em>, <em class="sig-param">hh_constraint_ge_bound</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_ortools.np_integerizer_ortools" title="Permalink to this definition">¶</a></dt>
 <dd><p>ortools single-integerizer function taking numpy data types and conforming to a
 standard function signature that allows it to be swapped interchangeably with alternate
 LP implementations.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>incidence</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(control_count, sample_count) float</span></dt>
-<dd></dd>
-<dt><strong>resid_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sample_count,) float</span></dt>
-<dd></dd>
-<dt><strong>log_resid_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sample_count,) float</span></dt>
-<dd></dd>
-<dt><strong>control_importance_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>total_hh_control_index</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd></dd>
-<dt><strong>lp_right_hand_side</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>relax_ge_upper_bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>hh_constraint_ge_bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(control_count,) float</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>incidence</strong><span class="classifier">numpy.ndarray(control_count, sample_count) float</span></dt><dd></dd>
+<dt><strong>resid_weights</strong><span class="classifier">numpy.ndarray(sample_count,) float</span></dt><dd></dd>
+<dt><strong>log_resid_weights</strong><span class="classifier">numpy.ndarray(sample_count,) float</span></dt><dd></dd>
+<dt><strong>control_importance_weights</strong><span class="classifier">numpy.ndarray(control_count,) float</span></dt><dd></dd>
+<dt><strong>total_hh_control_index</strong><span class="classifier">int</span></dt><dd></dd>
+<dt><strong>lp_right_hand_side</strong><span class="classifier">numpy.ndarray(control_count,) float</span></dt><dd></dd>
+<dt><strong>relax_ge_upper_bound</strong><span class="classifier">numpy.ndarray(control_count,) float</span></dt><dd></dd>
+<dt><strong>hh_constraint_ge_bound</strong><span class="classifier">numpy.ndarray(control_count,) float</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>resid_weights_out</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sample_count,)</span></dt>
-<dd></dd>
-<dt><strong>status_text</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd></dd>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>resid_weights_out</strong><span class="classifier">numpy.ndarray(sample_count,)</span></dt><dd></dd>
+<dt><strong>status_text</strong><span class="classifier">str</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.lp_ortools.np_simul_integerizer_ortools">
-<code class="descclassname">populationsim.lp_ortools.</code><code class="descname">np_simul_integerizer_ortools</code><span class="sig-paren">(</span><em>sub_int_weights</em>, <em>parent_countrol_importance</em>, <em>parent_relax_ge_upper_bound</em>, <em>sub_countrol_importance</em>, <em>sub_float_weights</em>, <em>sub_resid_weights</em>, <em>lp_right_hand_side</em>, <em>parent_hh_constraint_ge_bound</em>, <em>sub_incidence</em>, <em>parent_incidence</em>, <em>total_hh_right_hand_side</em>, <em>relax_ge_upper_bound</em>, <em>parent_lp_right_hand_side</em>, <em>hh_constraint_ge_bound</em>, <em>parent_resid_weights</em>, <em>total_hh_sub_control_index</em>, <em>total_hh_parent_control_index</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_ortools.np_simul_integerizer_ortools" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.lp_ortools.</code><code class="sig-name descname">np_simul_integerizer_ortools</code><span class="sig-paren">(</span><em class="sig-param">sub_int_weights</em>, <em class="sig-param">parent_countrol_importance</em>, <em class="sig-param">parent_relax_ge_upper_bound</em>, <em class="sig-param">sub_countrol_importance</em>, <em class="sig-param">sub_float_weights</em>, <em class="sig-param">sub_resid_weights</em>, <em class="sig-param">lp_right_hand_side</em>, <em class="sig-param">parent_hh_constraint_ge_bound</em>, <em class="sig-param">sub_incidence</em>, <em class="sig-param">parent_incidence</em>, <em class="sig-param">total_hh_right_hand_side</em>, <em class="sig-param">relax_ge_upper_bound</em>, <em class="sig-param">parent_lp_right_hand_side</em>, <em class="sig-param">hh_constraint_ge_bound</em>, <em class="sig-param">parent_resid_weights</em>, <em class="sig-param">total_hh_sub_control_index</em>, <em class="sig-param">total_hh_parent_control_index</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_ortools.np_simul_integerizer_ortools" title="Permalink to this definition">¶</a></dt>
 <dd><p>ortools-based siuml-integerizer function taking numpy data types and conforming to a
 standard function signature that allows it to be swapped interchangeably with alternate
 LP implementations.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>sub_int_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count, sample_count) int</span></dt>
-<dd></dd>
-<dt><strong>parent_countrol_importance</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>parent_relax_ge_upper_bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>sub_countrol_importance</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>sub_float_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count, sample_count) float</span></dt>
-<dd></dd>
-<dt><strong>sub_resid_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count, sample_count) float</span></dt>
-<dd></dd>
-<dt><strong>lp_right_hand_side</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count, sub_control_count) float</span></dt>
-<dd></dd>
-<dt><strong>parent_hh_constraint_ge_bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>sub_incidence</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sample_count, sub_control_count) float</span></dt>
-<dd></dd>
-<dt><strong>parent_incidence</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sample_count, parent_control_count) float</span></dt>
-<dd></dd>
-<dt><strong>total_hh_right_hand_side</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count,) float</span></dt>
-<dd></dd>
-<dt><strong>relax_ge_upper_bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count, sub_control_count) float</span></dt>
-<dd></dd>
-<dt><strong>parent_lp_right_hand_side</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt>
-<dd></dd>
-<dt><strong>hh_constraint_ge_bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sub_zone_count, sub_control_count) float</span></dt>
-<dd></dd>
-<dt><strong>parent_resid_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray(sample_count,) float</span></dt>
-<dd></dd>
-<dt><strong>total_hh_sub_control_index</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd></dd>
-<dt><strong>total_hh_parent_control_index</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sub_int_weights</strong><span class="classifier">numpy.ndarray(sub_zone_count, sample_count) int</span></dt><dd></dd>
+<dt><strong>parent_countrol_importance</strong><span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt><dd></dd>
+<dt><strong>parent_relax_ge_upper_bound</strong><span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt><dd></dd>
+<dt><strong>sub_countrol_importance</strong><span class="classifier">numpy.ndarray(sub_control_count,) float</span></dt><dd></dd>
+<dt><strong>sub_float_weights</strong><span class="classifier">numpy.ndarray(sub_zone_count, sample_count) float</span></dt><dd></dd>
+<dt><strong>sub_resid_weights</strong><span class="classifier">numpy.ndarray(sub_zone_count, sample_count) float</span></dt><dd></dd>
+<dt><strong>lp_right_hand_side</strong><span class="classifier">numpy.ndarray(sub_zone_count, sub_control_count) float</span></dt><dd></dd>
+<dt><strong>parent_hh_constraint_ge_bound</strong><span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt><dd></dd>
+<dt><strong>sub_incidence</strong><span class="classifier">numpy.ndarray(sample_count, sub_control_count) float</span></dt><dd></dd>
+<dt><strong>parent_incidence</strong><span class="classifier">numpy.ndarray(sample_count, parent_control_count) float</span></dt><dd></dd>
+<dt><strong>total_hh_right_hand_side</strong><span class="classifier">numpy.ndarray(sub_zone_count,) float</span></dt><dd></dd>
+<dt><strong>relax_ge_upper_bound</strong><span class="classifier">numpy.ndarray(sub_zone_count, sub_control_count) float</span></dt><dd></dd>
+<dt><strong>parent_lp_right_hand_side</strong><span class="classifier">numpy.ndarray(parent_control_count,) float</span></dt><dd></dd>
+<dt><strong>hh_constraint_ge_bound</strong><span class="classifier">numpy.ndarray(sub_zone_count, sub_control_count) float</span></dt><dd></dd>
+<dt><strong>parent_resid_weights</strong><span class="classifier">numpy.ndarray(sample_count,) float</span></dt><dd></dd>
+<dt><strong>total_hh_sub_control_index</strong><span class="classifier">int</span></dt><dd></dd>
+<dt><strong>total_hh_parent_control_index</strong><span class="classifier">int</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>resid_weights_out</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray of float</span></dt>
-<dd><p class="first last">residual weights in range [0..1] as solved,
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>resid_weights_out</strong><span class="classifier">numpy.ndarray of float</span></dt><dd><p>residual weights in range [0..1] as solved,
 or, in case of failure, sub_resid_weights unchanged</p>
 </dd>
-<dt><strong>status_text</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd><p class="first last">STATUS_OPTIMAL, STATUS_FEASIBLE in case of success, or a solver-specific failure status</p>
+<dt><strong>status_text</strong><span class="classifier">string</span></dt><dd><p>STATUS_OPTIMAL, STATUS_FEASIBLE in case of success, or a solver-specific failure status</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 <div class="section" id="module-populationsim.multi_integerizer">
 <span id="multi-integerizer"></span><h3>multi_integerizer<a class="headerlink" href="#module-populationsim.multi_integerizer" title="Permalink to this headline">¶</a></h3>
-<dl class="class">
-<dt id="populationsim.multi_integerizer.SimulIntegerizer">
-<em class="property">class </em><code class="descclassname">populationsim.multi_integerizer.</code><code class="descname">SimulIntegerizer</code><span class="sig-paren">(</span><em>incidence_df</em>, <em>sub_weights</em>, <em>sub_controls_df</em>, <em>control_spec</em>, <em>total_hh_control_col</em>, <em>trace_label=''</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.SimulIntegerizer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="function">
 <dt id="populationsim.multi_integerizer.do_no_integerizing">
-<code class="descclassname">populationsim.multi_integerizer.</code><code class="descname">do_no_integerizing</code><span class="sig-paren">(</span><em>trace_label</em>, <em>incidence_df</em>, <em>sub_weights</em>, <em>sub_controls_df</em>, <em>control_spec</em>, <em>total_hh_control_col</em>, <em>sub_control_zones</em>, <em>sub_geography</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_no_integerizing" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.multi_integerizer.</code><code class="sig-name descname">do_no_integerizing</code><span class="sig-paren">(</span><em class="sig-param">trace_label</em>, <em class="sig-param">incidence_df</em>, <em class="sig-param">sub_weights</em>, <em class="sig-param">sub_controls_df</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">total_hh_control_col</em>, <em class="sig-param">sub_control_zones</em>, <em class="sig-param">sub_geography</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_no_integerizing" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="populationsim.multi_integerizer.do_sequential_integerizing">
-<code class="descclassname">populationsim.multi_integerizer.</code><code class="descname">do_sequential_integerizing</code><span class="sig-paren">(</span><em>trace_label</em>, <em>incidence_df</em>, <em>sub_weights</em>, <em>sub_controls_df</em>, <em>control_spec</em>, <em>total_hh_control_col</em>, <em>sub_control_zones</em>, <em>sub_geography</em>, <em>combine_results=True</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_sequential_integerizing" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.multi_integerizer.</code><code class="sig-name descname">do_sequential_integerizing</code><span class="sig-paren">(</span><em class="sig-param">trace_label</em>, <em class="sig-param">incidence_df</em>, <em class="sig-param">sub_weights</em>, <em class="sig-param">sub_controls_df</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">total_hh_control_col</em>, <em class="sig-param">sub_control_zones</em>, <em class="sig-param">sub_geography</em>, <em class="sig-param">combine_results=True</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_sequential_integerizing" title="Permalink to this definition">¶</a></dt>
 <dd><p>note: this method returns different results depending on the value of combine_results</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>incidence_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">full incidence_df for all hh samples in seed zone</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>incidence_df</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>full incidence_df for all hh samples in seed zone</p>
 </dd>
-<dt><strong>sub_zone_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFame</span></dt>
-<dd><p class="first last">balanced subzone household sample weights to integerize</p>
+<dt><strong>sub_zone_weights</strong><span class="classifier">pandas.DataFame</span></dt><dd><p>balanced subzone household sample weights to integerize</p>
 </dd>
-<dt><strong>sub_controls_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">sub_geography controls (one row per zone indexed by sub_zone id)</p>
+<dt><strong>sub_controls_df</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>sub_geography controls (one row per zone indexed by sub_zone id)</p>
 </dd>
-<dt><strong>control_spec</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">full control spec with columns ‘target’, ‘seed_table’, ‘importance’, …</p>
+<dt><strong>control_spec</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>full control spec with columns ‘target’, ‘seed_table’, ‘importance’, …</p>
 </dd>
-<dt><strong>total_hh_control_col</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">name of total_hh column (so we can preferentially match this control)</p>
+<dt><strong>total_hh_control_col</strong><span class="classifier">str</span></dt><dd><p>name of total_hh column (so we can preferentially match this control)</p>
 </dd>
-<dt><strong>sub_geography</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">subzone geography name (e.g. ‘TAZ’)</p>
+<dt><strong>sub_geography</strong><span class="classifier">str</span></dt><dd><p>subzone geography name (e.g. ‘TAZ’)</p>
 </dd>
-<dt><strong>sub_control_zones</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Series</span></dt>
-<dd><p class="first last">series mapping zone_id (index) to zone label (value)
+<dt><strong>sub_control_zones</strong><span class="classifier">pandas.Series</span></dt><dd><p>series mapping zone_id (index) to zone label (value)
 for use in sub_controls_df column names</p>
 </dd>
-<dt><strong>combine_results</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd><p class="first last">return all results in a single frame or return infeasible rounded results separately?</p>
+<dt><strong>combine_results</strong><span class="classifier">bool</span></dt><dd><p>return all results in a single frame or return infeasible rounded results separately?</p>
 </dd>
-<dt><strong>Returns</strong></dt>
-<dd></dd>
-<dt><strong>——-</strong></dt>
-<dd></dd>
-<dt><strong>For combined results:</strong></dt>
-<dd><dl class="first last docutils">
-<dt>integerized_weights_df <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame</span></dt>
-<dd><p class="first last">canonical form weight table, with columns for ‘balanced_weight’, ‘integer_weight’
+<dt><strong>Returns</strong></dt><dd></dd>
+<dt><strong>——-</strong></dt><dd></dd>
+<dt><strong>For combined results:</strong></dt><dd><dl class="simple">
+<dt>integerized_weights_df<span class="classifier">pandas.DataFrame</span></dt><dd><p>canonical form weight table, with columns for ‘balanced_weight’, ‘integer_weight’
 plus columns for household id, and sub_geography zone ids</p>
 </dd>
 </dl>
 </dd>
-<dt><strong>for segregated results:</strong></dt>
-<dd><dl class="first last docutils">
-<dt>integerized_zone_ids <span class="classifier-delimiter">:</span> <span class="classifier">array(int)</span></dt>
-<dd><p class="first last">zone_ids of feasible (integerized) zones</p>
+<dt><strong>for segregated results:</strong></dt><dd><dl class="simple">
+<dt>integerized_zone_ids<span class="classifier">array(int)</span></dt><dd><p>zone_ids of feasible (integerized) zones</p>
 </dd>
-<dt>rounded_zone_ids <span class="classifier-delimiter">:</span> <span class="classifier">array(int)</span></dt>
-<dd><p class="first last">zone_ids of infeasible (rounded) zones</p>
+<dt>rounded_zone_ids<span class="classifier">array(int)</span></dt><dd><p>zone_ids of infeasible (rounded) zones</p>
 </dd>
-<dt>integerized_weights_df <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame or None if all zones infeasible</span></dt>
-<dd><p class="first last">integerized weights for feasible zones</p>
+<dt>integerized_weights_df<span class="classifier">pandas.DataFrame or None if all zones infeasible</span></dt><dd><p>integerized weights for feasible zones</p>
 </dd>
-<dt>rounded_weights_df <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame or None if all zones feasible</span></dt>
-<dd><p class="first last">rounded weights for infeasible aones</p>
+<dt>rounded_weights_df<span class="classifier">pandas.DataFrame or None if all zones feasible</span></dt><dd><p>rounded weights for infeasible aones</p>
 </dd>
 </dl>
 </dd>
-<dt><strong>Results dataframes are canonical form weight table,</strong></dt>
-<dd></dd>
-<dt><strong>with columns for ‘balanced_weight’, ‘integer_weight’</strong></dt>
-<dd></dd>
-<dt><strong>plus columns for household id, and sub_geography zone ids</strong></dt>
-<dd></dd>
+<dt><strong>Results dataframes are canonical form weight table,</strong></dt><dd></dd>
+<dt><strong>with columns for ‘balanced_weight’, ‘integer_weight’</strong></dt><dd></dd>
+<dt><strong>plus columns for household id, and sub_geography zone ids</strong></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.multi_integerizer.do_simul_integerizing">
-<code class="descclassname">populationsim.multi_integerizer.</code><code class="descname">do_simul_integerizing</code><span class="sig-paren">(</span><em>trace_label</em>, <em>incidence_df</em>, <em>sub_weights</em>, <em>sub_controls_df</em>, <em>control_spec</em>, <em>total_hh_control_col</em>, <em>sub_geography</em>, <em>sub_control_zones</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_simul_integerizing" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.multi_integerizer.</code><code class="sig-name descname">do_simul_integerizing</code><span class="sig-paren">(</span><em class="sig-param">trace_label</em>, <em class="sig-param">incidence_df</em>, <em class="sig-param">sub_weights</em>, <em class="sig-param">sub_controls_df</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">total_hh_control_col</em>, <em class="sig-param">sub_geography</em>, <em class="sig-param">sub_control_zones</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_simul_integerizing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around simultaneous integerizer to handle solver failure for infeasible subzones.</p>
 <p>Simultaneous integerize balanced float sub_weights,
 If simultaneous integerization fails, integerize serially to identify infeasible subzones,
 remove and smart_round infeasible subzones, and try simultaneous integerization again.
 (That ought to succeed, but if not, then fall back to all sequential integerization)
 Finally combine all results into a single result dataframe.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>incidence_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">full incidence_df for all hh samples in seed zone</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>incidence_df</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>full incidence_df for all hh samples in seed zone</p>
 </dd>
-<dt><strong>sub_zone_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFame</span></dt>
-<dd><p class="first last">balanced subzone household sample weights to integerize</p>
+<dt><strong>sub_zone_weights</strong><span class="classifier">pandas.DataFame</span></dt><dd><p>balanced subzone household sample weights to integerize</p>
 </dd>
-<dt><strong>sub_controls_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">sub_geography controls (one row per zone indexed by sub_zone id)</p>
+<dt><strong>sub_controls_df</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>sub_geography controls (one row per zone indexed by sub_zone id)</p>
 </dd>
-<dt><strong>control_spec</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">full control spec with columns ‘target’, ‘seed_table’, ‘importance’, …</p>
+<dt><strong>control_spec</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>full control spec with columns ‘target’, ‘seed_table’, ‘importance’, …</p>
 </dd>
-<dt><strong>total_hh_control_col</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">name of total_hh column (so we can preferentially match this control)</p>
+<dt><strong>total_hh_control_col</strong><span class="classifier">str</span></dt><dd><p>name of total_hh column (so we can preferentially match this control)</p>
 </dd>
-<dt><strong>sub_geography</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">subzone geography name (e.g. ‘TAZ’)</p>
+<dt><strong>sub_geography</strong><span class="classifier">str</span></dt><dd><p>subzone geography name (e.g. ‘TAZ’)</p>
 </dd>
-<dt><strong>sub_control_zones</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Series</span></dt>
-<dd><p class="first last">index is zone id and value is zone label (e.g. TAZ_101)
+<dt><strong>sub_control_zones</strong><span class="classifier">pandas.Series</span></dt><dd><p>index is zone id and value is zone label (e.g. TAZ_101)
 for use in sub_controls_df column names</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>integer_weights_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame</span></dt>
-<dd><p class="first last">canonical form weight table, with columns for ‘balanced_weight’, ‘integer_weight’
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>integer_weights_df</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>canonical form weight table, with columns for ‘balanced_weight’, ‘integer_weight’
 plus columns for household id, and sub_geography zone ids</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.multi_integerizer.multi_integerize">
-<code class="descclassname">populationsim.multi_integerizer.</code><code class="descname">multi_integerize</code><span class="sig-paren">(</span><em>incidence_df</em>, <em>sub_zone_weights</em>, <em>sub_controls_df</em>, <em>control_spec</em>, <em>total_hh_control_col</em>, <em>parent_geography</em>, <em>parent_id</em>, <em>sub_geography</em>, <em>sub_control_zones</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.multi_integerize" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>incidence_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">full incidence_df for all hh samples in seed zone</p>
+<code class="sig-prename descclassname">populationsim.multi_integerizer.</code><code class="sig-name descname">multi_integerize</code><span class="sig-paren">(</span><em class="sig-param">incidence_df</em>, <em class="sig-param">sub_zone_weights</em>, <em class="sig-param">sub_controls_df</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">total_hh_control_col</em>, <em class="sig-param">parent_geography</em>, <em class="sig-param">parent_id</em>, <em class="sig-param">sub_geography</em>, <em class="sig-param">sub_control_zones</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.multi_integerize" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>incidence_df</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>full incidence_df for all hh samples in seed zone</p>
 </dd>
-<dt><strong>sub_zone_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFame</span></dt>
-<dd><p class="first last">balanced subzone household sample weights to integerize</p>
+<dt><strong>sub_zone_weights</strong><span class="classifier">pandas.DataFame</span></dt><dd><p>balanced subzone household sample weights to integerize</p>
 </dd>
-<dt><strong>sub_controls_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">sub_geography controls (one row per zone indexed by sub_zone id)</p>
+<dt><strong>sub_controls_df</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>sub_geography controls (one row per zone indexed by sub_zone id)</p>
 </dd>
-<dt><strong>control_spec</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">full control spec with columns ‘target’, ‘seed_table’, ‘importance’, …</p>
+<dt><strong>control_spec</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>full control spec with columns ‘target’, ‘seed_table’, ‘importance’, …</p>
 </dd>
-<dt><strong>total_hh_control_col</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">name of total_hh column (so we can preferentially match this control)</p>
+<dt><strong>total_hh_control_col</strong><span class="classifier">str</span></dt><dd><p>name of total_hh column (so we can preferentially match this control)</p>
 </dd>
-<dt><strong>parent_geography</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">parent geography zone name</p>
+<dt><strong>parent_geography</strong><span class="classifier">str</span></dt><dd><p>parent geography zone name</p>
 </dd>
-<dt><strong>parent_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">parent geography zone id</p>
+<dt><strong>parent_id</strong><span class="classifier">int</span></dt><dd><p>parent geography zone id</p>
 </dd>
-<dt><strong>sub_geography</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">subzone geography name (e.g. ‘TAZ’)</p>
+<dt><strong>sub_geography</strong><span class="classifier">str</span></dt><dd><p>subzone geography name (e.g. ‘TAZ’)</p>
 </dd>
-<dt><strong>sub_control_zones</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Series</span></dt>
-<dd><p class="first last">index is zone id and value is zone label (e.g. TAZ_101)
+<dt><strong>sub_control_zones</strong><span class="classifier">pandas.Series</span></dt><dd><p>index is zone id and value is zone label (e.g. TAZ_101)
 for use in sub_controls_df column names</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>integer_weights_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame</span></dt>
-<dd><p class="first last">canonical form weight table, with columns for ‘balanced_weight’, ‘integer_weight’
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>integer_weights_df</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>canonical form weight table, with columns for ‘balanced_weight’, ‘integer_weight’
 plus columns for household id, parent and sub_geography zone ids</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.multi_integerizer.reshape_result">
-<code class="descclassname">populationsim.multi_integerizer.</code><code class="descname">reshape_result</code><span class="sig-paren">(</span><em>float_weights</em>, <em>integerized_weights</em>, <em>sub_geography</em>, <em>sub_control_zones</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.reshape_result" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.multi_integerizer.</code><code class="sig-name descname">reshape_result</code><span class="sig-paren">(</span><em class="sig-param">float_weights</em>, <em class="sig-param">integerized_weights</em>, <em class="sig-param">sub_geography</em>, <em class="sig-param">sub_control_zones</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.reshape_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reshape results into unstacked form - (same as that returned by sequential integerizer)
 with columns for ‘balanced_weight’, ‘integer_weight’
 plus columns for household id, and sub_geography zone ids</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>float_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame</span></dt>
-<dd><p class="first last">dataframe with one row per sample hh and one column per sub_zone</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>float_weights</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>dataframe with one row per sample hh and one column per sub_zone</p>
 </dd>
-<dt><strong>integerized_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame</span></dt>
-<dd><p class="first last">dataframe with one row per sample hh and one column per sub_zone</p>
+<dt><strong>integerized_weights</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>dataframe with one row per sample hh and one column per sub_zone</p>
 </dd>
-<dt><strong>sub_geography</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">name of sub_geography for result column name</p>
+<dt><strong>sub_geography</strong><span class="classifier">str</span></dt><dd><p>name of sub_geography for result column name</p>
 </dd>
-<dt><strong>sub_control_zones</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Series</span></dt>
-<dd><p class="first last">series mapping zone_id (index) to zone label (value)</p>
+<dt><strong>sub_control_zones</strong><span class="classifier">pandas.Series</span></dt><dd><p>series mapping zone_id (index) to zone label (value)</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>integer_weights_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame</span></dt>
-<dd><p class="first last">canonical form weight table, with columns for ‘balanced_weight’, ‘integer_weight’
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>integer_weights_df</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>canonical form weight table, with columns for ‘balanced_weight’, ‘integer_weight’
 plus columns for household id, and sub_geography zone ids</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.multi_integerizer.try_simul_integerizing">
-<code class="descclassname">populationsim.multi_integerizer.</code><code class="descname">try_simul_integerizing</code><span class="sig-paren">(</span><em>trace_label</em>, <em>incidence_df</em>, <em>sub_weights</em>, <em>sub_controls_df</em>, <em>sub_geography</em>, <em>control_spec</em>, <em>total_hh_control_col</em>, <em>sub_control_zones</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.try_simul_integerizing" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.multi_integerizer.</code><code class="sig-name descname">try_simul_integerizing</code><span class="sig-paren">(</span><em class="sig-param">trace_label</em>, <em class="sig-param">incidence_df</em>, <em class="sig-param">sub_weights</em>, <em class="sig-param">sub_controls_df</em>, <em class="sig-param">sub_geography</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">total_hh_control_col</em>, <em class="sig-param">sub_control_zones</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.try_simul_integerizing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attempt simultaneous integerization and return integerized weights if successful</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>incidence_df</strong></dt>
-<dd></dd>
-<dt><strong>sub_weights</strong></dt>
-<dd></dd>
-<dt><strong>sub_controls_df</strong></dt>
-<dd></dd>
-<dt><strong>sub_geography</strong></dt>
-<dd></dd>
-<dt><strong>control_spec</strong></dt>
-<dd></dd>
-<dt><strong>total_hh_control_col</strong></dt>
-<dd></dd>
-<dt><strong>sub_control_zones</strong></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>incidence_df</strong></dt><dd></dd>
+<dt><strong>sub_weights</strong></dt><dd></dd>
+<dt><strong>sub_controls_df</strong></dt><dd></dd>
+<dt><strong>sub_geography</strong></dt><dd></dd>
+<dt><strong>control_spec</strong></dt><dd></dd>
+<dt><strong>total_hh_control_col</strong></dt><dd></dd>
+<dt><strong>sub_control_zones</strong></dt><dd></dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>status</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">str value of integerizer status from STATUS_TEXT dict
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>status</strong><span class="classifier">str</span></dt><dd><p>str value of integerizer status from STATUS_TEXT dict
 integerization was successful if status in STATUS_SUCCESS list</p>
 </dd>
-<dt><strong>integerized_weights_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame or None</span></dt>
-<dd><p class="first last">canonical form weight table, with columns for ‘balanced_weight’, ‘integer_weight’
+<dt><strong>integerized_weights_df</strong><span class="classifier">pandas.DataFrame or None</span></dt><dd><p>canonical form weight table, with columns for ‘balanced_weight’, ‘integer_weight’
 or None if integerization failed</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -949,7 +760,7 @@ or None if integerization failed</p>
 <span id="simul-balancer"></span><h3>simul_balancer<a class="headerlink" href="#module-populationsim.simul_balancer" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="populationsim.simul_balancer.SimultaneousListBalancer">
-<em class="property">class </em><code class="descclassname">populationsim.simul_balancer.</code><code class="descname">SimultaneousListBalancer</code><span class="sig-paren">(</span><em>incidence_table</em>, <em>parent_weights</em>, <em>controls</em>, <em>sub_control_zones</em>, <em>total_hh_control_col</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.simul_balancer.SimultaneousListBalancer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">populationsim.simul_balancer.</code><code class="sig-name descname">SimultaneousListBalancer</code><span class="sig-paren">(</span><em class="sig-param">incidence_table</em>, <em class="sig-param">parent_weights</em>, <em class="sig-param">controls</em>, <em class="sig-param">sub_control_zones</em>, <em class="sig-param">total_hh_control_col</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.simul_balancer.SimultaneousListBalancer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dual-zone simultaneous list balancer using Newton-Raphson method with control relaxation.</p>
 <p>Simultaneously balances the household weights across multiple subzones of a parent zone,
 ensuring that the total weight of each household across sub-zones sums to the parent hh weight.</p>
@@ -958,7 +769,7 @@ ensuring that the total weight of each household across sub-zones sums to the pa
 
 <dl class="function">
 <dt id="populationsim.simul_balancer.np_simul_balancer">
-<code class="descclassname">populationsim.simul_balancer.</code><code class="descname">np_simul_balancer</code><span class="sig-paren">(</span><em>sample_count</em>, <em>control_count</em>, <em>zone_count</em>, <em>master_control_index</em>, <em>incidence</em>, <em>parent_weights</em>, <em>weights_lower_bound</em>, <em>weights_upper_bound</em>, <em>sub_weights</em>, <em>parent_controls</em>, <em>controls_importance</em>, <em>sub_controls</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.simul_balancer.np_simul_balancer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.simul_balancer.</code><code class="sig-name descname">np_simul_balancer</code><span class="sig-paren">(</span><em class="sig-param">sample_count</em>, <em class="sig-param">control_count</em>, <em class="sig-param">zone_count</em>, <em class="sig-param">master_control_index</em>, <em class="sig-param">incidence</em>, <em class="sig-param">parent_weights</em>, <em class="sig-param">weights_lower_bound</em>, <em class="sig-param">weights_upper_bound</em>, <em class="sig-param">sub_weights</em>, <em class="sig-param">parent_controls</em>, <em class="sig-param">controls_importance</em>, <em class="sig-param">sub_controls</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.simul_balancer.np_simul_balancer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simultaneous balancer using only numpy (no pandas) data types.
 Separate function to ensure that no pandas data types leak in from object instance variables
 since they are often silently accepted as numpy arguments but slow things down</p>
@@ -972,7 +783,7 @@ since they are often silently accepted as numpy arguments but slow things down</
 <span id="id3"></span><h3>input_pre_processor<a class="headerlink" href="#input-pre-processor" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.input_pre_processor"></span><dl class="function">
 <dt id="populationsim.steps.input_pre_processor.input_pre_processor">
-<code class="descclassname">populationsim.steps.input_pre_processor.</code><code class="descname">input_pre_processor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.input_pre_processor.input_pre_processor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.input_pre_processor.</code><code class="sig-name descname">input_pre_processor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.input_pre_processor.input_pre_processor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read input text files and save them as pipeline tables for use in subsequent steps.</p>
 <p>The files to read as specified by table_list, and array of dicts that specify the
 input file name, the name of the pipeline table, along with keys allow the specification
@@ -984,32 +795,32 @@ unless an alternate table_list name is specified as a model step argument ‘tab
 completed, in which case the input_table_list may specify replacement tables.
 (e.g. lowest geography controls that will replace the previous low controls dataframe.)</p>
 <p>See input_table_list in settings.yaml in the example folder for a working example</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="20%" />
-<col width="58%" />
-<col width="23%" />
+<col style="width: 20%" />
+<col style="width: 58%" />
+<col style="width: 23%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">key</th>
-<th class="head" colspan="2">description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head" colspan="2"><p>description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>tablename</td>
-<td colspan="2">ame of pipeline table in which to store dataframe</td>
+<tbody>
+<tr class="row-even"><td><p>tablename</p></td>
+<td colspan="2"><p>ame of pipeline table in which to store dataframe</p></td>
 </tr>
-<tr class="row-odd"><td>filename</td>
-<td colspan="2">name of csv file to read (in data_dir)</td>
+<tr class="row-odd"><td><p>filename</p></td>
+<td colspan="2"><p>name of csv file to read (in data_dir)</p></td>
 </tr>
-<tr class="row-even"><td>column_map</td>
-<td colspan="2">list of input columns to rename from_name: to_name</td>
+<tr class="row-even"><td><p>column_map</p></td>
+<td colspan="2"><p>list of input columns to rename from_name: to_name</p></td>
 </tr>
-<tr class="row-odd"><td>index_col</td>
-<td colspan="2">name of column to set as dataframe index column</td>
+<tr class="row-odd"><td><p>index_col</p></td>
+<td colspan="2"><p>name of column to set as dataframe index column</p></td>
 </tr>
-<tr class="row-even"><td>drop_columns</td>
-<td colspan="2">list of column names of columns to drop</td>
+<tr class="row-even"><td><p>drop_columns</p></td>
+<td colspan="2"><p>list of column names of columns to drop</p></td>
 </tr>
 </tbody>
 </table>
@@ -1017,7 +828,7 @@ completed, in which case the input_table_list may specify replacement tables.
 
 <dl class="function">
 <dt id="populationsim.steps.input_pre_processor.read_csv_with_fallback_encoding">
-<code class="descclassname">populationsim.steps.input_pre_processor.</code><code class="descname">read_csv_with_fallback_encoding</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.input_pre_processor.read_csv_with_fallback_encoding" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.input_pre_processor.</code><code class="sig-name descname">read_csv_with_fallback_encoding</code><span class="sig-paren">(</span><em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.input_pre_processor.read_csv_with_fallback_encoding" title="Permalink to this definition">¶</a></dt>
 <dd><p>read a CSV to a pandas DataFrame using default utf-8 encoding,
 but try alternate Windows-compatible cp1252 if unicode fails</p>
 </dd></dl>
@@ -1027,35 +838,28 @@ but try alternate Windows-compatible cp1252 if unicode fails</p>
 <span id="id4"></span><h3>setup_data_structures<a class="headerlink" href="#setup-data-structures" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.setup_data_structures"></span><dl class="function">
 <dt id="populationsim.steps.setup_data_structures.add_geography_columns">
-<code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">add_geography_columns</code><span class="sig-paren">(</span><em>incidence_table</em>, <em>households_df</em>, <em>crosswalk_df</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.add_geography_columns" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.setup_data_structures.</code><code class="sig-name descname">add_geography_columns</code><span class="sig-paren">(</span><em class="sig-param">incidence_table</em>, <em class="sig-param">households_df</em>, <em class="sig-param">crosswalk_df</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.add_geography_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add seed and meta geography columns to incidence_table</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>incidence_table</strong></dt>
-<dd></dd>
-<dt><strong>households_df</strong></dt>
-<dd></dd>
-<dt><strong>crosswalk_df</strong></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>incidence_table</strong></dt><dd></dd>
+<dt><strong>households_df</strong></dt><dd></dd>
+<dt><strong>crosswalk_df</strong></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.steps.setup_data_structures.build_crosswalk_table">
-<code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">build_crosswalk_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.build_crosswalk_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.setup_data_structures.</code><code class="sig-name descname">build_crosswalk_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.build_crosswalk_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>build crosswalk table filtered to include only zones in lowest geography</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.steps.setup_data_structures.filter_households">
-<code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">filter_households</code><span class="sig-paren">(</span><em>households_df</em>, <em>persons_df</em>, <em>crosswalk_df</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.filter_households" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.setup_data_structures.</code><code class="sig-name descname">filter_households</code><span class="sig-paren">(</span><em class="sig-param">households_df</em>, <em class="sig-param">persons_df</em>, <em class="sig-param">crosswalk_df</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.filter_households" title="Permalink to this definition">¶</a></dt>
 <dd><p>Filter households and persons tables, removing zero weight households
 and any households not in seed zones.</p>
 <p>Returns filtered households_df and persons_df</p>
@@ -1063,7 +867,7 @@ and any households not in seed zones.</p>
 
 <dl class="function">
 <dt id="populationsim.steps.setup_data_structures.repop_setup_data_structures">
-<code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">repop_setup_data_structures</code><span class="sig-paren">(</span><em>configs_dir</em>, <em>households</em>, <em>persons</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.repop_setup_data_structures" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.setup_data_structures.</code><code class="sig-name descname">repop_setup_data_structures</code><span class="sig-paren">(</span><em class="sig-param">configs_dir</em>, <em class="sig-param">households</em>, <em class="sig-param">persons</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.repop_setup_data_structures" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup geographic correspondence (crosswalk), control sets, and incidence tables for repop run.</p>
 <p>A new lowest-level geography control tables should already have been read in by rerunning
 input_pre_processor with a table_list override. The control table contains one row for
@@ -1071,27 +875,20 @@ each zone, with columns specifying control field totals for that control</p>
 <p>This step reads in the repop control file, which specifies which control control fields
 in the control table should be used for balancing, along with their importance and the
 recipe (seed table and expression) for determining household incidence for that control.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>configs_dir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd></dd>
-<dt><strong>households: pipeline table</strong></dt>
-<dd></dd>
-<dt><strong>persons: pipeline table</strong></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>configs_dir</strong><span class="classifier">str</span></dt><dd></dd>
+<dt><strong>households: pipeline table</strong></dt><dd></dd>
+<dt><strong>persons: pipeline table</strong></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.steps.setup_data_structures.setup_data_structures">
-<code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">setup_data_structures</code><span class="sig-paren">(</span><em>settings</em>, <em>configs_dir</em>, <em>households</em>, <em>persons</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.setup_data_structures" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.setup_data_structures.</code><code class="sig-name descname">setup_data_structures</code><span class="sig-paren">(</span><em class="sig-param">settings</em>, <em class="sig-param">configs_dir</em>, <em class="sig-param">households</em>, <em class="sig-param">persons</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.setup_data_structures" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup geographic correspondence (crosswalk), control sets, and incidence tables.</p>
 <p>A control tables for target geographies should already have been read in by running
 input_pre_processor. The zone control tables contains one row for each zone, with columns
@@ -1102,36 +899,26 @@ recipe (seed table and expression) for determining household incidence for that 
 <p>If GROUP_BY_INCIDENCE_SIGNATURE setting is enabled, then incidence table rows are
 household group ids and and additional household_groups table is created mapping hh group ids
 to actual hh_ids.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>settings: dict</strong></dt>
-<dd><p class="first last">contents of settings.yaml as dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>settings: dict</strong></dt><dd><p>contents of settings.yaml as dict</p>
 </dd>
-<dt><strong>configs_dir: str</strong></dt>
-<dd></dd>
-<dt><strong>households: pipeline table</strong></dt>
-<dd></dd>
-<dt><strong>persons: pipeline table</strong></dt>
-<dd></dd>
-<dt><strong>creates pipeline tables:</strong></dt>
-<dd><p class="first last">crosswalk
+<dt><strong>configs_dir: str</strong></dt><dd></dd>
+<dt><strong>households: pipeline table</strong></dt><dd></dd>
+<dt><strong>persons: pipeline table</strong></dt><dd></dd>
+<dt><strong>creates pipeline tables:</strong></dt><dd><p>crosswalk
 controls
 geography-specific controls
 incidence_table
 household_groups (if GROUP_BY_INCIDENCE_SIGNATURE setting is enabled)</p>
 </dd>
-<dt><strong>modifies tables:</strong></dt>
-<dd><p class="first last">households
+<dt><strong>modifies tables:</strong></dt><dd><p>households
 persons</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1139,62 +926,54 @@ persons</p>
 <span id="id5"></span><h3>initial_seed_balancing<a class="headerlink" href="#initial-seed-balancing" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.initial_seed_balancing"></span><dl class="function">
 <dt id="populationsim.steps.initial_seed_balancing.initial_seed_balancing">
-<code class="descclassname">populationsim.steps.initial_seed_balancing.</code><code class="descname">initial_seed_balancing</code><span class="sig-paren">(</span><em>settings</em>, <em>crosswalk</em>, <em>control_spec</em>, <em>incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.initial_seed_balancing.initial_seed_balancing" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.initial_seed_balancing.</code><code class="sig-name descname">initial_seed_balancing</code><span class="sig-paren">(</span><em class="sig-param">settings</em>, <em class="sig-param">crosswalk</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.initial_seed_balancing.initial_seed_balancing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Balance the household weights for each of the seed geographies (independently)
 using the seed level controls and the aggregated sub-zone controls totals.</p>
 <p>Create the seed_weights table with one row per household and columns contaiing
 household_id, seed geography (e.g. PUMA), and float preliminary_balanced_weights</p>
 <p>Adds seed_weights table to pipeline named &lt;seed_geography&gt;_weights (e.g. PUMA_weights):</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="16%" />
-<col width="12%" />
-<col width="58%" />
-<col width="14%" />
+<col style="width: 16%" />
+<col style="width: 12%" />
+<col style="width: 58%" />
+<col style="width: 14%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">index
-hh_id</th>
-<th class="head">PUMA</th>
-<th class="head">preliminary_balanced_weight</th>
-<th class="head">hh_id</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>index
+hh_id</p></th>
+<th class="head"><p>PUMA</p></th>
+<th class="head"><p>preliminary_balanced_weight</p></th>
+<th class="head"><p>hh_id</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>0
+<tbody>
+<tr class="row-even"><td><p>0
 1
 2
-…</td>
-<td>600
+…</p></td>
+<td><p>600
 601
-602</td>
-<td>0.313555
+602</p></td>
+<td><p>0.313555
 0.627110
-0.313555</td>
-<td>0
+0.313555</p></td>
+<td><p>0
 1
-2</td>
+2</p></td>
 </tr>
 </tbody>
 </table>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>settings</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict (settings.yaml as dict)</span></dt>
-<dd></dd>
-<dt><strong>crosswalk</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>control_spec</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>incidence_table</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>settings</strong><span class="classifier">dict (settings.yaml as dict)</span></dt><dd></dd>
+<dt><strong>crosswalk</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>control_spec</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>incidence_table</strong><span class="classifier">pipeline table</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1202,27 +981,20 @@ hh_id</th>
 <span id="id6"></span><h3>meta_control_factoring<a class="headerlink" href="#meta-control-factoring" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.meta_control_factoring"></span><dl class="function">
 <dt id="populationsim.steps.meta_control_factoring.meta_control_factoring">
-<code class="descclassname">populationsim.steps.meta_control_factoring.</code><code class="descname">meta_control_factoring</code><span class="sig-paren">(</span><em>settings</em>, <em>control_spec</em>, <em>incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.meta_control_factoring.meta_control_factoring" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.meta_control_factoring.</code><code class="sig-name descname">meta_control_factoring</code><span class="sig-paren">(</span><em class="sig-param">settings</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.meta_control_factoring.meta_control_factoring" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply simple factoring to summed household fractional weights based on original
 meta control values relative to summed household fractional weights by meta zone.</p>
 <p>The resulting factored meta control weights will be new meta controls appended as
 additional columns to the seed control table, for final balancing.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>settings</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict (settings.yaml as dict)</span></dt>
-<dd></dd>
-<dt><strong>control_spec</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>incidence_table</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>settings</strong><span class="classifier">dict (settings.yaml as dict)</span></dt><dd></dd>
+<dt><strong>control_spec</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>incidence_table</strong><span class="classifier">pipeline table</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1230,30 +1002,22 @@ additional columns to the seed control table, for final balancing.</p>
 <span id="id7"></span><h3>final_seed_balancing<a class="headerlink" href="#final-seed-balancing" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.final_seed_balancing"></span><dl class="function">
 <dt id="populationsim.steps.final_seed_balancing.final_seed_balancing">
-<code class="descclassname">populationsim.steps.final_seed_balancing.</code><code class="descname">final_seed_balancing</code><span class="sig-paren">(</span><em>settings</em>, <em>crosswalk</em>, <em>control_spec</em>, <em>incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.final_seed_balancing.final_seed_balancing" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.final_seed_balancing.</code><code class="sig-name descname">final_seed_balancing</code><span class="sig-paren">(</span><em class="sig-param">settings</em>, <em class="sig-param">crosswalk</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.final_seed_balancing.final_seed_balancing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Balance the household weights for each of the seed geographies (independently)
 using the seed level controls and the aggregated sub-zone controls totals.</p>
 <p>Create the seed_weights table with one row per household and columns contaiing
 household_id, seed geography (e.g. PUMA), and float preliminary_balanced_weights</p>
 <p>Adds column balanced_weight  to the seed_weights table</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>settings</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict (settings.yaml as dict)</span></dt>
-<dd></dd>
-<dt><strong>crosswalk</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>control_spec</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>incidence_table</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>settings</strong><span class="classifier">dict (settings.yaml as dict)</span></dt><dd></dd>
+<dt><strong>crosswalk</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>control_spec</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>incidence_table</strong><span class="classifier">pipeline table</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1261,28 +1025,20 @@ household_id, seed geography (e.g. PUMA), and float preliminary_balanced_weights
 <span id="id8"></span><h3>integerize_final_seed_weights<a class="headerlink" href="#integerize-final-seed-weights" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.integerize_final_seed_weights"></span><dl class="function">
 <dt id="populationsim.steps.integerize_final_seed_weights.integerize_final_seed_weights">
-<code class="descclassname">populationsim.steps.integerize_final_seed_weights.</code><code class="descname">integerize_final_seed_weights</code><span class="sig-paren">(</span><em>settings</em>, <em>crosswalk</em>, <em>control_spec</em>, <em>incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.integerize_final_seed_weights.integerize_final_seed_weights" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.integerize_final_seed_weights.</code><code class="sig-name descname">integerize_final_seed_weights</code><span class="sig-paren">(</span><em class="sig-param">settings</em>, <em class="sig-param">crosswalk</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.integerize_final_seed_weights.integerize_final_seed_weights" title="Permalink to this definition">¶</a></dt>
 <dd><p>Final balancing for each seed (puma) zone with aggregated low and mid-level controls and
 distributed meta-level controls.</p>
 <p>Adds integer_weight column to seed-level weight table</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>settings</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict (settings.yaml as dict)</span></dt>
-<dd></dd>
-<dt><strong>crosswalk</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>control_spec</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>incidence_table</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>settings</strong><span class="classifier">dict (settings.yaml as dict)</span></dt><dd></dd>
+<dt><strong>crosswalk</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>control_spec</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>incidence_table</strong><span class="classifier">pipeline table</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1290,131 +1046,95 @@ distributed meta-level controls.</p>
 <span id="id9"></span><h3>sub_balancing<a class="headerlink" href="#sub-balancing" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.sub_balancing"></span><dl class="function">
 <dt id="populationsim.steps.sub_balancing.balance">
-<code class="descclassname">populationsim.steps.sub_balancing.</code><code class="descname">balance</code><span class="sig-paren">(</span><em>incidence_df</em>, <em>parent_weights</em>, <em>sub_controls_df</em>, <em>control_spec</em>, <em>total_hh_control_col</em>, <em>parent_geography</em>, <em>parent_id</em>, <em>sub_geographies</em>, <em>sub_control_zones</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.balance" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>incidence_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">full incidence_df for all hh samples in seed zone</p>
+<code class="sig-prename descclassname">populationsim.steps.sub_balancing.</code><code class="sig-name descname">balance</code><span class="sig-paren">(</span><em class="sig-param">incidence_df</em>, <em class="sig-param">parent_weights</em>, <em class="sig-param">sub_controls_df</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">total_hh_control_col</em>, <em class="sig-param">parent_geography</em>, <em class="sig-param">parent_id</em>, <em class="sig-param">sub_geographies</em>, <em class="sig-param">sub_control_zones</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.balance" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>incidence_df</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>full incidence_df for all hh samples in seed zone</p>
 </dd>
-<dt><strong>parent_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Series</span></dt>
-<dd><p class="first last">parent zone balanced (possibly integerized) aggregate target weights</p>
+<dt><strong>parent_weights</strong><span class="classifier">pandas.Series</span></dt><dd><p>parent zone balanced (possibly integerized) aggregate target weights</p>
 </dd>
-<dt><strong>sub_controls_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">sub_geography controls (one row per zone indexed by sub_zone id)</p>
+<dt><strong>sub_controls_df</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>sub_geography controls (one row per zone indexed by sub_zone id)</p>
 </dd>
-<dt><strong>control_spec</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">full control spec with columns ‘target’, ‘seed_table’, ‘importance’, …</p>
+<dt><strong>control_spec</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>full control spec with columns ‘target’, ‘seed_table’, ‘importance’, …</p>
 </dd>
-<dt><strong>total_hh_control_col</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">name of total_hh column (so we can preferentially match this control)</p>
+<dt><strong>total_hh_control_col</strong><span class="classifier">str</span></dt><dd><p>name of total_hh column (so we can preferentially match this control)</p>
 </dd>
-<dt><strong>parent_geography</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">parent geography zone name</p>
+<dt><strong>parent_geography</strong><span class="classifier">str</span></dt><dd><p>parent geography zone name</p>
 </dd>
-<dt><strong>parent_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">parent geography zone id</p>
+<dt><strong>parent_id</strong><span class="classifier">int</span></dt><dd><p>parent geography zone id</p>
 </dd>
-<dt><strong>sub_geographies</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list(str)</span></dt>
-<dd><p class="first last">list of subgeographies in descending order</p>
+<dt><strong>sub_geographies</strong><span class="classifier">list(str)</span></dt><dd><p>list of subgeographies in descending order</p>
 </dd>
-<dt><strong>sub_control_zones</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Series</span></dt>
-<dd><p class="first last">index is zone id and value is zone label (e.g. TAZ_101)
+<dt><strong>sub_control_zones</strong><span class="classifier">pandas.Series</span></dt><dd><p>index is zone id and value is zone label (e.g. TAZ_101)
 for use in sub_controls_df column names</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>sub_zone_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame</span></dt>
-<dd><p class="first last">balanced subzone household float sample weights</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>sub_zone_weights</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>balanced subzone household float sample weights</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.steps.sub_balancing.balance_and_integerize">
-<code class="descclassname">populationsim.steps.sub_balancing.</code><code class="descname">balance_and_integerize</code><span class="sig-paren">(</span><em>incidence_df</em>, <em>parent_weights</em>, <em>sub_controls_df</em>, <em>control_spec</em>, <em>total_hh_control_col</em>, <em>parent_geography</em>, <em>parent_id</em>, <em>sub_geographies</em>, <em>crosswalk_df</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.balance_and_integerize" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>incidence_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">full incidence_df for all hh samples in seed zone</p>
+<code class="sig-prename descclassname">populationsim.steps.sub_balancing.</code><code class="sig-name descname">balance_and_integerize</code><span class="sig-paren">(</span><em class="sig-param">incidence_df</em>, <em class="sig-param">parent_weights</em>, <em class="sig-param">sub_controls_df</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">total_hh_control_col</em>, <em class="sig-param">parent_geography</em>, <em class="sig-param">parent_id</em>, <em class="sig-param">sub_geographies</em>, <em class="sig-param">crosswalk_df</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.balance_and_integerize" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>incidence_df</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>full incidence_df for all hh samples in seed zone</p>
 </dd>
-<dt><strong>parent_weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Series</span></dt>
-<dd><p class="first last">parent zone balanced (possibly integerized) aggregate target weights</p>
+<dt><strong>parent_weights</strong><span class="classifier">pandas.Series</span></dt><dd><p>parent zone balanced (possibly integerized) aggregate target weights</p>
 </dd>
-<dt><strong>sub_controls_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">sub_geography controls (one row per zone indexed by sub_zone id)</p>
+<dt><strong>sub_controls_df</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>sub_geography controls (one row per zone indexed by sub_zone id)</p>
 </dd>
-<dt><strong>control_spec</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">full control spec with columns ‘target’, ‘seed_table’, ‘importance’, …</p>
+<dt><strong>control_spec</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>full control spec with columns ‘target’, ‘seed_table’, ‘importance’, …</p>
 </dd>
-<dt><strong>total_hh_control_col</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">name of total_hh column (so we can preferentially match this control)</p>
+<dt><strong>total_hh_control_col</strong><span class="classifier">str</span></dt><dd><p>name of total_hh column (so we can preferentially match this control)</p>
 </dd>
-<dt><strong>parent_geography</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">parent geography zone name</p>
+<dt><strong>parent_geography</strong><span class="classifier">str</span></dt><dd><p>parent geography zone name</p>
 </dd>
-<dt><strong>parent_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">parent geography zone id</p>
+<dt><strong>parent_id</strong><span class="classifier">int</span></dt><dd><p>parent geography zone id</p>
 </dd>
-<dt><strong>sub_geographies</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list(str)</span></dt>
-<dd><p class="first last">list of subgeographies in descending order</p>
+<dt><strong>sub_geographies</strong><span class="classifier">list(str)</span></dt><dd><p>list of subgeographies in descending order</p>
 </dd>
-<dt><strong>crosswalk_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.Dataframe</span></dt>
-<dd><p class="first last">geo crosswork table sliced to current seed geography</p>
+<dt><strong>crosswalk_df</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>geo crosswork table sliced to current seed geography</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>integerized_sub_zone_weights_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.DataFrame</span></dt>
-<dd><p class="first last">canonical form weight table, with columns for ‘balanced_weight’, ‘integer_weight’
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>integerized_sub_zone_weights_df</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>canonical form weight table, with columns for ‘balanced_weight’, ‘integer_weight’
 plus columns for household id and sub_geography zone ids</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="populationsim.steps.sub_balancing.sub_balancing">
-<code class="descclassname">populationsim.steps.sub_balancing.</code><code class="descname">sub_balancing</code><span class="sig-paren">(</span><em>settings</em>, <em>crosswalk</em>, <em>control_spec</em>, <em>incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.sub_balancing" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.sub_balancing.</code><code class="sig-name descname">sub_balancing</code><span class="sig-paren">(</span><em class="sig-param">settings</em>, <em class="sig-param">crosswalk</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.sub_balancing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simul-balance and integerize all zones at a specified geographic level
 in groups by parent zone.</p>
 <p>For instance, if the ‘geography’ step arg is ‘TRACT’ and the parent geography is ‘SEED’,
 then for each seed zone, we simul-balance the TRACTS it contains.</p>
 <p>Creates a weight table for the target geography
 with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>settings</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict (settings.yaml as dict)</span></dt>
-<dd></dd>
-<dt><strong>crosswalk</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>control_spec</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>incidence_table</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>settings</strong><span class="classifier">dict (settings.yaml as dict)</span></dt><dd></dd>
+<dt><strong>crosswalk</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>control_spec</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>incidence_table</strong><span class="classifier">pipeline table</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1422,7 +1142,7 @@ with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
 <span id="id10"></span><h3>expand_households<a class="headerlink" href="#expand-households" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.expand_households"></span><dl class="function">
 <dt id="populationsim.steps.expand_households.expand_households">
-<code class="descclassname">populationsim.steps.expand_households.</code><code class="descname">expand_households</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.expand_households.expand_households" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.expand_households.</code><code class="sig-name descname">expand_households</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.expand_households.expand_households" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a complete expanded synthetic household list with their assigned geographic zone ids.</p>
 <p>This is the skeleton synthetic household id list with no household or person attributes,
 one row per household, with geography columns and seed household table household_id.</p>
@@ -1434,7 +1154,7 @@ one row per household, with geography columns and seed household table household
 <span id="id11"></span><h3>write_tables<a class="headerlink" href="#write-tables" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.write_tables"></span><dl class="function">
 <dt id="populationsim.steps.write_tables.write_tables">
-<code class="descclassname">populationsim.steps.write_tables.</code><code class="descname">write_tables</code><span class="sig-paren">(</span><em>output_dir</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.write_tables.write_tables" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.write_tables.</code><code class="sig-name descname">write_tables</code><span class="sig-paren">(</span><em class="sig-param">output_dir</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.write_tables.write_tables" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write pipeline tables as csv files (in output directory) as specified by output_tables list
 in settings file.</p>
 <p>Pipeline tables are intermediate computational tables, not to be confused with the
@@ -1460,18 +1180,13 @@ TRACT_weights has balanced_weight and integer_weight for every TRACT.</p>
      <span class="o">-</span> <span class="n">expanded_household_ids</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>output_dir: str</strong></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>output_dir: str</strong></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1479,28 +1194,20 @@ TRACT_weights has balanced_weight and integer_weight for every TRACT.</p>
 <span id="id12"></span><h3>write_synthetic_population<a class="headerlink" href="#write-synthetic-population" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.write_synthetic_population"></span><dl class="function">
 <dt id="populationsim.steps.write_synthetic_population.write_synthetic_population">
-<code class="descclassname">populationsim.steps.write_synthetic_population.</code><code class="descname">write_synthetic_population</code><span class="sig-paren">(</span><em>expanded_household_ids</em>, <em>households</em>, <em>persons</em>, <em>output_dir</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.write_synthetic_population.write_synthetic_population" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.write_synthetic_population.</code><code class="sig-name descname">write_synthetic_population</code><span class="sig-paren">(</span><em class="sig-param">expanded_household_ids</em>, <em class="sig-param">households</em>, <em class="sig-param">persons</em>, <em class="sig-param">output_dir</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.write_synthetic_population.write_synthetic_population" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write synthetic households and persons tables to output dir as csv files.
 The settings file allows specification of output file names, household_id column name,
 and seed data attribute columns to include in output files.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>expanded_household_ids</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>households</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>persons</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>output_dir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>expanded_household_ids</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>households</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>persons</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>output_dir</strong><span class="classifier">str</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1508,24 +1215,17 @@ and seed data attribute columns to include in output files.</p>
 <span id="id13"></span><h3>summarize<a class="headerlink" href="#summarize" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.summarize"></span><dl class="function">
 <dt id="populationsim.steps.summarize.summarize">
-<code class="descclassname">populationsim.steps.summarize.</code><code class="descname">summarize</code><span class="sig-paren">(</span><em>crosswalk</em>, <em>incidence_table</em>, <em>control_spec</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.summarize.summarize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.summarize.</code><code class="sig-name descname">summarize</code><span class="sig-paren">(</span><em class="sig-param">crosswalk</em>, <em class="sig-param">incidence_table</em>, <em class="sig-param">control_spec</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.summarize.summarize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write aggregate summary files of controls and weights for all geographic levels to output dir</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>crosswalk</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>incidence_table</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>control_spec</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>crosswalk</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>incidence_table</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>control_spec</strong><span class="classifier">pipeline table</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1533,28 +1233,20 @@ and seed data attribute columns to include in output files.</p>
 <span id="id14"></span><h3>repop_balancing<a class="headerlink" href="#repop-balancing" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.repop_balancing"></span><dl class="function">
 <dt id="populationsim.steps.repop_balancing.repop_balancing">
-<code class="descclassname">populationsim.steps.repop_balancing.</code><code class="descname">repop_balancing</code><span class="sig-paren">(</span><em>settings</em>, <em>crosswalk</em>, <em>control_spec</em>, <em>incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.repop_balancing.repop_balancing" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">populationsim.steps.repop_balancing.</code><code class="sig-name descname">repop_balancing</code><span class="sig-paren">(</span><em class="sig-param">settings</em>, <em class="sig-param">crosswalk</em>, <em class="sig-param">control_spec</em>, <em class="sig-param">incidence_table</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.repop_balancing.repop_balancing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Balance and integerize all zones at a lowest geographic level.</p>
 <p>Creates a weight table for the repop zones target geography
 with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>settings</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict (settings.yaml as dict)</span></dt>
-<dd></dd>
-<dt><strong>crosswalk</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
-<dt><strong>control_spec: pipeline table</strong></dt>
-<dd></dd>
-<dt><strong>incidence_table</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pipeline table</span></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>settings</strong><span class="classifier">dict (settings.yaml as dict)</span></dt><dd></dd>
+<dt><strong>crosswalk</strong><span class="classifier">pipeline table</span></dt><dd></dd>
+<dt><strong>control_spec: pipeline table</strong></dt><dd></dd>
+<dt><strong>incidence_table</strong><span class="classifier">pipeline table</span></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1567,12 +1259,13 @@ with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
 <h2>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
-<li>v0.3 - first release</li>
-<li>v0.3.1 - allow zones with zero households</li>
-<li>v0.3.2 - fix bug in mult-integerizer with total_hh_parent_control_index</li>
-<li>v0.3.3 - add disgnostic printouts on assert fail in mult_integerizer</li>
-<li>v0.3.4 - add survey weighting use case</li>
-<li>v0.3.5 - add Python 3.5+ support</li>
+<li><p>v0.3 - first release</p></li>
+<li><p>v0.3.1 - allow zones with zero households</p></li>
+<li><p>v0.3.2 - fix bug in mult-integerizer with total_hh_parent_control_index</p></li>
+<li><p>v0.3.3 - add disgnostic printouts on assert fail in mult_integerizer</p></li>
+<li><p>v0.3.4 - add survey weighting use case</p></li>
+<li><p>v0.3.5 - add Python 3.5+ support</p></li>
+<li><p>v0.4 - transfer to ActivitySim.org</p></li>
 </ul>
 </div></blockquote>
 </div>
@@ -1586,7 +1279,7 @@ with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="docs.html" class="btn btn-neutral float-right" title="Documents &amp; Resources" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="docs.html" class="btn btn-neutral float-right" title="ActivitySim Resources" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="validation.html" class="btn btn-neutral float-left" title="Validation of Results" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

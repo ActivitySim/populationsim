@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Getting Started &mdash; PopulationSim 0.3.5
+  <title>Getting Started &mdash; PopulationSim 0.4
  documentation</title>
   
 
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.3.5
+                0.4
 
               </div>
             
@@ -96,7 +96,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#run-examples">Run Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#example-calm">Example_calm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#example-calm-repop">Example_calm_repop</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-weighting">Example_weighting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-survey-weighting">Example_survey_weighting</a></li>
 </ul>
 </li>
 </ul>
@@ -104,7 +104,8 @@
 <li class="toctree-l1"><a class="reference internal" href="application_configuration.html">Application &amp; Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validation.html">Validation of Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="software.html">Software Implementation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docs.html">Documents &amp; Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html">ActivitySim Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html#external-resources">External Resources</a></li>
 </ul>
 
             
@@ -175,8 +176,8 @@
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Install <a class="reference external" href="https://www.anaconda.com/distribution/">Anaconda 64bit Python 3</a>. Anaconda Python is required for PopulationSim.</li>
-<li>If you access the internet from behind a firewall, then you will need to configure your proxy server. To do so, create a .condarc file in your Anaconda installation folder (i.e. <code class="docutils literal notranslate"><span class="pre">C:\ProgramData\Anaconda3</span></code>), such as:</li>
+<li><p>Install <a class="reference external" href="https://www.anaconda.com/distribution/">Anaconda 64bit Python 3</a>. Anaconda Python is required for PopulationSim.</p></li>
+<li><p>If you access the internet from behind a firewall, then you will need to configure your proxy server. To do so, create a .condarc file in your Anaconda installation folder (i.e. <code class="docutils literal notranslate"><span class="pre">C:\ProgramData\Anaconda3</span></code>), such as:</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">proxy_servers</span><span class="p">:</span>
   <span class="n">http</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>
@@ -185,7 +186,7 @@
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
-<li>Create and activate an Anaconda environment (basically a Python install just for this project)</li>
+<li><p>Create and activate an Anaconda environment (basically a Python install just for this project)</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">popsim</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.7</span>
 
@@ -197,27 +198,15 @@
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
-<li>Get and install other required libraries, which can be found online.  Run the following command on the activated conda Python environment:</li>
+<li><p>Get and install the PopulationSim package on the activated conda Python environment:</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="n">cytoolz</span> <span class="n">numpy</span> <span class="n">pandas</span> <span class="n">psutil</span> <span class="n">pytables</span> <span class="n">future</span>
-</pre></div>
-</div>
-<ol class="arabic simple" start="5">
-<li>If you access the internet from behind a firewall, then you will need to configure your proxy server when downloading packages. For example:</li>
-</ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">host</span> <span class="n">pypi</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">org</span> <span class="o">--</span><span class="n">proxy</span><span class="o">=</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>  <span class="n">activitysim</span>
-</pre></div>
-</div>
-<ol class="arabic simple" start="6">
-<li>Get and install the PopulationSim package on the activated conda Python environment:</li>
-</ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">RSGInc</span><span class="o">/</span><span class="n">populationsim</span><span class="o">/</span><span class="n">zipball</span><span class="o">/</span><span class="n">master</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">populationsim</span>
 </pre></div>
 </div>
 <div class="section" id="python-2-or-3">
 <span id="anaconda-notes"></span><h3>Python 2 or 3?<a class="headerlink" href="#python-2-or-3" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
+<p class="admonition-title">Note</p>
 <p>PopulationSim is a 64bit Python 2 or 3 library that uses a number of packages from the
 scientific Python ecosystem, most notably <a class="reference external" href="http://pandas.pydata.org">pandas</a>
 and <a class="reference external" href="http://numpy.org">numpy</a>. It relies heavily on the
@@ -227,7 +216,7 @@ end of 2019 so Python 3 is recommended.</p>
 <p>The recommended way to get your own scientific Python installation is to
 install 64 bit Anaconda, which contains many of the libraries upon which
 ActivitySim depends + some handy Python installation management tools.</p>
-<p class="last">For more information on Anaconda and ActivitySim, see ActivitySim’s <a class="reference external" href="https://activitysim.github.io/activitysim/gettingstarted.html#anaconda">getting started</a> guide.</p>
+<p>For more information on Anaconda and ActivitySim, see ActivitySim’s <a class="reference external" href="https://activitysim.github.io/activitysim/gettingstarted.html#anaconda">getting started</a> guide.</p>
 </div>
 </div>
 </div>
@@ -235,25 +224,24 @@ ActivitySim depends + some handy Python installation management tools.</p>
 <h2>Run Examples<a class="headerlink" href="#run-examples" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
-<li>Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed.</li>
-<li>Download and unzip the <a class="reference external" href="https://github.com/RSGInc/populationSim_resources/raw/master/example_setup/PopulationSimExampleSetUpsPython3.zip">example setups</a> to a folder on your computer. It does not have to be the same directory as your Anaconda or PopulationSim install.</li>
+<li><p>Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed.</p></li>
 </ul>
 </div></blockquote>
-<p>There are three examples for running PopulationSim, two created using data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon and the other using data from the Metro Vancouver region in British Columbia. The <a class="reference internal" href="#example-calm">example_calm</a> set-up runs PopulationSim in base mode, where a synthetic population is created for the entire modeling region. This takes approximately 12 minutes on a laptop with an Intel i7-4800MQ CPU &#64; 2.70GHz and 16 GB of RAM. The <a class="reference internal" href="#example-calm-repop">example_calm_repop</a> set-up runs PopulationSim in the <em>repop</em> mode, which updates the synthetic population for a small part of the region. The <a href="#id2"><span class="problematic" id="id3">`example_survey_weighting`_</span></a> set-up runs PopulationSim for the case of developing final weights for a household travel survey. More information on the configuration of PopulationSim can be found in the <strong>Application &amp; Configuration</strong> section.</p>
+<p>There are three examples for running PopulationSim, two created using data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon and the other using data from the Metro Vancouver region in British Columbia. The <a class="reference internal" href="#example-calm">example_calm</a> set-up runs PopulationSim in base mode, where a synthetic population is created for the entire modeling region. This takes approximately 12 minutes on a laptop with an Intel i7-4800MQ CPU &#64; 2.70GHz and 16 GB of RAM. The <a class="reference internal" href="#example-calm-repop">example_calm_repop</a> set-up runs PopulationSim in the <em>repop</em> mode, which updates the synthetic population for a small part of the region. The <a class="reference internal" href="#example-survey-weighting">example_survey_weighting</a> set-up runs PopulationSim for the case of developing final weights for a household travel survey. More information on the configuration of PopulationSim can be found in the <strong>Application &amp; Configuration</strong> section.</p>
 <div class="section" id="example-calm">
 <h3>Example_calm<a class="headerlink" href="#example-calm" title="Permalink to this headline">¶</a></h3>
 <p>Follow the steps below to run <strong>example_calm</strong> set up:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Open a command prompt in the example_calm folder</li>
-<li>Run the following commands:</li>
+<li><p>Open a command prompt in the example_calm folder</p></li>
+<li><p>Run the following commands:</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
 <span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li>Review the outputs in the <em>output</em> folder</li>
+<li><p>Review the outputs in the <em>output</em> folder</p></li>
 </ul>
 </div></blockquote>
 </div>
@@ -262,33 +250,33 @@ ActivitySim depends + some handy Python installation management tools.</p>
 <p>The repop configuration requires outputs from a base run. Therefore, the base configuration must be run before running the repop configuration. Follow the steps below to run <strong>example_calm_repop</strong> set up:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Copy the <strong>pipeline.h5</strong> file from the example_calm\output directory to example_calm_repop\output directory (all PopulationSim files are stored in pipeline.h5 file)</li>
-<li>Open a command prompt in the example_calm_repop folder</li>
-<li>Run the following commands:</li>
+<li><p>Copy the <strong>pipeline.h5</strong> file from the example_calm\output directory to example_calm_repop\output directory (all PopulationSim files are stored in pipeline.h5 file)</p></li>
+<li><p>Open a command prompt in the example_calm_repop folder</p></li>
+<li><p>Run the following commands:</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
 <span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li>Review the outputs in the <em>output</em> folder</li>
+<li><p>Review the outputs in the <em>output</em> folder</p></li>
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="example-weighting">
-<h3>Example_weighting<a class="headerlink" href="#example-weighting" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="example-survey-weighting">
+<h3>Example_survey_weighting<a class="headerlink" href="#example-survey-weighting" title="Permalink to this headline">¶</a></h3>
 <p>Follow the steps below to run <strong>example_survey_weighting</strong> set up:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Open a command prompt in the example_survey_weighting folder</li>
-<li>Run the following commands:</li>
+<li><p>Open a command prompt in the example_survey_weighting folder</p></li>
+<li><p>Run the following commands:</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
 <span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li>Review the outputs in the <em>output</em> folder</li>
+<li><p>Review the outputs in the <em>output</em> folder</p></li>
 </ul>
 </div></blockquote>
 </div>
