@@ -105,7 +105,7 @@ versions, and then add the error to the largest category by subtracting it from 
 Configuration
 -------------
 
-Below is PopulationSim's directory structure followed by a description of inputs. To set up a PopulationSim run, the user must create the `example directory structure <https://github.com/RSGInc/populationSim_resources/raw/master/example_setup/PopulationSimExampleSetUps.7z>`_
+Below is PopulationSim's directory structure followed by a description of inputs.
 
   .. image:: images/PopulationSimFolderStructure.png
 

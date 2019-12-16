@@ -69,8 +69,6 @@ Run Examples
 
   * Before running examples, ensure that Anaconda Python, dependent libraries and PopulationSim package have been installed.
 
-  * Download and unzip the `example setups <https://github.com/RSGInc/populationSim_resources/raw/master/example_setup/PopulationSimExampleSetUpsPython3.zip>`_ to a folder on your computer. It does not have to be the same directory as your Anaconda or PopulationSim install.
-
 There are three examples for running PopulationSim, two created using data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon and the other using data from the Metro Vancouver region in British Columbia. The `example_calm`_ set-up runs PopulationSim in base mode, where a synthetic population is created for the entire modeling region. This takes approximately 12 minutes on a laptop with an Intel i7-4800MQ CPU @ 2.70GHz and 16 GB of RAM. The `example_calm_repop`_ set-up runs PopulationSim in the *repop* mode, which updates the synthetic population for a small part of the region. The `example_survey_weighting`_ set-up runs PopulationSim for the case of developing final weights for a household travel survey. More information on the configuration of PopulationSim can be found in the **Application & Configuration** section.
 
 Example_calm
@@ -104,8 +102,8 @@ The repop configuration requires outputs from a base run. Therefore, the base co
 
   * Review the outputs in the *output* folder
 
-Example_weighting
-~~~~~~~~~~~~~~~~~~
+Example_survey_weighting
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Follow the steps below to run **example_survey_weighting** set up:
 
