@@ -5,3 +5,4 @@ graft example_calm_repop
 graft example_survey_weighting
 graft example_test
 graft scripts
+graft papers
