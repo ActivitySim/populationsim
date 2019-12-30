@@ -16,7 +16,7 @@ install:
 - conda update -q conda
 - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION future
 - source activate test-environment
-- pip install pytest pytest-cov coveralls pycodestyle
+- conda install pytest pytest-cov coveralls pycodestyle
 - pip install .
 script:
 - pycodestyle populationsim
