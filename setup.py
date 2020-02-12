@@ -30,7 +30,7 @@ setup(
         'activitysim >= 0.9.2',
         'numpy >= 1.16.1',
         'pandas >= 0.24.1',
-        'ortools >= 5.1.4045',
+        'ortools >= 5.1.4045, < 7.5',
         'future >= 0.16.0'
     ]
 )
