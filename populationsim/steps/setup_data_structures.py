@@ -18,7 +18,7 @@ from .helper import control_table_name
 from .helper import get_control_table
 from .helper import get_control_data_table
 
-from populationsim.util import setting
+from activitysim.core.config import setting
 
 logger = logging.getLogger(__name__)
 

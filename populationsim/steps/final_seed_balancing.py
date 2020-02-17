@@ -8,7 +8,7 @@ import pandas as pd
 
 from activitysim.core import inject
 
-from populationsim.util import setting
+from activitysim.core.config import setting
 
 from ..balancer import do_balancing
 from .helper import get_control_table
