@@ -8,7 +8,7 @@ import pandas as pd
 from activitysim.core import inject
 from activitysim.core import pipeline
 
-from populationsim.util import setting
+from activitysim.core.config import setting
 
 from ..balancer import do_balancing
 

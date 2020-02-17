@@ -39,6 +39,7 @@ seed_geography: PUMA
 
 output_tables:
   action: include
+  prefix: ''
   tables:
     - expanded_household_ids
     - summary_DISTRICT

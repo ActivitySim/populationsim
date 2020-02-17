@@ -6,6 +6,7 @@ from activitysim.core import config
 from activitysim.core import tracing
 from activitysim.core import pipeline
 from activitysim.core import inject
+from activitysim.core.config import setting
 
 from populationsim import steps
 
@@ -53,9 +54,9 @@ def test_full_run2():
     assert isinstance(pipeline.get_table('expanded_household_ids'), pd.DataFrame)
 
     # output tables list action: include
-    assert os.path.exists(os.path.join(output_dir, 'expanded_household_ids.csv'))
-    assert os.path.exists(os.path.join(output_dir, 'summary_DISTRICT.csv'))
-    assert not os.path.exists(os.path.join(output_dir, 'summary_TAZ.csv'))
+    assert os.path.exists(config.output_file_path('expanded_household_ids.csv'))
+    assert os.path.exists(config.output_file_path('summary_DISTRICT.csv'))
+    assert not os.path.exists(config.output_file_path('summary_TAZ.csv'))
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

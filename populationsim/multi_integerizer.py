@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 
 
-from .util import setting
+from activitysim.core.config import setting
 
 from .lp import get_simul_integerizer
 from .lp import STATUS_SUCCESS

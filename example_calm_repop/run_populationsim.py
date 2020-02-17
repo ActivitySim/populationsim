@@ -12,7 +12,7 @@ from activitysim.core import inject
 from activitysim.core.config import handle_standard_args
 from activitysim.core.tracing import print_elapsed_time
 
-from populationsim.util import setting
+from activitysim.core.config import setting
 from populationsim import lp
 from populationsim import multi_integerizer
 

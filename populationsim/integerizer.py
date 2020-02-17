@@ -9,7 +9,7 @@ import os
 
 import numpy as np
 import pandas as pd
-from .util import setting
+from activitysim.core.config import setting
 
 from .lp import get_single_integerizer
 from .lp import STATUS_SUCCESS

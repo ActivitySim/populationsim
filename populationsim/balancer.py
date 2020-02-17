@@ -10,7 +10,7 @@ import numpy as np
 
 import pandas as pd
 
-from .util import setting
+from activitysim.core.config import setting
 
 
 logger = logging.getLogger(__name__)
