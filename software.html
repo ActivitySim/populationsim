@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Software Implementation &mdash; PopulationSim 0.4
+  <title>Software Implementation &mdash; PopulationSim 0.4.1
  documentation</title>
   
 
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.4
+                0.4.1
 
               </div>
             
@@ -113,7 +113,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#integerize-final-seed-weights">integerize_final_seed_weights</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#sub-balancing">sub_balancing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#expand-households">expand_households</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#write-tables">write_tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write-tables">write_tables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parameters">Parameters</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#write-synthetic-population">write_synthetic_population</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#summarize">summarize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#repop-balancing">repop_balancing</a></li>
@@ -980,8 +983,8 @@ of pre-processing steps.</p>
 <p>By default, reads table_list from ‘input_table_list’ in settings.yaml,
 unless an alternate table_list name is specified as a model step argument ‘table_list’.
 (This allows alternate/additional input files to be read for repop)</p>
-<p>In the case of repop, this step is being run after an initial populationsim run has
-completed, in which case the input_table_list may specify replacement tables.
+<p>In the case of repop, this step is being run after an initial run has completed,
+in which case the input_table_list may specify replacement tables.
 (e.g. lowest geography controls that will replace the previous low controls dataframe.)</p>
 <p>See input_table_list in settings.yaml in the example folder for a working example</p>
 <table border="1" class="docutils">
@@ -997,7 +1000,7 @@ completed, in which case the input_table_list may specify replacement tables.
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>tablename</td>
-<td colspan="2">ame of pipeline table in which to store dataframe</td>
+<td colspan="2">name of pipeline table in which to store dataframe</td>
 </tr>
 <tr class="row-odd"><td>filename</td>
 <td colspan="2">name of csv file to read (in data_dir)</td>
@@ -1013,13 +1016,6 @@ completed, in which case the input_table_list may specify replacement tables.
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="function">
-<dt id="populationsim.steps.input_pre_processor.read_csv_with_fallback_encoding">
-<code class="descclassname">populationsim.steps.input_pre_processor.</code><code class="descname">read_csv_with_fallback_encoding</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.input_pre_processor.read_csv_with_fallback_encoding" title="Permalink to this definition">¶</a></dt>
-<dd><p>read a CSV to a pandas DataFrame using default utf-8 encoding,
-but try alternate Windows-compatible cp1252 if unicode fails</p>
 </dd></dl>
 
 </div>
@@ -1063,7 +1059,7 @@ and any households not in seed zones.</p>
 
 <dl class="function">
 <dt id="populationsim.steps.setup_data_structures.repop_setup_data_structures">
-<code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">repop_setup_data_structures</code><span class="sig-paren">(</span><em>configs_dir</em>, <em>households</em>, <em>persons</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.repop_setup_data_structures" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">repop_setup_data_structures</code><span class="sig-paren">(</span><em>households</em>, <em>persons</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.repop_setup_data_structures" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup geographic correspondence (crosswalk), control sets, and incidence tables for repop run.</p>
 <p>A new lowest-level geography control tables should already have been read in by rerunning
 input_pre_processor with a table_list override. The control table contains one row for
@@ -1076,8 +1072,6 @@ recipe (seed table and expression) for determining household incidence for that 
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>configs_dir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd></dd>
 <dt><strong>households: pipeline table</strong></dt>
 <dd></dd>
 <dt><strong>persons: pipeline table</strong></dt>
@@ -1091,7 +1085,7 @@ recipe (seed table and expression) for determining household incidence for that 
 
 <dl class="function">
 <dt id="populationsim.steps.setup_data_structures.setup_data_structures">
-<code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">setup_data_structures</code><span class="sig-paren">(</span><em>settings</em>, <em>configs_dir</em>, <em>households</em>, <em>persons</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.setup_data_structures" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">populationsim.steps.setup_data_structures.</code><code class="descname">setup_data_structures</code><span class="sig-paren">(</span><em>settings</em>, <em>households</em>, <em>persons</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.setup_data_structures" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup geographic correspondence (crosswalk), control sets, and incidence tables.</p>
 <p>A control tables for target geographies should already have been read in by running
 input_pre_processor. The zone control tables contains one row for each zone, with columns
@@ -1110,8 +1104,6 @@ to actual hh_ids.</p>
 <dt><strong>settings: dict</strong></dt>
 <dd><p class="first last">contents of settings.yaml as dict</p>
 </dd>
-<dt><strong>configs_dir: str</strong></dt>
-<dd></dd>
 <dt><strong>households: pipeline table</strong></dt>
 <dd></dd>
 <dt><strong>persons: pipeline table</strong></dt>
@@ -1432,19 +1424,10 @@ one row per household, with geography columns and seed household table household
 </div>
 <div class="section" id="write-tables">
 <span id="id11"></span><h3>write_tables<a class="headerlink" href="#write-tables" title="Permalink to this headline">¶</a></h3>
-<span class="target" id="module-populationsim.steps.write_tables"></span><dl class="function">
-<dt id="populationsim.steps.write_tables.write_tables">
-<code class="descclassname">populationsim.steps.write_tables.</code><code class="descname">write_tables</code><span class="sig-paren">(</span><em>output_dir</em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.write_tables.write_tables" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write pipeline tables as csv files (in output directory) as specified by output_tables list
+<span class="target" id="module-populationsim.steps.write_tables(output_dir)"></span><p>Write pipeline tables as csv files (in output directory) as specified by output_tables list
 in settings file.</p>
-<p>Pipeline tables are intermediate computational tables, not to be confused with the
-synthetic population tables written by the write_synthetic_population step.</p>
 <p>‘output_tables’ can specify either a list of output tables to include or to skip
 if no output_tables list is specified, then no checkpointed tables will be written</p>
-<p>Intermediate tables likely to be of particular interest or utility are the controls and weights
-tables for the various geographies. For example, if one of your geographies is TRACT, then:
-TRACT_controls has control totals for every TRACT (and aggregated subzone) controls.
-TRACT_weights has balanced_weight and integer_weight for every TRACT.</p>
 <p>To write all output tables EXCEPT the households and persons tables:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_tables</span><span class="p">:</span>
   <span class="n">action</span><span class="p">:</span> <span class="n">skip</span>
@@ -1453,27 +1436,25 @@ TRACT_weights has balanced_weight and integer_weight for every TRACT.</p>
     <span class="o">-</span> <span class="n">persons</span>
 </pre></div>
 </div>
-<p>To write ONLY the expanded_household_ids table:</p>
+<p>To write ONLY the households table:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_tables</span><span class="p">:</span>
   <span class="n">action</span><span class="p">:</span> <span class="n">include</span>
   <span class="n">tables</span><span class="p">:</span>
-     <span class="o">-</span> <span class="n">expanded_household_ids</span>
+     <span class="o">-</span> <span class="n">households</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>output_dir: str</strong></dt>
-<dd></dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+<p>To write tables into a single HDF5 store instead of individual CSVs, use the h5_store flag:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_tables</span><span class="p">:</span>
+  <span class="n">h5_store</span><span class="p">:</span> <span class="kc">True</span>
+  <span class="n">action</span><span class="p">:</span> <span class="n">include</span>
+  <span class="n">tables</span><span class="p">:</span>
+     <span class="o">-</span> <span class="n">households</span>
+</pre></div>
+</div>
+<div class="section" id="parameters">
+<h4>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h4>
+<p>output_dir: str</p>
+</div>
 </div>
 <div class="section" id="write-synthetic-population">
 <span id="id12"></span><h3>write_synthetic_population<a class="headerlink" href="#write-synthetic-population" title="Permalink to this headline">¶</a></h3>
