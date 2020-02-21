@@ -8,7 +8,7 @@ with open('README.rst') as file:
 
 setup(
     name='populationsim',
-    version='0.4',
+    version='0.4.1',
     description='Population Synthesis',
     author='contributing authors',
     author_email='ben.stabler@rsginc.com',
