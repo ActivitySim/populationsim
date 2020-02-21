@@ -1,6 +1,9 @@
-from __future__ import absolute_import
 # PopulationSim
 # See full license in LICENSE.txt.
+
+from __future__ import absolute_import
+
+from activitysim.core import inject as _inject
 
 from . import input_pre_processor
 from . import setup_data_structures
@@ -11,7 +14,14 @@ from . import integerize_final_seed_weights
 from . import sub_balancing
 from . import expand_households
 from . import summarize
-from . import write_tables
 from . import write_synthetic_population
-
 from . import repop_balancing
+
+from activitysim.core.steps.output import write_data_dictionary
+from activitysim.core.steps.output import write_tables
+
+
+@_inject.injectable(cache=True)
+def preload_injectables():
+    _inject.add_step('write_data_dictionary', write_data_dictionary)
+    _inject.add_step('write_tables', write_tables)

@@ -11,7 +11,7 @@ import numpy as np
 from activitysim.core import pipeline
 from activitysim.core import inject
 
-from populationsim.util import setting
+from activitysim.core.config import setting
 from .helper import get_control_table
 from .helper import get_weight_table
 

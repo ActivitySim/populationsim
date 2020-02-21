@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 import logging
 
-from .util import setting
+from activitysim.core.config import setting
 from . import lp_cvx
 from . import lp_ortools
 

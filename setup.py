@@ -8,7 +8,7 @@ with open('README.rst') as file:
 
 setup(
     name='populationsim',
-    version='0.4',
+    version='0.4.1',
     description='Population Synthesis',
     author='contributing authors',
     author_email='ben.stabler@rsginc.com',
@@ -27,10 +27,10 @@ setup(
     include_package_data=True,
     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
     install_requires=[
+        'activitysim >= 0.9.2',
         'numpy >= 1.16.1',
         'pandas >= 0.24.1',
-        'activitysim >= 0.9.1',
-        'ortools >= 5.1.4045',
+        'ortools >= 5.1.4045, < 7.5',
         'future >= 0.16.0'
     ]
 )

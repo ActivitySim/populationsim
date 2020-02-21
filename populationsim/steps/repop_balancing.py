@@ -7,7 +7,7 @@ import pandas as pd
 
 from activitysim.core import inject
 
-from populationsim.util import setting
+from activitysim.core.config import setting
 
 from .helper import get_control_table
 from .helper import weight_table_name
