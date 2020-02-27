@@ -3,12 +3,9 @@ use_setuptools()  # nopep8
 
 from setuptools import setup, find_packages
 
-with open('README.rst') as file:
-    long_description = file.read()
-
 setup(
     name='populationsim',
-    version='0.4.1',
+    version='0.4.2',
     description='Population Synthesis',
     author='contributing authors',
     author_email='ben.stabler@rsginc.com',
@@ -22,7 +19,6 @@ setup(
         'Programming Language :: Python :: 3.7',
         'License :: OSI Approved :: BSD License'
     ],
-    long_description=long_description,
     packages=find_packages(exclude=['*.tests']),
     include_package_data=True,
     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
