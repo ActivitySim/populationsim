@@ -1,0 +1,126 @@
+# directory of target run of PopulationSim, containing data/output directories
+popsim_dir: ../Task1_PopSim/PopulationSim/Setup
+
+# folder to save outputs
+validation_dir: validation_results
+
+scenario: Base
+region: Tulare
+
+geographies: data/MAZ_XWalk_MAZ_TAZ_BG_CT_PUMA_CNT.csv
+group_geographies:
+    - COUNTY
+    - PUMA
+    - TAZ
+    - MAZ
+plot_geographies:
+    - COUNTY
+    - TAZ
+    - MAZ
+
+seed_households: data/seed_households.csv
+seed_cols:
+    geog: PUMA
+    geog_weight: WGTP
+    hh_id: hh_id
+
+expanded_hhid: output/expanded_household_ids.csv
+expanded_hhid_col: hh_id
+summaries:
+    - output/summary_MAZ_PUMA.csv
+    - output/summary_TAZ.csv
+    - output/summary_MAZ.csv
+
+aggregate_summaries:
+    - name: Total Households
+      geography: MAZ
+      control: num_hh_control
+      result: num_hh_result
+    - name: 'Household Size: 1 person HH'
+      geography: TAZ
+      control: hh_size_1_control
+      result: hh_size_1_result
+    - name: 'Household Size: 2 person HH'
+      geography: TAZ
+      control: hh_size_2_control
+      result: hh_size_2_result
+    - name: 'Household Size: 3 person HH'
+      geography: TAZ
+      control: hh_size_3_control
+      result: hh_size_3_result
+    - name: 'Household Size: 4+ person HH'
+      geography: TAZ
+      control: hh_size_4_control
+      result: hh_size_4_result
+    - name: 'Householder Age: 15-44 years'
+      geography: TAZ
+      control: hh_age_15_to_44_control
+      result: hh_age_15_to_44_result
+    - name: 'Householder Age: 45-64 years'
+      geography: TAZ
+      control: hh_age_45_to_64_control
+      result: hh_age_45_to_64_result
+    - name: 'Householder Age: >=65 years'
+      geography: TAZ
+      control: hh_age_65_abv_control
+      result: hh_age_65_abv_result
+    - name: 'Household Workers: 0 worker HH'
+      geography: TAZ
+      control: hh_wrks_0_control
+      result: hh_wrks_0_result
+    - name: 'Household Workers: 1 worker HH'
+      geography: TAZ
+      control: hh_wrks_1_control
+      result: hh_wrks_1_result
+    - name: 'Household Workers: 2 worker HH'
+      geography: TAZ
+      control: hh_wrks_2_control
+      result: hh_wrks_2_result
+    - name: 'Household Workers: 3+ worker HH'
+      geography: TAZ
+      control: hh_wrks_3m_control
+      result: hh_wrks_3m_result
+    - name: 'Household Income: (-Inf,24999)'
+      geography: TAZ
+      control: hh_inc_0_25_control
+      result: hh_inc_0_25_result
+    - name: 'Household Income: (24999,59999)'
+      geography: TAZ
+      control: hh_inc_25_60_control
+      result: hh_inc_25_60_result
+    - name: 'Household Income: (59999,99999)'
+      geography: TAZ
+      control: hh_inc_60_100_control
+      result: hh_inc_60_100_result
+    - name: 'Household Income: (99999,+Inf)'
+      geography: TAZ
+      control: hh_inc_100_plus_control
+      result: hh_inc_100_plus_result
+    - name: 'Household with Kids'
+      geography: TAZ
+      control: hh_kid_control
+      result: hh_kid_result
+    - name: 'Household without Kids'
+      geography: TAZ
+      control: hh_no_kid_control
+      result: hh_no_kid_result
+    - name: 'Person Age: 0-4 years'
+      geography: TAZ
+      control: person_age0to4_control
+      result: person_age0to4_result
+    - name: 'Person Age: 5-17 years'
+      geography: TAZ
+      control: person_age5to17_control
+      result: person_age5to17_result
+    - name: 'Person Age: 18-24 years'
+      geography: TAZ
+      control: person_age18to24_control
+      result: person_age18to24_result
+    - name: 'Person Age: 25-54 years'
+      geography: TAZ
+      control: person_age25to54_control
+      result: person_age25to54_result
+    - name: 'Person Age: >=55 years'
+      geography: TAZ
+      control: person_age55m_control
+      result: person_age55m_result
