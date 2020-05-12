@@ -1,0 +1,148 @@
+# directory of target run of PopulationSim, containing data/output directories
+popsim_dir: ../example_calm
+# folder to save outputs
+validation_dir: calm_validation_results
+scenario: Base
+region: CALM
+geographies: data/geo_cross_walk.csv
+group_geographies:
+    - REGION
+    - PUMA
+    - TRACT
+    - TAZ
+seed_households: data/seed_households.csv
+seed_cols:
+    geog: PUMA
+    geog_weight: WGTP
+    hh_id: hhnum
+expanded_hhid: output/expanded_household_ids.csv
+expanded_hhid_col: hh_id
+summaries:
+    - output/summary_TAZ_PUMA.csv
+    - output/summary_TRACT.csv
+    - output/summary_TAZ.csv
+aggregate_summaries:
+    - name: Total Households
+      geography: TAZ
+      control: num_hh_control
+      result: num_hh_result
+    - name: 'Household Size: 1 person HH'
+      geography: TAZ
+      control: hh_size_1_control
+      result: hh_size_1_result
+    - name: 'Household Size: 2 person HH'
+      geography: TAZ
+      control: hh_size_2_control
+      result: hh_size_2_result
+    - name: 'Household Size: 3 person HH'
+      geography: TAZ
+      control: hh_size_3_control
+      result: hh_size_3_result
+    - name: 'Household Size: 4+ person HH'
+      geography: TAZ
+      control: hh_size_4_plus_control
+      result: hh_size_4_plus_result
+    - name: 'Householder Age: 15-24 years'
+      geography: TAZ
+      control: hh_age_15_24_control
+      result: hh_age_15_24_result
+    - name: 'Householder Age: 25-54 years'
+      geography: TAZ
+      control: hh_age_25_54_control
+      result: hh_age_25_54_result
+    - name: 'Householder Age: 55-64 years'
+      geography: TAZ
+      control: hh_age_55_64_control
+      result: hh_age_55_64_result
+    - name: 'Householder Age: >65 years'
+      geography: TAZ
+      control: hh_age_65_plus_control
+      result: hh_age_65_plus_result
+    - name: 'Household Income: (-Inf,21297)'
+      geography: TAZ
+      control: hh_inc_15_control
+      result: hh_inc_15_result
+    - name: 'Household Income: [21297,42593)'
+      geography: TAZ
+      control: hh_inc_15_30_control
+      result: hh_inc_15_30_result
+    - name: 'Household Income: [42593,85185)'
+      geography: TAZ
+      control: hh_inc_30_60_control
+      result: hh_inc_30_60_result
+    - name: 'Household Income: [85185,+Inf)'
+      geography: TAZ
+      control: hh_inc_60_plus_control
+      result: hh_inc_60_plus_result
+    - name: Students by family
+      geography: TAZ
+      control: students_by_family_housing_type_control
+      result: students_by_family_housing_type_result
+    - name: Students by non-family
+      geography: TAZ
+      control: students_by_nonfamily_housing_type_control
+      result: students_by_nonfamily_housing_type_result
+    - name: SF
+      geography: TRACT
+      control: hh_by_type_sf_control
+      result: hh_by_type_sf_result
+    - name: MF
+      geography: TRACT
+      control: hh_by_type_mf_control
+      result: hh_by_type_mf_result
+    - name: MH
+      geography: TRACT
+      control: hh_by_type_mh_control
+      result: hh_by_type_mh_result
+    - name: Dup
+      geography: TRACT
+      control: hh_by_type_dup_control
+      result: hh_by_type_dup_result
+    - name: 'Household Workers: 0 worker HH'
+      geography: TRACT
+      control: hh_wrks_0_control
+      result: hh_wrks_0_result
+    - name: 'Household Workers: 1 worker HH'
+      geography: TRACT
+      control: hh_wrks_1_control
+      result: hh_wrks_1_result
+    - name: 'Household Workers: 2 worker HH'
+      geography: TRACT
+      control: hh_wrks_2_control
+      result: hh_wrks_2_result
+    - name: 'Household Workers: 3+ worker HH'
+      geography: TRACT
+      control: hh_wrks_3_plus_control
+      result: hh_wrks_3_plus_result
+    - name: Occupation Type 1
+      geography: REGION
+      control: persons_occ_1_control
+      result: persons_occ_1_result
+    - name: Occupation Type 2
+      geography: REGION
+      control: persons_occ_2_control
+      result: persons_occ_2_result
+    - name: Occupation Type 3
+      geography: REGION
+      control: persons_occ_3_control
+      result: persons_occ_3_result
+    - name: Occupation Type 4
+      geography: REGION
+      control: persons_occ_4_control
+      result: persons_occ_4_result
+    - name: Occupation Type 5
+      geography: REGION
+      control: persons_occ_5_control
+      result: persons_occ_5_result
+    - name: Occupation Type 6
+      geography: REGION
+      control: persons_occ_6_control
+      result: persons_occ_6_result
+    - name: Occupation Type 7
+      geography: REGION
+      control: persons_occ_7_control
+      result: persons_occ_7_result
+    - name: Occupation Type 8
+      geography: REGION
+      control: persons_occ_8_control
+      result: persons_occ_8_result
