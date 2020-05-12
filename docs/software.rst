@@ -234,3 +234,5 @@ Release Notes
   * v0.3.4 - add survey weighting use case
   * v0.3.5 - add Python 3.5+ support
   * v0.4 - transfer to ActivitySim.org
+  * v0.4.1 - package updates
+  * v0.4.2 - validation script in Python
