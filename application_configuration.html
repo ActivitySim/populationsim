@@ -22,10 +22,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -193,85 +193,81 @@
 <p>As discussed earlier, two main inputs to a population synthesizer are a seed sample and controls. The seed sample can come from a household travel survey or from American Community Survey (ACS) Public Use Microdata Sample (PUMS), with latter being the most common source. The PUMS data contains a sample of actual responses to the ACS, but the privacy of each household is protected by aggregating all household residential locations into relatively large regions called Public Use Microdata Areas (PUMAs). PUMAs are special non-overlapping areas that partition each state into contiguous geographic units containing no fewer than 100,000 people each. Some larger regions are composed of many PUMAs, while other, smaller regions have only one PUMA, or may even be smaller than a PUMA. It is not a problem to use PopulationSim to generate a synthetic population if the region is smaller than a PUMA; PopulationSim will ‘fit’ the PUMA-level population to regional control data as an initial step.</p>
 <p>Often it is not possible or desirable to specify all the controls at the same level of geographic resolution. Some important demographic, socio-economic and land-use development distributions (e.g., employment or occupation data) which may be adopted for controls are only available at relatively aggregate geographies (e.g., County, District, Region, etc.). Moreover, some distributions which are available at a finer geographic level in the base year may not be available at the same geographic level for a future forecast year. In some cases, even if a control is available at a finer geography, the modeler might want to specify that control (e.g., population by age) at an aggregate geography due to concerns about accuracy, forecastability, etc.</p>
 <p>The flexible number of geographies feature in PopulationSim enables user to make use of data available at different geographic resolutions. In summary, the <strong>choice of geographies for PopulationSim</strong> is decided based on following:</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">Travel Model Spatial Resolution:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">For most ABMs, this is <strong>MAZ</strong> but can also be <strong>TAZ</strong> or even <strong>Block Group</strong></td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Availability of Control Data:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">Different controls are available at different geographic levels; some data is available at the block level (for example, total households), some data is avialable at the block group level, the tract level, the county level, etc.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">Accuracy of Control Data:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">Generally there is more error in data specified at smaller geographic units than larger geographic units</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Desired level of Control:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">It is possible that the user may not wish to control certain variables at a small geographic level, even if good base-year data were available. For example, the user may not have much faith in the ability to forecast certain variables at a small geogrphic level into the future. In such cases, the user may wish to aggregate available data to larger geographies.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">Seed Sample Geography:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">The level at which seed data is specified automatically determines one of the geographic level (the Seed level).</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Travel Model Spatial Resolution</dt>
+<dd class="field-odd"><p>For most ABMs, this is <strong>MAZ</strong> but can also be <strong>TAZ</strong> or even <strong>Block Group</strong></p>
+</dd>
+<dt class="field-even">Availability of Control Data</dt>
+<dd class="field-even"><p>Different controls are available at different geographic levels; some data is available at the block level (for example, total households), some data is avialable at the block group level, the tract level, the county level, etc.</p>
+</dd>
+<dt class="field-odd">Accuracy of Control Data</dt>
+<dd class="field-odd"><p>Generally there is more error in data specified at smaller geographic units than larger geographic units</p>
+</dd>
+<dt class="field-even">Desired level of Control</dt>
+<dd class="field-even"><p>It is possible that the user may not wish to control certain variables at a small geographic level, even if good base-year data were available. For example, the user may not have much faith in the ability to forecast certain variables at a small geogrphic level into the future. In such cases, the user may wish to aggregate available data to larger geographies.</p>
+</dd>
+<dt class="field-odd">Seed Sample Geography</dt>
+<dd class="field-odd"><p>The level at which seed data is specified automatically determines one of the geographic level (the Seed level).</p>
+</dd>
+</dl>
 <p>The hierarchy of geographies is important when making a decision regarding controls. The hierarchy of geographies in PopulationSim framework is as follows:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Meta (e.g., the entire modeling region)</li>
-<li>Seed (e.g., PUMA)</li>
-<li>Sub-Seed (e.g., TAZ, MAZ)</li>
+<li><p>Meta (e.g., the entire modeling region)</p></li>
+<li><p>Seed (e.g., PUMA)</p></li>
+<li><p>Sub-Seed (e.g., TAZ, MAZ)</p></li>
 </ul>
 </div></blockquote>
 <p>The Meta geography is the entire region. Currently, PopulationSim can handle only one Meta geography. The Seed geography is the geographic resolution of the seed data. There can be one or more Seed geographies. PopulationSim can handle any number of nested Sub-Seed geographies. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the <a class="reference internal" href="docs.html#docs"><span class="std std-ref">Resources</span></a> section.</p>
 <div class="section" id="geographic-cross-walk">
 <h3>Geographic Cross-walk<a class="headerlink" href="#geographic-cross-walk" title="Permalink to this headline">¶</a></h3>
 <p>After selecting the geographies, the next step is to prepare a geographic cross-walk file. The geographic cross-walk file defines the hierarchical structure of geographies. The geographic cross-walk is used to aggregate controls specified at a lower geography to upper geography and to allocate population from an upper geography to a lower geography. An example geographic crosswalk is shown below:</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="14%" />
-<col width="30%" />
-<col width="19%" />
-<col width="16%" />
-<col width="21%" />
+<col style="width: 14%" />
+<col style="width: 30%" />
+<col style="width: 19%" />
+<col style="width: 16%" />
+<col style="width: 21%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">TAZ</th>
-<th class="head">BLOCK GROUP</th>
-<th class="head">TRACT</th>
-<th class="head">PUMA</th>
-<th class="head">REGION</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>TAZ</p></th>
+<th class="head"><p>BLOCK GROUP</p></th>
+<th class="head"><p>TRACT</p></th>
+<th class="head"><p>PUMA</p></th>
+<th class="head"><p>REGION</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>475</td>
-<td>3</td>
-<td>100</td>
-<td>600</td>
-<td>1</td>
+<tbody>
+<tr class="row-even"><td><p>475</p></td>
+<td><p>3</p></td>
+<td><p>100</p></td>
+<td><p>600</p></td>
+<td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td>476</td>
-<td>3</td>
-<td>100</td>
-<td>600</td>
-<td>1</td>
+<tr class="row-odd"><td><p>476</p></td>
+<td><p>3</p></td>
+<td><p>100</p></td>
+<td><p>600</p></td>
+<td><p>1</p></td>
 </tr>
-<tr class="row-even"><td>232</td>
-<td>45</td>
-<td>100</td>
-<td>600</td>
-<td>1</td>
+<tr class="row-even"><td><p>232</p></td>
+<td><p>45</p></td>
+<td><p>100</p></td>
+<td><p>600</p></td>
+<td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td>247</td>
-<td>45</td>
-<td>202</td>
-<td>600</td>
-<td>1</td>
+<tr class="row-odd"><td><p>247</p></td>
+<td><p>45</p></td>
+<td><p>202</p></td>
+<td><p>600</p></td>
+<td><p>1</p></td>
 </tr>
-<tr class="row-even"><td>248</td>
-<td>45</td>
-<td>202</td>
-<td>600</td>
-<td>1</td>
+<tr class="row-even"><td><p>248</p></td>
+<td><p>45</p></td>
+<td><p>202</p></td>
+<td><p>600</p></td>
+<td><p>1</p></td>
 </tr>
 </tbody>
 </table>
@@ -312,206 +308,203 @@ versions, and then add the error to the largest category by subtracting it from 
 </div>
 </div></blockquote>
 <p>PopulationSim is configured using the settings.YAML file. PopulationSim can be configured to run in <strong>base</strong> mode or <strong>repop</strong> mode.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">base mode:</th><td class="field-body">The base configuration runs PopulationSim from beginning to end and produces a new synthetic population.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">repop mode:</th><td class="field-body">The repop configuration is used for repopulating a subset of zones for an existing synthetic population. The user has the option to <em>replace</em> or <em>append</em> to the existing synthetic population. These options are specified from the settings.YAML file, details can be found in the <a class="reference internal" href="#settings"><span class="std std-ref">Configuring Settings File</span></a> section.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">base mode</dt>
+<dd class="field-odd"><p>The base configuration runs PopulationSim from beginning to end and produces a new synthetic population.</p>
+</dd>
+<dt class="field-even">repop mode</dt>
+<dd class="field-even"><p>The repop configuration is used for repopulating a subset of zones for an existing synthetic population. The user has the option to <em>replace</em> or <em>append</em> to the existing synthetic population. These options are specified from the settings.YAML file, details can be found in the <a class="reference internal" href="#settings"><span class="std std-ref">Configuring Settings File</span></a> section.</p>
+</dd>
+</dl>
 <p>The following sections describes the inputs and outputs, followed by discussion on configuring the settings file and specifying controls.</p>
 <div class="section" id="inputs-outputs">
 <span id="id1"></span><h3>Inputs &amp; Outputs<a class="headerlink" href="#inputs-outputs" title="Permalink to this headline">¶</a></h3>
 <p>Please refer to the following definition list to understand the file names:</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name"><em>GEOG_NAME</em>:</th><td class="field-body">Sub-seed geography name such as TAZ, MAZ, etc.</td>
-</tr>
-<tr class="field-even field"><th class="field-name"><em>SEED_GEOG</em>:</th><td class="field-body">Geographic resolution of the seed sample such as PUMA.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name"><em>META_GEOG</em>:</th><td class="field-body">Geography name of the Meta geography such as Region, District, etc.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd"><em>GEOG_NAME</em></dt>
+<dd class="field-odd"><p>Sub-seed geography name such as TAZ, MAZ, etc.</p>
+</dd>
+<dt class="field-even"><em>SEED_GEOG</em></dt>
+<dd class="field-even"><p>Geographic resolution of the seed sample such as PUMA.</p>
+</dd>
+<dt class="field-odd"><em>META_GEOG</em></dt>
+<dd class="field-odd"><p>Geography name of the Meta geography such as Region, District, etc.</p>
+</dd>
+</dl>
 <hr class="docutils" />
 <p>Working Directory Contents:</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="23%" />
-<col width="77%" />
+<col style="width: 23%" />
+<col style="width: 77%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">File</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>run_populationsim.py</td>
-<td>Python script that orchestrates a PopulationSim run</td>
+<tbody>
+<tr class="row-even"><td><p>run_populationsim.py</p></td>
+<td><p>Python script that orchestrates a PopulationSim run</p></td>
 </tr>
-<tr class="row-odd"><td>/configs</td>
-<td>Sub-directory containing control specifications and configuration settings</td>
+<tr class="row-odd"><td><p>/configs</p></td>
+<td><p>Sub-directory containing control specifications and configuration settings</p></td>
 </tr>
-<tr class="row-even"><td>/data</td>
-<td>Sub-directory containing all input files</td>
+<tr class="row-even"><td><p>/data</p></td>
+<td><p>Sub-directory containing all input files</p></td>
 </tr>
-<tr class="row-odd"><td>/output</td>
-<td>Sub-directory containing all outputs, summaries and intermediate files</td>
+<tr class="row-odd"><td><p>/output</p></td>
+<td><p>Sub-directory containing all outputs, summaries and intermediate files</p></td>
 </tr>
 </tbody>
 </table>
 <hr class="docutils" />
 <p><em>/configs</em> Sub-directory Contents:</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="25%" />
-<col width="75%" />
+<col style="width: 25%" />
+<col style="width: 75%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">File</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>logging.yaml</td>
-<td>YAML-based file for setting up logging</td>
+<tbody>
+<tr class="row-even"><td><p>logging.yaml</p></td>
+<td><p>YAML-based file for setting up logging</p></td>
 </tr>
-<tr class="row-odd"><td>settings.yaml</td>
-<td>YAML-based settings file to configure a PopulationSim run</td>
+<tr class="row-odd"><td><p>settings.yaml</p></td>
+<td><p>YAML-based settings file to configure a PopulationSim run</p></td>
 </tr>
-<tr class="row-even"><td>controls.csv</td>
-<td>CSV file to specify controls</td>
+<tr class="row-even"><td><p>controls.csv</p></td>
+<td><p>CSV file to specify controls</p></td>
 </tr>
 </tbody>
 </table>
 <hr class="docutils" />
 <p><em>/data</em> Sub-directory Contents:</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="35%" />
-<col width="65%" />
+<col style="width: 35%" />
+<col style="width: 65%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">File</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>control_totals_GEOG_NAME.csv</td>
-<td>Marginal control totals at each spatial resolution named <em>GEOG_NAME</em></td>
+<tbody>
+<tr class="row-even"><td><p>control_totals_GEOG_NAME.csv</p></td>
+<td><p>Marginal control totals at each spatial resolution named <em>GEOG_NAME</em></p></td>
 </tr>
-<tr class="row-odd"><td>geo_crosswalk.csv</td>
-<td>Geographic cross-walk file</td>
+<tr class="row-odd"><td><p>geo_crosswalk.csv</p></td>
+<td><p>Geographic cross-walk file</p></td>
 </tr>
-<tr class="row-even"><td>seed_households.csv</td>
-<td>Seed sample of households</td>
+<tr class="row-even"><td><p>seed_households.csv</p></td>
+<td><p>Seed sample of households</p></td>
 </tr>
-<tr class="row-odd"><td>seed_persons.csv</td>
-<td>Seed sample of persons</td>
+<tr class="row-odd"><td><p>seed_persons.csv</p></td>
+<td><p>Seed sample of persons</p></td>
 </tr>
 </tbody>
 </table>
 <hr class="docutils" />
 <p><em>/output</em> Sub-directory Contents (populated at the end of a PopulationSim run):</p>
 <p>This sub-directory is populated at the end of the PopulationSim run. The table below list all possible outputs from a PopulationSim run. The user has the option to specify the output files that should be exported at the end of a run. Details can be found in the <em>Configuring Settings File</em> section.</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="22%" />
-<col width="19%" />
-<col width="59%" />
+<col style="width: 22%" />
+<col style="width: 19%" />
+<col style="width: 59%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">File</th>
-<th class="head">Group</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Group</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>asim.log</td>
-<td>Logging</td>
-<td>Log file</td>
+<tbody>
+<tr class="row-even"><td><p>asim.log</p></td>
+<td><p>Logging</p></td>
+<td><p>Log file</p></td>
 </tr>
-<tr class="row-odd"><td>pipeline.h5</td>
-<td>Data Pipeline</td>
-<td>HDF5 data pipeline which stores all the inputs, outputs and intermediate files</td>
+<tr class="row-odd"><td><p>pipeline.h5</p></td>
+<td><p>Data Pipeline</p></td>
+<td><p>HDF5 data pipeline which stores all the inputs, outputs and intermediate files</p></td>
 </tr>
-<tr class="row-even"><td>expanded_household_ids.csv</td>
-<td>Final Synthetic Population</td>
-<td>List of expanded household IDs with their geographic assignment. User would join <br />
-this file with the seed sample to generate a fully expanded synthetic population</td>
+<tr class="row-even"><td><p>expanded_household_ids.csv</p></td>
+<td><p>Final Synthetic Population</p></td>
+<td><p>List of expanded household IDs with their geographic assignment. User would join <br />
+this file with the seed sample to generate a fully expanded synthetic population</p></td>
 </tr>
-<tr class="row-odd"><td>synthetic_households.csv</td>
-<td>Final Synthetic Population</td>
-<td>Fully expanded synthetic population of households. User can specify the attributes <br />
-to be included from the <em>seed sample</em> in the <em>settings.YAML</em> file</td>
+<tr class="row-odd"><td><p>synthetic_households.csv</p></td>
+<td><p>Final Synthetic Population</p></td>
+<td><p>Fully expanded synthetic population of households. User can specify the attributes <br />
+to be included from the <em>seed sample</em> in the <em>settings.YAML</em> file</p></td>
 </tr>
-<tr class="row-even"><td>synthetic_persons.csv</td>
-<td>Final Synthetic Population</td>
-<td>Fully expanded synthetic population of persons. User can specify the attributes to <br />
-be included from the <em>seed sample</em> in the <em>settings.YAML</em> file</td>
+<tr class="row-even"><td><p>synthetic_persons.csv</p></td>
+<td><p>Final Synthetic Population</p></td>
+<td><p>Fully expanded synthetic population of persons. User can specify the attributes to <br />
+be included from the <em>seed sample</em> in the <em>settings.YAML</em> file</p></td>
 </tr>
-<tr class="row-odd"><td>incidence_table.csv</td>
-<td>Intermediate</td>
-<td>Intermediate incidence table</td>
+<tr class="row-odd"><td><p>incidence_table.csv</p></td>
+<td><p>Intermediate</p></td>
+<td><p>Intermediate incidence table</p></td>
 </tr>
-<tr class="row-even"><td>household_groups.csv</td>
-<td>Intermediate</td>
-<td>Unique household group assignments based on controls variables</td>
+<tr class="row-even"><td><p>household_groups.csv</p></td>
+<td><p>Intermediate</p></td>
+<td><p>Unique household group assignments based on controls variables</p></td>
 </tr>
-<tr class="row-odd"><td>GEOG_NAME_control_data.csv</td>
-<td>Intermediate</td>
-<td>Input control data at each geographic level - <em>GEOG_NAME</em></td>
+<tr class="row-odd"><td><p>GEOG_NAME_control_data.csv</p></td>
+<td><p>Intermediate</p></td>
+<td><p>Input control data at each geographic level - <em>GEOG_NAME</em></p></td>
 </tr>
-<tr class="row-even"><td>GEOG_NAME_controls.csv</td>
-<td>Intermediate</td>
-<td>Control totals at each geographic level (<em>GEOG_NAME</em>) containing only the controls <br />
-specified in the <em>configs/controls.csv</em> control specification file</td>
+<tr class="row-even"><td><p>GEOG_NAME_controls.csv</p></td>
+<td><p>Intermediate</p></td>
+<td><p>Control totals at each geographic level (<em>GEOG_NAME</em>) containing only the controls <br />
+specified in the <em>configs/controls.csv</em> control specification file</p></td>
 </tr>
-<tr class="row-odd"><td>GEOG_NAME_weights.csv</td>
-<td>Intermediate</td>
-<td>List of household weights with their geographic assignment</td>
+<tr class="row-odd"><td><p>GEOG_NAME_weights.csv</p></td>
+<td><p>Intermediate</p></td>
+<td><p>List of household weights with their geographic assignment</p></td>
 </tr>
-<tr class="row-even"><td>GEOG_NAME_weights_sparse.csv</td>
-<td>Intermediate</td>
-<td>List of household weights with their geographic assignment</td>
+<tr class="row-even"><td><p>GEOG_NAME_weights_sparse.csv</p></td>
+<td><p>Intermediate</p></td>
+<td><p>List of household weights with their geographic assignment</p></td>
 </tr>
-<tr class="row-odd"><td>control_spec.csv</td>
-<td>Intermediate</td>
-<td>Control specification used for the run</td>
+<tr class="row-odd"><td><p>control_spec.csv</p></td>
+<td><p>Intermediate</p></td>
+<td><p>Control specification used for the run</p></td>
 </tr>
-<tr class="row-even"><td>geo_cross_walk.csv</td>
-<td>Intermediate</td>
-<td>Input geographic cross-walk</td>
+<tr class="row-even"><td><p>geo_cross_walk.csv</p></td>
+<td><p>Intermediate</p></td>
+<td><p>Input geographic cross-walk</p></td>
 </tr>
-<tr class="row-odd"><td>crosswalk.csv</td>
-<td>Intermediate</td>
-<td>Trimmed geographic cross-walk used in PopulationSim run</td>
+<tr class="row-odd"><td><p>crosswalk.csv</p></td>
+<td><p>Intermediate</p></td>
+<td><p>Trimmed geographic cross-walk used in PopulationSim run</p></td>
 </tr>
-<tr class="row-even"><td>trace_GEOG_NAME_weights.csv</td>
-<td>Tracing</td>
-<td>Trace file listing household weights for the trace geography specified in settings</td>
+<tr class="row-even"><td><p>trace_GEOG_NAME_weights.csv</p></td>
+<td><p>Tracing</p></td>
+<td><p>Trace file listing household weights for the trace geography specified in settings</p></td>
 </tr>
-<tr class="row-odd"><td>summary_hh_weights.csv</td>
-<td>Summary</td>
-<td>List of household with weights through different stages of PopulationSim</td>
+<tr class="row-odd"><td><p>summary_hh_weights.csv</p></td>
+<td><p>Summary</p></td>
+<td><p>List of household with weights through different stages of PopulationSim</p></td>
 </tr>
-<tr class="row-even"><td>summary_GEOG_NAME.csv</td>
-<td>Summary</td>
-<td>Marginal Controls vs. Synthetic Population Comparison at <em>GEOG_NAME</em> level</td>
+<tr class="row-even"><td><p>summary_GEOG_NAME.csv</p></td>
+<td><p>Summary</p></td>
+<td><p>Marginal Controls vs. Synthetic Population Comparison at <em>GEOG_NAME</em> level</p></td>
 </tr>
-<tr class="row-odd"><td>summary_GEOG_NAME_aggregate.csv</td>
-<td>Summary</td>
-<td>Household weights aggregate to <em>SEED_GEOG</em> at the end of allocation to <em>GEOG_NAME</em></td>
+<tr class="row-odd"><td><p>summary_GEOG_NAME_aggregate.csv</p></td>
+<td><p>Summary</p></td>
+<td><p>Household weights aggregate to <em>SEED_GEOG</em> at the end of allocation to <em>GEOG_NAME</em></p></td>
 </tr>
-<tr class="row-even"><td>summary_GEOG_NAME_SEED_GEOG.csv</td>
-<td>Summary</td>
-<td>Marginal Controls vs. Synthetic Population Comparison at <em>SEED_GEOG</em> level using <br />
-weights from allocation at <em>GEOG_NAME</em> level</td>
+<tr class="row-even"><td><p>summary_GEOG_NAME_SEED_GEOG.csv</p></td>
+<td><p>Summary</p></td>
+<td><p>Marginal Controls vs. Synthetic Population Comparison at <em>SEED_GEOG</em> level using <br />
+weights from allocation at <em>GEOG_NAME</em> level</p></td>
 </tr>
 </tbody>
 </table>
@@ -530,54 +523,53 @@ weights from allocation at <em>GEOG_NAME</em> level</td>
 <span class="n">max_expansion_factor</span><span class="p">:</span> <span class="mi">30</span>
 </pre></div>
 </div>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="29%" />
-<col width="9%" />
-<col width="62%" />
+<col style="width: 29%" />
+<col style="width: 9%" />
+<col style="width: 62%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Value</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>INTEGERIZE_WITH_BACKSTOPPED_CONTROLS</td>
-<td>True/False</td>
-<td>When set to <strong>True</strong>, upper geography controls are imputed for current <br />
-geography and used as additional controls for integerization</td>
+<tbody>
+<tr class="row-even"><td><p>INTEGERIZE_WITH_BACKSTOPPED_CONTROLS</p></td>
+<td><p>True/False</p></td>
+<td><p>When set to <strong>True</strong>, upper geography controls are imputed for current <br />
+geography and used as additional controls for integerization</p></td>
 </tr>
-<tr class="row-odd"><td>SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS</td>
-<td>True/False</td>
-<td>When <strong>True</strong>, PopulationSim uses floating weights from upper geography</td>
+<tr class="row-odd"><td><p>SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS</p></td>
+<td><p>True/False</p></td>
+<td><p>When <strong>True</strong>, PopulationSim uses floating weights from upper geography</p></td>
 </tr>
-<tr class="row-even"><td>GROUP_BY_INCIDENCE_SIGNATURE</td>
-<td>True/False</td>
-<td>When <strong>True</strong>, PopulationSim groups the household incidence by HH group</td>
+<tr class="row-even"><td><p>GROUP_BY_INCIDENCE_SIGNATURE</p></td>
+<td><p>True/False</p></td>
+<td><p>When <strong>True</strong>, PopulationSim groups the household incidence by HH group</p></td>
 </tr>
-<tr class="row-odd"><td>USE_SIMUL_INTEGERIZER</td>
-<td>True/False</td>
-<td><dl class="first docutils">
-<dt>PopulationSim Integerizer can run in two modes: <br /></dt>
-<dd><ol class="first last arabic simple">
-<li>Sequential - Zones are processed in a ascending order of number of <br />
-households in the zone <br /></li>
-<li>Simultaneous - Zones are processed simultaneously <br /></li>
+<tr class="row-odd"><td><p>USE_SIMUL_INTEGERIZER</p></td>
+<td><p>True/False</p></td>
+<td><dl class="simple">
+<dt>PopulationSim Integerizer can run in two modes: <br /></dt><dd><ol class="arabic simple">
+<li><p>Sequential - Zones are processed in a ascending order of number of <br />
+households in the zone <br /></p></li>
+<li><p>Simultaneous - Zones are processed simultaneously <br /></p></li>
 </ol>
 </dd>
 </dl>
-<p class="last"><em>for more details, refer the TRB paper on Docs page</em></p>
+<p><em>for more details, refer the TRB paper on Docs page</em></p>
 </td>
 </tr>
-<tr class="row-even"><td>USE_CVXPY</td>
-<td>True/False</td>
-<td>A third-party solver is used for integerization - CVXPY or or-tools <br />
-<strong>CVXPY</strong> is currently not available for Windows</td>
+<tr class="row-even"><td><p>USE_CVXPY</p></td>
+<td><p>True/False</p></td>
+<td><p>A third-party solver is used for integerization - CVXPY or or-tools <br />
+<strong>CVXPY</strong> is currently not available for Windows</p></td>
 </tr>
-<tr class="row-odd"><td>max_expansion_factor</td>
-<td>&gt; 0</td>
-<td>Maximum HH expansion factor weight setting. This settings dictates the <br />
+<tr class="row-odd"><td><p>max_expansion_factor</p></td>
+<td><p>&gt; 0</p></td>
+<td><p>Maximum HH expansion factor weight setting. This settings dictates the <br />
 ratio of the final weight of the household record to its initial weight. <br />
 For example, a maxExpansionFactor setting of 5 would mean a household <br />
 having a PUMS weight of x can have a final weight of not more than 5x, <br />
@@ -586,7 +578,7 @@ The user might need to adjust this setting to enable sampling of a record <br />
 with a rare household configuration. Otherwise, it might result in some <br />
 controls not being matched due to unavailability of records to sample from.
 The maximum expansion factor may have to be adjusted upwards if the target <br />
-is much greater than the seed number of households.                        <br /></td>
+is much greater than the seed number of households.                        <br /></p></td>
 </tr>
 </tbody>
 </table>
@@ -595,32 +587,32 @@ is much greater than the seed number of households.                        <br /
 <span class="n">seed_geography</span><span class="p">:</span> <span class="n">PUMA</span>
 </pre></div>
 </div>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="14%" />
-<col width="18%" />
-<col width="69%" />
+<col style="width: 14%" />
+<col style="width: 18%" />
+<col style="width: 69%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Value</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>geographies</td>
-<td>List of geographies</td>
-<td>List of geographies at which the controls are specified including the seed <br />
+<tbody>
+<tr class="row-even"><td><p>geographies</p></td>
+<td><p>List of geographies</p></td>
+<td><p>List of geographies at which the controls are specified including the seed <br />
 geography - PUMA. The geographies should be in the hierarchical order: <br />
 <em>REGION</em> &gt;&gt; <em>PUMA</em> &gt;&gt; <em>TRACT</em> &gt;&gt; <em>TAZ</em> &gt;&gt; … <br />
 Any number of geographies are allowed <br />
 These geography names should be used as prefixes in control data file names <br />
 for the corresponding geographies. Note that number of sub-seed geographies <br />
-are flexible. Each must be listed in the run_list settings, shown below.</td>
+are flexible. Each must be listed in the run_list settings, shown below.</p></td>
 </tr>
-<tr class="row-odd"><td>seed_geography</td>
-<td>PUMA</td>
-<td>Seed geography name from the list of geographies</td>
+<tr class="row-odd"><td><p>seed_geography</p></td>
+<td><p>PUMA</p></td>
+<td><p>Seed geography name from the list of geographies</p></td>
 </tr>
 </tbody>
 </table>
@@ -631,22 +623,22 @@ are flexible. Each must be listed in the run_list settings, shown below.</td>
       <span class="n">TRACT</span><span class="p">:</span> <span class="mi">10200</span>
 </pre></div>
 </div>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="24%" />
-<col width="76%" />
+<col style="width: 24%" />
+<col style="width: 76%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>TAZ</td>
-<td>TAZ ID that should be traced.</td>
+<tbody>
+<tr class="row-even"><td><p>TAZ</p></td>
+<td><p>TAZ ID that should be traced.</p></td>
 </tr>
-<tr class="row-odd"><td>TRACT</td>
-<td>TRACT ID that should be traced.</td>
+<tr class="row-odd"><td><p>TRACT</p></td>
+<td><p>TRACT ID that should be traced.</p></td>
 </tr>
 </tbody>
 </table>
@@ -654,20 +646,20 @@ are flexible. Each must be listed in the run_list settings, shown below.</td>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_dir</span><span class="p">:</span> <span class="n">data</span>
 </pre></div>
 </div>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="12%" />
-<col width="88%" />
+<col style="width: 12%" />
+<col style="width: 88%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>data_dir</td>
-<td>Name of the data_directory within the working directory. Do not change unless
-the directory structure changes from the template.</td>
+<tbody>
+<tr class="row-even"><td><p>data_dir</p></td>
+<td><p>Name of the data_directory within the working directory. Do not change unless
+the directory structure changes from the template.</p></td>
 </tr>
 </tbody>
 </table>
@@ -675,10 +667,10 @@ the directory structure changes from the template.</td>
 <p>This setting is used to specify details of various inputs to PopulationSim. Below is the list of the inputs in the PopulationSim data pipeline:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Seed-Households</li>
-<li>Seed-Persons</li>
-<li>Geographic CrossWalk</li>
-<li>Control data at each control geography</li>
+<li><p>Seed-Households</p></li>
+<li><p>Seed-Persons</p></li>
+<li><p>Geographic CrossWalk</p></li>
+<li><p>Control data at each control geography</p></li>
 </ul>
 </div></blockquote>
 <p>Note that Seed-Households, Seed-Persons and Geographic CrossWalk are all required tables and must be listed. There must be a control data file specified for each geography other than seed.            For each input table, the user is required to specify an import table name, input CSV file name, index column name and column name map (only for renaming column names). The user can also specify a list of columns to be dropped from the input synthetic population seed data. An example is shown below followed by description of attributes.</p>
@@ -715,54 +707,54 @@ the directory structure changes from the template.</td>
         <span class="n">filename</span> <span class="p">:</span> <span class="n">scaled_control_totals_meta</span><span class="o">.</span><span class="n">csv</span>
 </pre></div>
 </div>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="14%" />
-<col width="86%" />
+<col style="width: 14%" />
+<col style="width: 86%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>tablename</td>
-<td><p class="first">Name of the imported CSV file in the PopulationSim data pipeline. The input <br />
+<tbody>
+<tr class="row-even"><td><p>tablename</p></td>
+<td><p>Name of the imported CSV file in the PopulationSim data pipeline. The input <br />
 names in the PopulationSim data pipeline should be named as per the following <br />
 standard: <br />
 1. Seed-Households - <em>households</em> <br /></p>
 <blockquote>
-<div>Households across all Seed geographies should be in one file. There should be <br />
+<div><p>Households across all Seed geographies should be in one file. There should be <br />
 a Seed geography field with name as specified in the settings file. The seed  <br />
-geography identifies which Seed geography unit each household belongs to</div></blockquote>
-<ol class="last arabic" start="2">
-<li><p class="first">Seed-Persons - <em>persons</em> <br /></p>
+geography identifies which Seed geography unit each household belongs to</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>Seed-Persons - <em>persons</em> <br /></p>
 <p>Persons across all Seed geographies should be in one file. There should be a <br />
 Seed geography field with name as specified in the settings file. The seed  <br />
 geography identifies which Seed geography unit each person belongs to</p>
 </li>
-<li><p class="first">Geographic CrossWalk - <em>geo_cross_walk</em> <br /></p>
+<li><p>Geographic CrossWalk - <em>geo_cross_walk</em> <br /></p>
 <p>The field names in the geographic cross-walk should be same as the geography <br />
 names specified in the settings file</p>
 </li>
-<li><p class="first">Control data at each control geography - <em>GEOG_NAME_control_data</em>, <br />
-where <em>GEOG_NAME</em>  is the name of the control geography (TAZ, TRACT and REGION)</p>
-</li>
+<li><p>Control data at each control geography - <em>GEOG_NAME_control_data</em>, <br />
+where <em>GEOG_NAME</em>  is the name of the control geography (TAZ, TRACT and REGION)</p></li>
 </ol>
 </td>
 </tr>
-<tr class="row-odd"><td>filename</td>
-<td>Name of the input CSV file in the data folder</td>
+<tr class="row-odd"><td><p>filename</p></td>
+<td><p>Name of the input CSV file in the data folder</p></td>
 </tr>
-<tr class="row-even"><td>index_col</td>
-<td>Name of the unique ID field in the seed household data</td>
+<tr class="row-even"><td><p>index_col</p></td>
+<td><p>Name of the unique ID field in the seed household data</p></td>
 </tr>
-<tr class="row-odd"><td>column_map</td>
-<td>Column map of fields to be renamed. The format for the column map is as follows: <br />
-<code class="docutils literal notranslate"><span class="pre">Name</span> <span class="pre">in</span> <span class="pre">CSV:</span> <span class="pre">New</span> <span class="pre">Name</span></code></td>
+<tr class="row-odd"><td><p>column_map</p></td>
+<td><p>Column map of fields to be renamed. The format for the column map is as follows: <br />
+<code class="docutils literal notranslate"><span class="pre">Name</span> <span class="pre">in</span> <span class="pre">CSV:</span> <span class="pre">New</span> <span class="pre">Name</span></code></p></td>
 </tr>
-<tr class="row-even"><td>drop_columns</td>
-<td>List of columns to be dropped from the input data</td>
+<tr class="row-even"><td><p>drop_columns</p></td>
+<td><p>List of columns to be dropped from the input data</p></td>
 </tr>
 </tbody>
 </table>
@@ -770,38 +762,38 @@ where <em>GEOG_NAME</em>  is the name of the control geography (TAZ, TRACT and R
 <p><strong>Reserved Column Names</strong>:</p>
 <p>Three columns representing the following needs to be specified:</p>
 <ul class="simple">
-<li>Initial weight on households</li>
-<li>Unique household identifier</li>
-<li>Control on total number of households at the lowest geographic level</li>
+<li><p>Initial weight on households</p></li>
+<li><p>Unique household identifier</p></li>
+<li><p>Control on total number of households at the lowest geographic level</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">household_weight_col</span><span class="p">:</span> <span class="n">WGTP</span>
 <span class="n">household_id_col</span><span class="p">:</span> <span class="n">hh_id</span>
 <span class="n">total_hh_control</span><span class="p">:</span> <span class="n">num_hh</span>
 </pre></div>
 </div>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="24%" />
-<col width="76%" />
+<col style="width: 24%" />
+<col style="width: 76%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>household_weight_col</td>
-<td>Initial weight column in the household seed sample</td>
+<tbody>
+<tr class="row-even"><td><p>household_weight_col</p></td>
+<td><p>Initial weight column in the household seed sample</p></td>
 </tr>
-<tr class="row-odd"><td>household_id_col</td>
-<td>Unique household ID column in the household seed sample used to <br />
+<tr class="row-odd"><td><p>household_id_col</p></td>
+<td><p>Unique household ID column in the household seed sample used to <br />
 identify which persons are in which household. Should have same <br />
-name as the index column on household seed table</td>
+name as the index column on household seed table</p></td>
 </tr>
-<tr class="row-even"><td>total_hh_control</td>
-<td>Total number of household control at the lowest geographic level.  <br />
+<tr class="row-even"><td><p>total_hh_control</p></td>
+<td><p>Total number of household control at the lowest geographic level.  <br />
 Note that PopulationSim requires this control to be specified at the <br />
-lowest geography. It is strictly enforced</td>
+lowest geography. It is strictly enforced</p></td>
 </tr>
 </tbody>
 </table>
@@ -810,19 +802,19 @@ lowest geography. It is strictly enforced</td>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">control_file_name</span><span class="p">:</span> <span class="n">controls</span><span class="o">.</span><span class="n">csv</span>
 </pre></div>
 </div>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="32%" />
-<col width="68%" />
+<col style="width: 32%" />
+<col style="width: 68%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>control_file_name</td>
-<td>Name of the CSV control specification file</td>
+<tbody>
+<tr class="row-even"><td><p>control_file_name</p></td>
+<td><p>Name of the CSV control specification file</p></td>
 </tr>
 </tbody>
 </table>
@@ -834,22 +826,22 @@ lowest geography. It is strictly enforced</td>
     <span class="o">-</span> <span class="n">expanded_household_ids</span>
 </pre></div>
 </div>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="19%" />
-<col width="81%" />
+<col style="width: 19%" />
+<col style="width: 81%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>action</td>
-<td><em>include</em> or <em>skip</em> the list of tables specified</td>
+<tbody>
+<tr class="row-even"><td><p>action</p></td>
+<td><p><em>include</em> or <em>skip</em> the list of tables specified</p></td>
 </tr>
-<tr class="row-odd"><td>tables</td>
-<td>List of table to be written out or skipped</td>
+<tr class="row-odd"><td><p>tables</p></td>
+<td><p>List of table to be written out or skipped</p></td>
 </tr>
 </tbody>
 </table>
@@ -873,27 +865,27 @@ lowest geography. It is strictly enforced</td>
       <span class="o">-</span> <span class="n">OCCP</span>
 </pre></div>
 </div>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="14%" />
-<col width="86%" />
+<col style="width: 14%" />
+<col style="width: 86%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>household_id</td>
-<td>Column name of the unique household ID field in the expanded synthetic population</td>
+<tbody>
+<tr class="row-even"><td><p>household_id</p></td>
+<td><p>Column name of the unique household ID field in the expanded synthetic population</p></td>
 </tr>
-<tr class="row-odd"><td>filename</td>
-<td>CSV file names for the expanded households and persons table</td>
+<tr class="row-odd"><td><p>filename</p></td>
+<td><p>CSV file names for the expanded households and persons table</p></td>
 </tr>
-<tr class="row-even"><td>columns</td>
-<td>Names of seed sample columns to be included in the final synthetic population. <br />
+<tr class="row-even"><td><p>columns</p></td>
+<td><p>Names of seed sample columns to be included in the final synthetic population. <br />
 Missing or misspelled column names generate error. The geographic allocation <br />
-information of each household is added by default.</td>
+information of each household is added by default.</p></td>
 </tr>
 </tbody>
 </table>
@@ -916,69 +908,69 @@ information of each household is added by default.</td>
   <span class="c1">#resume_after: integerize_final_seed_weights</span>
 </pre></div>
 </div>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="24%" />
-<col width="76%" />
+<col style="width: 24%" />
+<col style="width: 76%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>steps</td>
-<td>List of steps to be run</td>
+<tbody>
+<tr class="row-even"><td><p>steps</p></td>
+<td><p>List of steps to be run</p></td>
 </tr>
-<tr class="row-odd"><td>resume_after</td>
-<td>The step from which the current run should resume</td>
+<tr class="row-odd"><td><p>resume_after</p></td>
+<td><p>The step from which the current run should resume</p></td>
 </tr>
 </tbody>
 </table>
 <p>For detailed information on software implementation refer to <a class="reference internal" href="software.html#core-components"><span class="std std-ref">Core Components</span></a> and <a class="reference internal" href="software.html#model-steps"><span class="std std-ref">Model Steps</span></a>. The table below gives a brief description of each step.</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="19%" />
-<col width="81%" />
+<col style="width: 19%" />
+<col style="width: 81%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Step</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Step</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td><a class="reference internal" href="software.html#input-pre-processor"><span class="std std-ref">input_pre_processor</span></a></td>
-<td>Read input text files and save them as pipeline tables for use in subsequent steps.</td>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="software.html#input-pre-processor"><span class="std std-ref">input_pre_processor</span></a></p></td>
+<td><p>Read input text files and save them as pipeline tables for use in subsequent steps.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="software.html#setup-data-structures"><span class="std std-ref">setup_data_structures</span></a></td>
-<td>Builds data structures such as incidence_table.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="software.html#setup-data-structures"><span class="std std-ref">setup_data_structures</span></a></p></td>
+<td><p>Builds data structures such as incidence_table.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="software.html#initial-seed-balancing"><span class="std std-ref">initial_seed_balancing</span></a></td>
-<td>Balance the household weights for each of the seed geographies (independently) using the seed level controls and the aggregated sub-zone controls totals.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="software.html#initial-seed-balancing"><span class="std std-ref">initial_seed_balancing</span></a></p></td>
+<td><p>Balance the household weights for each of the seed geographies (independently) using the seed level controls and the aggregated sub-zone controls totals.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="software.html#meta-control-factoring"><span class="std std-ref">meta_control_factoring</span></a></td>
-<td>Apply simple factoring to summed household fractional weights based on original meta control values relative to summed household fractional weights by meta zone.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="software.html#meta-control-factoring"><span class="std std-ref">meta_control_factoring</span></a></p></td>
+<td><p>Apply simple factoring to summed household fractional weights based on original meta control values relative to summed household fractional weights by meta zone.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="software.html#final-seed-balancing"><span class="std std-ref">final_seed_balancing</span></a></td>
-<td>Balance the household weights for each of the seed geographies (independently) using the seed level controls and the aggregated sub-zone controls totals.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="software.html#final-seed-balancing"><span class="std std-ref">final_seed_balancing</span></a></p></td>
+<td><p>Balance the household weights for each of the seed geographies (independently) using the seed level controls and the aggregated sub-zone controls totals.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="software.html#integerize-final-seed-weights"><span class="std std-ref">integerize_final_seed_weights</span></a></td>
-<td>Final balancing for each seed (puma) zone with aggregated low and mid-level controls and distributed meta-level controls.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="software.html#integerize-final-seed-weights"><span class="std std-ref">integerize_final_seed_weights</span></a></p></td>
+<td><p>Final balancing for each seed (puma) zone with aggregated low and mid-level controls and distributed meta-level controls.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="software.html#sub-balancing"><span class="std std-ref">sub_balancing</span></a></td>
-<td>Simul-balance and integerize all zones at a specified geographic level in groups by parent zone.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="software.html#sub-balancing"><span class="std std-ref">sub_balancing</span></a></p></td>
+<td><p>Simul-balance and integerize all zones at a specified geographic level in groups by parent zone.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="software.html#expand-households"><span class="std std-ref">expand_households</span></a></td>
-<td>Create a complete expanded synthetic household list with their assigned geographic zone ids.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="software.html#expand-households"><span class="std std-ref">expand_households</span></a></p></td>
+<td><p>Create a complete expanded synthetic household list with their assigned geographic zone ids.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="software.html#write-tables"><span class="std std-ref">write_tables</span></a></td>
-<td>Write pipeline tables as csv files (in output directory) as specified by output_tables list in settings file.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="software.html#write-tables"><span class="std std-ref">write_tables</span></a></p></td>
+<td><p>Write pipeline tables as csv files (in output directory) as specified by output_tables list in settings file.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="software.html#write-synthetic-population"><span class="std std-ref">write_synthetic_population</span></a></td>
-<td>Write synthetic households and persons tables to output directory as csv files.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="software.html#write-synthetic-population"><span class="std std-ref">write_synthetic_population</span></a></p></td>
+<td><p>Write synthetic households and persons tables to output directory as csv files.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="software.html#summarize"><span class="std std-ref">summarize</span></a></td>
-<td>Write aggregate summary files of controls and weights for all geographic levels to output dir</td>
+<tr class="row-even"><td><p><a class="reference internal" href="software.html#summarize"><span class="std std-ref">summarize</span></a></p></td>
+<td><p>Write aggregate summary files of controls and weights for all geographic levels to output dir</p></td>
 </tr>
 </tbody>
 </table>
@@ -998,19 +990,19 @@ information of each household is added by default.</td>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">repop_control_file_name</span><span class="p">:</span> <span class="n">repop_controls</span><span class="o">.</span><span class="n">csv</span>
 </pre></div>
 </div>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="31%" />
-<col width="69%" />
+<col style="width: 31%" />
+<col style="width: 69%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>repop_control_file_name</td>
-<td>Name of the CSV control specification file for repop mode</td>
+<tbody>
+<tr class="row-even"><td><p>repop_control_file_name</p></td>
+<td><p>Name of the CSV control specification file for repop mode</p></td>
 </tr>
 </tbody>
 </table>
@@ -1034,25 +1026,25 @@ information of each household is added by default.</td>
   <span class="n">resume_after</span><span class="p">:</span> <span class="n">summarize</span>
 </pre></div>
 </div>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="22%" />
-<col width="78%" />
+<col style="width: 22%" />
+<col style="width: 78%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>steps</td>
-<td>List of steps to be run <br />
+<tbody>
+<tr class="row-even"><td><p>steps</p></td>
+<td><p>List of steps to be run <br />
 Two options for the expand_households.repop step <br />
 1. append <br />
-2. replace</td>
+2. replace</p></td>
 </tr>
-<tr class="row-odd"><td>resume_after</td>
-<td>The step from which the current run should resume</td>
+<tr class="row-odd"><td><p>resume_after</p></td>
+<td><p>The step from which the current run should resume</p></td>
 </tr>
 </tbody>
 </table>
@@ -1094,121 +1086,121 @@ Two options for the expand_households.repop step <br />
 </div>
 <p><strong>Notes for weighting mode</strong>:</p>
 <ul class="simple">
-<li>If there are no meta controls, the preliminary and final balanced weights are same.</li>
-<li>It should be noted that under NO_INTEGERIZATION_EVER mode the expanded_household_ids file is empty.</li>
+<li><p>If there are no meta controls, the preliminary and final balanced weights are same.</p></li>
+<li><p>It should be noted that under NO_INTEGERIZATION_EVER mode the expanded_household_ids file is empty.</p></li>
 </ul>
 </div>
 <div class="section" id="specifying-controls">
 <h3>Specifying Controls<a class="headerlink" href="#specifying-controls" title="Permalink to this headline">¶</a></h3>
 <p>The controls for a PopulationSim run are specified using the control specification CSV file. Following the ActivitySim framework, Python expressions are used for specifying control constraints.  An example file is below.</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="15%" />
-<col width="8%" />
-<col width="8%" />
-<col width="8%" />
-<col width="10%" />
-<col width="51%" />
+<col style="width: 15%" />
+<col style="width: 8%" />
+<col style="width: 8%" />
+<col style="width: 8%" />
+<col style="width: 10%" />
+<col style="width: 51%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">target</th>
-<th class="head">geography</th>
-<th class="head">seed_table</th>
-<th class="head">importance</th>
-<th class="head">control_field</th>
-<th class="head">expression</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>target</p></th>
+<th class="head"><p>geography</p></th>
+<th class="head"><p>seed_table</p></th>
+<th class="head"><p>importance</p></th>
+<th class="head"><p>control_field</p></th>
+<th class="head"><p>expression</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>num_hh</td>
-<td>TAZ</td>
-<td>households</td>
-<td>100000000</td>
-<td>HHBASE</td>
-<td>(households.WGTP &gt; 0) &amp; <br /> (households.WGTP &lt; np.inf) <a class="footnote-reference" href="#id3" id="id2">[1]</a></td>
+<tbody>
+<tr class="row-even"><td><p>num_hh</p></td>
+<td><p>TAZ</p></td>
+<td><p>households</p></td>
+<td><p>100000000</p></td>
+<td><p>HHBASE</p></td>
+<td><p>(households.WGTP &gt; 0) &amp; <br /> (households.WGTP &lt; np.inf) <a class="footnote-reference brackets" href="#id3" id="id2">1</a></p></td>
 </tr>
-<tr class="row-odd"><td>hh_size_4_plus</td>
-<td>TAZ</td>
-<td>households</td>
-<td>5000</td>
-<td>HHSIZE4</td>
-<td>households.NP &gt;= 4</td>
+<tr class="row-odd"><td><p>hh_size_4_plus</p></td>
+<td><p>TAZ</p></td>
+<td><p>households</p></td>
+<td><p>5000</p></td>
+<td><p>HHSIZE4</p></td>
+<td><p>households.NP &gt;= 4</p></td>
 </tr>
-<tr class="row-even"><td>hh_age_15_24</td>
-<td>TAZ</td>
-<td>households</td>
-<td>500</td>
-<td>HHAGE1</td>
-<td>(households.AGEHOH &gt; 15) &amp; <br /> (households.AGEHOH &lt;= 24)</td>
+<tr class="row-even"><td><p>hh_age_15_24</p></td>
+<td><p>TAZ</p></td>
+<td><p>households</p></td>
+<td><p>500</p></td>
+<td><p>HHAGE1</p></td>
+<td><p>(households.AGEHOH &gt; 15) &amp; <br /> (households.AGEHOH &lt;= 24)</p></td>
 </tr>
-<tr class="row-odd"><td>hh_inc_15</td>
-<td>TAZ</td>
-<td>households</td>
-<td>500</td>
-<td>HHINC1</td>
-<td>(households.HHINCADJ &gt; -999999999) &amp; <br /> (households.HHINCADJ &lt;= 21297)</td>
+<tr class="row-odd"><td><p>hh_inc_15</p></td>
+<td><p>TAZ</p></td>
+<td><p>households</p></td>
+<td><p>500</p></td>
+<td><p>HHINC1</p></td>
+<td><p>(households.HHINCADJ &gt; -999999999) &amp; <br /> (households.HHINCADJ &lt;= 21297)</p></td>
 </tr>
-<tr class="row-even"><td>student_fam_housing</td>
-<td>TAZ</td>
-<td>persons</td>
-<td>500</td>
-<td>OSUFAM</td>
-<td>persons.OSUTAG == 1</td>
+<tr class="row-even"><td><p>student_fam_housing</p></td>
+<td><p>TAZ</p></td>
+<td><p>persons</p></td>
+<td><p>500</p></td>
+<td><p>OSUFAM</p></td>
+<td><p>persons.OSUTAG == 1</p></td>
 </tr>
-<tr class="row-odd"><td>hh_wrks_3_plus</td>
-<td>TRACT</td>
-<td>households</td>
-<td>1000</td>
-<td>HHWORK3</td>
-<td>households.NWESR &gt;= 3</td>
+<tr class="row-odd"><td><p>hh_wrks_3_plus</p></td>
+<td><p>TRACT</p></td>
+<td><p>households</p></td>
+<td><p>1000</p></td>
+<td><p>HHWORK3</p></td>
+<td><p>households.NWESR &gt;= 3</p></td>
 </tr>
-<tr class="row-even"><td>hh_by_type_sf</td>
-<td>TRACT</td>
-<td>households</td>
-<td>1000</td>
-<td>SF</td>
-<td>households.HTYPE == 1</td>
+<tr class="row-even"><td><p>hh_by_type_sf</p></td>
+<td><p>TRACT</p></td>
+<td><p>households</p></td>
+<td><p>1000</p></td>
+<td><p>SF</p></td>
+<td><p>households.HTYPE == 1</p></td>
 </tr>
-<tr class="row-odd"><td>persons_occ_8</td>
-<td>REGION</td>
-<td>persons</td>
-<td>1000</td>
-<td>OCCP8</td>
-<td>persons.OCCP == 8</td>
+<tr class="row-odd"><td><p>persons_occ_8</p></td>
+<td><p>REGION</p></td>
+<td><p>persons</p></td>
+<td><p>1000</p></td>
+<td><p>OCCP8</p></td>
+<td><p>persons.OCCP == 8</p></td>
 </tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id3" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>np.inf is the NumPy constant for infinty</td></tr>
-</tbody>
-</table>
+<dl class="footnote brackets">
+<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
+<dd><p>np.inf is the NumPy constant for infinty</p>
+</dd>
+</dl>
 <p>Attribute definitions are as follows:</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">target:</th><td class="field-body">target is the name of the control in PopulationSim. A column by this name is added to the seed table. Note that the <code class="docutils literal notranslate"><span class="pre">total_hh_control:</span></code> target must be present in the control specification file. All other controls are flexible. The target names should be unique even if they are for different geographies.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">geography:</th><td class="field-body">geography is the geographic level of the control, as specified in <code class="docutils literal notranslate"><span class="pre">geographies</span></code>.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">seed_table:</th><td class="field-body">seed_table is the seed table the control applies to and it can be <code class="docutils literal notranslate"><span class="pre">households</span></code> or <code class="docutils literal notranslate"><span class="pre">persons</span></code>.  If persons, then persons are aggregated to households using the count operator.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">importance:</th><td class="field-body">importance is the importance weight for the control. A higher weight will cause PopulationSim to attempt to match the control at the possible expense of matching lower-weight controls.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">control_field:</th><td class="field-body">control_field is the field in the control data input files that this control applies to. Note that the control field names should be unique even if they are for different geographies.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">expression:</th><td class="field-body">expression is a valid Python/Pandas expression that identifies seed households or persons that this control applies to. The household and persons fields used for creating these expressions should exist in the seed tables. User might need to pre-process the seed sample to create the variable required in these expressions. These expressions can be specified for both discrete and continuous variables. For most applications, this involves creating logical relationships such as equalities, inequalities and ranges using the standard logical operators (AND, OR, EQUAL, Greater than, less than).</td>
-</tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Some conventions for writing expressions:</dt>
-<dd><ul class="first last simple">
-<li>Each expression is applied to all rows in the table being operated upon.</li>
-<li>Expressions must be vectorized expressions and can use most numpy and pandas expressions.</li>
-<li>When editing the CSV files in Excel, use single quote ‘ or space at the start of a cell to get Excel to accept the expression</li>
+<dl class="field-list simple">
+<dt class="field-odd">target</dt>
+<dd class="field-odd"><p>target is the name of the control in PopulationSim. A column by this name is added to the seed table. Note that the <code class="docutils literal notranslate"><span class="pre">total_hh_control:</span></code> target must be present in the control specification file. All other controls are flexible. The target names should be unique even if they are for different geographies.</p>
+</dd>
+<dt class="field-even">geography</dt>
+<dd class="field-even"><p>geography is the geographic level of the control, as specified in <code class="docutils literal notranslate"><span class="pre">geographies</span></code>.</p>
+</dd>
+<dt class="field-odd">seed_table</dt>
+<dd class="field-odd"><p>seed_table is the seed table the control applies to and it can be <code class="docutils literal notranslate"><span class="pre">households</span></code> or <code class="docutils literal notranslate"><span class="pre">persons</span></code>.  If persons, then persons are aggregated to households using the count operator.</p>
+</dd>
+<dt class="field-even">importance</dt>
+<dd class="field-even"><p>importance is the importance weight for the control. A higher weight will cause PopulationSim to attempt to match the control at the possible expense of matching lower-weight controls.</p>
+</dd>
+<dt class="field-odd">control_field</dt>
+<dd class="field-odd"><p>control_field is the field in the control data input files that this control applies to. Note that the control field names should be unique even if they are for different geographies.</p>
+</dd>
+<dt class="field-even">expression</dt>
+<dd class="field-even"><p>expression is a valid Python/Pandas expression that identifies seed households or persons that this control applies to. The household and persons fields used for creating these expressions should exist in the seed tables. User might need to pre-process the seed sample to create the variable required in these expressions. These expressions can be specified for both discrete and continuous variables. For most applications, this involves creating logical relationships such as equalities, inequalities and ranges using the standard logical operators (AND, OR, EQUAL, Greater than, less than).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Some conventions for writing expressions:</dt><dd><ul class="simple">
+<li><p>Each expression is applied to all rows in the table being operated upon.</p></li>
+<li><p>Expressions must be vectorized expressions and can use most numpy and pandas expressions.</p></li>
+<li><p>When editing the CSV files in Excel, use single quote ‘ or space at the start of a cell to get Excel to accept the expression</p></li>
 </ul>
 </dd>
 </dl>
@@ -1222,11 +1214,11 @@ Two options for the expand_households.repop step <br />
 <p>While the PopulationSim algorithm is designed to work even with imperfect data, an error-free and consistent set of input controls guarantees optimal performance. Poor performance and errors are usually the result of inconsistent data and it is the responsibility of the user to do necessary QA/QC on the input data. Some data problems that are frequently encountered are as follows:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Miscoding of data</li>
-<li>Inconsistent controls (for example, household-level households by size controls do not match person-level controls on total persons, or household-level workers per household controls do not match person-level workers by occupation)</li>
-<li>Controls do not add to total number of households</li>
-<li>Controls do not aggregate consistently across geographies</li>
-<li>missing or mislabelled controls</li>
+<li><p>Miscoding of data</p></li>
+<li><p>Inconsistent controls (for example, household-level households by size controls do not match person-level controls on total persons, or household-level workers per household controls do not match person-level workers by occupation)</p></li>
+<li><p>Controls do not add to total number of households</p></li>
+<li><p>Controls do not aggregate consistently across geographies</p></li>
+<li><p>missing or mislabelled controls</p></li>
 </ul>
 </div></blockquote>
 </div>
