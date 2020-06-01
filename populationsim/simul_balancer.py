@@ -238,7 +238,7 @@ def np_simul_balancer(
                         yy + (relaxed_constraint / float(importance)))
 
                 # update HH weights
-                sub_weights[z] *= pow(gamma[z,c], incidence[c])
+                sub_weights[z] *= pow(gamma[z, c], incidence[c])
 
                 # clip weights to upper and lower bounds
                 sub_weights[z] = np.clip(sub_weights[z], weights_lower_bound, weights_upper_bound)
