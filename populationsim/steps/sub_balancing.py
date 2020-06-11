@@ -252,9 +252,12 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
         # only want ones for which there are (non-zero) controls
         parent_ids = parent_controls_df.index.intersection(parent_ids)
 
-        for parent_id in parent_ids:
+        num_parent_ids = len(parent_ids)
+        for idx, parent_id in enumerate(parent_ids, start=1):
 
-            logger.info("balancing seed %s, %s %s" % (seed_id, parent_geography, parent_id))
+            log_msg = "balancing {}/{} seed {}, {} {}"
+            log_msg = log_msg.format(idx, num_parent_ids, seed_id, parent_geography, parent_id)
+            logger.info(log_msg)
 
             initial_weights = weights_df[weights_df[parent_geography] == parent_id]
             initial_weights = initial_weights.set_index(settings.get('household_id_col'))
