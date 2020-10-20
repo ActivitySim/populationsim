@@ -236,3 +236,4 @@ Release Notes
   * v0.4 - transfer to ActivitySim.org
   * v0.4.1 - package updates
   * v0.4.2 - validation script in Python
+  * v0.4.3 - allow non-binary incidence 
