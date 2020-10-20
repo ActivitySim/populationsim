@@ -38,7 +38,7 @@ def teardown_function(func):
 
 
 TAZ_COUNT = 36
-TAZ_100_HH_COUNT = 25
+TAZ_100_HH_COUNT = 33
 TAZ_100_HH_REPOP_COUNT = 26
 
 
@@ -51,7 +51,7 @@ def test_full_run1():
         'meta_control_factoring',
         'final_seed_balancing',
         'integerize_final_seed_weights',
-        'sub_balancing.geography = TRACT',
+        'sub_balancing.geography=TRACT',
         'sub_balancing.geography=TAZ',
         'expand_households',
         'summarize',
