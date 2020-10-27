@@ -1,8 +1,6 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
-from __future__ import absolute_import
-
 from activitysim.core import inject as _inject
 
 from . import input_pre_processor
