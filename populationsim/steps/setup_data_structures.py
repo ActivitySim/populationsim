@@ -307,6 +307,7 @@ def setup_data_structures(settings, households, persons):
     """
 
     seed_geography = setting('seed_geography')
+    geographies = settings['geographies']
 
     households_df = households.to_frame()
     persons_df = persons.to_frame()
@@ -314,10 +315,21 @@ def setup_data_structures(settings, households, persons):
     crosswalk_df = build_crosswalk_table()
     inject.add_table('crosswalk', crosswalk_df)
 
+    slice_geography = settings.get('slice_geography', None)
+    if slice_geography:
+        assert slice_geography in geographies
+        assert slice_geography in crosswalk_df.columns
+
+        # only want rows for slice_geography and higher
+        slice_geographies = geographies[:geographies.index(slice_geography) + 1]
+        slice_table = crosswalk_df[slice_geographies].groupby(slice_geography).max()
+        # it is convenient to have slice_geography column in table as well as index
+        slice_table[slice_geography] = slice_table.index
+        inject.add_table(f"slice_crosswalk", slice_table)
+
     control_spec = read_control_spec(setting('control_file_name', 'controls.csv'))
     inject.add_table('control_spec', control_spec)
 
-    geographies = settings['geographies']
     for g in geographies:
         controls = build_control_table(g, control_spec, crosswalk_df)
         inject.add_table(control_table_name(g), controls)

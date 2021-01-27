@@ -39,7 +39,7 @@ def test_config_logger(capsys):
 
     logger.info('test_config_logger')
     logger.info('log_info')
-    logger.warn('log_warn1')
+    logger.warning('log_warn1')
 
     out, err = capsys.readouterr()
 

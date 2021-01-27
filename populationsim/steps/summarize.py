@@ -52,7 +52,6 @@ def summarize_geography(geography, weight_col, hh_id_col,
     for zone_id in zone_ids:
 
         zone_controls = controls_df.loc[zone_id].tolist()
-
         controls.append(zone_controls)
 
         zone_row_map = results_df[geography] == zone_id

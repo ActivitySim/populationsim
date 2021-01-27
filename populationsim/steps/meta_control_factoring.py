@@ -57,7 +57,7 @@ def meta_control_factoring(settings, control_spec, incidence_table):
 
     # - if there are no meta controls, then we don't have to do anything
     if not (control_spec.geography == meta_geography).any():
-        logger.warn("meta_control_factoring: no meta targets so nothing to do")
+        logger.warning("meta_control_factoring: no meta targets so nothing to do")
         return
 
     meta_controls_df = get_control_table(meta_geography)
