@@ -30,6 +30,8 @@ def log_settings():
 
 if __name__ == '__main__':
 
+    assert inject.get_injectable('preload_injectables', None)
+
     parser = argparse.ArgumentParser()
     add_run_args(parser)
     args = parser.parse_args()
