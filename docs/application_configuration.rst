@@ -7,20 +7,20 @@
    <br />
 
 Application & Configuration
-=============================
+===========================
 
 This section describes how to set up a new PopulationSim implementation.
 
 In order to create a new PopulationSim implementation, the user must first understand the requirements of the project in terms of geographic resolution and details desired in the synthetic population. Once the requirements of the project have been established, the next step is to prepare the inputs to PopulationSim which includes seed population tables and geographic controls. Next, PopulationSim needs to be configured for available inputs and features desired in the final synthetic population. After this, the user needs to run PopulationSim and resolve any data related errors. Finally, the user should validate the output synthetic population against the controls to understand the precision of the synthetic population compared to controls and the amount of variance in the population for each control.
 
 Selecting Geographies
-----------------------
+---------------------
 
-PopulationSim can represent both household and person level controls at multiple geographic levels. Therefore the user must define what geographic units to use for each control. This is an art; there is not necessarily any 'right' way to define geographic areas or to determine what geographic level to use for each control. However, there are important considerations for selecting geography, discussed below.
+PopulationSim can represent both household and person level controls at multiple geographic levels. Therefore the user must define what geographic units to use for each control. There is not necessarily any 'right' way to define geographic areas or to determine what geographic level to use for each control. However, there are important considerations for selecting geography, discussed below.
 
-Traditionally, travel forecasting models have followed the sequential four-step model framework. This required the modeling region to be divided into zones, typically the size of census block groups or tracts. The zones used in four-step process are typically known as Transportation Analysis Zones (TAZs). The spatial boundaries of TAZs varies across modeling region and ranges from a city block to a large area in the suburb within a modeling region. If building a synthetic population for a trip-based model, or an Activity-based model (ABM) whose smallest geography is the TAZ, then there is no reason to select a smaller geoegraphical unit than the TAZ for any of the controls.
+Traditionally, travel forecasting models have followed the sequential four-step model framework. This required the modeling region to be divided into zones, typically the size of census block groups or tracts. The zones used in four-step process are typically known as Transportation Analysis Zones (TAZs). The spatial boundaries of TAZs varies across modeling region and ranges from a city block to a large area in the suburb within a modeling region. If building a synthetic population for a trip-based model, or an activity-based travel models (ABMs) whose smallest geography is the TAZ, then there is no reason to select a smaller geoegraphical unit than the TAZ for any of the controls.
 
-Activity-based models (ABMs) operate in a micro-simulation framework, where travel decisions are modeled explicitly for persons and households in the synthetic population. Many ABMs (e.g., DaySim, CT-RAMP) operate at a finer spatial resolution than TAZs, wherein all location choices (e.g., usual work location, tour destination choice) are modeled at a sub-TAZ geography. This finer geography is typically referred to as Micro-Analysis Zones (MAZs) which are smaller zones nested within TAZs. Models that represent behavior at the MAZ level requires that MAZs are used as the lowest level of control, so that the synthetic population will identify the MAZ that each household resides in.
+ABMs operate at the individual level, where travel decisions are modeled explicitly for persons and households in the synthetic population. Many ABMs operate at a finer spatial resolution than TAZs, wherein all location choices (e.g., usual work location, tour destination choice) are modeled at a sub-TAZ geography. This finer geography is typically referred to as Micro-Analysis Zones (MAZs) which are smaller zones nested within TAZs. Models that represent behavior at the MAZ level requires that MAZs are used as the lowest level of control, so that the synthetic population will identify the MAZ that each household resides in.
 
 As discussed earlier, two main inputs to a population synthesizer are a seed sample and controls. The seed sample can come from a household travel survey or from American Community Survey (ACS) Public Use Microdata Sample (PUMS), with latter being the most common source. The PUMS data contains a sample of actual responses to the ACS, but the privacy of each household is protected by aggregating all household residential locations into relatively large regions called Public Use Microdata Areas (PUMAs). PUMAs are special non-overlapping areas that partition each state into contiguous geographic units containing no fewer than 100,000 people each. Some larger regions are composed of many PUMAs, while other, smaller regions have only one PUMA, or may even be smaller than a PUMA. It is not a problem to use PopulationSim to generate a synthetic population if the region is smaller than a PUMA; PopulationSim will 'fit' the PUMA-level population to regional control data as an initial step.
 
@@ -49,7 +49,7 @@ The hierarchy of geographies is important when making a decision regarding contr
   * Seed (e.g., PUMA)
   * Sub-Seed (e.g., TAZ, MAZ)
 
-The Meta geography is the entire region. Currently, PopulationSim can handle only one Meta geography. The Seed geography is the geographic resolution of the seed data. There can be one or more Seed geographies. PopulationSim can handle any number of nested Sub-Seed geographies. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the :ref:`docs` section.
+The Meta geography is the entire region. PopulationSim can handle only one Meta geography. The Seed geography is the geographic resolution of the seed data. There can be one or more Seed geographies. PopulationSim can handle any number of nested Sub-Seed geographies. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the :ref:`docs` section.
 
 Geographic Cross-walk
 ~~~~~~~~~~~~~~~~~~~~~
@@ -74,12 +74,12 @@ After selecting the geographies, the next step is to prepare a geographic cross-
 
 
 Preparing seed and control data
---------------------------------
+-------------------------------
 
 Seed sample
 ~~~~~~~~~~~
 
-As mentioned in previous section, the seed sample is typically obtained from the ACS PUMS. One of the main requirements for the seed sample is that it should be representative of the modeling region. In case of ACS PUMS, this can be ensured by selecting PUMAs representing the modeling region both demographically and geographically. PUMA boundaries may not perfectly line up against the modeling region boundaries and overlaps are possible. Each sub-seed geography must be assigned to a Seed geography, and each Seed geography must be assigned to a Meta geography.
+As mentioned in previous section, the seed sample is typically obtained from the ACS PUMS. One of the main requirements for the seed sample is that it should be representative of the modeling region. In the case of ACS PUMS, this can be ensured by selecting PUMAs representing the modeling region both demographically and geographically. PUMA boundaries may not perfectly line up against the modeling region boundaries and overlaps are possible. Each sub-seed geography must be assigned to a Seed geography, and each Seed geography must be assigned to a Meta geography.
 
 The seed sample must contain all of the specified control variables, as well as any variables that are needed for the travel model but not specified as controls. For population groups that use completely separate, non-overlapping controls, such as residential population and group-quarter population, separate seed samples are prepared. In the ACS PUMS datasets, it is possible to have zero-person households in the raw data table (`NP = 0`); these records must be filtered from the seed data. PopulationSim can be set up and run separately for each population segment using the same geographic system. The outputs from each run can be combined into a unified synthetic population as a post processing step.
 
@@ -105,7 +105,7 @@ versions, and then add the error to the largest category by subtracting it from 
 Configuration
 -------------
 
-Below is PopulationSim's directory structure followed by a description of inputs.
+Below is PopulationSim's typical directory structure followed by a description of inputs.
 
   .. image:: images/PopulationSimFolderStructure.png
 
@@ -117,15 +117,15 @@ PopulationSim is run via **run_populationsim.py**. The user needs to first activ
    activate popsim
    python run_populationsim.py
 
-PopulationSim is configured using the settings.YAML file. PopulationSim can be configured to run in **base** mode or **repop** mode.
+PopulationSim is configured using the settings.yaml file. PopulationSim can be configured to run in **regular** mode or **repop** mode.
 
-:base mode:
+:regular mode:
 
-  The base configuration runs PopulationSim from beginning to end and produces a new synthetic population.
+  The regular configuration runs PopulationSim from beginning to end and produces a new synthetic population.  This can run either single-process or multi-processed to save on runtime.  
 
 :repop mode:
 
-  The repop configuration is used for repopulating a subset of zones for an existing synthetic population. The user has the option to *replace* or *append* to the existing synthetic population. These options are specified from the settings.YAML file, details can be found in the :ref:`settings` section.
+  The repop configuration is used for repopulating a subset of zones for an existing synthetic population. The user has the option to *replace* or *append* to the existing synthetic population. These options are specified from the settings.yaml file, details can be found in the :ref:`settings` section.
 
 
 The following sections describes the inputs and outputs, followed by discussion on configuring the settings file and specifying controls.
@@ -134,7 +134,7 @@ The following sections describes the inputs and outputs, followed by discussion 
 .. _inputs_outputs:
 
 Inputs & Outputs
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 Please refer to the following definition list to understand the file names:
 
@@ -147,17 +147,19 @@ Please refer to the following definition list to understand the file names:
 
 Working Directory Contents:
 
-+-----------------------+----------------------------------------------------------------------------+
-| File                  | Description                                                                |
-+=======================+============================================================================+
-| run_populationsim.py  | Python script that orchestrates a PopulationSim run                        |
-+-----------------------+----------------------------------------------------------------------------+
-| /configs              | Sub-directory containing control specifications and configuration settings |
-+-----------------------+----------------------------------------------------------------------------+
-| /data                 | Sub-directory containing all input files                                   |
-+-----------------------+----------------------------------------------------------------------------+
-| /output               | Sub-directory containing all outputs, summaries and intermediate files     |
-+-----------------------+----------------------------------------------------------------------------+
++-----------------------+--------------------------------------------------------------------------------------------------------+
+| File                  | Description                                                                                            |
++=======================+========================================================================================================+
+| run_populationsim.py  | Python script that orchestrates a PopulationSim run                                                    |
++-----------------------+--------------------------------------------------------------------------------------------------------+
+| /configs              | Sub-directory containing control specifications and configuration settings                             |
++-----------------------+--------------------------------------------------------------------------------------------------------+
+| /configs_mp           | Sub-directory containing configuration settings for running multi-processed if applicable              |
++-----------------------+--------------------------------------------------------------------------------------------------------+
+| /data                 | Sub-directory containing all input files                                                               |
++-----------------------+--------------------------------------------------------------------------------------------------------+
+| /output               | Sub-directory containing all outputs, summaries and intermediate files                                 |
++-----------------------+--------------------------------------------------------------------------------------------------------+
 
 --------------------------------------------------------------
 
@@ -166,12 +168,22 @@ Working Directory Contents:
 +--------------------+------------------------------------------------------------+
 | File               | Description                                                |
 +====================+============================================================+
-| logging.yaml       | YAML-based file for setting up logging                     |
+| logging.yaml       | yaml-based file for setting up logging                     |
 +--------------------+------------------------------------------------------------+
-| settings.yaml      | YAML-based settings file to configure a PopulationSim run  |
+| settings.yaml      | yaml-based settings file to configure a PopulationSim run  |
 +--------------------+------------------------------------------------------------+
 | controls.csv       | CSV file to specify controls                               |
 +--------------------+------------------------------------------------------------+
+
+--------------------------------------------------------------
+
+*/configs_mp* Sub-directory Contents:
+
++--------------------+---------------------------------------------------------------+
+| File               | Description                                                   |
++====================+===============================================================+
+| settings.yaml      | additional yaml-based settings file for multiprocess running  |
++--------------------+---------------------------------------------------------------+
 
 --------------------------------------------------------------
 
@@ -208,10 +220,10 @@ This sub-directory is populated at the end of the PopulationSim run. The table b
 |                                 |                            | this file with the seed sample to generate a fully expanded synthetic population        |
 +---------------------------------+----------------------------+-----------------------------------------------------------------------------------------+
 | synthetic_households.csv        | Final Synthetic Population | Fully expanded synthetic population of households. User can specify the attributes |br| |
-|                                 |                            | to be included from the *seed sample* in the *settings.YAML* file                       |
+|                                 |                            | to be included from the *seed sample* in the *settings.yaml* file                       |
 +---------------------------------+----------------------------+-----------------------------------------------------------------------------------------+
 | synthetic_persons.csv           | Final Synthetic Population | Fully expanded synthetic population of persons. User can specify the attributes to |br| |
-|                                 |                            | be included from the *seed sample* in the *settings.YAML* file                          |
+|                                 |                            | be included from the *seed sample* in the *settings.yaml* file                          |
 +---------------------------------+----------------------------+-----------------------------------------------------------------------------------------+
 | incidence_table.csv             | Intermediate               | Intermediate incidence table                                                            |
 +---------------------------------+----------------------------+-----------------------------------------------------------------------------------------+
@@ -249,11 +261,19 @@ This sub-directory is populated at the end of the PopulationSim run. The table b
 .. _settings:
 
 Configuring Settings File
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-PopulationSim is configured using the *configs/settings.YAML* file. The user has the flexibility to specify algorithm functionality, list geographies, invoke tracing, provide inputs specifications, select outputs and list the steps to run. The settings shown below are from the PopulationSim application for the CALM region as an example of how a run can be configured. The meta geography for CALM region is named as *Region*, the seed geography is *PUMA* and the two sub-seed geographies are *TRACT* and *TAZ*. The settings below are for this four geography application, but the user can configure PopulationSim for any number of geographies and use different geography names.
+PopulationSim is configured using the *configs/settings.yaml* file. The user has the flexibility to specify algorithm functionality, list geographies, invoke tracing, provide inputs specifications, select outputs, list the steps to run, and specify multiprocess settings. 
 
-Some of the setting are configured differently for the *repop* mode. The settings specific to the *repop* mode are described in the :ref:`settings_repop` section.
+.. note::
+   When running PopulationSim, multiple settings files can be specified so long as the ``inherit_settings: True`` setting is included in 
+   subsequent files.  This feature is used for the multi-processing configuration described below.  To utilize this feature, once can run PopulationSim
+   with the following command: ``python run_populationsim.py -c configs_mp -c configs``.  This command specifies two config folders, each with 
+   a settings file, and the ``configs_mp`` settings inherit from the earlier ``configs`` settings.
+
+The settings shown below are from the PopulationSim application for the CALM region as an example of how a run can be configured. The meta geography for CALM region is named as *Region*, the seed geography is *PUMA* and the two sub-seed geographies are *TRACT* and *TAZ*. The settings below are for this four geography application, but the user can configure PopulationSim for any number of geographies and use different geography names.
+
+Some of the setting are configured differently for the *repop* mode. The settings specific to the *repop* mode are described in the :ref:`settings_repop` section.  The settings specific to the *multiprocessing* setup are described in the :ref:`settings_mp` section.  
 
 **Algorithm/Software Configuration**:
 
@@ -365,7 +385,7 @@ This setting is used to specify details of various inputs to PopulationSim. Belo
 	* Geographic CrossWalk
 	* Control data at each control geography
 
-Note that Seed-Households, Seed-Persons and Geographic CrossWalk are all required tables and must be listed. There must be a control data file specified for each geography other than seed. 		For each input table, the user is required to specify an import table name, input CSV file name, index column name and column name map (only for renaming column names). The user can also specify a list of columns to be dropped from the input synthetic population seed data. An example is shown below followed by description of attributes.
+Note that Seed-Households, Seed-Persons and Geographic CrossWalk are all required tables and must be listed. There must be a control data file specified for each geography other than seed. For each input table, the user is required to specify an import table name, input CSV file name, index column name and column name map (only for renaming column names). The user can also specify a list of columns to be dropped from the input synthetic population seed data. An example is shown below followed by description of attributes.
 
 ::
 
@@ -542,7 +562,7 @@ This setting allows the user to specify the details of the expanded synthetic po
 
 
 
-**Steps for base mode**:
+**Steps for regular mode**:
 
 This setting lists the sub-modules or steps to be run by the PopulationSim orchestrator. The ActivitySim framework allows user to resume a PopulationSim run from a specific point. This is specified using the attribute ``resume_after``. The step, ``sub_balancing.geography`` is repeated for each sub-seed geography (the example below shows two, but there can be 0 or more).
 
@@ -600,19 +620,78 @@ For detailed information on software implementation refer to :ref:`core_componen
 | :ref:`summarize`                     | Write aggregate summary files of controls and weights for all geographic levels to output dir                                                                     |
 +--------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
+.. _settings_mp:
+
+Configuring Settings File for Multiprocessing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This sections describes the settings that are additionally configured for running PopulationSim with 
+multiprocessing to reduce runtime.  PopulationSim uses ActivitySim's multiprocessing capabilities, which 
+are described in more detail `here <https://activitysim.github.io/activitysim/howitworks.html#multiprocessing>`_.
+
+The example below can be found in the ``example_calm\configs_mp\settings.yaml`` file.  The group of model steps 
+identified as ``mp_seed_balancing`` and starting with ``input_pre_processor`` 
+are run single process until the next group of model steps identified as ``mp_sub_balancing_TAZ`` and starting with 
+``sub_balancing.geography=TAZ`` is reached, at which time PopulationSim runs these steps in parallel using two processors
+by slicing the problem into separate geographic batches based on the ``slice_geography: TRACT`` setting.  It then 
+returns to single process with the final group of model steps identified as ``mp_summarize`` and 
+beginning with ``expand_households``.  
+
+::
+
+  inherit_settings: True
+  multiprocess: True
+  num_processes: 2
+  cleanup_pipeline_after_run: True
+  slice_geography: TRACT
+
+  multiprocess_steps:
+    - name: mp_seed_balancing
+      begin: input_pre_processor
+    - name: mp_sub_balancing_TAZ
+      begin: sub_balancing.geography=TAZ
+      num_processes: 2
+      slice:
+        tables:
+          - slice_crosswalk
+          - crosswalk
+        # don't slice any tables not explicitly listed above in slice.tables
+        except: True
+        # the following tables are added by sub_balancer and should be coalesced
+        coalesce:
+          - TAZ_weights
+          - TAZ_weights_sparse
+          - trace_TAZ_weights
+    - name: mp_summarize
+      begin: expand_households
+    
+    
++-------------------------------+--------------------------------------------------------------------------------------------------------------+
+| Attribute                     | Description                                                                                                  |
++===============================+==============================================================================================================+
+| inherit_settings              | True means this settings file inherits settings from settings file(s) identified earlier in the run command  |
++-------------------------------+--------------------------------------------------------------------------------------------------------------+
+| num_processes                 | Number of processors to use for multiprocessing                                                              |
++-------------------------------+--------------------------------------------------------------------------------------------------------------+
+| cleanup_pipeline_after_run    | Removes multiprocess process specific intermediate pipelines at the end of the run if desired                |
++-------------------------------+--------------------------------------------------------------------------------------------------------------+
+| slice_geography               | The geography used to separate the problem into parallel geographic batches for balancing                    |
++-------------------------------+--------------------------------------------------------------------------------------------------------------+
+| multiprocess_steps            | Specifies which steps to run single process and multiprocess                                                 |
++-------------------------------+--------------------------------------------------------------------------------------------------------------+
 
 
 
 .. _settings_repop:
 
 Configuring Settings File for repop Mode
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This sections describes the settings that are configured differently for the *repop* mode.
 
 **Input Data Tables for repop mode**
 
-The repop mode runs over an existing synthetic population and uses the data pipeline (HDF5 file) from the base run as an input. User should copy the HDF5 file from the base outputs to the *output* folder of the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as base mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).
+The repop mode runs over an existing synthetic population and uses the data pipeline (HDF5 file) from the regular run as an input. User should copy the HDF5 file from the regular outputs to the *output* folder of the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as regular mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).
 
 ::
 
@@ -641,7 +720,7 @@ It should be noted that only the summary_GEOG_NAME.csv summary file is available
 
 **Steps for repop mode**:
 
-When running PoulationSim in repop mode, the steps specified in this setting are run. As mentioned earlier, the repop mode runs over an existing synthetic population. The default value for the ``resume_after`` setting under the repop mode is *summarize* which is the last step of a base run. In other words, the repop mode starts from the last step of the base run and modifies the base synthetic population as per the new controls. The user can choose either *append* or *replace* in the ``expand_households.repop`` attribute to modify the existing synthetic population. The *append* option adds to the existing synthetic population in the specified geographies, while the *replace* option replaces any existing synthetic population with newly synthesized population in the specified geographies.
+When running PoulationSim in repop mode, the steps specified in this setting are run. As mentioned earlier, the repop mode runs over an existing synthetic population. The default value for the ``resume_after`` setting under the repop mode is *summarize* which is the last step of a regular run. In other words, the repop mode starts from the last step of the regular run and modifies the regular synthetic population as per the new controls. The user can choose either *append* or *replace* in the ``expand_households.repop`` attribute to modify the existing synthetic population. The *append* option adds to the existing synthetic population in the specified geographies, while the *replace* option replaces any existing synthetic population with newly synthesized population in the specified geographies.
 
 ::
 
@@ -676,27 +755,27 @@ For information on software implementation of repop balancing refer to :ref:`rep
 .. _settings_weighting:
 
 How to prepare PopulationSim inputs for survey weighting
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The main difference in the seed sample for population synthesis and survey weighting is that in case of survey weighting the geographic allocation is known. PopulationSim operates at multiple geographies and performs geographic allocation of the sample to match controls at lower geographies. Since it is undesirable to change geographic allocation in case of survey weighting, controls should be specified only at one geographic level – the seed geography.  All the other inputs must be prepared in the same fashion as for population synthesis.
 
 
 **Configuring PopulationSim for survey weighting**:
 
-Since survey weighting does not involve expanding the survey sample, integerization is not needed. Integerization can be skipped by switching off integerization in the YAML settings file as follows:
+Since survey weighting does not involve expanding the survey sample, integerization is not needed. Integerization can be skipped by switching off integerization in the yaml settings file as follows:
 
 ::
 
   NO_INTEGERIZATION_EVER: True
 
-User may want to specify the maximum and minimum limit on expansion of initial weights in the YAML settings file as follows:
+User may want to specify the maximum and minimum limit on expansion of initial weights in the yaml settings file as follows:
 
 ::
 
   max_expansion_factor: 4 # Default is 30
   min_expansion_factor: 0.5
 
-The desired output for survey weighting is a list of final weights by household ID. In order to achieve this, the grouping of incidence must be switched off in the YAML settings file as follows:
+The desired output for survey weighting is a list of final weights by household ID. In order to achieve this, the grouping of incidence must be switched off in the yaml settings file as follows:
 
 ::
 
@@ -705,7 +784,7 @@ The desired output for survey weighting is a list of final weights by household 
 
 **Output Tables for weighting mode**:
 
-To obtain the final weights by household ID, the seed geography weights table must be specified in the YAML settings file as below:
+To obtain the final weights by household ID, the seed geography weights table must be specified in the yaml settings file as below:
 
 ::
 
@@ -731,7 +810,7 @@ The seed_geography_weights file contains the following columns:
 - It should be noted that under NO_INTEGERIZATION_EVER mode the expanded_household_ids file is empty.
 
 Specifying Controls
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 The controls for a PopulationSim run are specified using the control specification CSV file. Following the ActivitySim framework, Python expressions are used for specifying control constraints.  An example file is below.
 
@@ -782,26 +861,10 @@ Some conventions for writing expressions:
 Error Handling & Debugging
 --------------------------
 
-It is recommended to do appropriate checks on input data before running PopulationSim.
-
-Checks on data inputs
-~~~~~~~~~~~~~~~~~~~~~~~
-
-While the PopulationSim algorithm is designed to work even with imperfect data, an error-free and consistent set of input controls guarantees optimal performance. Poor performance and errors are usually the result of inconsistent data and it is the responsibility of the user to do necessary QA/QC on the input data. Some data problems that are frequently encountered are as follows:
+It is recommended to do appropriate checks on input data before running PopulationSim.  While the PopulationSim algorithm is designed to work even with imperfect data, an error-free and consistent set of input controls guarantees optimal performance. Poor performance and errors are usually the result of inconsistent data and it is the responsibility of the user to do necessary QA/QC on the input data. Some data problems that are frequently encountered are as follows:
 
 	* Miscoding of data
 	* Inconsistent controls (for example, household-level households by size controls do not match person-level controls on total persons, or household-level workers per household controls do not match person-level workers by occupation)
 	* Controls do not add to total number of households
 	* Controls do not aggregate consistently across geographies
-	* missing or mislabelled controls
-
-Common run-time errors
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Below is a list of common run-time errors:
-
-**Tabs in settings.YAML file**
-
-User should not use /t (tabs) while configuring the settings.YAML file. Presence of /t would result in the error shown below. {SPACE} should be used for indenting purposes and hard returns at the end of each line.
-
-  .. image:: images/YAML_Tab_Error.JPG
+	* Missing or mislabelled controls

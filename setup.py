@@ -5,22 +5,21 @@ from setuptools import setup, find_packages
 
 setup(
     name='populationsim',
-    version='0.4.3',
+    version='0.5',
     description='Population Synthesis',
     author='contributing authors',
     author_email='ben.stabler@rsginc.com',
     license='BSD-3',
     url='https://github.com/ActivitySim/populationsim',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python :: 3.8',
         'License :: OSI Approved :: BSD License'
     ],
     packages=find_packages(exclude=['*.tests']),
     include_package_data=True,
-    python_requires='>=3.3',
     install_requires=[
-        'activitysim >= 0.9.2',
+        'activitysim >= 0.9.9',
         'numpy >= 1.16.1',
         'pandas >= 1.1.0',
         'ortools >= 5.1.4045',

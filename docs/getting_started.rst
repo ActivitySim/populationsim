@@ -27,12 +27,12 @@ Installation
 
 ::
 
-  conda create -n popsim python=3.7
+  conda create -n popsim python=3.8 
 
-  #Windows
+  # Windows
   activate popsim
 
-  #Mac
+  # Mac
   conda activate popsim
 
 4. Get and install the PopulationSim package on the activated conda Python environment:
@@ -42,19 +42,17 @@ Installation
   pip install populationsim
 
 
-.. _anaconda_notes :
+.. _activitysim :
 
-Python 2 or 3?
-~~~~~~~~~~~~~~~
+ActivitySim
+~~~~~~~~~~~
 
 .. note::
 
-  PopulationSim is a 64bit Python 2 or 3 library that uses a number of packages from the
+  PopulationSim is a 64bit Python 3 library that uses a number of packages from the
   scientific Python ecosystem, most notably `pandas <http://pandas.pydata.org>`__
-  and `numpy <http://numpy.org>`__. It relies heavily on the
-  `ActivitySim <https://activitysim.github.io>`__ package. Both ActivitySim and PopulationSim
-  currently support Python 2, but Python 2 will be `retired <https://pythonclock.org/>`__ at the
-  end of 2019 so Python 3 is recommended.
+  and `numpy <http://numpy.org>`__. It also relies heavily on the
+  `ActivitySim <https://activitysim.github.io>`__ package.
 
   The recommended way to get your own scientific Python installation is to
   install 64 bit Anaconda, which contains many of the libraries upon which
@@ -67,7 +65,17 @@ Python 2 or 3?
 Run Examples
 ------------
 
-There are three examples for running PopulationSim, two created using data from the Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon and the other using data from the Metro Vancouver region in British Columbia. The `example_calm`_ set-up runs PopulationSim in base mode, where a synthetic population is created for the entire modeling region. This takes approximately 12 minutes on a laptop with an Intel i7-4800MQ CPU @ 2.70GHz and 16 GB of RAM. The `example_calm_repop`_ set-up runs PopulationSim in the *repop* mode, which updates the synthetic population for a small part of the region. The `example_survey_weighting`_ set-up runs PopulationSim for the case of developing final weights for a household travel survey. More information on the configuration of PopulationSim can be found in the **Application & Configuration** section.
+There are four examples for running PopulationSim, three created using data from the 
+Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon and the other using data from 
+the Metro Vancouver region in British Columbia. 
+
+1. The `example_calm`_ set-up runs PopulationSim,  where a synthetic population is created single-processed for the entire modeling region. 
+
+2. The `example_calm_mp`_ set-up runs PopulationSim `multi-processed <http://docs.python.org/3/library/multiprocessing.html>`_, where a synthetic population is created for the entire modeling region by simultaneously balancing results using multiple processors on your computer, thereby reducing runtime.
+
+3. The `example_calm_repop`_ set-up runs PopulationSim in the *repop* mode, which updates the synthetic population for a small part of the region. 
+
+4. The `example_survey_weighting`_ set-up runs PopulationSim for the case of developing final weights for a household travel survey. More information on the configuration of PopulationSim can be found in the **Application & Configuration** section.
 
 Example_calm
 ~~~~~~~~~~~~
@@ -81,6 +89,22 @@ Follow the steps below to run **example_calm** set up:
 
    activate popsim
    python run_populationsim.py
+
+  * Review the outputs in the *output* folder
+
+Example_calm_mp
+~~~~~~~~~~~~~~~
+
+Follow the steps below to run **example_calm_mp** multiprocessed set up:
+
+  * Open a command prompt in the example_calm folder
+  * In ``configs_mp\setting.yaml``, set ``num_processes: 2`` to a reasonable number of processors for your machine
+  * Run the following commands:
+
+  ::
+
+   activate popsim
+   python run_populationsim.py -c configs_mp -c configs
 
   * Review the outputs in the *output* folder
 
