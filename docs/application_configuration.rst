@@ -287,6 +287,7 @@ These settings control the functionality of the PopulationSim algorithm. The set
   USE_SIMUL_INTEGERIZER: True
   USE_CVXPY: False
   max_expansion_factor: 30
+  MAX_BALANCE_ITERATIONS_SIMULTANEOUS: 1000
 
 +--------------------------------------+------------+---------------------------------------------------------------------------------+
 | Attribute                            | Value      | Description                                                                     |
@@ -319,7 +320,8 @@ These settings control the functionality of the PopulationSim algorithm. The set
 |                                      |            | The maximum expansion factor may have to be adjusted upwards if the target |br| |
 |                                      |            | is much greater than the seed number of households.                        |br| |
 +--------------------------------------+------------+---------------------------------------------------------------------------------+
-
+| MAX_BALANCE_ITERATIONS_SIMULTANEOUS  | Integer    | Number of simultaneous list balancer iterations                                 |
++--------------------------------------+------------+---------------------------------------------------------------------------------+
 
 
 **Geographic Settings**:
