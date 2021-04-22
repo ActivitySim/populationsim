@@ -39,6 +39,9 @@ Installation
 
 ::
 
+  # best to use the conda version of pytables for consistency with activitysim
+  conda install pytables
+
   pip install populationsim
 
 

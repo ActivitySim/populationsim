@@ -22,7 +22,6 @@ setup(
         'activitysim >= 0.9.9',
         'numpy >= 1.16.1',
         'pandas >= 1.1.0',
-        'ortools >= 5.1.4045',
-        'future >= 0.16.0'
+        'ortools >= 5.1.4045'
     ]
 )

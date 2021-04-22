@@ -1,6 +1,4 @@
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
+
 # PopulationSim
 # See full license in LICENSE.txt.
 
