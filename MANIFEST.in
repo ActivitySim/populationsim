@@ -1,5 +1,4 @@
 include ez_setup.py
-include README.rst
 graft example_calm
 graft example_calm_repop
 graft example_survey_weighting

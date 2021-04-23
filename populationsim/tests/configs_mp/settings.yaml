@@ -1,0 +1,48 @@
+inherit_settings: True
+
+multiprocess: True
+num_processes: 2
+
+slice_geography: TRACT
+
+# Steps for base mode
+# ------------------------------------------------------------------
+models:
+  ### mp_seed_balancing step
+  - input_pre_processor
+  - setup_data_structures
+  - initial_seed_balancing
+  - meta_control_factoring
+  - final_seed_balancing
+  - integerize_final_seed_weights
+  - sub_balancing.geography=TRACT
+  ### mp_sub_balancing_TAZ step
+  - sub_balancing.geography=TAZ
+  ### mp_summarize step
+  - expand_households
+  - summarize
+  - write_synthetic_population
+  - write_data_dictionary
+  - write_tables
+
+resume_after:
+
+multiprocess_steps:
+  - name: mp_seed_balancing
+    begin: input_pre_processor
+  - name: mp_sub_balancing_TAZ
+    begin: sub_balancing.geography=TAZ
+    num_processes: 2
+    slice:
+      tables:
+        - slice_crosswalk
+        - crosswalk
+      # don't slice any tables not explicitly listed above in slice.tables
+      except: True
+      # the following tables are added by sub_balancer and should be coalesced
+      coalesce:
+        - TAZ_weights
+        - TAZ_weights_sparse
+  - name: mp_summarize
+    begin: expand_households
+

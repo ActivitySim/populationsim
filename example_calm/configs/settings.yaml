@@ -38,18 +38,19 @@ input_table_list:
   - tablename: households
     filename : seed_households.csv
     index_col: hh_id
-    column_map:
+    rename_columns:
       # not sure what SERIALNO is, but it is not unique
       #SERIALNO: hh_id
       hhnum: hh_id
   - tablename: persons
     # expression_filename: seed_persons_expressions.csv
     filename : seed_persons.csv
-    column_map:
+    rename_columns:
       # SERIALNO: hh_id
       hhnum: hh_id
       SPORDER: per_num
-    # drop mixed type fields that appear to have been incorrectly generated
+    # drop unused mixed type fields to avoid PyTables pipeline performance issues
+    # (PyTables will pickle object types that it cannot map directly to c-types)
     drop_columns:
       - indp02
       - naicsp02
@@ -120,10 +121,9 @@ output_synthetic_population:
       - OCCP
 
 
-# Steps for base mode
+# Model steps for base mode
 # ------------------------------------------------------------------
-run_list:
-  steps:
+models:
     - input_pre_processor
     - setup_data_structures
     - initial_seed_balancing
@@ -133,8 +133,9 @@ run_list:
     - sub_balancing.geography=TRACT
     - sub_balancing.geography=TAZ
     - expand_households
+    - write_data_dictionary
     - summarize
     - write_tables
     - write_synthetic_population
 
-  #resume_after: expand_households
+resume_after:
