@@ -3,11 +3,11 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Validation of Results &mdash; PopulationSim 0.4.3
+  <title>Validation of Results &mdash; PopulationSim 0.5
  documentation</title>
   
 
@@ -18,7 +18,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -31,7 +34,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -53,7 +55,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PopulationSim
+            <a href="index.html" class="icon icon-home"> PopulationSim
           
 
           
@@ -63,7 +65,7 @@
             
             
               <div class="version">
-                0.4.3
+                0.5
 
               </div>
             
@@ -144,6 +146,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -155,7 +159,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/validation.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -171,19 +175,32 @@
             
   <div class="section" id="validation-of-results">
 <h1>Validation of Results<a class="headerlink" href="#validation-of-results" title="Permalink to this headline">¶</a></h1>
-<p>One of the most critical steps in the population synthesis procedure is the validation of the synthetic population. Validation can give us clues about inconsistencies among controls, data processing errors or misspecification of settings. This section provides general guidelines on validation procedures.</p>
-<p>PopulationSim reports the difference between the synthesized totals and the control totals for all the controls at each geographic level. User can select these summaries using the <code class="docutils literal notranslate"><span class="pre">output_tables:</span></code> token as described in the <a class="reference internal" href="application_configuration.html#settings"><span class="std std-ref">Configuring Settings File</span></a> section. The <a class="reference internal" href="application_configuration.html#inputs-outputs"><span class="std std-ref">Inputs &amp; Outputs</span></a> section lists all the summaries available to user. Most population synthesizers will match each control very well at a regional level; therefore such summaries are useful but not very insightful into the goodness-of-fit of the tool at lower level geographies. Users can download a <a class="reference external" href="https://github.com/activitysim/populationSim/tree/master/scripts">validation script</a> to generate advanced summary statistics and validation plots. This <em>validation script</em> takes summaries and outputs from a PopulationSim run to generate plots and advanced summaries. The script is configured to run for the CALM region example and includes notes on inputs and configuration settings. To download and run the CALM region example refer to the <a class="reference internal" href="getting_started.html#getting-started"><span class="std std-ref">Getting Started</span></a> section.</p>
+<p>One of the most critical steps in the population synthesis procedure is the validation of the synthetic
+population. Validation can give us clues about inconsistencies among controls, data processing errors or
+misspecification of settings. This section provides general guidelines on validation procedures.</p>
+<p>PopulationSim reports the difference between the synthesized totals and the control totals for all the controls
+at each geographic level. User can select these summaries using the <code class="docutils literal notranslate"><span class="pre">output_tables:</span></code> token as described in
+the <a class="reference internal" href="application_configuration.html#settings"><span class="std std-ref">Configuring Settings File</span></a> section. The <a class="reference internal" href="application_configuration.html#inputs-outputs"><span class="std std-ref">Inputs &amp; Outputs</span></a> section lists all the summaries available to user.
+Most population synthesizers will match each control very well at a regional level; therefore such summaries
+are useful but not very insightful into the goodness-of-fit of the tool at lower level geographies. Users
+can download a <a class="reference external" href="https://github.com/activitysim/populationSim/tree/master/scripts">validation Jupyter Notebook</a> to
+generate advanced summary statistics and validation plots. This validation notebook takes summaries and
+outputs from a PopulationSim run and generates plots and advanced summaries. The notebook is configured to run
+for the CALM region example and includes notes on inputs and configuration settings. To download and run
+the CALM region example refer to the <a class="reference internal" href="getting_started.html#getting-started"><span class="std std-ref">Getting Started</span></a> section.</p>
 <div class="section" id="validation-summary-statistics">
 <h2>Validation Summary Statistics<a class="headerlink" href="#validation-summary-statistics" title="Permalink to this headline">¶</a></h2>
-<p>Statistics that inform us of convergence at a more disaggregate level are generated by the <em>validation script</em> – please note that these statistics are being computed for the geography at which the controls are specified i.e. MAZ, TAZ or Meta as the case might be. The following three statistics are computed as a part of this exercise: <br />
-(1)     the average percentage difference between the control totals and the synthesized totals, <br />
-(2)     the standard deviation (STDEV) of the percentage difference – this measure informs us of how much dispersion from the average exists, and  <br />
-(3)     the percentage root mean square error (RMSE) - an indicator of the proximity of synthesized and control totals. <br />
-The number of geographies for which the control is non-zero (N) are also reported.</p>
+<p>Statistics related to the convergence at a more disaggregate level are generated by the validation notebook.  These statistics are being computed for the geography at which the controls are specified i.e. MAZ, TAZ or Meta as the case might be. The following three statistics are computed: <br /></p>
+<ol class="arabic simple">
+<li><p>The average percentage difference between the control totals and the synthesized totals, <br /></p></li>
+<li><p>The standard deviation (STDEV) of the percentage difference – this measure describes how much dispersion from the average exists, and  <br /></p></li>
+<li><p>The percentage root mean square error (RMSE) - an indicator of the proximity of synthesized and control totals. <br /></p></li>
+</ol>
+<p>The number of geographies for which the control is non-zero (N) are also reported.</p>
 </div>
 <div class="section" id="charts-plots">
 <h2>Charts &amp; Plots<a class="headerlink" href="#charts-plots" title="Permalink to this headline">¶</a></h2>
-<p>The <em>validation script</em> also produces charts and plots which includes frequency distribution and expansion factor distribution plots.</p>
+<p>The validation notebook also produces charts and plots which includes frequency distribution and expansion factor distribution plots.</p>
 <div class="section" id="validation-charts">
 <h3>Validation Charts<a class="headerlink" href="#validation-charts" title="Permalink to this headline">¶</a></h3>
 <p>The validation chart is a visualization of the disaggregate summary statistics – mean percentage difference, STDEV and RMSE of percentage differences. A form of dot and whisker plot is generated for each control where the dots are the mean percentage differences and horizontal bars are twice the STDEV or RMSE centered around zero. An example validation chart is below:</p>
@@ -193,7 +210,7 @@ The number of geographies for which the control is non-zero (N) are also reporte
 </div>
 <div class="section" id="frequency-distribution-plots">
 <h3>Frequency Distribution Plots<a class="headerlink" href="#frequency-distribution-plots" title="Permalink to this headline">¶</a></h3>
-<p>These are simply frequency distribution plots of differences between control and synthesized values across the geography at which the controls were specified. An example frequency distribution plot is below:</p>
+<p>These are frequency distribution plots of differences between control and synthesized values across the geography at which the controls were specified. An example frequency distribution plot is below:</p>
 <blockquote>
 <div><img alt="_images/hh_inc_30_60_control.png" src="_images/hh_inc_30_60_control.png" />
 </div></blockquote>
@@ -213,37 +230,29 @@ The number of geographies for which the control is non-zero (N) are also reporte
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="software.html" class="btn btn-neutral float-right" title="Software Implementation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="application_configuration.html" class="btn btn-neutral float-left" title="Application &amp; Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="software.html" class="btn btn-neutral float-right" title="Software Implementation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="application_configuration.html" class="btn btn-neutral float-left" title="Application &amp; Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright contributing authors
+        &#169; Copyright contributing authors.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

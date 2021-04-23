@@ -3,11 +3,11 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Application &amp; Configuration &mdash; PopulationSim 0.4.3
+  <title>Application &amp; Configuration &mdash; PopulationSim 0.5
  documentation</title>
   
 
@@ -18,7 +18,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -31,7 +34,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -53,7 +55,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PopulationSim
+            <a href="index.html" class="icon icon-home"> PopulationSim
           
 
           
@@ -63,7 +65,7 @@
             
             
               <div class="version">
-                0.4.3
+                0.5
 
               </div>
             
@@ -104,16 +106,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#inputs-outputs">Inputs &amp; Outputs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#configuring-settings-file">Configuring Settings File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuring-settings-file-for-multiprocessing">Configuring Settings File for Multiprocessing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#configuring-settings-file-for-repop-mode">Configuring Settings File for repop Mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-to-prepare-populationsim-inputs-for-survey-weighting">How to prepare PopulationSim inputs for survey weighting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#specifying-controls">Specifying Controls</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#error-handling-debugging">Error Handling &amp; Debugging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#checks-on-data-inputs">Checks on data inputs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#common-run-time-errors">Common run-time errors</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling-debugging">Error Handling &amp; Debugging</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="validation.html">Validation of Results</a></li>
@@ -159,6 +158,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -170,7 +171,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/application_configuration.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -190,9 +191,9 @@
 <p>In order to create a new PopulationSim implementation, the user must first understand the requirements of the project in terms of geographic resolution and details desired in the synthetic population. Once the requirements of the project have been established, the next step is to prepare the inputs to PopulationSim which includes seed population tables and geographic controls. Next, PopulationSim needs to be configured for available inputs and features desired in the final synthetic population. After this, the user needs to run PopulationSim and resolve any data related errors. Finally, the user should validate the output synthetic population against the controls to understand the precision of the synthetic population compared to controls and the amount of variance in the population for each control.</p>
 <div class="section" id="selecting-geographies">
 <h2>Selecting Geographies<a class="headerlink" href="#selecting-geographies" title="Permalink to this headline">¶</a></h2>
-<p>PopulationSim can represent both household and person level controls at multiple geographic levels. Therefore the user must define what geographic units to use for each control. This is an art; there is not necessarily any ‘right’ way to define geographic areas or to determine what geographic level to use for each control. However, there are important considerations for selecting geography, discussed below.</p>
-<p>Traditionally, travel forecasting models have followed the sequential four-step model framework. This required the modeling region to be divided into zones, typically the size of census block groups or tracts. The zones used in four-step process are typically known as Transportation Analysis Zones (TAZs). The spatial boundaries of TAZs varies across modeling region and ranges from a city block to a large area in the suburb within a modeling region. If building a synthetic population for a trip-based model, or an Activity-based model (ABM) whose smallest geography is the TAZ, then there is no reason to select a smaller geoegraphical unit than the TAZ for any of the controls.</p>
-<p>Activity-based models (ABMs) operate in a micro-simulation framework, where travel decisions are modeled explicitly for persons and households in the synthetic population. Many ABMs (e.g., DaySim, CT-RAMP) operate at a finer spatial resolution than TAZs, wherein all location choices (e.g., usual work location, tour destination choice) are modeled at a sub-TAZ geography. This finer geography is typically referred to as Micro-Analysis Zones (MAZs) which are smaller zones nested within TAZs. Models that represent behavior at the MAZ level requires that MAZs are used as the lowest level of control, so that the synthetic population will identify the MAZ that each household resides in.</p>
+<p>PopulationSim can represent both household and person level controls at multiple geographic levels. Therefore the user must define what geographic units to use for each control. There is not necessarily any ‘right’ way to define geographic areas or to determine what geographic level to use for each control. However, there are important considerations for selecting geography, discussed below.</p>
+<p>Traditionally, travel forecasting models have followed the sequential four-step model framework. This required the modeling region to be divided into zones, typically the size of census block groups or tracts. The zones used in four-step process are typically known as Transportation Analysis Zones (TAZs). The spatial boundaries of TAZs varies across modeling region and ranges from a city block to a large area in the suburb within a modeling region. If building a synthetic population for a trip-based model, or an activity-based travel models (ABMs) whose smallest geography is the TAZ, then there is no reason to select a smaller geoegraphical unit than the TAZ for any of the controls.</p>
+<p>ABMs operate at the individual level, where travel decisions are modeled explicitly for persons and households in the synthetic population. Many ABMs operate at a finer spatial resolution than TAZs, wherein all location choices (e.g., usual work location, tour destination choice) are modeled at a sub-TAZ geography. This finer geography is typically referred to as Micro-Analysis Zones (MAZs) which are smaller zones nested within TAZs. Models that represent behavior at the MAZ level requires that MAZs are used as the lowest level of control, so that the synthetic population will identify the MAZ that each household resides in.</p>
 <p>As discussed earlier, two main inputs to a population synthesizer are a seed sample and controls. The seed sample can come from a household travel survey or from American Community Survey (ACS) Public Use Microdata Sample (PUMS), with latter being the most common source. The PUMS data contains a sample of actual responses to the ACS, but the privacy of each household is protected by aggregating all household residential locations into relatively large regions called Public Use Microdata Areas (PUMAs). PUMAs are special non-overlapping areas that partition each state into contiguous geographic units containing no fewer than 100,000 people each. Some larger regions are composed of many PUMAs, while other, smaller regions have only one PUMA, or may even be smaller than a PUMA. It is not a problem to use PopulationSim to generate a synthetic population if the region is smaller than a PUMA; PopulationSim will ‘fit’ the PUMA-level population to regional control data as an initial step.</p>
 <p>Often it is not possible or desirable to specify all the controls at the same level of geographic resolution. Some important demographic, socio-economic and land-use development distributions (e.g., employment or occupation data) which may be adopted for controls are only available at relatively aggregate geographies (e.g., County, District, Region, etc.). Moreover, some distributions which are available at a finer geographic level in the base year may not be available at the same geographic level for a future forecast year. In some cases, even if a control is available at a finer geography, the modeler might want to specify that control (e.g., population by age) at an aggregate geography due to concerns about accuracy, forecastability, etc.</p>
 <p>The flexible number of geographies feature in PopulationSim enables user to make use of data available at different geographic resolutions. In summary, the <strong>choice of geographies for PopulationSim</strong> is decided based on following:</p>
@@ -221,7 +222,7 @@
 <li><p>Sub-Seed (e.g., TAZ, MAZ)</p></li>
 </ul>
 </div></blockquote>
-<p>The Meta geography is the entire region. Currently, PopulationSim can handle only one Meta geography. The Seed geography is the geographic resolution of the seed data. There can be one or more Seed geographies. PopulationSim can handle any number of nested Sub-Seed geographies. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the <a class="reference internal" href="docs.html#docs"><span class="std std-ref">Resources</span></a> section.</p>
+<p>The Meta geography is the entire region. PopulationSim can handle only one Meta geography. The Seed geography is the geographic resolution of the seed data. There can be one or more Seed geographies. PopulationSim can handle any number of nested Sub-Seed geographies. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the <a class="reference internal" href="docs.html#docs"><span class="std std-ref">Resources</span></a> section.</p>
 <div class="section" id="geographic-cross-walk">
 <h3>Geographic Cross-walk<a class="headerlink" href="#geographic-cross-walk" title="Permalink to this headline">¶</a></h3>
 <p>After selecting the geographies, the next step is to prepare a geographic cross-walk file. The geographic cross-walk file defines the hierarchical structure of geographies. The geographic cross-walk is used to aggregate controls specified at a lower geography to upper geography and to allocate population from an upper geography to a lower geography. An example geographic crosswalk is shown below:</p>
@@ -280,7 +281,7 @@
 <h2>Preparing seed and control data<a class="headerlink" href="#preparing-seed-and-control-data" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="seed-sample">
 <h3>Seed sample<a class="headerlink" href="#seed-sample" title="Permalink to this headline">¶</a></h3>
-<p>As mentioned in previous section, the seed sample is typically obtained from the ACS PUMS. One of the main requirements for the seed sample is that it should be representative of the modeling region. In case of ACS PUMS, this can be ensured by selecting PUMAs representing the modeling region both demographically and geographically. PUMA boundaries may not perfectly line up against the modeling region boundaries and overlaps are possible. Each sub-seed geography must be assigned to a Seed geography, and each Seed geography must be assigned to a Meta geography.</p>
+<p>As mentioned in previous section, the seed sample is typically obtained from the ACS PUMS. One of the main requirements for the seed sample is that it should be representative of the modeling region. In the case of ACS PUMS, this can be ensured by selecting PUMAs representing the modeling region both demographically and geographically. PUMA boundaries may not perfectly line up against the modeling region boundaries and overlaps are possible. Each sub-seed geography must be assigned to a Seed geography, and each Seed geography must be assigned to a Meta geography.</p>
 <p>The seed sample must contain all of the specified control variables, as well as any variables that are needed for the travel model but not specified as controls. For population groups that use completely separate, non-overlapping controls, such as residential population and group-quarter population, separate seed samples are prepared. In the ACS PUMS datasets, it is possible to have zero-person households in the raw data table (<cite>NP = 0</cite>); these records must be filtered from the seed data. PopulationSim can be set up and run separately for each population segment using the same geographic system. The outputs from each run can be combined into a unified synthetic population as a post processing step.</p>
 <p>Finally, the seed sample must include an initial weight field. The PopulationSim algorithm is designed to assign weights as close to the initial weight as possible to minimize the changes in distribution of uncontrolled variables. All the fields in the seed sample should be appropriately recoded to specify controls (see more details in next section). Household-level population variables must be computed in advance (for e.g., number of workers in each household) and monetary variables must be inflation adjusted to be consistent with year of control data (e.g., Household Income). The ACS PUMS data contain 3 or 5 years of household records, where  each record’s income is reported in the year in which it was collected. The ACS PUMS data includes the rolling reference factor for the year and the inflation adjustment factor, these must be used to code each household’s income to a common income year.</p>
 </div>
@@ -299,7 +300,7 @@ versions, and then add the error to the largest category by subtracting it from 
 </div>
 <div class="section" id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
-<p>Below is PopulationSim’s directory structure followed by a description of inputs.</p>
+<p>Below is PopulationSim’s typical directory structure followed by a description of inputs.</p>
 <blockquote>
 <div><img alt="_images/PopulationSimFolderStructure.png" src="_images/PopulationSimFolderStructure.png" />
 </div></blockquote>
@@ -310,13 +311,13 @@ versions, and then add the error to the largest category by subtracting it from 
 </pre></div>
 </div>
 </div></blockquote>
-<p>PopulationSim is configured using the settings.YAML file. PopulationSim can be configured to run in <strong>base</strong> mode or <strong>repop</strong> mode.</p>
+<p>PopulationSim is configured using the settings.yaml file. PopulationSim can be configured to run in <strong>regular</strong> mode or <strong>repop</strong> mode.</p>
 <dl class="field-list simple">
-<dt class="field-odd">base mode</dt>
-<dd class="field-odd"><p>The base configuration runs PopulationSim from beginning to end and produces a new synthetic population.</p>
+<dt class="field-odd">regular mode</dt>
+<dd class="field-odd"><p>The regular configuration runs PopulationSim from beginning to end and produces a new synthetic population.  This can run either single-process or multi-processed to save on runtime.</p>
 </dd>
 <dt class="field-even">repop mode</dt>
-<dd class="field-even"><p>The repop configuration is used for repopulating a subset of zones for an existing synthetic population. The user has the option to <em>replace</em> or <em>append</em> to the existing synthetic population. These options are specified from the settings.YAML file, details can be found in the <a class="reference internal" href="#settings"><span class="std std-ref">Configuring Settings File</span></a> section.</p>
+<dd class="field-even"><p>The repop configuration is used for repopulating a subset of zones for an existing synthetic population. The user has the option to <em>replace</em> or <em>append</em> to the existing synthetic population. These options are specified from the settings.yaml file, details can be found in the <a class="reference internal" href="#settings"><span class="std std-ref">Configuring Settings File</span></a> section.</p>
 </dd>
 </dl>
 <p>The following sections describes the inputs and outputs, followed by discussion on configuring the settings file and specifying controls.</p>
@@ -338,8 +339,8 @@ versions, and then add the error to the largest category by subtracting it from 
 <p>Working Directory Contents:</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 23%" />
-<col style="width: 77%" />
+<col style="width: 18%" />
+<col style="width: 82%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>File</p></th>
@@ -353,10 +354,13 @@ versions, and then add the error to the largest category by subtracting it from 
 <tr class="row-odd"><td><p>/configs</p></td>
 <td><p>Sub-directory containing control specifications and configuration settings</p></td>
 </tr>
-<tr class="row-even"><td><p>/data</p></td>
+<tr class="row-even"><td><p>/configs_mp</p></td>
+<td><p>Sub-directory containing configuration settings for running multi-processed if applicable</p></td>
+</tr>
+<tr class="row-odd"><td><p>/data</p></td>
 <td><p>Sub-directory containing all input files</p></td>
 </tr>
-<tr class="row-odd"><td><p>/output</p></td>
+<tr class="row-even"><td><p>/output</p></td>
 <td><p>Sub-directory containing all outputs, summaries and intermediate files</p></td>
 </tr>
 </tbody>
@@ -375,13 +379,31 @@ versions, and then add the error to the largest category by subtracting it from 
 </thead>
 <tbody>
 <tr class="row-even"><td><p>logging.yaml</p></td>
-<td><p>YAML-based file for setting up logging</p></td>
+<td><p>yaml-based file for setting up logging</p></td>
 </tr>
 <tr class="row-odd"><td><p>settings.yaml</p></td>
-<td><p>YAML-based settings file to configure a PopulationSim run</p></td>
+<td><p>yaml-based settings file to configure a PopulationSim run</p></td>
 </tr>
 <tr class="row-even"><td><p>controls.csv</p></td>
 <td><p>CSV file to specify controls</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p><em>/configs_mp</em> Sub-directory Contents:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 76%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>settings.yaml</p></td>
+<td><p>additional yaml-based settings file for multiprocess running</p></td>
 </tr>
 </tbody>
 </table>
@@ -444,12 +466,12 @@ this file with the seed sample to generate a fully expanded synthetic population
 <tr class="row-odd"><td><p>synthetic_households.csv</p></td>
 <td><p>Final Synthetic Population</p></td>
 <td><p>Fully expanded synthetic population of households. User can specify the attributes <br />
-to be included from the <em>seed sample</em> in the <em>settings.YAML</em> file</p></td>
+to be included from the <em>seed sample</em> in the <em>settings.yaml</em> file</p></td>
 </tr>
 <tr class="row-even"><td><p>synthetic_persons.csv</p></td>
 <td><p>Final Synthetic Population</p></td>
 <td><p>Fully expanded synthetic population of persons. User can specify the attributes to <br />
-be included from the <em>seed sample</em> in the <em>settings.YAML</em> file</p></td>
+be included from the <em>seed sample</em> in the <em>settings.yaml</em> file</p></td>
 </tr>
 <tr class="row-odd"><td><p>incidence_table.csv</p></td>
 <td><p>Intermediate</p></td>
@@ -514,8 +536,16 @@ weights from allocation at <em>GEOG_NAME</em> level</p></td>
 </div>
 <div class="section" id="configuring-settings-file">
 <span id="settings"></span><h3>Configuring Settings File<a class="headerlink" href="#configuring-settings-file" title="Permalink to this headline">¶</a></h3>
-<p>PopulationSim is configured using the <em>configs/settings.YAML</em> file. The user has the flexibility to specify algorithm functionality, list geographies, invoke tracing, provide inputs specifications, select outputs and list the steps to run. The settings shown below are from the PopulationSim application for the CALM region as an example of how a run can be configured. The meta geography for CALM region is named as <em>Region</em>, the seed geography is <em>PUMA</em> and the two sub-seed geographies are <em>TRACT</em> and <em>TAZ</em>. The settings below are for this four geography application, but the user can configure PopulationSim for any number of geographies and use different geography names.</p>
-<p>Some of the setting are configured differently for the <em>repop</em> mode. The settings specific to the <em>repop</em> mode are described in the <a class="reference internal" href="#settings-repop"><span class="std std-ref">Configuring Settings File for repop Mode</span></a> section.</p>
+<p>PopulationSim is configured using the <em>configs/settings.yaml</em> file. The user has the flexibility to specify algorithm functionality, list geographies, invoke tracing, provide inputs specifications, select outputs, list the steps to run, and specify multiprocess settings.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When running PopulationSim, multiple settings files can be specified so long as the <code class="docutils literal notranslate"><span class="pre">inherit_settings:</span> <span class="pre">True</span></code> setting is included in
+subsequent files.  This feature is used for the multi-processing configuration described below.  To utilize this feature, once can run PopulationSim
+with the following command: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">run_populationsim.py</span> <span class="pre">-c</span> <span class="pre">configs_mp</span> <span class="pre">-c</span> <span class="pre">configs</span></code>.  This command specifies two config folders, each with
+a settings file, and the <code class="docutils literal notranslate"><span class="pre">configs_mp</span></code> settings inherit from the earlier <code class="docutils literal notranslate"><span class="pre">configs</span></code> settings.</p>
+</div>
+<p>The settings shown below are from the PopulationSim application for the CALM region as an example of how a run can be configured. The meta geography for CALM region is named as <em>Region</em>, the seed geography is <em>PUMA</em> and the two sub-seed geographies are <em>TRACT</em> and <em>TAZ</em>. The settings below are for this four geography application, but the user can configure PopulationSim for any number of geographies and use different geography names.</p>
+<p>Some of the setting are configured differently for the <em>repop</em> mode. The settings specific to the <em>repop</em> mode are described in the <a class="reference internal" href="#settings-repop"><span class="std std-ref">Configuring Settings File for repop Mode</span></a> section.  The settings specific to the <em>multiprocessing</em> setup are described in the <a class="reference internal" href="#settings-mp"><span class="std std-ref">Configuring Settings File for Multiprocessing</span></a> section.</p>
 <p><strong>Algorithm/Software Configuration</strong>:</p>
 <p>These settings control the functionality of the PopulationSim algorithm. The settings shown are currently the defaults as they were the ones used to validate the final PopulationSim application for the CALM region. They should not be changed by the casual user, with the possible exception of the max_expansion_factor setting, as explained below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INTEGERIZE_WITH_BACKSTOPPED_CONTROLS</span><span class="p">:</span> <span class="kc">True</span>
@@ -524,6 +554,7 @@ weights from allocation at <em>GEOG_NAME</em> level</p></td>
 <span class="n">USE_SIMUL_INTEGERIZER</span><span class="p">:</span> <span class="kc">True</span>
 <span class="n">USE_CVXPY</span><span class="p">:</span> <span class="kc">False</span>
 <span class="n">max_expansion_factor</span><span class="p">:</span> <span class="mi">30</span>
+<span class="n">MAX_BALANCE_ITERATIONS_SIMULTANEOUS</span><span class="p">:</span> <span class="mi">1000</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -582,6 +613,10 @@ with a rare household configuration. Otherwise, it might result in some <br />
 controls not being matched due to unavailability of records to sample from.
 The maximum expansion factor may have to be adjusted upwards if the target <br />
 is much greater than the seed number of households.                        <br /></p></td>
+</tr>
+<tr class="row-even"><td><p>MAX_BALANCE_ITERATIONS_SIMULTANEOUS</p></td>
+<td><p>Integer</p></td>
+<td><p>Number of simultaneous list balancer iterations</p></td>
 </tr>
 </tbody>
 </table>
@@ -676,7 +711,7 @@ the directory structure changes from the template.</p></td>
 <li><p>Control data at each control geography</p></li>
 </ul>
 </div></blockquote>
-<p>Note that Seed-Households, Seed-Persons and Geographic CrossWalk are all required tables and must be listed. There must be a control data file specified for each geography other than seed.            For each input table, the user is required to specify an import table name, input CSV file name, index column name and column name map (only for renaming column names). The user can also specify a list of columns to be dropped from the input synthetic population seed data. An example is shown below followed by description of attributes.</p>
+<p>Note that Seed-Households, Seed-Persons and Geographic CrossWalk are all required tables and must be listed. There must be a control data file specified for each geography other than seed. For each input table, the user is required to specify an import table name, input CSV file name, index column name and column name map (only for renaming column names). The user can also specify a list of columns to be dropped from the input synthetic population seed data. An example is shown below followed by description of attributes.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">input_table_list</span><span class="p">:</span>
 <span class="o">-</span> <span class="n">tablename</span><span class="p">:</span> <span class="n">households</span>
         <span class="n">filename</span> <span class="p">:</span> <span class="n">seed_households</span><span class="o">.</span><span class="n">csv</span>
@@ -892,7 +927,7 @@ information of each household is added by default.</p></td>
 </tr>
 </tbody>
 </table>
-<p><strong>Steps for base mode</strong>:</p>
+<p><strong>Steps for regular mode</strong>:</p>
 <p>This setting lists the sub-modules or steps to be run by the PopulationSim orchestrator. The ActivitySim framework allows user to resume a PopulationSim run from a specific point. This is specified using the attribute <code class="docutils literal notranslate"><span class="pre">resume_after</span></code>. The step, <code class="docutils literal notranslate"><span class="pre">sub_balancing.geography</span></code> is repeated for each sub-seed geography (the example below shows two, but there can be 0 or more).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">run_list</span><span class="p">:</span>
   <span class="n">steps</span><span class="p">:</span>
@@ -978,11 +1013,79 @@ information of each household is added by default.</p></td>
 </tbody>
 </table>
 </div>
+<div class="section" id="configuring-settings-file-for-multiprocessing">
+<span id="settings-mp"></span><h3>Configuring Settings File for Multiprocessing<a class="headerlink" href="#configuring-settings-file-for-multiprocessing" title="Permalink to this headline">¶</a></h3>
+<p>This sections describes the settings that are additionally configured for running PopulationSim with
+multiprocessing to reduce runtime.  PopulationSim uses ActivitySim’s multiprocessing capabilities, which
+are described in more detail <a class="reference external" href="https://activitysim.github.io/activitysim/howitworks.html#multiprocessing">here</a>.</p>
+<p>The example below can be found in the <code class="docutils literal notranslate"><span class="pre">example_calm\configs_mp\settings.yaml</span></code> file.  The group of model steps
+identified as <code class="docutils literal notranslate"><span class="pre">mp_seed_balancing</span></code> and starting with <code class="docutils literal notranslate"><span class="pre">input_pre_processor</span></code>
+are run single process until the next group of model steps identified as <code class="docutils literal notranslate"><span class="pre">mp_sub_balancing_TAZ</span></code> and starting with
+<code class="docutils literal notranslate"><span class="pre">sub_balancing.geography=TAZ</span></code> is reached, at which time PopulationSim runs these steps in parallel using two processors
+by slicing the problem into separate geographic batches based on the <code class="docutils literal notranslate"><span class="pre">slice_geography:</span> <span class="pre">TRACT</span></code> setting.  It then
+returns to single process with the final group of model steps identified as <code class="docutils literal notranslate"><span class="pre">mp_summarize</span></code> and
+beginning with <code class="docutils literal notranslate"><span class="pre">expand_households</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">inherit_settings</span><span class="p">:</span> <span class="kc">True</span>
+<span class="n">multiprocess</span><span class="p">:</span> <span class="kc">True</span>
+<span class="n">num_processes</span><span class="p">:</span> <span class="mi">2</span>
+<span class="n">cleanup_pipeline_after_run</span><span class="p">:</span> <span class="kc">True</span>
+<span class="n">slice_geography</span><span class="p">:</span> <span class="n">TRACT</span>
+
+<span class="n">multiprocess_steps</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">mp_seed_balancing</span>
+    <span class="n">begin</span><span class="p">:</span> <span class="n">input_pre_processor</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">mp_sub_balancing_TAZ</span>
+    <span class="n">begin</span><span class="p">:</span> <span class="n">sub_balancing</span><span class="o">.</span><span class="n">geography</span><span class="o">=</span><span class="n">TAZ</span>
+    <span class="n">num_processes</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="nb">slice</span><span class="p">:</span>
+      <span class="n">tables</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">slice_crosswalk</span>
+        <span class="o">-</span> <span class="n">crosswalk</span>
+      <span class="c1"># don&#39;t slice any tables not explicitly listed above in slice.tables</span>
+      <span class="k">except</span><span class="p">:</span> <span class="kc">True</span>
+      <span class="c1"># the following tables are added by sub_balancer and should be coalesced</span>
+      <span class="n">coalesce</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">TAZ_weights</span>
+        <span class="o">-</span> <span class="n">TAZ_weights_sparse</span>
+        <span class="o">-</span> <span class="n">trace_TAZ_weights</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">mp_summarize</span>
+    <span class="n">begin</span><span class="p">:</span> <span class="n">expand_households</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 78%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>inherit_settings</p></td>
+<td><p>True means this settings file inherits settings from settings file(s) identified earlier in the run command</p></td>
+</tr>
+<tr class="row-odd"><td><p>num_processes</p></td>
+<td><p>Number of processors to use for multiprocessing</p></td>
+</tr>
+<tr class="row-even"><td><p>cleanup_pipeline_after_run</p></td>
+<td><p>Removes multiprocess process specific intermediate pipelines at the end of the run if desired</p></td>
+</tr>
+<tr class="row-odd"><td><p>slice_geography</p></td>
+<td><p>The geography used to separate the problem into parallel geographic batches for balancing</p></td>
+</tr>
+<tr class="row-even"><td><p>multiprocess_steps</p></td>
+<td><p>Specifies which steps to run single process and multiprocess</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="configuring-settings-file-for-repop-mode">
 <span id="settings-repop"></span><h3>Configuring Settings File for repop Mode<a class="headerlink" href="#configuring-settings-file-for-repop-mode" title="Permalink to this headline">¶</a></h3>
 <p>This sections describes the settings that are configured differently for the <em>repop</em> mode.</p>
 <p><strong>Input Data Tables for repop mode</strong></p>
-<p>The repop mode runs over an existing synthetic population and uses the data pipeline (HDF5 file) from the base run as an input. User should copy the HDF5 file from the base outputs to the <em>output</em> folder of the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as base mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).</p>
+<p>The repop mode runs over an existing synthetic population and uses the data pipeline (HDF5 file) from the regular run as an input. User should copy the HDF5 file from the regular outputs to the <em>output</em> folder of the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as regular mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">repop_input_table_list</span><span class="p">:</span>
   <span class="o">-</span> <span class="n">taz_control_data</span><span class="p">:</span>
     <span class="n">filename</span> <span class="p">:</span> <span class="n">repop_control_totals_taz</span><span class="o">.</span><span class="n">csv</span>
@@ -1012,7 +1115,7 @@ information of each household is added by default.</p></td>
 <p><strong>Output Tables for repop mode</strong>:</p>
 <p>It should be noted that only the summary_GEOG_NAME.csv summary file is available for the repop mode.</p>
 <p><strong>Steps for repop mode</strong>:</p>
-<p>When running PoulationSim in repop mode, the steps specified in this setting are run. As mentioned earlier, the repop mode runs over an existing synthetic population. The default value for the <code class="docutils literal notranslate"><span class="pre">resume_after</span></code> setting under the repop mode is <em>summarize</em> which is the last step of a base run. In other words, the repop mode starts from the last step of the base run and modifies the base synthetic population as per the new controls. The user can choose either <em>append</em> or <em>replace</em> in the <code class="docutils literal notranslate"><span class="pre">expand_households.repop</span></code> attribute to modify the existing synthetic population. The <em>append</em> option adds to the existing synthetic population in the specified geographies, while the <em>replace</em> option replaces any existing synthetic population with newly synthesized population in the specified geographies.</p>
+<p>When running PoulationSim in repop mode, the steps specified in this setting are run. As mentioned earlier, the repop mode runs over an existing synthetic population. The default value for the <code class="docutils literal notranslate"><span class="pre">resume_after</span></code> setting under the repop mode is <em>summarize</em> which is the last step of a regular run. In other words, the repop mode starts from the last step of the regular run and modifies the regular synthetic population as per the new controls. The user can choose either <em>append</em> or <em>replace</em> in the <code class="docutils literal notranslate"><span class="pre">expand_households.repop</span></code> attribute to modify the existing synthetic population. The <em>append</em> option adds to the existing synthetic population in the specified geographies, while the <em>replace</em> option replaces any existing synthetic population with newly synthesized population in the specified geographies.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">run_list</span><span class="p">:</span>
   <span class="n">steps</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">input_pre_processor</span><span class="o">.</span><span class="n">repop</span>
@@ -1057,21 +1160,21 @@ Two options for the expand_households.repop step <br />
 <span id="settings-weighting"></span><h3>How to prepare PopulationSim inputs for survey weighting<a class="headerlink" href="#how-to-prepare-populationsim-inputs-for-survey-weighting" title="Permalink to this headline">¶</a></h3>
 <p>The main difference in the seed sample for population synthesis and survey weighting is that in case of survey weighting the geographic allocation is known. PopulationSim operates at multiple geographies and performs geographic allocation of the sample to match controls at lower geographies. Since it is undesirable to change geographic allocation in case of survey weighting, controls should be specified only at one geographic level – the seed geography.  All the other inputs must be prepared in the same fashion as for population synthesis.</p>
 <p><strong>Configuring PopulationSim for survey weighting</strong>:</p>
-<p>Since survey weighting does not involve expanding the survey sample, integerization is not needed. Integerization can be skipped by switching off integerization in the YAML settings file as follows:</p>
+<p>Since survey weighting does not involve expanding the survey sample, integerization is not needed. Integerization can be skipped by switching off integerization in the yaml settings file as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">NO_INTEGERIZATION_EVER</span><span class="p">:</span> <span class="kc">True</span>
 </pre></div>
 </div>
-<p>User may want to specify the maximum and minimum limit on expansion of initial weights in the YAML settings file as follows:</p>
+<p>User may want to specify the maximum and minimum limit on expansion of initial weights in the yaml settings file as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_expansion_factor</span><span class="p">:</span> <span class="mi">4</span> <span class="c1"># Default is 30</span>
 <span class="n">min_expansion_factor</span><span class="p">:</span> <span class="mf">0.5</span>
 </pre></div>
 </div>
-<p>The desired output for survey weighting is a list of final weights by household ID. In order to achieve this, the grouping of incidence must be switched off in the YAML settings file as follows:</p>
+<p>The desired output for survey weighting is a list of final weights by household ID. In order to achieve this, the grouping of incidence must be switched off in the yaml settings file as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GROUP_BY_INCIDENCE_SIGNATURE</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p><strong>Output Tables for weighting mode</strong>:</p>
-<p>To obtain the final weights by household ID, the seed geography weights table must be specified in the YAML settings file as below:</p>
+<p>To obtain the final weights by household ID, the seed geography weights table must be specified in the yaml settings file as below:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_tables</span><span class="p">:</span>
   <span class="n">action</span><span class="p">:</span> <span class="n">include</span>
   <span class="n">tables</span><span class="p">:</span>
@@ -1211,29 +1314,16 @@ Two options for the expand_households.repop step <br />
 </div>
 <div class="section" id="error-handling-debugging">
 <h2>Error Handling &amp; Debugging<a class="headerlink" href="#error-handling-debugging" title="Permalink to this headline">¶</a></h2>
-<p>It is recommended to do appropriate checks on input data before running PopulationSim.</p>
-<div class="section" id="checks-on-data-inputs">
-<h3>Checks on data inputs<a class="headerlink" href="#checks-on-data-inputs" title="Permalink to this headline">¶</a></h3>
-<p>While the PopulationSim algorithm is designed to work even with imperfect data, an error-free and consistent set of input controls guarantees optimal performance. Poor performance and errors are usually the result of inconsistent data and it is the responsibility of the user to do necessary QA/QC on the input data. Some data problems that are frequently encountered are as follows:</p>
+<p>It is recommended to do appropriate checks on input data before running PopulationSim.  While the PopulationSim algorithm is designed to work even with imperfect data, an error-free and consistent set of input controls guarantees optimal performance. Poor performance and errors are usually the result of inconsistent data and it is the responsibility of the user to do necessary QA/QC on the input data. Some data problems that are frequently encountered are as follows:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Miscoding of data</p></li>
 <li><p>Inconsistent controls (for example, household-level households by size controls do not match person-level controls on total persons, or household-level workers per household controls do not match person-level workers by occupation)</p></li>
 <li><p>Controls do not add to total number of households</p></li>
 <li><p>Controls do not aggregate consistently across geographies</p></li>
-<li><p>missing or mislabelled controls</p></li>
+<li><p>Missing or mislabelled controls</p></li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="common-run-time-errors">
-<h3>Common run-time errors<a class="headerlink" href="#common-run-time-errors" title="Permalink to this headline">¶</a></h3>
-<p>Below is a list of common run-time errors:</p>
-<p><strong>Tabs in settings.YAML file</strong></p>
-<p>User should not use /t (tabs) while configuring the settings.YAML file. Presence of /t would result in the error shown below. {SPACE} should be used for indenting purposes and hard returns at the end of each line.</p>
-<blockquote>
-<div><img alt="_images/YAML_Tab_Error.JPG" src="_images/YAML_Tab_Error.JPG" />
-</div></blockquote>
-</div>
 </div>
 </div>
 
@@ -1242,37 +1332,29 @@ Two options for the expand_households.repop step <br />
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="validation.html" class="btn btn-neutral float-right" title="Validation of Results" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="validation.html" class="btn btn-neutral float-right" title="Validation of Results" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright contributing authors
+        &#169; Copyright contributing authors.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

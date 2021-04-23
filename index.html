@@ -3,11 +3,11 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Introduction &mdash; PopulationSim 0.4.3
+  <title>Introduction &mdash; PopulationSim 0.5
  documentation</title>
   
 
@@ -18,7 +18,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -31,7 +34,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -52,7 +54,7 @@
           
 
           
-            <a href="#" class="icon icon-home" alt="Documentation Home"> PopulationSim
+            <a href="#" class="icon icon-home"> PopulationSim
           
 
           
@@ -62,7 +64,7 @@
             
             
               <div class="version">
-                0.4.3
+                0.5
 
               </div>
             
@@ -134,6 +136,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -145,7 +149,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -161,57 +165,68 @@
             
   <div class="section" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>PopulationSim is an open platform for population synthesis and survey weighting.  It emerged from Oregon DOT’s desire to
-build a shared, open, platform that could be easily adapted for statewide, regional, and urban
-transportation planning needs.</p>
+<p>PopulationSim is an open platform for population synthesis and survey weighting.  It emerged from
+<a class="reference external" href="https://www.oregon.gov/odot">Oregon DOT</a>’s desire to build a shared, open, platform that could
+be easily adapted for statewide, regional, and urban transportation planning needs.</p>
 <div class="section" id="what-is-population-synthesis">
 <h2>What is population synthesis?<a class="headerlink" href="#what-is-population-synthesis" title="Permalink to this headline">¶</a></h2>
-<p>Activity Based Models (ABMs) operate in a micro-simulation framework , wherein the travel choices of person and household decision-making agents are predicted by applying Monte Carlo methods to behavioral models. This requires a data set of households and persons representing the entire population in the modeling region. Population synthesis refers to the process used to create this data.</p>
-<p>The required inputs to population synthesis are a population sample and marginal distributions. The population
-sample is commonly referred to as the <em>seed or reference sample</em> and the marginal distributions are referred to
-as <em>controls or targets</em>. <strong>The process of expanding the seed sample to match the marginal distribution
-is termed population synthesis.</strong> The software tool which implements this population synthesis process
+<p>Activity based travel demand models such as <a class="reference external" href="http://www.activitysim.org">ActivitySim</a> operate at an individual
+level, wherein the travel choices of person and household decision-making agents are predicted by applying
+Monte Carlo methods to behavioral models. This requires a data set of households and persons representing
+the entire population in the modeling region. Population synthesis refers to the process used to create this data.</p>
+<p>The required inputs to population synthesis are a population sample and marginal distributions (or control totals).
+The population sample is commonly referred to as the <em>seed or reference sample</em> and the marginal distributions are
+commonly referred to as <em>controls or targets</em>. <strong>The process of expanding the seed sample to match the marginal
+distribution is termed population synthesis.</strong> The software tool which implements this population synthesis process
 is termed as a <strong>Population Synthesizer</strong>.</p>
 </div>
 <div class="section" id="what-does-a-population-synthesizer-produce">
 <h2>What does a Population Synthesizer produce?<a class="headerlink" href="#what-does-a-population-synthesizer-produce" title="Permalink to this headline">¶</a></h2>
 <p>The objective of a population synthesizer is to generate a synthetic population for
-a modeling region. The main outputs from a population synthesizer include lists of persons and households
-representing the entire population of the modeling region. These databases include household and person-level
-attributes of interest. Examples of attributes at the household level include household income, household size, housing type, and number of vehicles. Examples of person attributes include
+a modeling region. The main outputs from a population synthesizer include tables of persons and households
+representing the entire population of the modeling region. These tables also include household and person-level
+attributes of interest. Examples of attributes at the household level include household income, household size, housing
+type, and number of vehicles. Examples of person attributes include
 age, gender, workschool status, and occupation. Depending on the use case, a population synthesizer may also
 produce multi-way distribution of demographic variables at different geographies to be used as an input
-to aggregate travel models. In the case of PopulationSim specifically, an additional option is also included to
-modify an existing regional synthetic population for a smaller geographical area. In this case, the outputs are a modified list of persons and households.</p>
+to aggregate (four-step) travel models. In the case of PopulationSim specifically, an additional option is also included to
+modify an existing regional synthetic population for a smaller geographical area. In this case, the outputs are a modified
+set of persons and households.</p>
 </div>
 <div class="section" id="how-does-a-population-synthesizer-work">
 <h2>How does a population synthesizer work?<a class="headerlink" href="#how-does-a-population-synthesizer-work" title="Permalink to this headline">¶</a></h2>
 <p>The main inputs to a population synthesizer are disaggregate population samples and marginal control
-distributions. In the United States, the disaggregate population sample is typically obtained from the Census Public Use Microdata Sample (PUMS), but other sources, such as a household travel survey, can also be used. The seed sample should
-include demographic variables corresponding to each marginal control termed as <em>controlled variables</em> (e.g.,
-household size, household income, etc.). The seed sample could also include other variables of interest but not
-necessarily controlled via marginal controls. These are termed as <em>uncontrolled variables</em>. The seed sample should also include an initial weight on each household record.</p>
-<p>Base-year marginal distributions of person and household-level attributes of interest are available from Census. For future years, marginal distributions are either held constant, or forecasted.  Marginal distributions can be for both household or person level variables and are specified at a specific geography (e.g., Block Groups, Traffic Analysis Zone or County). PopulationSim allows controls to be specified at multiple geographic levels.</p>
-<p>The objective of a population synthesizer is to
-generate household weights which satisfies the marginal control distributions. This is achieved by use of
-a data fitting technique. The most common fitting technique used by various population synthesizers is the
-Iterative Proportional Fitting (IPF) procedure. Generally, the IPF procedure is used to obtain joint distributions of demographic
-variables. Then, random sampling from PUMS generates the baseline synthetic population.</p>
+distributions. In the United States, the disaggregate population sample is typically obtained from the <a class="reference external" href="https://www.census.gov/programs-surveys/acs/microdata.html">Census Public Use
+Microdata Sample (PUMS)</a>, but other sources, such as a household
+travel survey, can also be used. The seed sample should include demographic variables corresponding to each marginal control
+termed as <em>controlled variables</em> (e.g., household size, household income, etc.). The seed sample could also include other
+variables of interest but not necessarily controlled via marginal controls. These are termed as <em>uncontrolled variables</em>.
+The seed sample should also include an initial weight on each household record.</p>
+<p>Current year marginal distributions of person and household-level attributes of interest are available from Census. For
+future years, marginal distributions are either held constant, or forecasted.  Marginal distributions can be for both
+household or person level variables and are specified at a specific geography (e.g., Block Groups, Traffic Analysis Zone
+or County). PopulationSim allows controls to be specified at multiple geographic levels.</p>
+<p>The objective of a population synthesizer is to generate household weights which satisfies the marginal control
+distributions. This is achieved by use of a data fitting technique. The most common fitting technique used by various
+population synthesizers is the Iterative Proportional Fitting (IPF) procedure. Generally, the IPF procedure is used
+to obtain joint distributions of demographic  variables. Then, random sampling from PUMS generates the baseline synthetic
+population.</p>
 <p>One of the limitations of the simple IPF method is that it does not incorporate both household and person
 level attributes simulatenously. Some population synthesizers use a heuristic algorithm called the
 Iterative Proportional Updating Algorithm (IPU) to incorporate both person and household-level variables in the fitting procedure.</p>
-<p>Besides IPF, entropy
-maximization algorithms have been used as a fitting technique. In most of the entropy based methods,
+<p>Besides IPF, entropy maximization algorithms have been used as a fitting technique. In most of the entropy based methods,
 the relative entropy is used as the objective function. The relative entropy based optimization ensures
 that the least amount of new information is introduced in finding a feasible solution. The base entropy
 is defined by the initial weights in the seed sample. The weights generated by the entropy maximization
 algorithm preserves the distribution of initial weights while matching the marginal controls. This is an
-advantage of the entropy maximization based procedures over the IPF based procedures. PopulationSim uses the entropy maximization based list balancing to match controls specified at various geographic levels.</p>
-<p>Once the final weights
-have been assigned, seed sample is expanded using these weights to generate a synthetic population. Most
+advantage of the entropy maximization based procedures over the IPF based procedures. PopulationSim uses the entropy maximization
+based list balancing to match controls specified at various geographic levels.</p>
+<p>Once the final weights have been assigned, the seed sample is expanded using these weights to generate a synthetic population. Most
 population synthesizers create distributions using final weights and employ random sampling to expand the
 seed sample. PopulationSim uses Linear Programming to convert the final weights to integer values and expands
-the seed sample using these integer weights. For detailed description of PopulationSim algorithm, please refer to the TRB paper link in the <a class="reference internal" href="docs.html#docs"><span class="std std-ref">Resources</span></a> section. For information on software implementation refer to <a class="reference internal" href="software.html#core-components"><span class="std std-ref">Core Components</span></a> and <a class="reference internal" href="software.html#model-steps"><span class="std std-ref">Model Steps</span></a>. To learn more about PopulationSim application and configuration, please follow the content index below.</p>
+the seed sample using these integer weights. For detailed description of PopulationSim algorithm, please refer to the TRB paper
+link in the <a class="reference internal" href="docs.html#docs"><span class="std std-ref">Resources</span></a> section. For information on software implementation refer to <a class="reference internal" href="software.html#core-components"><span class="std std-ref">Core Components</span></a> and <a class="reference internal" href="software.html#model-steps"><span class="std std-ref">Model Steps</span></a>. To
+learn more about PopulationSim application and configuration, please follow the content index below.</p>
 </div>
 <div class="section" id="how-does-population-synthesis-work-for-survey-weighting">
 <h2>How does population synthesis work for survey weighting?<a class="headerlink" href="#how-does-population-synthesis-work-for-survey-weighting" title="Permalink to this headline">¶</a></h2>
@@ -271,35 +286,28 @@ not needed because household locations are surveyed and not synthesized.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright contributing authors
+        &#169; Copyright contributing authors.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
