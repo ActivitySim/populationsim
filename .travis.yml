@@ -9,17 +9,21 @@ python:
 install:
 - wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh
 - bash miniconda.sh -b -p $HOME/miniconda
-- export PATH="$HOME/miniconda/bin:$PATH"
+- source "$HOME/miniconda/etc/profile.d/conda.sh"
 - hash -r
 - conda config --set always_yes yes --set changeps1 no
 - conda update -q conda
-- conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION future
-- source activate test-environment
+- conda info -a
+- conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
+- conda activate test-environment
 - conda install pytest pytest-cov coveralls pycodestyle
 - pip install .
+- pip freeze
+
 script:
 - pycodestyle populationsim
 - py.test --cov populationsim --cov-report term-missing
+
 after_success:
 - coveralls
 # Build docs
