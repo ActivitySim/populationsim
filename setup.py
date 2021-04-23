@@ -19,7 +19,7 @@ setup(
     packages=find_packages(exclude=['*.tests']),
     include_package_data=True,
     install_requires=[
-        'activitysim >= 0.9.9',
+        'activitysim >= 0.9.9.1',
         'numpy >= 1.16.1',
         'pandas >= 1.1.0',
         'ortools >= 5.1.4045'
