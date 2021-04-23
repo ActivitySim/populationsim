@@ -1,7 +1,8 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
-from activitysim.core import inject as _inject
+
+from activitysim.core import inject
 
 from . import input_pre_processor
 from . import setup_data_structures
@@ -19,7 +20,8 @@ from activitysim.core.steps.output import write_data_dictionary
 from activitysim.core.steps.output import write_tables
 
 
-@_inject.injectable(cache=True)
+@inject.injectable(cache=True)
 def preload_injectables():
-    _inject.add_step('write_data_dictionary', write_data_dictionary)
-    _inject.add_step('write_tables', write_tables)
+    inject.add_step('write_data_dictionary', write_data_dictionary)
+    inject.add_step('write_tables', write_tables)
+    return True

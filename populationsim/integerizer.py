@@ -1,3 +1,4 @@
+
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -159,8 +160,8 @@ class Integerizer(object):
 
             if (float_weights == 0).any():
                 # not sure this matters...
-                logger.warn("Integerizer: %s zero weights out of %s" %
-                            ((float_weights == 0).sum(), sample_count))
+                logger.warning("Integerizer: %s zero weights out of %s" %
+                               ((float_weights == 0).sum(), sample_count))
                 assert False
 
             if (resid_weights == 0.0).any():
@@ -312,7 +313,7 @@ def do_integerizing(
         logger.error("Integerizer failed for %s status %s. "
                      "Returning smart-rounded original weights" % (trace_label, status))
     elif status != 'OPTIMAL':
-        logger.warn("Integerizer status non-optimal for %s status %s." % (trace_label, status))
+        logger.warning("Integerizer status non-optimal for %s status %s." % (trace_label, status))
 
     integerized_weights = pd.Series(0, index=zero_weight_rows.index)
     integerized_weights.update(integerizer.weights['integerized_weight'])

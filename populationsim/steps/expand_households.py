@@ -1,3 +1,4 @@
+
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -53,6 +54,10 @@ def expand_households():
 
     if setting('GROUP_BY_INCIDENCE_SIGNATURE'):
 
+        # get these in a repeatable order so np.random.choice behaves the same regardless of weight table order
+        # i.e. which could vary depending on whether we ran single or multi process due to apportioned/coalesce
+        expanded_weights = expanded_weights.sort_values(geography_cols + [household_id_col])
+
         # the household_id_col is really the group_id
         expanded_weights.rename(columns={household_id_col: 'group_id'}, inplace=True)
 
@@ -72,12 +77,14 @@ def expand_households():
             probs = list(df.sample_weight / df.sample_weight.sum())
             group_hh_probs[group_id] = [hh_ids, probs]
 
-        # FIXME - should sample without replacement?
+        # get a repeatable random number sequence generator for consistent choice results
+        prng = pipeline.get_rn_generator().get_external_rng('expand_households')
+
         # now make a hh_id choice for each group_id in expanded_weights
         def chooser(group_id):
             hh_ids = group_hh_probs[group_id][HH_IDS]
             hh_probs = group_hh_probs[group_id][HH_PROBS]
-            return np.random.choice(hh_ids, p=hh_probs)
+            return prng.choice(hh_ids, p=hh_probs)
         expanded_weights[household_id_col] = \
             expanded_weights.group_id.apply(chooser, convert_dtype=True,)
 
@@ -106,6 +113,9 @@ def expand_households():
         op = 'append' if append else 'replace'
         logger.info("expand_households op: %s prev hh count %s dropped %s added %s final %s" %
                     (op, prev_hhs, dropped_hhs, added_hhs, final_hhs))
+
+    # sort this so results will be consistent whether single or multiprocessing, GROUP_BY_INCIDENCE_SIGNATURE, etc...
+    expanded_weights = expanded_weights.sort_values(geography_cols + [household_id_col])
 
     repop = inject.get_step_arg('repop', default=False)
     inject.add_table('expanded_household_ids', expanded_weights, replace=repop)

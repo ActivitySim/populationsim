@@ -1,3 +1,5 @@
+BSD 3-Clause License
+
 PopulationSim
 Contributions Copyright (C) by the contributing authors
 
