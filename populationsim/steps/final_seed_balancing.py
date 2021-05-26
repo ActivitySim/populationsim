@@ -68,6 +68,10 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
     max_expansion_factor = settings.get('max_expansion_factor', None)
     min_expansion_factor = settings.get('min_expansion_factor', None)
+    
+    absolute_upper_bound = settings.get('absolute_upper_bound', None)
+    absolute_lower_bound = settings.get('absolute_lower_bound', None)
+
 
     relaxation_factors = pd.DataFrame(index=seed_controls_df.columns.tolist())
 
@@ -86,6 +90,8 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
             total_hh_control_col=total_hh_control_col,
             max_expansion_factor=max_expansion_factor,
             min_expansion_factor=min_expansion_factor,
+            absolute_lower_bound=absolute_lower_bound,
+            absolute_upper_bound=absolute_upper_bound,
             incidence_df=seed_incidence_df,
             control_totals=seed_controls_df.loc[seed_id],
             initial_weights=seed_incidence_df['sample_weight'])

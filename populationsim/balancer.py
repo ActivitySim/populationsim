@@ -243,6 +243,7 @@ def np_balancer(
 def do_balancing(control_spec,
                  total_hh_control_col,
                  max_expansion_factor, min_expansion_factor,
+                 absolute_upper_bound, absolute_lower_bound,
                  incidence_df, control_totals, initial_weights):
 
     # incidence table should only have control columns
@@ -261,6 +262,7 @@ def do_balancing(control_spec,
 
     control_importance_weights = control_spec.importance
 
+
     if min_expansion_factor:
 
         # number_of_households in this seed geograpy as specified in seed_controlss
@@ -270,10 +272,20 @@ def do_balancing(control_spec,
         lb_ratio = min_expansion_factor * float(number_of_households) / float(total_weights)
 
         lb_weights = initial_weights * lb_ratio
-        lb_weights = lb_weights.clip(lower=0)
+        
+        if absolute_lower_bound:
+            lb_weights = lb_weights.clip(lower=absolute_lower_bound)
+        else:
+            lb_weights = lb_weights.clip(lower=0)
+
+    elif absolute_lower_bound:
+        lb_weights = initial_weights.clip(lower=absolute_lower_bound)
 
     else:
         lb_weights = None
+
+
+
 
     if max_expansion_factor:
 
@@ -284,7 +296,11 @@ def do_balancing(control_spec,
         ub_ratio = max_expansion_factor * float(number_of_households) / float(total_weights)
 
         ub_weights = initial_weights * ub_ratio
-        ub_weights = ub_weights.round().clip(lower=1).astype(int)
+
+        if absolute_upper_bound: 
+            ub_weights = ub_weights.round().clip(upper=absolute_upper_bound, lower = 1).astype(int)
+        else:
+            ub_weights = ub_weights.round().clip(lower=1).astype(int)
 
     else:
         ub_weights = None
