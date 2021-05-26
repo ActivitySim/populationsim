@@ -15,9 +15,7 @@ from ..balancer import do_balancing
 from .helper import get_control_table
 from .helper import weight_table_name
 
-
 logger = logging.getLogger(__name__)
-
 
 @inject.step()
 def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
@@ -69,7 +67,6 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     absolute_upper_bound = settings.get('absolute_upper_bound', None)
     absolute_lower_bound = settings.get('absolute_lower_bound', None)
 
- 
     # run balancer for each seed geography
     weight_list = []
     sample_weight_list = []

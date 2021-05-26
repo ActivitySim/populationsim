@@ -15,9 +15,7 @@ from .helper import get_control_table
 from .helper import weight_table_name
 from .helper import get_weight_table
 
-
 logger = logging.getLogger(__name__)
-
 
 @inject.step()
 def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
@@ -71,7 +69,6 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     
     absolute_upper_bound = settings.get('absolute_upper_bound', None)
     absolute_lower_bound = settings.get('absolute_lower_bound', None)
-
 
     relaxation_factors = pd.DataFrame(index=seed_controls_df.columns.tolist())
 
