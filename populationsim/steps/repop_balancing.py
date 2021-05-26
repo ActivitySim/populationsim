@@ -102,7 +102,7 @@ def repop_balancing(settings, crosswalk, control_spec, incidence_table):
                 control_spec=low_control_spec,
                 total_hh_control_col=total_hh_control_col,
                 max_expansion_factor=max_expansion_factor,
-                min_expansion_factor=min_expansion_factor,  
+                min_expansion_factor=min_expansion_factor,
                 absolute_upper_bound=absolute_upper_bound,
                 absolute_lower_bound=absolute_lower_bound,
                 incidence_df=seed_incidence_df,
