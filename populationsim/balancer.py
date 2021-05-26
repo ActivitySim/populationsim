@@ -294,7 +294,7 @@ def do_balancing(control_spec,
         ub_weights = initial_weights * ub_ratio
 
         if absolute_upper_bound:
-            ub_weights = ub_weights.round().clip(upper=absolute_upper_bound,lower=1).astype(int)
+            ub_weights = ub_weights.round().clip(upper=absolute_upper_bound, lower=1).astype(int)
         else:
             ub_weights = ub_weights.round().clip(lower=1).astype(int)
 
