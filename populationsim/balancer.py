@@ -272,7 +272,7 @@ def do_balancing(control_spec,
         lb_ratio = min_expansion_factor * float(number_of_households) / float(total_weights)
 
         lb_weights = initial_weights * lb_ratio
-        
+
         if absolute_lower_bound:
             lb_weights = lb_weights.clip(lower=absolute_lower_bound)
         else:
@@ -283,9 +283,6 @@ def do_balancing(control_spec,
 
     else:
         lb_weights = None
-
-
-
 
     if max_expansion_factor:
 
