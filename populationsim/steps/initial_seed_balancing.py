@@ -74,7 +74,7 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
     seed_ids = crosswalk_df[seed_geography].unique()
     for seed_id in seed_ids:
-  
+
         logger.info("initial_seed_balancing seed id %s" % seed_id)
 
         seed_incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
