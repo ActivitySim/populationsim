@@ -1,5 +1,4 @@
-from __future__ import division
-from __future__ import absolute_import
+
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -208,7 +207,7 @@ def np_balancer(
                     yy + relaxed_constraint / float(importance))
 
             # update HH weights
-            weights_final[incidence[c] > 0] *= gamma[c]
+            weights_final *= pow(gamma[c], incidence[c])
 
             # clip weights to upper and lower bounds
             weights_final = np.clip(weights_final, weights_lower_bound, weights_upper_bound)

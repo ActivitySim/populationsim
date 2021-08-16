@@ -23,7 +23,7 @@ def merge_seed_data(expanded_household_ids, seed_data_df, seed_columns, trace_la
     # warn of any columns that aren't in seed_data_df
     for c in seed_columns:
         if c not in df_columns and c != hh_col:
-            logger.warn("column '%s' not in %s" % (c, trace_label))
+            logger.warning("column '%s' not in %s" % (c, trace_label))
 
     # remove any columns that aren't in seed_data_df
     df_columns = [c for c in seed_columns if c in df_columns]

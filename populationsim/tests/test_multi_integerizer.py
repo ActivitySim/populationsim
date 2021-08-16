@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 # PopulationSim
 # See full license in LICENSE.txt.
 

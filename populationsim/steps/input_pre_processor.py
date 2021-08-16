@@ -7,11 +7,9 @@ import os
 import pandas as pd
 import numpy as np
 
-from activitysim.core import (
-    inject,
-    config,
-    input
-)
+from activitysim.core import inject
+from activitysim.core import config
+from activitysim.core import input
 
 logger = logging.getLogger(__name__)
 

@@ -20,9 +20,9 @@ import sphinx_rtd_theme
 # -- Get Package Version --------------------------------------------------
 with open("../setup.py") as file:
     lines = file.readlines()
-    for l in lines:
-        if "version" in l:
-            VERSION = l.replace("version='", "").replace("',", "").replace(" ", "")
+    for line in lines:
+        if "version" in line:
+            VERSION = line.replace("version='", "").replace("',", "").replace(" ", "")
             print("package version: " + VERSION)
 
 # If extensions (or modules to document with autodoc) are in another directory,

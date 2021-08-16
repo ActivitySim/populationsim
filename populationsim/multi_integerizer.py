@@ -1,5 +1,4 @@
-from __future__ import print_function
-from __future__ import absolute_import
+
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -147,11 +146,11 @@ class SimulIntegerizer(object):
         # how could this not be the case?
         if not (parent_hh_constraint_ge_bound == parent_max_possible_control_values).all():
             print("\nSimulIntegerizer integerizing", self.trace_label)
-            logger.warn("parent_hh_constraint_ge_bound != parent_max_possible_control_values")
-            logger.warn("parent_hh_constraint_ge_bound:      %s" %
-                        parent_hh_constraint_ge_bound)
-            logger.warn("parent_max_possible_control_values: %s" %
-                        parent_max_possible_control_values)
+            logger.warning("parent_hh_constraint_ge_bound != parent_max_possible_control_values")
+            logger.warning("parent_hh_constraint_ge_bound:      %s" %
+                           parent_hh_constraint_ge_bound)
+            logger.warning("parent_max_possible_control_values: %s" %
+                           parent_max_possible_control_values)
             print("\n")
             # assert (parent_hh_constraint_ge_bound == parent_max_possible_control_values).all()
 
@@ -364,7 +363,7 @@ def do_simul_integerizing(
         logger.info("do_simul_integerizing succeeded for %s status %s. " % (trace_label, status))
         return integerized_weights_df
 
-    logger.warn("do_simul_integerizing failed for %s status %s. " % (trace_label, status))
+    logger.warning("do_simul_integerizing failed for %s status %s. " % (trace_label, status))
 
     # if simultaneous integerization failed, sequentially integerize to detect infeasible subzones
     # infeasible zones will be smart rounded and returned in rounded_weights_df
@@ -381,7 +380,7 @@ def do_simul_integerizing(
     if len(feasible_zone_ids) == 0:
         # if all subzones are infeasible, then we don't have any feasible zones to try
         # so the best we can do is return rounded_weights_df
-        logger.warn("do_sequential_integerizing failed for all subzones %s. " % trace_label)
+        logger.warning("do_sequential_integerizing failed for all subzones %s. " % trace_label)
         logger.info("do_simul_integerizing returning smart rounded weights for %s."
                     % trace_label)
         return rounded_weights_df
@@ -389,8 +388,8 @@ def do_simul_integerizing(
     if len(rounded_zone_ids) == 0:
         # if all subzones are feasible, then there are no zones to remove in order to retry
         # so the best we can do is return sequentially_integerized_weights_df
-        logger.warn("do_simul_integerizing failed but found no infeasible sub zones %s. "
-                    % trace_label)
+        logger.warning("do_simul_integerizing failed but found no infeasible sub zones %s. "
+                       % trace_label)
         logger.info("do_simul_integerizing falling back to sequential integerizing for %s."
                     % trace_label)
         return sequentially_integerized_weights_df
@@ -398,8 +397,8 @@ def do_simul_integerizing(
     if len(feasible_zone_ids) == 1:
         # if only one zone is feasible, not much point in simul_integerizing it
         # so the best we can do is return do_sequential_integerizing combined results
-        logger.warn("do_simul_integerizing failed but found no infeasible sub zones %s. "
-                    % trace_label)
+        logger.warning("do_simul_integerizing failed but found no infeasible sub zones %s. "
+                       % trace_label)
         return pd.concat([sequentially_integerized_weights_df, rounded_weights_df])
 
     # - remove the infeasible subzones and retry simul_integerizing
