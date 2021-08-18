@@ -6,7 +6,6 @@ from setuptools import setup, find_packages
 setup(
     name='populationsim',
     version='0.5',
-
     description='Population Synthesis',
     author='contributing authors',
     author_email='ben.stabler@rsginc.com',
