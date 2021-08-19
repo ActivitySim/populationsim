@@ -111,11 +111,11 @@ def add_geography_columns(incidence_table, households_df, crosswalk_df):
     # add seed_geography col to incidence table
     incidence_table[seed_geography] = households_df[seed_geography]
 
-    # add meta column to incidence table
-    seed_to_meta = \
-        crosswalk_df[[seed_geography, meta_geography]] \
-        .groupby(seed_geography, as_index=True).min()[meta_geography]
-    incidence_table[meta_geography] = incidence_table[seed_geography].map(seed_to_meta)
+    # add meta column to incidence table (unless it's already there)
+    if seed_geography != meta_geography:
+        tmp = crosswalk_df[list({seed_geography, meta_geography})]
+        seed_to_meta = tmp.groupby(seed_geography, as_index=True).min()[meta_geography]
+        incidence_table[meta_geography] = incidence_table[seed_geography].map(seed_to_meta)
 
     return incidence_table
 
