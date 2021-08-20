@@ -41,8 +41,8 @@ def test_Konduri():
         control_importance_weights=control_importance_weights,
         lb_weights=0,
         ub_weights=30,
-        absolute_lower_bound = 1,
-        absolute_upper_bound = 30,
+        absolute_lower_bound=1,
+        absolute_upper_bound=30,
         master_control_index=None,
         max_iterations=DEFAULT_MAX_ITERATIONS
         )
