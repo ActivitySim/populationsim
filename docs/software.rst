@@ -224,18 +224,3 @@ Contribution Guidelines
 
 PopulationSim development follows the same `development guidelines <https://activitysim.github.io/activitysim/development.html>`__ as ActivitySim.
 
-
-Release Notes
--------------
-
-  * v0.3 - first release
-  * v0.3.1 - allow zones with zero households
-  * v0.3.2 - fix bug in mult-integerizer with total_hh_parent_control_index
-  * v0.3.3 - add disgnostic printouts on assert fail in mult_integerizer
-  * v0.3.4 - add survey weighting use case
-  * v0.3.5 - add Python 3.5+ support
-  * v0.4 - transfer to ActivitySim.org
-  * v0.4.1 - package updates
-  * v0.4.2 - validation script in Python
-  * v0.4.3 - allow non-binary incidence 
-  * v0.5 - support for multiprocessing

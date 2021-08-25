@@ -12,7 +12,13 @@ This page describes how to install and run PopulationSim with the provided examp
 Installation
 ------------
 
-1. Install `Anaconda 64bit Python 3 <https://www.anaconda.com/distribution/>`__. Anaconda Python is required for PopulationSim.
+1. It is recommended that you install and use a *conda* package manager
+for your system. One easy way to do so is by using `Anaconda 64bit Python 3 <https://www.anaconda.com/distribution/>`__,
+although you should consult the `terms of service <https://www.anaconda.com/terms-of-service>`__
+for this product and ensure you qualify (as of summer 2021, businesses and
+governments with over 200 employees do not qualify for free usage).  If you prefer
+a completely free open source *conda* tool, you can download and install the
+appropriate version of `Miniforge <https://github.com/conda-forge/miniforge#miniforge3>`__.
 
 2. If you access the internet from behind a firewall, then you will need to configure your proxy server. To do so, create a .condarc file in your Anaconda installation folder (i.e. ``C:\ProgramData\Anaconda3``), such as:
 
@@ -62,7 +68,7 @@ ActivitySim
   ActivitySim depends + some handy Python installation management tools.
 
   For more information on Anaconda and ActivitySim, see ActivitySim's `getting started
-  <https://activitysim.github.io/activitysim/gettingstarted.html#anaconda>`__ guide.
+  <https://activitysim.github.io/activitysim/gettingstarted.html>`__ guide.
 
 
 Run Examples

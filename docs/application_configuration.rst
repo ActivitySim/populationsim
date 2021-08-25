@@ -320,7 +320,7 @@ These settings control the functionality of the PopulationSim algorithm. The set
 |                                      |            | The maximum expansion factor may have to be adjusted upwards if the target |br| |
 |                                      |            | is much greater than the seed number of households.                        |br| |
 +--------------------------------------+------------+---------------------------------------------------------------------------------+
-| MAX_BALANCE_ITERATIONS_SIMULTANEOUS  | Integer    | Number of simultaneous list balancer iterations                                 |
+| MAX_BALANCE_ITERATIONS_SIMULTANEOUS  | Integer    | Number of list balancer iterations.  The default may be more than is needed.    |
 +--------------------------------------+------------+---------------------------------------------------------------------------------+
 
 
@@ -693,7 +693,7 @@ This sections describes the settings that are configured differently for the *re
 
 **Input Data Tables for repop mode**
 
-The repop mode runs over an existing synthetic population and uses the data pipeline (HDF5 file) from the regular run as an input. User should copy the HDF5 file from the regular outputs to the *output* folder of the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as regular mode. However, only one geography can be controlled. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).
+The repop mode runs over an existing synthetic population and uses the data pipeline (HDF5 file) from the regular run as an input. User should copy the HDF5 file from the regular outputs to the *output* folder of the repop set up. The data input which needs to be specified in this setting is the control data for the subset of geographies to be modified. Input tables for the repop mode can be specified in the same manner as regular mode. However, only one geography can be controlled and the geography must be the lowest in "geographies" setting. In the example below, TAZ controls are specified. The controls specified in TAZ_control_data do not have to be consistent with the controls specified in the data used to control the initial population. Only those geographic units to be repopulated should be specified in the control data (for example, TAZs 314 through 317).
 
 ::
 
@@ -713,6 +713,7 @@ The repop mode runs over an existing synthetic population and uses the data pipe
 | Attribute                 | Description                                                 |
 +===========================+=============================================================+
 | repop_control_file_name   | Name of the CSV control specification file for repop mode   |
+|                           | Must include total_hh_control field                         |
 +---------------------------+-------------------------------------------------------------+
 
 
