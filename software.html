@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Software Implementation &mdash; PopulationSim 0.5
+  <title>Software Implementation &mdash; PopulationSim 0.5.1
  documentation</title>
   
 
@@ -31,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
@@ -65,7 +66,7 @@
             
             
               <div class="version">
-                0.5
+                0.5.1
 
               </div>
             
@@ -127,7 +128,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#contribution-guidelines">Contribution Guidelines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#release-notes">Release Notes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="docs.html">Resources</a></li>
@@ -269,8 +269,8 @@ exact ortools/cbc version.</p>
 <div class="section" id="module-populationsim.assign">
 <span id="assign"></span><h3>assign<a class="headerlink" href="#module-populationsim.assign" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="populationsim.assign.assign_variable">
-<code class="sig-prename descclassname"><span class="pre">populationsim.assign.</span></code><code class="sig-name descname"><span class="pre">assign_variable</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expression</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locals_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.assign.assign_variable" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.assign.assign_variable">
+<span class="sig-prename descclassname"><span class="pre">populationsim.assign.</span></span><span class="sig-name descname"><span class="pre">assign_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expression</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locals_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.assign.assign_variable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate an expression of a given data table.</p>
 <p>Expressions are evaluated using Python’s eval function.
 Python expressions have access to variables in locals_d (and df being
@@ -307,8 +307,8 @@ the result of evaluating expression</p>
 <div class="section" id="module-populationsim.balancer">
 <span id="balancer"></span><h3>balancer<a class="headerlink" href="#module-populationsim.balancer" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
-<dt id="populationsim.balancer.ListBalancer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">populationsim.balancer.</span></code><code class="sig-name descname"><span class="pre">ListBalancer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_totals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_importance_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">master_control_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.balancer.ListBalancer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.balancer.ListBalancer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">populationsim.balancer.</span></span><span class="sig-name descname"><span class="pre">ListBalancer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_totals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_importance_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">master_control_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.balancer.ListBalancer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Single-geography list balancer using Newton-Raphson method with control relaxation.</p>
 <p>Takes a list of households with initial weights assigned to each household, and updates those
 weights in such a way as to match the marginal distribution of control variables while
@@ -321,8 +321,8 @@ relaxation.</p>
 <div class="section" id="module-populationsim.integerizer">
 <span id="integerizer"></span><h3>integerizer<a class="headerlink" href="#module-populationsim.integerizer" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="populationsim.integerizer.do_integerizing">
-<code class="sig-prename descclassname"><span class="pre">populationsim.integerizer.</span></code><code class="sig-name descname"><span class="pre">do_integerizing</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_totals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.integerizer.do_integerizing" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.integerizer.do_integerizing">
+<span class="sig-prename descclassname"><span class="pre">populationsim.integerizer.</span></span><span class="sig-name descname"><span class="pre">do_integerizing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_totals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.integerizer.do_integerizing" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -350,8 +350,8 @@ relaxation.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.integerizer.smart_round">
-<code class="sig-prename descclassname"><span class="pre">populationsim.integerizer.</span></code><code class="sig-name descname"><span class="pre">smart_round</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">int_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_sum</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.integerizer.smart_round" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.integerizer.smart_round">
+<span class="sig-prename descclassname"><span class="pre">populationsim.integerizer.</span></span><span class="sig-name descname"><span class="pre">smart_round</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">int_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_sum</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.integerizer.smart_round" title="Permalink to this definition">¶</a></dt>
 <dd><p>Round weights while ensuring (as far as possible that result sums to target_sum)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -373,8 +373,8 @@ relaxation.</p>
 <div class="section" id="module-populationsim.lp">
 <span id="lp"></span><h3>lp<a class="headerlink" href="#module-populationsim.lp" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="populationsim.lp.get_simul_integerizer">
-<code class="sig-prename descclassname"><span class="pre">populationsim.lp.</span></code><code class="sig-name descname"><span class="pre">get_simul_integerizer</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp.get_simul_integerizer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.lp.get_simul_integerizer">
+<span class="sig-prename descclassname"><span class="pre">populationsim.lp.</span></span><span class="sig-name descname"><span class="pre">get_simul_integerizer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp.get_simul_integerizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return simul-integerizer function using installed/configured Linear Programming library.</p>
 <p>Different LP packages can be used for integerization (e.g. ortools of cvx) and this function
 hides the specifics of the individual packages so they can be swapped with minimal impact.</p>
@@ -406,8 +406,8 @@ total_hh_parent_control_index)</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.lp.get_single_integerizer">
-<code class="sig-prename descclassname"><span class="pre">populationsim.lp.</span></code><code class="sig-name descname"><span class="pre">get_single_integerizer</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp.get_single_integerizer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.lp.get_single_integerizer">
+<span class="sig-prename descclassname"><span class="pre">populationsim.lp.</span></span><span class="sig-name descname"><span class="pre">get_single_integerizer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp.get_single_integerizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return single integerizer function using installed/configured Linear Programming library.</p>
 <p>Different LP packages can be used for integerization (e.g. ortools of cvx) and this function
 hides the specifics of the individual packages so they can be swapped with minimal impact.</p>
@@ -435,8 +435,8 @@ hh_constraint_ge_bound)</p>
 <div class="section" id="module-populationsim.lp_cvx">
 <span id="lp-cvx"></span><h3>lp_cvx<a class="headerlink" href="#module-populationsim.lp_cvx" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="populationsim.lp_cvx.np_integerizer_cvx">
-<code class="sig-prename descclassname"><span class="pre">populationsim.lp_cvx.</span></code><code class="sig-name descname"><span class="pre">np_integerizer_cvx</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_importance_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lp_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relax_ge_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hh_constraint_ge_bound</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_cvx.np_integerizer_cvx" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.lp_cvx.np_integerizer_cvx">
+<span class="sig-prename descclassname"><span class="pre">populationsim.lp_cvx.</span></span><span class="sig-name descname"><span class="pre">np_integerizer_cvx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_importance_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lp_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relax_ge_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hh_constraint_ge_bound</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_cvx.np_integerizer_cvx" title="Permalink to this definition">¶</a></dt>
 <dd><p>cvx-based single-integerizer function taking numpy data types and conforming to a
 standard function signature that allows it to be swapped interchangeably with alternate
 LP implementations.</p>
@@ -463,8 +463,8 @@ LP implementations.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.lp_cvx.np_simul_integerizer_cvx">
-<code class="sig-prename descclassname"><span class="pre">populationsim.lp_cvx.</span></code><code class="sig-name descname"><span class="pre">np_simul_integerizer_cvx</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_int_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_countrol_importance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_relax_ge_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_countrol_importance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_float_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lp_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_hh_constraint_ge_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relax_ge_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_lp_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hh_constraint_ge_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_sub_control_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_cvx.np_simul_integerizer_cvx" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.lp_cvx.np_simul_integerizer_cvx">
+<span class="sig-prename descclassname"><span class="pre">populationsim.lp_cvx.</span></span><span class="sig-name descname"><span class="pre">np_simul_integerizer_cvx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_int_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_countrol_importance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_relax_ge_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_countrol_importance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_float_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lp_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_hh_constraint_ge_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relax_ge_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_lp_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hh_constraint_ge_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_sub_control_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_cvx.np_simul_integerizer_cvx" title="Permalink to this definition">¶</a></dt>
 <dd><p>cvx-based siuml-integerizer function taking numpy data types and conforming to a
 standard function signature that allows it to be swapped interchangeably with alternate
 LP implementations.</p>
@@ -505,8 +505,8 @@ or, in case of failure, sub_resid_weights unchanged</p>
 <div class="section" id="module-populationsim.lp_ortools">
 <span id="lp-ortools"></span><h3>lp_ortools<a class="headerlink" href="#module-populationsim.lp_ortools" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="populationsim.lp_ortools.np_integerizer_ortools">
-<code class="sig-prename descclassname"><span class="pre">populationsim.lp_ortools.</span></code><code class="sig-name descname"><span class="pre">np_integerizer_ortools</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_importance_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lp_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relax_ge_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hh_constraint_ge_bound</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_ortools.np_integerizer_ortools" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.lp_ortools.np_integerizer_ortools">
+<span class="sig-prename descclassname"><span class="pre">populationsim.lp_ortools.</span></span><span class="sig-name descname"><span class="pre">np_integerizer_ortools</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_importance_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lp_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relax_ge_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hh_constraint_ge_bound</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_ortools.np_integerizer_ortools" title="Permalink to this definition">¶</a></dt>
 <dd><p>ortools single-integerizer function taking numpy data types and conforming to a
 standard function signature that allows it to be swapped interchangeably with alternate
 LP implementations.</p>
@@ -533,8 +533,8 @@ LP implementations.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.lp_ortools.np_simul_integerizer_ortools">
-<code class="sig-prename descclassname"><span class="pre">populationsim.lp_ortools.</span></code><code class="sig-name descname"><span class="pre">np_simul_integerizer_ortools</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_int_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_countrol_importance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_relax_ge_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_countrol_importance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_float_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lp_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_hh_constraint_ge_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relax_ge_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_lp_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hh_constraint_ge_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_sub_control_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_parent_control_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_ortools.np_simul_integerizer_ortools" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.lp_ortools.np_simul_integerizer_ortools">
+<span class="sig-prename descclassname"><span class="pre">populationsim.lp_ortools.</span></span><span class="sig-name descname"><span class="pre">np_simul_integerizer_ortools</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_int_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_countrol_importance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_relax_ge_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_countrol_importance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_float_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lp_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_hh_constraint_ge_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relax_ge_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_lp_right_hand_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hh_constraint_ge_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_resid_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_sub_control_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_parent_control_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.lp_ortools.np_simul_integerizer_ortools" title="Permalink to this definition">¶</a></dt>
 <dd><p>ortools-based siuml-integerizer function taking numpy data types and conforming to a
 standard function signature that allows it to be swapped interchangeably with alternate
 LP implementations.</p>
@@ -576,13 +576,13 @@ or, in case of failure, sub_resid_weights unchanged</p>
 <div class="section" id="module-populationsim.multi_integerizer">
 <span id="multi-integerizer"></span><h3>multi_integerizer<a class="headerlink" href="#module-populationsim.multi_integerizer" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="populationsim.multi_integerizer.do_no_integerizing">
-<code class="sig-prename descclassname"><span class="pre">populationsim.multi_integerizer.</span></code><code class="sig-name descname"><span class="pre">do_no_integerizing</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geography</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_no_integerizing" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.multi_integerizer.do_no_integerizing">
+<span class="sig-prename descclassname"><span class="pre">populationsim.multi_integerizer.</span></span><span class="sig-name descname"><span class="pre">do_no_integerizing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geography</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_no_integerizing" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.multi_integerizer.do_sequential_integerizing">
-<code class="sig-prename descclassname"><span class="pre">populationsim.multi_integerizer.</span></code><code class="sig-name descname"><span class="pre">do_sequential_integerizing</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combine_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_sequential_integerizing" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.multi_integerizer.do_sequential_integerizing">
+<span class="sig-prename descclassname"><span class="pre">populationsim.multi_integerizer.</span></span><span class="sig-name descname"><span class="pre">do_sequential_integerizing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combine_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_sequential_integerizing" title="Permalink to this definition">¶</a></dt>
 <dd><p>note: this method returns different results depending on the value of combine_results</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -632,8 +632,8 @@ plus columns for household id, and sub_geography zone ids</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.multi_integerizer.do_simul_integerizing">
-<code class="sig-prename descclassname"><span class="pre">populationsim.multi_integerizer.</span></code><code class="sig-name descname"><span class="pre">do_simul_integerizing</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_simul_integerizing" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.multi_integerizer.do_simul_integerizing">
+<span class="sig-prename descclassname"><span class="pre">populationsim.multi_integerizer.</span></span><span class="sig-name descname"><span class="pre">do_simul_integerizing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.do_simul_integerizing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around simultaneous integerizer to handle solver failure for infeasible subzones.</p>
 <p>Simultaneous integerize balanced float sub_weights,
 If simultaneous integerization fails, integerize serially to identify infeasible subzones,
@@ -671,8 +671,8 @@ plus columns for household id, and sub_geography zone ids</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.multi_integerizer.multi_integerize">
-<code class="sig-prename descclassname"><span class="pre">populationsim.multi_integerizer.</span></code><code class="sig-name descname"><span class="pre">multi_integerize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_zone_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.multi_integerize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.multi_integerizer.multi_integerize">
+<span class="sig-prename descclassname"><span class="pre">populationsim.multi_integerizer.</span></span><span class="sig-name descname"><span class="pre">multi_integerize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_zone_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.multi_integerize" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -708,8 +708,8 @@ plus columns for household id, parent and sub_geography zone ids</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.multi_integerizer.reshape_result">
-<code class="sig-prename descclassname"><span class="pre">populationsim.multi_integerizer.</span></code><code class="sig-name descname"><span class="pre">reshape_result</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">float_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integerized_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.reshape_result" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.multi_integerizer.reshape_result">
+<span class="sig-prename descclassname"><span class="pre">populationsim.multi_integerizer.</span></span><span class="sig-name descname"><span class="pre">reshape_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">float_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integerized_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.reshape_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reshape results into unstacked form - (same as that returned by sequential integerizer)
 with columns for ‘balanced_weight’, ‘integer_weight’
 plus columns for household id, and sub_geography zone ids</p>
@@ -737,8 +737,8 @@ plus columns for household id, and sub_geography zone ids</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.multi_integerizer.try_simul_integerizing">
-<code class="sig-prename descclassname"><span class="pre">populationsim.multi_integerizer.</span></code><code class="sig-name descname"><span class="pre">try_simul_integerizing</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.try_simul_integerizing" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.multi_integerizer.try_simul_integerizing">
+<span class="sig-prename descclassname"><span class="pre">populationsim.multi_integerizer.</span></span><span class="sig-name descname"><span class="pre">try_simul_integerizing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.multi_integerizer.try_simul_integerizing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attempt simultaneous integerization and return integerized weights if successful</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -769,8 +769,8 @@ or None if integerization failed</p>
 <div class="section" id="module-populationsim.simul_balancer">
 <span id="simul-balancer"></span><h3>simul_balancer<a class="headerlink" href="#module-populationsim.simul_balancer" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
-<dt id="populationsim.simul_balancer.SimultaneousListBalancer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">populationsim.simul_balancer.</span></code><code class="sig-name descname"><span class="pre">SimultaneousListBalancer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.simul_balancer.SimultaneousListBalancer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.simul_balancer.SimultaneousListBalancer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">populationsim.simul_balancer.</span></span><span class="sig-name descname"><span class="pre">SimultaneousListBalancer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.simul_balancer.SimultaneousListBalancer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dual-zone simultaneous list balancer using Newton-Raphson method with control relaxation.</p>
 <p>Simultaneously balances the household weights across multiple subzones of a parent zone,
 ensuring that the total weight of each household across sub-zones sums to the parent hh weight.</p>
@@ -778,8 +778,8 @@ ensuring that the total weight of each household across sub-zones sums to the pa
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.simul_balancer.np_simul_balancer">
-<code class="sig-prename descclassname"><span class="pre">populationsim.simul_balancer.</span></code><code class="sig-name descname"><span class="pre">np_simul_balancer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zone_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">master_control_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_lower_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_controls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controls_importance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.simul_balancer.np_simul_balancer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.simul_balancer.np_simul_balancer">
+<span class="sig-prename descclassname"><span class="pre">populationsim.simul_balancer.</span></span><span class="sig-name descname"><span class="pre">np_simul_balancer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zone_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">master_control_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_lower_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_upper_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_controls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controls_importance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.simul_balancer.np_simul_balancer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simultaneous balancer using only numpy (no pandas) data types.
 Separate function to ensure that no pandas data types leak in from object instance variables
 since they are often silently accepted as numpy arguments but slow things down</p>
@@ -792,8 +792,8 @@ since they are often silently accepted as numpy arguments but slow things down</
 <div class="section" id="input-pre-processor">
 <span id="id3"></span><h3>input_pre_processor<a class="headerlink" href="#input-pre-processor" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.input_pre_processor"></span><dl class="py function">
-<dt id="populationsim.steps.input_pre_processor.input_pre_processor">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.input_pre_processor.</span></code><code class="sig-name descname"><span class="pre">input_pre_processor</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.input_pre_processor.input_pre_processor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.input_pre_processor.input_pre_processor">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.input_pre_processor.</span></span><span class="sig-name descname"><span class="pre">input_pre_processor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.input_pre_processor.input_pre_processor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read input text files and save them as pipeline tables for use in subsequent steps.</p>
 <p>The files to read as specified by table_list, and array of dicts that specify the
 input file name, the name of the pipeline table, along with keys allow the specification
@@ -840,8 +840,8 @@ in which case the input_table_list may specify replacement tables.
 <div class="section" id="setup-data-structures">
 <span id="id4"></span><h3>setup_data_structures<a class="headerlink" href="#setup-data-structures" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.setup_data_structures"></span><dl class="py function">
-<dt id="populationsim.steps.setup_data_structures.add_geography_columns">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.setup_data_structures.</span></code><code class="sig-name descname"><span class="pre">add_geography_columns</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">households_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.add_geography_columns" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.setup_data_structures.add_geography_columns">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.setup_data_structures.</span></span><span class="sig-name descname"><span class="pre">add_geography_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">households_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.add_geography_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add seed and meta geography columns to incidence_table</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -855,22 +855,22 @@ in which case the input_table_list may specify replacement tables.
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.steps.setup_data_structures.build_crosswalk_table">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.setup_data_structures.</span></code><code class="sig-name descname"><span class="pre">build_crosswalk_table</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.build_crosswalk_table" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.setup_data_structures.build_crosswalk_table">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.setup_data_structures.</span></span><span class="sig-name descname"><span class="pre">build_crosswalk_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.build_crosswalk_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>build crosswalk table filtered to include only zones in lowest geography</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.steps.setup_data_structures.filter_households">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.setup_data_structures.</span></code><code class="sig-name descname"><span class="pre">filter_households</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persons_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.filter_households" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.setup_data_structures.filter_households">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.setup_data_structures.</span></span><span class="sig-name descname"><span class="pre">filter_households</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persons_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.filter_households" title="Permalink to this definition">¶</a></dt>
 <dd><p>Filter households and persons tables, removing zero weight households
 and any households not in seed zones.</p>
 <p>Returns filtered households_df and persons_df</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.steps.setup_data_structures.repop_setup_data_structures">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.setup_data_structures.</span></code><code class="sig-name descname"><span class="pre">repop_setup_data_structures</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.repop_setup_data_structures" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.setup_data_structures.repop_setup_data_structures">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.setup_data_structures.</span></span><span class="sig-name descname"><span class="pre">repop_setup_data_structures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.repop_setup_data_structures" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup geographic correspondence (crosswalk), control sets, and incidence tables for repop run.</p>
 <p>A new lowest-level geography control tables should already have been read in by rerunning
 input_pre_processor with a table_list override. The control table contains one row for
@@ -889,8 +889,8 @@ recipe (seed table and expression) for determining household incidence for that 
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.steps.setup_data_structures.setup_data_structures">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.setup_data_structures.</span></code><code class="sig-name descname"><span class="pre">setup_data_structures</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.setup_data_structures" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.setup_data_structures.setup_data_structures">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.setup_data_structures.</span></span><span class="sig-name descname"><span class="pre">setup_data_structures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.setup_data_structures.setup_data_structures" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup geographic correspondence (crosswalk), control sets, and incidence tables.</p>
 <p>A control tables for target geographies should already have been read in by running
 input_pre_processor. The zone control tables contains one row for each zone, with columns
@@ -926,8 +926,8 @@ persons</p>
 <div class="section" id="initial-seed-balancing">
 <span id="id5"></span><h3>initial_seed_balancing<a class="headerlink" href="#initial-seed-balancing" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.initial_seed_balancing"></span><dl class="py function">
-<dt id="populationsim.steps.initial_seed_balancing.initial_seed_balancing">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.initial_seed_balancing.</span></code><code class="sig-name descname"><span class="pre">initial_seed_balancing</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.initial_seed_balancing.initial_seed_balancing" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.initial_seed_balancing.initial_seed_balancing">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.initial_seed_balancing.</span></span><span class="sig-name descname"><span class="pre">initial_seed_balancing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.initial_seed_balancing.initial_seed_balancing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Balance the household weights for each of the seed geographies (independently)
 using the seed level controls and the aggregated sub-zone controls totals.</p>
 <p>Create the seed_weights table with one row per household and columns contaiing
@@ -981,8 +981,8 @@ hh_id</p></th>
 <div class="section" id="meta-control-factoring">
 <span id="id6"></span><h3>meta_control_factoring<a class="headerlink" href="#meta-control-factoring" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.meta_control_factoring"></span><dl class="py function">
-<dt id="populationsim.steps.meta_control_factoring.meta_control_factoring">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.meta_control_factoring.</span></code><code class="sig-name descname"><span class="pre">meta_control_factoring</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.meta_control_factoring.meta_control_factoring" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.meta_control_factoring.meta_control_factoring">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.meta_control_factoring.</span></span><span class="sig-name descname"><span class="pre">meta_control_factoring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.meta_control_factoring.meta_control_factoring" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply simple factoring to summed household fractional weights based on original
 meta control values relative to summed household fractional weights by meta zone.</p>
 <p>The resulting factored meta control weights will be new meta controls appended as
@@ -1002,8 +1002,8 @@ additional columns to the seed control table, for final balancing.</p>
 <div class="section" id="final-seed-balancing">
 <span id="id7"></span><h3>final_seed_balancing<a class="headerlink" href="#final-seed-balancing" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.final_seed_balancing"></span><dl class="py function">
-<dt id="populationsim.steps.final_seed_balancing.final_seed_balancing">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.final_seed_balancing.</span></code><code class="sig-name descname"><span class="pre">final_seed_balancing</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.final_seed_balancing.final_seed_balancing" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.final_seed_balancing.final_seed_balancing">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.final_seed_balancing.</span></span><span class="sig-name descname"><span class="pre">final_seed_balancing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.final_seed_balancing.final_seed_balancing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Balance the household weights for each of the seed geographies (independently)
 using the seed level controls and the aggregated sub-zone controls totals.</p>
 <p>Create the seed_weights table with one row per household and columns contaiing
@@ -1025,8 +1025,8 @@ household_id, seed geography (e.g. PUMA), and float preliminary_balanced_weights
 <div class="section" id="integerize-final-seed-weights">
 <span id="id8"></span><h3>integerize_final_seed_weights<a class="headerlink" href="#integerize-final-seed-weights" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.integerize_final_seed_weights"></span><dl class="py function">
-<dt id="populationsim.steps.integerize_final_seed_weights.integerize_final_seed_weights">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.integerize_final_seed_weights.</span></code><code class="sig-name descname"><span class="pre">integerize_final_seed_weights</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.integerize_final_seed_weights.integerize_final_seed_weights" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.integerize_final_seed_weights.integerize_final_seed_weights">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.integerize_final_seed_weights.</span></span><span class="sig-name descname"><span class="pre">integerize_final_seed_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.integerize_final_seed_weights.integerize_final_seed_weights" title="Permalink to this definition">¶</a></dt>
 <dd><p>Final balancing for each seed (puma) zone with aggregated low and mid-level controls and
 distributed meta-level controls.</p>
 <p>Adds integer_weight column to seed-level weight table</p>
@@ -1046,8 +1046,8 @@ distributed meta-level controls.</p>
 <div class="section" id="sub-balancing">
 <span id="id9"></span><h3>sub_balancing<a class="headerlink" href="#sub-balancing" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.sub_balancing"></span><dl class="py function">
-<dt id="populationsim.steps.sub_balancing.balance">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.sub_balancing.</span></code><code class="sig-name descname"><span class="pre">balance</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geographies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.balance" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.sub_balancing.balance">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.sub_balancing.</span></span><span class="sig-name descname"><span class="pre">balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geographies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_control_zones</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.balance" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -1082,8 +1082,8 @@ for use in sub_controls_df column names</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.steps.sub_balancing.balance_and_integerize">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.sub_balancing.</span></code><code class="sig-name descname"><span class="pre">balance_and_integerize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geographies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.balance_and_integerize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.sub_balancing.balance_and_integerize">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.sub_balancing.</span></span><span class="sig-name descname"><span class="pre">balance_and_integerize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incidence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_controls_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_hh_control_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_geography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_geographies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.balance_and_integerize" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -1118,8 +1118,8 @@ plus columns for household id and sub_geography zone ids</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="populationsim.steps.sub_balancing.sub_balancing">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.sub_balancing.</span></code><code class="sig-name descname"><span class="pre">sub_balancing</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.sub_balancing" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.sub_balancing.sub_balancing">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.sub_balancing.</span></span><span class="sig-name descname"><span class="pre">sub_balancing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.sub_balancing.sub_balancing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simul-balance and integerize all zones at a specified geographic level
 in groups by parent zone.</p>
 <p>For instance, if the ‘geography’ step arg is ‘TRACT’ and the parent geography is ‘SEED’,
@@ -1142,8 +1142,8 @@ with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
 <div class="section" id="expand-households">
 <span id="id10"></span><h3>expand_households<a class="headerlink" href="#expand-households" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.expand_households"></span><dl class="py function">
-<dt id="populationsim.steps.expand_households.expand_households">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.expand_households.</span></code><code class="sig-name descname"><span class="pre">expand_households</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.expand_households.expand_households" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.expand_households.expand_households">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.expand_households.</span></span><span class="sig-name descname"><span class="pre">expand_households</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.expand_households.expand_households" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a complete expanded synthetic household list with their assigned geographic zone ids.</p>
 <p>This is the skeleton synthetic household id list with no household or person attributes,
 one row per household, with geography columns and seed household table household_id.</p>
@@ -1156,7 +1156,7 @@ one row per household, with geography columns and seed household table household
 <span class="target" id="module-populationsim.steps.write_tables"></span><p>Write pipeline tables as csv files (in output directory) as specified by output_tables list
 in settings file.</p>
 <p>‘output_tables’ can specify either a list of output tables to include or to skip
-if no output_tables list is specified, then no checkpointed tables will be written</p>
+if no output_tables list is specified, then all checkpointed tables will be written</p>
 <p>To write all output tables EXCEPT the households and persons tables:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_tables</span><span class="p">:</span>
   <span class="n">action</span><span class="p">:</span> <span class="n">skip</span>
@@ -1188,8 +1188,8 @@ if no output_tables list is specified, then no checkpointed tables will be writt
 <div class="section" id="write-synthetic-population">
 <span id="id12"></span><h3>write_synthetic_population<a class="headerlink" href="#write-synthetic-population" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.write_synthetic_population"></span><dl class="py function">
-<dt id="populationsim.steps.write_synthetic_population.write_synthetic_population">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.write_synthetic_population.</span></code><code class="sig-name descname"><span class="pre">write_synthetic_population</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expanded_household_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.write_synthetic_population.write_synthetic_population" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.write_synthetic_population.write_synthetic_population">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.write_synthetic_population.</span></span><span class="sig-name descname"><span class="pre">write_synthetic_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expanded_household_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.write_synthetic_population.write_synthetic_population" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write synthetic households and persons tables to output dir as csv files.
 The settings file allows specification of output file names, household_id column name,
 and seed data attribute columns to include in output files.</p>
@@ -1209,8 +1209,8 @@ and seed data attribute columns to include in output files.</p>
 <div class="section" id="summarize">
 <span id="id13"></span><h3>summarize<a class="headerlink" href="#summarize" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.summarize"></span><dl class="py function">
-<dt id="populationsim.steps.summarize.summarize">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.summarize.</span></code><code class="sig-name descname"><span class="pre">summarize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crosswalk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.summarize.summarize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.summarize.summarize">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.summarize.</span></span><span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crosswalk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.summarize.summarize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write aggregate summary files of controls and weights for all geographic levels to output dir</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1227,8 +1227,8 @@ and seed data attribute columns to include in output files.</p>
 <div class="section" id="repop-balancing">
 <span id="id14"></span><h3>repop_balancing<a class="headerlink" href="#repop-balancing" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-populationsim.steps.repop_balancing"></span><dl class="py function">
-<dt id="populationsim.steps.repop_balancing.repop_balancing">
-<code class="sig-prename descclassname"><span class="pre">populationsim.steps.repop_balancing.</span></code><code class="sig-name descname"><span class="pre">repop_balancing</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.repop_balancing.repop_balancing" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="populationsim.steps.repop_balancing.repop_balancing">
+<span class="sig-prename descclassname"><span class="pre">populationsim.steps.repop_balancing.</span></span><span class="sig-name descname"><span class="pre">repop_balancing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crosswalk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incidence_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#populationsim.steps.repop_balancing.repop_balancing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Balance and integerize all zones at a lowest geographic level.</p>
 <p>Creates a weight table for the repop zones target geography
 with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
@@ -1249,24 +1249,6 @@ with float ‘balanced_weight’ and ‘integer_weight’ columns.</p>
 <div class="section" id="contribution-guidelines">
 <h2>Contribution Guidelines<a class="headerlink" href="#contribution-guidelines" title="Permalink to this headline">¶</a></h2>
 <p>PopulationSim development follows the same <a class="reference external" href="https://activitysim.github.io/activitysim/development.html">development guidelines</a> as ActivitySim.</p>
-</div>
-<div class="section" id="release-notes">
-<h2>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><ul class="simple">
-<li><p>v0.3 - first release</p></li>
-<li><p>v0.3.1 - allow zones with zero households</p></li>
-<li><p>v0.3.2 - fix bug in mult-integerizer with total_hh_parent_control_index</p></li>
-<li><p>v0.3.3 - add disgnostic printouts on assert fail in mult_integerizer</p></li>
-<li><p>v0.3.4 - add survey weighting use case</p></li>
-<li><p>v0.3.5 - add Python 3.5+ support</p></li>
-<li><p>v0.4 - transfer to ActivitySim.org</p></li>
-<li><p>v0.4.1 - package updates</p></li>
-<li><p>v0.4.2 - validation script in Python</p></li>
-<li><p>v0.4.3 - allow non-binary incidence</p></li>
-<li><p>v0.5 - support for multiprocessing</p></li>
-</ul>
-</div></blockquote>
 </div>
 </div>
 
