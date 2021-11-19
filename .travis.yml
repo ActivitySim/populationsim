@@ -27,7 +27,7 @@ script:
 after_success:
 - coveralls
 # Build docs
-- pip install sphinx numpydoc sphinx_rtd_theme
+- pip install sphinx numpydoc sphinx_rtd_theme==0.5.2
 - cd docs
 - make clean
 - make html
