@@ -1,39 +1,79 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  <meta charset="utf-8" />
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
   <title>Application &amp; Configuration &mdash; PopulationSim 0.5.1
  documentation</title>
-      <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="_static/js/theme.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Validation of Results" href="validation.html" />
     <link rel="prev" title="Getting Started" href="getting_started.html" /> 
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+
+   
   <div class="wy-grid-for-nav">
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
+          
+
+          
             <a href="index.html" class="icon icon-home"> PopulationSim
+          
+
+          
           </a>
+
+          
+            
+            
               <div class="version">
                 0.5.1
 
               </div>
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -41,7 +81,18 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Application &amp; Configuration</a><ul>
@@ -73,35 +124,76 @@
 <li class="toctree-l1"><a class="reference internal" href="docs.html">Resources</a></li>
 </ul>
 
+            
+          
         </div>
+        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">PopulationSim</a>
+        
       </nav>
 
+
       <div class="wy-nav-content">
+        
         <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
+    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
       <li>Application &amp; Configuration</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+        
+          
             <a href="_sources/application_configuration.rst.txt" rel="nofollow"> View page source</a>
+          
+        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
-  <section id="application-configuration">
+            
+  <div class="section" id="application-configuration">
 <h1>Application &amp; Configuration<a class="headerlink" href="#application-configuration" title="Permalink to this headline">¶</a></h1>
 <p>This section describes how to set up a new PopulationSim implementation.</p>
 <p>In order to create a new PopulationSim implementation, the user must first understand the requirements of the project in terms of geographic resolution and details desired in the synthetic population. Once the requirements of the project have been established, the next step is to prepare the inputs to PopulationSim which includes seed population tables and geographic controls. Next, PopulationSim needs to be configured for available inputs and features desired in the final synthetic population. After this, the user needs to run PopulationSim and resolve any data related errors. Finally, the user should validate the output synthetic population against the controls to understand the precision of the synthetic population compared to controls and the amount of variance in the population for each control.</p>
-<section id="selecting-geographies">
+<div class="section" id="selecting-geographies">
 <h2>Selecting Geographies<a class="headerlink" href="#selecting-geographies" title="Permalink to this headline">¶</a></h2>
 <p>PopulationSim can represent both household and person level controls at multiple geographic levels. Therefore the user must define what geographic units to use for each control. There is not necessarily any ‘right’ way to define geographic areas or to determine what geographic level to use for each control. However, there are important considerations for selecting geography, discussed below.</p>
 <p>Traditionally, travel forecasting models have followed the sequential four-step model framework. This required the modeling region to be divided into zones, typically the size of census block groups or tracts. The zones used in four-step process are typically known as Transportation Analysis Zones (TAZs). The spatial boundaries of TAZs varies across modeling region and ranges from a city block to a large area in the suburb within a modeling region. If building a synthetic population for a trip-based model, or an activity-based travel models (ABMs) whose smallest geography is the TAZ, then there is no reason to select a smaller geoegraphical unit than the TAZ for any of the controls.</p>
@@ -135,7 +227,7 @@
 </ul>
 </div></blockquote>
 <p>The Meta geography is the entire region. PopulationSim can handle only one Meta geography. The Seed geography is the geographic resolution of the seed data. There can be one or more Seed geographies. PopulationSim can handle any number of nested Sub-Seed geographies. More information on PopulationSim algorithm can be found from the PopulationSim specifications in the <a class="reference internal" href="docs.html#docs"><span class="std std-ref">Resources</span></a> section.</p>
-<section id="geographic-cross-walk">
+<div class="section" id="geographic-cross-walk">
 <h3>Geographic Cross-walk<a class="headerlink" href="#geographic-cross-walk" title="Permalink to this headline">¶</a></h3>
 <p>After selecting the geographies, the next step is to prepare a geographic cross-walk file. The geographic cross-walk file defines the hierarchical structure of geographies. The geographic cross-walk is used to aggregate controls specified at a lower geography to upper geography and to allocate population from an upper geography to a lower geography. An example geographic crosswalk is shown below:</p>
 <table class="docutils align-default">
@@ -187,17 +279,17 @@
 </tr>
 </tbody>
 </table>
-</section>
-</section>
-<section id="preparing-seed-and-control-data">
+</div>
+</div>
+<div class="section" id="preparing-seed-and-control-data">
 <h2>Preparing seed and control data<a class="headerlink" href="#preparing-seed-and-control-data" title="Permalink to this headline">¶</a></h2>
-<section id="seed-sample">
+<div class="section" id="seed-sample">
 <h3>Seed sample<a class="headerlink" href="#seed-sample" title="Permalink to this headline">¶</a></h3>
 <p>As mentioned in previous section, the seed sample is typically obtained from the ACS PUMS. One of the main requirements for the seed sample is that it should be representative of the modeling region. In the case of ACS PUMS, this can be ensured by selecting PUMAs representing the modeling region both demographically and geographically. PUMA boundaries may not perfectly line up against the modeling region boundaries and overlaps are possible. Each sub-seed geography must be assigned to a Seed geography, and each Seed geography must be assigned to a Meta geography.</p>
 <p>The seed sample must contain all of the specified control variables, as well as any variables that are needed for the travel model but not specified as controls. For population groups that use completely separate, non-overlapping controls, such as residential population and group-quarter population, separate seed samples are prepared. In the ACS PUMS datasets, it is possible to have zero-person households in the raw data table (<cite>NP = 0</cite>); these records must be filtered from the seed data. PopulationSim can be set up and run separately for each population segment using the same geographic system. The outputs from each run can be combined into a unified synthetic population as a post processing step.</p>
 <p>Finally, the seed sample must include an initial weight field. The PopulationSim algorithm is designed to assign weights as close to the initial weight as possible to minimize the changes in distribution of uncontrolled variables. All the fields in the seed sample should be appropriately recoded to specify controls (see more details in next section). Household-level population variables must be computed in advance (for e.g., number of workers in each household) and monetary variables must be inflation adjusted to be consistent with year of control data (e.g., Household Income). The ACS PUMS data contain 3 or 5 years of household records, where  each record’s income is reported in the year in which it was collected. The ACS PUMS data includes the rolling reference factor for the year and the inflation adjustment factor, these must be used to code each household’s income to a common income year.</p>
-</section>
-<section id="controls">
+</div>
+<div class="section" id="controls">
 <h3>Controls<a class="headerlink" href="#controls" title="Permalink to this headline">¶</a></h3>
 <p>Controls are the marginal distributions that form the constraints for the population synthesis procedure. Controls are also referred to as <em>targets</em> and the objective of the population synthesis procedure is to produce a synthetic population whose attributes match these marginal distributions. Controls can be specified for both household and person variables. The choice of control variables depends on the needs of the project. Ideally, the user would want to specify control for all variables that are important determinant of travel behaviour or would be of interest to policy makers. These would include social, demographic, economic and land-use related variables.</p>
 <p>The mandatory requirement for a population synthesizer is to generate the right number of households in each travel model geography. Therefore, it is mandatory to specify a control on total number of households in each geographical unit at the lowest geographical level. If this control is matched perfectly, it ensures that all the upper geographies also have the correct number of households assigned to them.</p>
@@ -208,9 +300,9 @@ Disaggregation involves distributing data from the upper geography to lower geog
 inconsistent controls make convergence more difficult.  For example, if control data is allocated from Census geographies to TAZs, then often
 floating point controls are created.  To correct this, one can calculate the difference between the floating point controls and integerized
 versions, and then add the error to the largest category by subtracting it from the other categories.</p>
-</section>
-</section>
-<section id="configuration">
+</div>
+</div>
+<div class="section" id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
 <p>Below is PopulationSim’s typical directory structure followed by a description of inputs.</p>
 <blockquote>
@@ -233,7 +325,7 @@ versions, and then add the error to the largest category by subtracting it from 
 </dd>
 </dl>
 <p>The following sections describes the inputs and outputs, followed by discussion on configuring the settings file and specifying controls.</p>
-<section id="inputs-outputs">
+<div class="section" id="inputs-outputs">
 <span id="id1"></span><h3>Inputs &amp; Outputs<a class="headerlink" href="#inputs-outputs" title="Permalink to this headline">¶</a></h3>
 <p>Please refer to the following definition list to understand the file names:</p>
 <dl class="field-list simple">
@@ -445,8 +537,8 @@ weights from allocation at <em>GEOG_NAME</em> level</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="configuring-settings-file">
+</div>
+<div class="section" id="configuring-settings-file">
 <span id="settings"></span><h3>Configuring Settings File<a class="headerlink" href="#configuring-settings-file" title="Permalink to this headline">¶</a></h3>
 <p>PopulationSim is configured using the <em>configs/settings.yaml</em> file. The user has the flexibility to specify algorithm functionality, list geographies, invoke tracing, provide inputs specifications, select outputs, list the steps to run, and specify multiprocess settings.</p>
 <div class="admonition note">
@@ -924,8 +1016,8 @@ information of each household is added by default.</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="configuring-settings-file-for-multiprocessing">
+</div>
+<div class="section" id="configuring-settings-file-for-multiprocessing">
 <span id="settings-mp"></span><h3>Configuring Settings File for Multiprocessing<a class="headerlink" href="#configuring-settings-file-for-multiprocessing" title="Permalink to this headline">¶</a></h3>
 <p>This sections describes the settings that are additionally configured for running PopulationSim with
 multiprocessing to reduce runtime.  PopulationSim uses ActivitySim’s multiprocessing capabilities, which
@@ -992,8 +1084,8 @@ beginning with <code class="docutils literal notranslate"><span class="pre">expa
 </tr>
 </tbody>
 </table>
-</section>
-<section id="configuring-settings-file-for-repop-mode">
+</div>
+<div class="section" id="configuring-settings-file-for-repop-mode">
 <span id="settings-repop"></span><h3>Configuring Settings File for repop Mode<a class="headerlink" href="#configuring-settings-file-for-repop-mode" title="Permalink to this headline">¶</a></h3>
 <p>This sections describes the settings that are configured differently for the <em>repop</em> mode.</p>
 <p><strong>Input Data Tables for repop mode</strong></p>
@@ -1068,8 +1160,8 @@ Two options for the expand_households.repop step <br />
 </tbody>
 </table>
 <p>For information on software implementation of repop balancing refer to <a class="reference internal" href="software.html#repop-balancing"><span class="std std-ref">repop_balancing</span></a>.</p>
-</section>
-<section id="how-to-prepare-populationsim-inputs-for-survey-weighting">
+</div>
+<div class="section" id="how-to-prepare-populationsim-inputs-for-survey-weighting">
 <span id="settings-weighting"></span><h3>How to prepare PopulationSim inputs for survey weighting<a class="headerlink" href="#how-to-prepare-populationsim-inputs-for-survey-weighting" title="Permalink to this headline">¶</a></h3>
 <p>The main difference in the seed sample for population synthesis and survey weighting is that in case of survey weighting the geographic allocation is known. PopulationSim operates at multiple geographies and performs geographic allocation of the sample to match controls at lower geographies. Since it is undesirable to change geographic allocation in case of survey weighting, controls should be specified only at one geographic level – the seed geography.  All the other inputs must be prepared in the same fashion as for population synthesis.</p>
 <p><strong>Configuring PopulationSim for survey weighting</strong>:</p>
@@ -1108,8 +1200,8 @@ Two options for the expand_households.repop step <br />
 <li><p>If there are no meta controls, the preliminary and final balanced weights are same.</p></li>
 <li><p>It should be noted that under NO_INTEGERIZATION_EVER mode the expanded_household_ids file is empty.</p></li>
 </ul>
-</section>
-<section id="specifying-controls">
+</div>
+<div class="section" id="specifying-controls">
 <h3>Specifying Controls<a class="headerlink" href="#specifying-controls" title="Permalink to this headline">¶</a></h3>
 <p>The controls for a PopulationSim run are specified using the control specification CSV file. Following the ActivitySim framework, Python expressions are used for specifying control constraints.  An example file is below.</p>
 <table class="docutils align-default">
@@ -1223,8 +1315,8 @@ Two options for the expand_households.repop step <br />
 </ul>
 </dd>
 </dl>
-</section>
-<section id="what-are-importance-weights">
+</div>
+<div class="section" id="what-are-importance-weights">
 <span id="importance"></span><h3>What are importance weights<a class="headerlink" href="#what-are-importance-weights" title="Permalink to this headline">¶</a></h3>
 <p>PopulationSim uses the relative entropy maximization-based list balancing to match controls specified at various geographic levels. The relative entropy-based optimization ensures that the least amount of new information is introduced in finding a feasible solution. The base entropy is defined by the initial weights in the seed sample. The weights generated by the entropy maximization algorithm preserve the distribution of initial weights while matching the marginal controls. This ensures that the resulting weights are both uniform and preserves the distribution of the uncontrolled variables in the seed sample. A general relative entropy optimization problem is formulated as:</p>
 <p><span class="math notranslate nohighlight">\(\min\limits_{\rm x_{n}} \sum_{n}{x_{n}} ln\dfrac {x_{n}} {w_{n}}\)</span></p>
@@ -1236,8 +1328,8 @@ Two options for the expand_households.repop step <br />
 <p><span class="math notranslate nohighlight">\(\min\limits_{\rm x_{n}, z_{i}} \sum_{n}{x_{n}} ln\dfrac {x_{n}} {w_{n}} + \sum_{i}{u_{i}*(z_{i}ln{z_{i}})}\)</span></p>
 <p>Where, <span class="math notranslate nohighlight">\(u_{i}\)</span> are the penalties termed as importance factors or importance weights in PopulationSim.</p>
 <p><span class="math notranslate nohighlight">\(x_{n}\)</span> and <span class="math notranslate nohighlight">\(z_{i}\)</span>  are the parameters solved by the optimization while importance weights (<span class="math notranslate nohighlight">\(u_{i}\)</span>) are the hyperparameters that are exposed to the user and impact the optimization externally. The objective of the relative entropy optimization is to find a set of weights that are uniform and satisfy marginal controls. The importance weights allow the user to trade-off between these objectives. High importance weights (e.g., 1E10) on all controls result in a hard constrained optimization which gives a high preference to matching marginal controls. Low importance weights (e.g., &lt;50) results in an almost unconstrained problem. The user may also specify different importance weights for each marginal control. In this case, the controls with higher importance weights are given preference over the ones with low importance weights. Therefore, both absolute and relative value of the importance weights impacts the optimization problem and the solution.</p>
-</section>
-<section id="setting-importance-weights">
+</div>
+<div class="section" id="setting-importance-weights">
 <span id="setting-importance"></span><h3>Setting importance weights<a class="headerlink" href="#setting-importance-weights" title="Permalink to this headline">¶</a></h3>
 <p>Given the flexibility that importance weights offer to the user, they need to be tuned to get the desired optimality in the outputs for the given seed sample and marginal controls. The quality of the outputs is defined by a uniformity measure of the weights and goodness of fit across marginal controls. Here are general guidelines on setting importance weights:</p>
 <blockquote>
@@ -1247,9 +1339,9 @@ Two options for the expand_households.repop step <br />
 <li><p>The importance weights are generally updated in factors of 10. The user may need to run PopulationSim multiple times using various combinations of importance weights to reach the desired quality of outputs.</p></li>
 </ul>
 </div></blockquote>
-</section>
-</section>
-<section id="error-handling-debugging">
+</div>
+</div>
+<div class="section" id="error-handling-debugging">
 <h2>Error Handling &amp; Debugging<a class="headerlink" href="#error-handling-debugging" title="Permalink to this headline">¶</a></h2>
 <p>It is recommended to do appropriate checks on input data before running PopulationSim.  While the PopulationSim algorithm is designed to work even with imperfect data, an error-free and consistent set of input controls guarantees optimal performance. Poor performance and errors are usually the result of inconsistent data and it is the responsibility of the user to do necessary QA/QC on the input data. Some data problems that are frequently encountered are as follows:</p>
 <blockquote>
@@ -1261,38 +1353,55 @@ Two options for the expand_households.repop step <br />
 <li><p>Missing or mislabelled controls</p></li>
 </ul>
 </div></blockquote>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
+           
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="validation.html" class="btn btn-neutral float-right" title="Validation of Results" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright contributing authors.</p>
-  </div>
+    <p>
+        &#169; Copyright contributing authors.
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
         </div>
       </div>
+
     </section>
+
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
