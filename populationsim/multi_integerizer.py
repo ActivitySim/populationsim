@@ -89,7 +89,7 @@ class SimulIntegerizer(object):
         # print "sub_int_weights\n", sub_int_weights
         # print "sub_resid_weights\n", sub_resid_weights
 
-        sub_control_totals = np.asanyarray(self.sub_controls_df).astype(np.int)
+        sub_control_totals = np.asanyarray(self.sub_controls_df).astype(int)
         sub_countrol_importance = np.asanyarray(self.sub_countrol_importance).astype(np.float64)
 
         relaxed_sub_control_totals = np.dot(sub_float_weights, sub_incidence)
@@ -248,7 +248,7 @@ def try_simul_integerizing(
         logger.info("restoring %s zero weight rows" % zero_weight_rows.sum())
         integerized_weights = \
             pd.DataFrame(data=np.zeros(
-                sub_weights.shape, dtype=np.int),
+                sub_weights.shape, dtype=int),
                 columns=sub_weights.columns,
                 index=sub_weights.index)
         integerized_weights.update(integerizer.integerized_weights)
