@@ -1,6 +1,7 @@
 # ActivitySim
 # See full license in LICENSE.txt.
 
+import os
 import sys
 import argparse
 
@@ -35,5 +36,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     add_run_args(parser)
     args = parser.parse_args()
+    args.working_dir = os.path.dirname(__file__)
 
     sys.exit(run(args))

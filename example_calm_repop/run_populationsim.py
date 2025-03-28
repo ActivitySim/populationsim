@@ -1,69 +1,59 @@
+# ActivitySim
+# See full license in LICENSE.txt.
 
 import os
-import logging
-
-from activitysim.core import config
-from populationsim import steps
-
-from activitysim.core import tracing
-from activitysim.core import pipeline
-from activitysim.core import inject
-
-from activitysim.core.config import handle_standard_args
-from activitysim.core.tracing import print_elapsed_time
+import sys
+import argparse
+from pathlib import Path
+import shutil
 
 from activitysim.core.config import setting
-from populationsim import lp
-from populationsim import multi_integerizer
+from activitysim.core import inject
+
+from activitysim.cli.run import add_run_args, run
+from populationsim import steps
 
 
-# Add (and handle) 'standard' activitysim arguments:
-#     --config : specify path to config_dir
-#     --output : specify path to output_dir
-#     --data   : specify path to data_dir
-#     --models : specify run_list name
-#     --resume : resume_after
-handle_standard_args()
+@inject.injectable()
+def log_settings():
 
-tracing.config_logger()
-
-t0 = print_elapsed_time()
-
-logger = logging.getLogger('populationsim')
-
-logger.info("GROUP_BY_INCIDENCE_SIGNATURE: %s"
-            % setting('GROUP_BY_INCIDENCE_SIGNATURE'))
-logger.info("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: %s"
-            % setting('INTEGERIZE_WITH_BACKSTOPPED_CONTROLS'))
-logger.info("SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: %s"
-            % setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS'))
-logger.info("meta_control_data: %s"
-            % setting('meta_control_data'))
-logger.info("control_file_name: %s"
-            % setting('control_file_name'))
-
-logger.info("USE_CVXPY: %s" % lp.use_cvxpy())
-logger.info("USE_SIMUL_INTEGERIZER: %s" % multi_integerizer.use_simul_integerizer())
+    return [
+        'multiprocess',
+        'num_processes',
+        'resume_after',
+        'GROUP_BY_INCIDENCE_SIGNATURE',
+        'INTEGERIZE_WITH_BACKSTOPPED_CONTROLS',
+        'SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS',
+        'meta_control_data',
+        'control_file_name',
+        'USE_CVXPY',
+        'USE_SIMUL_INTEGERIZER'
+    ]
 
 
-# get the run list (name was possibly specified on the command line with the -m option)
-run_list_name = inject.get_injectable('run_list_name', 'run_list')
+if __name__ == '__main__':
 
-# run list from settings file is dict with list of 'steps' and optional 'resume_after'
-run_list = setting(run_list_name)
-assert 'steps' in run_list, "Did not find steps in run_list"
+    assert inject.get_injectable('preload_injectables', None)
+    
+    base_output = Path(__file__).parent.parent / 'example_calm' / 'output'
+    repop_output = Path(__file__).parent / 'output'
+    
+    if not (
+        (base_output / 'pipeline.h5').exists() and
+        (base_output / 'final_expanded_household_ids.csv').exists()
+    ):
+        msg = f"Pipeline output not found at {base_output}. Ensure the example_calm pipeline has been run."
+        raise FileNotFoundError(msg)
+    
+    # Copy the pipeline output from the example_survey_weighting/output
+    shutil.copy(
+        (base_output / 'pipeline.h5').__str__(), 
+        (repop_output / 'pipeline.h5').__str__()
+    )
 
-# list of steps and possible resume_after in run_list
-steps = run_list.get('steps')
-resume_after = run_list.get('resume_after', None)
-
-if resume_after:
-    print("resume_after", resume_after)
-
-pipeline.run(models=steps, resume_after=resume_after)
-
-
-# tables will no longer be available after pipeline is closed
-pipeline.close_pipeline()
-
-t0 = ("all models", t0)
+    parser = argparse.ArgumentParser()
+    add_run_args(parser)
+    args = parser.parse_args()
+    args.working_dir = os.path.dirname(__file__)
+    
+    sys.exit(run(args))
