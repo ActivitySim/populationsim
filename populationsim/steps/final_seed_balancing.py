@@ -70,6 +70,7 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     min_expansion_factor = settings.get('min_expansion_factor', None)
     absolute_upper_bound = settings.get('absolute_upper_bound', None)
     absolute_lower_bound = settings.get('absolute_lower_bound', None)
+    hard_constraints = settings.get('hard_constraints', None)
 
     relaxation_factors = pd.DataFrame(index=seed_controls_df.columns.tolist())
 
@@ -92,7 +93,8 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
             absolute_upper_bound=absolute_upper_bound,
             incidence_df=seed_incidence_df,
             control_totals=seed_controls_df.loc[seed_id],
-            initial_weights=seed_incidence_df['sample_weight'])
+            initial_weights=seed_incidence_df['sample_weight'],
+            use_hard_constraints=hard_constraints)
 
         logger.info("seed_balancer status: %s" % status)
         if not status['converged']:

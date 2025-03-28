@@ -62,6 +62,7 @@ def repop_balancing(settings, crosswalk, control_spec, incidence_table):
     min_expansion_factor = settings.get('min_expansion_factor', None)
     absolute_upper_bound = settings.get('absolute_upper_bound', None)
     absolute_lower_bound = settings.get('absolute_lower_bound', None)
+    hard_constraints = settings.get('hard_constraints', None)
 
     # run balancer for each low geography
     low_weight_list = []
@@ -107,7 +108,8 @@ def repop_balancing(settings, crosswalk, control_spec, incidence_table):
                 absolute_lower_bound=absolute_lower_bound,
                 incidence_df=seed_incidence_df,
                 control_totals=low_controls_df.loc[low_id],
-                initial_weights=initial_weights)
+                initial_weights=initial_weights,
+                use_hard_constraints=hard_constraints)
 
             logger.info("repop_balancing balancing %s status: %s" % (trace_label, status))
             if not status['converged']:
