@@ -4,7 +4,6 @@
 
 import logging
 import os
-
 import pandas as pd
 import numpy as np
 
@@ -40,48 +39,45 @@ def summarize_geography(geography, weight_col, hh_id_col,
                         crosswalk_df, results_df, incidence_df):
 
     # controls_table for current geography level
-    controls_df = get_control_table(geography)
-    control_names = controls_df.columns.tolist()
+    controls_table = get_control_table(geography)
+    control_names = controls_table.columns.tolist()
 
     # only want zones from crosswalk for which non-zero control rows exist
     zone_ids = crosswalk_df[geography].unique()
-    zone_ids = controls_df.index.intersection(zone_ids)
+    zone_ids = controls_table.index.intersection(zone_ids).astype(np.int64)
+    
+    # Using numpy matrix multiplication for efficient aggregation        
+    zone_results_df = results_df.loc[results_df[geography].isin(zone_ids), [geography, hh_id_col, weight_col]]    
+    
+    geo_vec = zone_results_df[geography].to_numpy()
+    weights = zone_results_df[weight_col].to_numpy()
+    incidence = incidence_df.loc[zone_results_df[hh_id_col], control_names].to_numpy()
+    
+    results = np.transpose(np.transpose(incidence) * weights)
+    results = np.column_stack([results, geo_vec])    
 
-    results = []
-    controls = []
-    for zone_id in zone_ids:
-
-        zone_controls = controls_df.loc[zone_id].tolist()
-        controls.append(zone_controls)
-
-        zone_row_map = results_df[geography] == zone_id
-        zone_weights = results_df[zone_row_map]
-
-        incidence = incidence_df.loc[zone_weights[hh_id_col]]
-
-        weights = zone_weights[weight_col].tolist()
-        x = [(incidence[c] * weights).sum() for c in control_names]
-        results.append(x)
-
+    logger.info("summarizing %s" % geography)
+    controls = [controls_table.loc[x].tolist() for x in zone_ids]
+    
+    summary_df = pd.DataFrame(
+        data=results,
+        columns=['%s_result' % c for c in control_names] + [geography]
+    ).groupby(geography).sum()
+    
     controls_df = pd.DataFrame(
         data=np.asanyarray(controls),
         columns=['%s_control' % c for c in control_names],
         index=zone_ids
     )
 
-    summary_df = pd.DataFrame(
-        data=np.asanyarray(results),
-        columns=['%s_result' % c for c in control_names],
-        index=zone_ids
-    )
-
     dif_df = pd.DataFrame(
-        data=np.asanyarray(results) - np.asanyarray(controls),
+        # data=np.asanyarray(results) - np.asanyarray(controls),
+        data=np.array(summary_df) - np.array(controls_df),
         columns=['%s_diff' % c for c in control_names],
         index=zone_ids
     )
 
-    summary_df = pd.concat([controls_df, summary_df, dif_df], axis=1)
+    summary_df = pd.concat([controls_df, summary_df, dif_df], axis=1, ignore_index=False)
 
     summary_cols = summary_df.columns.tolist()
 
@@ -171,6 +167,8 @@ def summarize(crosswalk, incidence_table, control_spec):
     seed_geography = setting('seed_geography')
     meta_geography = geographies[0]
     sub_geographies = geographies[geographies.index(seed_geography) + 1:]
+    super_geographies = geographies[:geographies.index(seed_geography)]
+    
     hh_id_col = setting('household_id_col')
 
     meta_ids = crosswalk_df[meta_geography].unique()
@@ -227,12 +225,17 @@ def summarize(crosswalk, incidence_table, control_spec):
         out_table('%s_aggregate' % (geography,), aggegrate_weights)
 
         summary_col = 'integer_weight' if include_integer_colums else 'balanced_weight'
-        df = summarize_geography(seed_geography, summary_col, hh_id_col,
+        df_seed = summarize_geography(seed_geography, summary_col, hh_id_col,
                                  crosswalk_df, weights_df, incidence_df)
-        out_table('%s_%s' % (geography, seed_geography,), df)
+        out_table('%s_%s' % (geography, seed_geography,), df_seed)
 
-        df = summarize_geography(geography, summary_col, hh_id_col,
+        df_geo = summarize_geography(geography, summary_col, hh_id_col,
                                  crosswalk_df, weights_df, incidence_df)
-        out_table('%s' % (geography,), df)
+        out_table('%s' % (geography,), df_geo)
+        
+        # Aggregate super geographies
+        for super_geo in super_geographies:        
+            df_super = summarize_geography(super_geo, summary_col, hh_id_col, crosswalk_df, weights_df, incidence_df)
+            out_table('%s_%s' % (geography, super_geo,), df_super)
 
     out_table('hh_weights', hh_weights_summary)

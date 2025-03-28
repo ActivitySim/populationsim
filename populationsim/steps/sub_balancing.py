@@ -74,8 +74,18 @@ def balance(
     controls = pd.DataFrame({'name': sub_control_spec.target})
     controls['importance'] = sub_control_spec.importance
     controls['total'] = sub_controls_df.sum(axis=0).values
-    for zone, zone_name in sub_control_zones.items():
-        controls[zone_name] = sub_controls_df.loc[zone].values
+    
+    # Perform in bulk rather than slow loop over pandas
+    new_controls = sub_controls_df.loc[sub_control_zones.index].transpose()
+    new_controls.columns = sub_control_zones.values
+
+    if len(set(controls.columns).intersection(new_controls.columns)) > 0:
+        controls.update(new_controls)               
+    else:
+        controls = controls.merge(new_controls, left_on='name', right_index=True)   
+    
+    # for zone, zone_name in sub_control_zones.items():
+    #     controls[zone_name] = sub_controls_df.loc[zone].values
 
     # incidence table should only have control columns
     sub_incidence_df = incidence_df[sub_control_spec.target]
@@ -180,6 +190,8 @@ def balance_and_integerize(
         sub_geography=sub_geography,
         sub_control_zones=sub_control_zones)
 
+    assert isinstance(integerized_sub_zone_weights_df, pd.DataFrame), "multi_integerize did not return a DataFrame"
+    
     integerized_sub_zone_weights_df[parent_geography] = parent_id
 
     return integerized_sub_zone_weights_df
@@ -239,7 +251,7 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
     # the incidence table is siloed by seed geography, se we handle each seed zone in turn
     seed_ids = crosswalk_df[seed_geography].unique()
-    for seed_id in seed_ids:
+    for seed_num, seed_id in enumerate(seed_ids):
 
         # slice incidence and crosswalk tables for this seed zone
         seed_incidence_df = incidence_df[incidence_df[seed_geography] == seed_id]
@@ -259,7 +271,7 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
         num_parent_ids = len(parent_ids)
         for idx, parent_id in enumerate(parent_ids, start=1):
 
-            logger.info(f"balancing {idx}/{num_parent_ids} seed {seed_id}, "
+            logger.info(f"balancing {idx}/{num_parent_ids} seed {seed_id} in {seed_num}/{len(seed_ids)}, "
                         f"{parent_geography} {parent_id}")
 
             initial_weights = weights_df[weights_df[parent_geography] == parent_id]
@@ -272,7 +284,8 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
             else:
                 initial_weights = initial_weights['integer_weight']
 
-            assert len(initial_weights.index) == len(seed_incidence_df.index)
+            assert len(initial_weights.index) == len(seed_incidence_df.index), \
+                "seed table and initial weights table do not match, possibly due to overlapping zones in crosswalk."
 
             zone_weights_df = balance_and_integerize(
                 incidence_df=seed_incidence_df,
@@ -298,8 +311,7 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
     integer_weights_df = pd.concat(integer_weights_list)
 
     logger.info(f"adding table {weight_table_name(geography)}")
-    inject.add_table(weight_table_name(geography),
-                     integer_weights_df)
+    inject.add_table(weight_table_name(geography), integer_weights_df)
 
     if not NO_INTEGERIZATION_EVER:
 

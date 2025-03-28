@@ -85,6 +85,16 @@ def build_incidence_table(control_spec, households_df, persons_df, crosswalk_df)
             incidence = df.groupby([hh_col], as_index=True).sum()
 
         incidence_table[control_row.target] = incidence
+    
+    # Check the control group sums
+    if 'control_group' in control_spec.columns:
+        for (control_group, table), fields in control_spec.groupby(['control_group', 'seed_table'])['target']:                        
+            total_col = setting('total_per_control') if table == 'persons' else setting('total_hh_control')
+            is_equal = incidence_table[fields].sum(axis=1) == incidence_table[total_col]
+
+            if not is_equal.all():
+                print(f"Control group {control_group} does not sum to {total_col} for {is_equal.sum()} zones. Is this expected?")
+                  
 
     return incidence_table
 
@@ -204,7 +214,31 @@ def build_crosswalk_table():
     low_control_data_df = get_control_data_table(low_geography)
     rows_in_low_controls = crosswalk[low_geography].isin(low_control_data_df[low_geography])
     crosswalk = crosswalk[rows_in_low_controls]
-
+    
+    # Ensure consistent nesting of geography hierarchies. e.g., a tract cannot be in two PUMAS
+    geos = setting('geographies')
+    slice_geo = setting('slice_geography', geos[0])
+    
+    # Start from sliced geography.    
+    slice_level = geos.index(slice_geo)
+    for i, g in enumerate(geos[1:], start=0):
+        count = crosswalk.groupby(g)[geos[i]].nunique()
+        
+        if (count > 1).any():
+            dupes = crosswalk.loc[crosswalk[g].isin(count[count > 1].index)].groupby([geos[i], g]).size().to_frame('N')            
+            msg = f"{g} geography overlaps with {geos[i]} and does not exclusively nest within higher order geographies in crosswalk.\n"
+            msg += "Check that the crosswalk table is correct,that the 'geographies' setting is in the correct order from largest to smallest, or slice at a lower level.\n"
+            msg += "This will produce an error in multiprocessing if sliced at this level.\n"
+                        
+            # If multiprocess, consistent geography nesting is required.
+            if setting('multiprocess', False) and (slice_level <= i):
+                raise RuntimeError(msg)
+            # Otherwise it is ok but not ideal. Produce a warning.
+            else:
+                Warning(msg)
+                
+            print(dupes)
+                
     return crosswalk
 
 
@@ -219,16 +253,20 @@ def build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
     group_incidence_table['sample_weight'] = hh_grouper.sum()['sample_weight']
     group_incidence_table['group_size'] = hh_grouper.count()['sample_weight']
     group_incidence_table = group_incidence_table.reset_index()
+    
+    # Enforce int64 to join large tables
+    group_incidence_table = group_incidence_table.astype(np.int64)
 
     logger.info("grouped incidence table has %s entries, ungrouped has %s"
                 % (len(group_incidence_table.index), len(hh_incidence_table.index)))
 
     # add group_id of each hh to hh_incidence_table
-    group_incidence_table['group_id'] = group_incidence_table.index
-    hh_incidence_table['group_id'] = hh_incidence_table[hh_groupby_cols].merge(
+    group_incidence_table['group_id'] = group_incidence_table.index.astype(np.int64)    
+    hh_incidence_table['group_id'] = pd.merge(
+        hh_incidence_table[hh_groupby_cols], 
         group_incidence_table[hh_groupby_cols + ['group_id']],
         on=hh_groupby_cols,
-        how='left').group_id.astype(int).values
+        how='left').group_id.values
 
     # it doesn't really matter what the incidence_table index is until we create population
     # when we need to expand each group to constituent households
@@ -239,7 +277,7 @@ def build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
     # create table mapping household_groups to households and their sample_weights
     # explicitly provide hh_id as a column to make it easier for use when expanding population
     household_groups = hh_incidence_table[['group_id', 'sample_weight']].copy()
-    household_groups[household_id_col] = household_groups.index.astype(int)
+    household_groups[household_id_col] = household_groups.index.astype(np.int64)
 
     return group_incidence_table, household_groups
 
@@ -332,7 +370,12 @@ def setup_data_structures(settings, households, persons):
 
     for g in geographies:
         controls = build_control_table(g, control_spec, crosswalk_df)
+        # Remove zones from xwalk missing from controls (e.g. zones with zero households)
+        crosswalk_df = crosswalk_df[crosswalk_df[g].isin(controls.index)]
         inject.add_table(control_table_name(g), controls)
+        
+    # update xwalk object
+    pipeline.replace_table('crosswalk', crosswalk_df)        
 
     households_df, persons_df = filter_households(households_df, persons_df, crosswalk_df)
     pipeline.replace_table('households', households_df)
