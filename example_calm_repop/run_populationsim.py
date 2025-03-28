@@ -37,19 +37,21 @@ if __name__ == '__main__':
     
     base_output = Path(__file__).parent.parent / 'example_calm' / 'output'
     repop_output = Path(__file__).parent / 'output'
-    
-    if not (
-        (base_output / 'pipeline.h5').exists() and
-        (base_output / 'final_expanded_household_ids.csv').exists()
-    ):
-        msg = f"Pipeline output not found at {base_output}. Ensure the example_calm pipeline has been run."
-        raise FileNotFoundError(msg)
-    
+        
     # Copy the pipeline output from the example_survey_weighting/output
-    shutil.copy(
-        (base_output / 'pipeline.h5').__str__(), 
-        (repop_output / 'pipeline.h5').__str__()
-    )
+    if not (repop_output / 'pipeline.h5').exists():
+        
+        if not (
+            (base_output / 'pipeline.h5').exists() and
+            (base_output / 'final_expanded_household_ids.csv').exists()
+        ):
+            msg = f"Pipeline output not found at {base_output}. Ensure the example_calm pipeline has been run."
+            raise FileNotFoundError(msg)
+
+        shutil.copy(
+            (base_output / 'pipeline.h5').__str__(), 
+            (repop_output / 'pipeline.h5').__str__()
+        )
 
     parser = argparse.ArgumentParser()
     add_run_args(parser)
