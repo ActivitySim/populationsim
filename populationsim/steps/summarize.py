@@ -48,13 +48,22 @@ def summarize_geography(geography, weight_col, hh_id_col,
     
     # Using numpy matrix multiplication for efficient aggregation        
     zone_results_df = results_df.loc[results_df[geography].isin(zone_ids), [geography, hh_id_col, weight_col]]    
-    
-    geo_vec = zone_results_df[geography].to_numpy()
+
+    # get the weights and incidence for the zones
+    geo_vec = zone_results_df[geography]
     weights = zone_results_df[weight_col].to_numpy()
-    incidence = incidence_df.loc[zone_results_df[hh_id_col], control_names].to_numpy()
+    incidence = incidence_df.loc[zone_results_df[hh_id_col], control_names]
     
-    results = np.transpose(np.transpose(incidence) * weights)
-    results = np.column_stack([results, geo_vec])    
+    # multiply incidence by weights and append the geography vector
+    results = np.column_stack([
+        np.transpose(np.transpose(incidence) * weights),
+        geo_vec
+        ]
+    )
+    
+    # If empty, fill with zeros
+    if results.size == 0:
+        results = np.zeros((1, results.shape[1]))
 
     logger.info("summarizing %s" % geography)
     controls = [controls_table.loc[x].tolist() for x in zone_ids]
@@ -71,7 +80,6 @@ def summarize_geography(geography, weight_col, hh_id_col,
     )
 
     dif_df = pd.DataFrame(
-        # data=np.asanyarray(results) - np.asanyarray(controls),
         data=np.array(summary_df) - np.array(controls_df),
         columns=['%s_diff' % c for c in control_names],
         index=zone_ids
