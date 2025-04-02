@@ -1,0 +1,18 @@
+target,geography,seed_table,importance,control_field,expression
+num_hh,MAZ,households,1000000000,HHS,households.weight==1
+hh_size_1,MAZ,households,5000,hh_size_1,households.persons == 1
+hh_size_2,MAZ,households,5000,hh_size_2,households.persons == 2
+hh_size_3,MAZ,households,5000,hh_size_3,households.persons == 3
+hh_size_4,MAZ,households,5000,hh_size_4,households.persons >= 4
+hh_wrks_0,MAZ,households,5000,hh_wrks_0,households.hworkers == 0
+hh_wrks_1,MAZ,households,5000,hh_wrks_1,households.hworkers == 1
+hh_wrks_2,MAZ,households,5000,hh_wrks_2,households.hworkers == 2
+hh_wrks_3m,MAZ,households,5000,hh_wrks_3m,households.hworkers >= 3
+hh_unit_single,MAZ,households,5000,hh_unit_single,"households.bldgsz.isin([2,3])"
+hh_unit_multi,MAZ,households,5000,hh_unit_multi,"households.bldgsz.isin([4,5,6,7,8,9])"
+hh_unit_mobile,MAZ,households,5000,hh_unit_mobile,households.bldgsz.isin([1])
+age_0_5,MAZ,persons,5000,age_0_5,(persons.age >=0) & (persons.age <= 5)
+age_6_15,MAZ,persons,5000,age_6_15,(persons.age >= 6) & (persons.age <= 15)
+age_16_17,MAZ,persons,5000,age_16_17,(persons.age >= 16) & (persons.age <= 17)
+age_18_64,MAZ,persons,5000,age_18_64,(persons.age >= 18) & (persons.age <= 64)
+age_65p,MAZ,persons,5000,age_65p,(persons.age >= 65)
