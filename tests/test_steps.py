@@ -1,7 +1,7 @@
 from pathlib import Path
 import pandas as pd
-import hashlib
 
+from tests.data_hash import df_to_hash
 from activitysim.core import config
 from activitysim.core import tracing
 from activitysim.core import pipeline
@@ -76,10 +76,7 @@ def test_full_run1():
     
     # This hash is the md5 of the json string of the expanded_household_ids file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    result_bytes = expanded_household_ids.to_json().encode('utf-8')
-    result_hash = hashlib.md5(result_bytes).hexdigest()
-
-    assert result_hash == 'cf79c8052fa6920123d80d54df5785f6'
+    assert df_to_hash(expanded_household_ids) == '48a303029b69f61803baeddb65d11371'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -113,10 +110,7 @@ def test_full_run2_repop_replace():
     
     # This hash is the md5 of the json string of the expanded_household_ids file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    result_bytes = expanded_household_ids.to_json().encode('utf-8')
-    result_hash = hashlib.md5(result_bytes).hexdigest()
-
-    assert result_hash == '58ad107b9f1a528d9bd208196755bd05'
+    assert df_to_hash(expanded_household_ids) == 'c7b8a428cf7ccef1d9755fa15d6dd377'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -146,10 +140,7 @@ def test_full_run2_repop_append():
 
     # This hash is the md5 of the json string of the expanded_household_ids file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    result_bytes = expanded_household_ids.to_json().encode('utf-8')
-    result_hash = hashlib.md5(result_bytes).hexdigest()
-
-    assert result_hash == '71a9782ca5faa01d6479c5933b1253cf'
+    assert df_to_hash(expanded_household_ids) == '7c0493702d95286a6648b395624b07df'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

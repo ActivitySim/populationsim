@@ -1,5 +1,5 @@
 import pandas as pd
-import hashlib
+from tests.data_hash import df_to_hash
 from pathlib import Path
 
 from activitysim.core import config
@@ -54,10 +54,7 @@ def test_weighting():
     
     # This hash is the md5 of the json string of the summary_hh_weights.csv file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    result_bytes = summary_hh_weights.to_json().encode('utf-8')
-    result_hash = hashlib.md5(result_bytes).hexdigest()
-
-    assert result_hash == '8686b9fde91f39a05bb2f4930e9feec4'
+    assert df_to_hash(summary_hh_weights) == '55ee10a9fb0a64cd1b230f3c8690576c'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
