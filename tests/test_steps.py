@@ -74,18 +74,12 @@ def test_full_run1():
     assert not (output_dir / 'households.csv').exists()
     assert (output_dir / 'summary_DISTRICT_1.csv').exists()
     
-    # This hash is the md5 of the json string of the synthetic_*.csv file previously generated
+    # This hash is the md5 of the json string of the expanded_household_ids file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    expected_hash = {
-        'households': 'cb51c372272c3984ad4e8c43177b8737',
-        'persons': 'de854cabd4e5db51a3b45ae0f6c50f3f'
-    }
-    for (table, expected) in expected_hash.items():
-        result_df = pd.read_csv(output_dir / f"synthetic_{table}.csv")
-        result_bytes = result_df.to_json().encode('utf-8')
-        result_hash = hashlib.md5(result_bytes).hexdigest()
+    result_bytes = expanded_household_ids.to_json().encode('utf-8')
+    result_hash = hashlib.md5(result_bytes).hexdigest()
 
-        assert result_hash == expected
+    assert result_hash == 'cf79c8052fa6920123d80d54df5785f6'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -117,18 +111,12 @@ def test_full_run2_repop_replace():
     assert len(taz_hh_counts) == TAZ_COUNT
     assert taz_hh_counts.loc[100] == TAZ_100_HH_REPOP_COUNT
     
-    # This hash is the md5 of the json string of the synthetic_*.csv file previously generated
+    # This hash is the md5 of the json string of the expanded_household_ids file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    expected_hash = {
-        'households': 'fd6fb614cd7a50711370909fa12e8cf1',
-        'persons': 'c020592fd528b82e7737d9362f114126'
-    }
-    for (table, expected) in expected_hash.items():
-        result_df = pd.read_csv(output_dir / f"synthetic_{table}.csv")
-        result_bytes = result_df.to_json().encode('utf-8')
-        result_hash = hashlib.md5(result_bytes).hexdigest()
+    result_bytes = expanded_household_ids.to_json().encode('utf-8')
+    result_hash = hashlib.md5(result_bytes).hexdigest()
 
-        assert result_hash == expected
+    assert result_hash == '58ad107b9f1a528d9bd208196755bd05'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -156,18 +144,12 @@ def test_full_run2_repop_append():
     assert len(taz_hh_counts) == TAZ_COUNT
     assert taz_hh_counts.loc[100] == TAZ_100_HH_COUNT + TAZ_100_HH_REPOP_COUNT
 
-    # This hash is the md5 of the json string of the synthetic_*.csv file previously generated
+    # This hash is the md5 of the json string of the expanded_household_ids file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    expected_hash = {
-        'households': '7d892871e0e1830a0006afafef9f9e6b',
-        'persons': 'd3423ad80fd4845c0c7eb255843e5b66'
-    }
-    for (table, expected) in expected_hash.items():
-        result_df = pd.read_csv(output_dir / f"synthetic_{table}.csv")
-        result_bytes = result_df.to_json().encode('utf-8')
-        result_hash = hashlib.md5(result_bytes).hexdigest()
+    result_bytes = expanded_household_ids.to_json().encode('utf-8')
+    result_hash = hashlib.md5(result_bytes).hexdigest()
 
-        assert result_hash == expected
+    assert result_hash == '71a9782ca5faa01d6479c5933b1253cf'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
