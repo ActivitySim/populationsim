@@ -52,13 +52,12 @@ def test_weighting():
     assert abs(total_summary_hh_weights - total_seed_households_weights) < 1
     
     
-    # This hash is the md5 of the json string of the expanded_household_ids.csv file previously generated
+    # This hash is the md5 of the json string of the summary_hh_weights.csv file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    result_df = pd.read_csv(output_dir / "summary_hh_weights.csv")
-    result_bytes = result_df.to_json().encode('utf-8')
+    result_bytes = summary_hh_weights.to_json().encode('utf-8')
     result_hash = hashlib.md5(result_bytes).hexdigest()
 
-    assert result_hash == '819696b931810698482bc854fb7b841e'
+    assert result_hash == '8686b9fde91f39a05bb2f4930e9feec4'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
