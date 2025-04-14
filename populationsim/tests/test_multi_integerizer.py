@@ -2,14 +2,16 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
-import os
-import numpy as np
+from pathlib import Path
 import pandas as pd
 
 from activitysim.core import inject
 
 from populationsim.multi_integerizer import do_simul_integerizing
 from populationsim.multi_integerizer import do_sequential_integerizing
+
+example_dir = Path(__file__).parent.parent.parent / 'examples'
+configs_dir = (example_dir / 'example_test' / 'configs').__str__()
 
 incidence_df = pd.DataFrame({
     'hh_id': [0, 6, 12, 18, 24, 30],
@@ -65,9 +67,8 @@ sub_control_zones = pd.Series(['TRACT_1', 'TRACT_2'], index=[1, 2])
 
 def test_simul_integerizer():
 
-    configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
     inject.add_injectable("configs_dir", configs_dir)
-
+    
     # data_dir = os.path.join(os.path.dirname(__file__), 'data')
     # inject.add_injectable("data_dir", data_dir)
     #
@@ -104,7 +105,6 @@ def test_simul_integerizer():
 
 
 def test_sequential_integerizer():
-    configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
     inject.add_injectable("configs_dir", configs_dir)
 
     # data_dir = os.path.join(os.path.dirname(__file__), 'data')

@@ -2,9 +2,8 @@
 # ActivitySim
 # See full license in LICENSE.txt.
 
-import os.path
 import logging
-
+from pathlib import Path
 import pytest
 
 import pandas as pd
@@ -16,10 +15,12 @@ from activitysim.core import inject
 
 def add_canonical_dirs():
 
-    configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
-    inject.add_injectable("configs_dir", configs_dir)
+    example_dir = Path(__file__).parent.parent.parent / 'examples'
+    example_configs_dir = (example_dir / 'example_test' / 'configs').__str__()
+    configs_dir = (Path(__file__).parent / 'configs').__str__()
+    inject.add_injectable("configs_dir", [configs_dir, example_configs_dir])
 
-    output_dir = os.path.join(os.path.dirname(__file__), 'output')
+    output_dir = Path(__file__).parent / 'output'
     inject.add_injectable("output_dir", output_dir)
 
 

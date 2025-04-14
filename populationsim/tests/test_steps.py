@@ -1,5 +1,4 @@
-import os
-
+from pathlib import Path
 import pandas as pd
 
 from activitysim.core import config
@@ -14,13 +13,15 @@ def setup_function():
 
     inject.reinject_decorated_tables()
 
-    configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
-    inject.add_injectable("configs_dir", configs_dir)
-
-    output_dir = os.path.join(os.path.dirname(__file__), 'output')
+    example_dir = Path(__file__).parent.parent.parent / 'examples'
+    
+    example_configs_dir = (example_dir / 'example_test' / 'configs').__str__()
+    configs_dir = (Path(__file__).parent / 'configs').__str__()
+    output_dir = Path(__file__).parent / 'output'
+    data_dir = (example_dir / 'example_test' / 'data').__str__()
+    
+    inject.add_injectable("configs_dir", [configs_dir, example_configs_dir])
     inject.add_injectable("output_dir", output_dir)
-
-    data_dir = os.path.join(os.path.dirname(__file__), 'data')
     inject.add_injectable("data_dir", data_dir)
 
     inject.clear_cache()
@@ -69,8 +70,8 @@ def test_full_run1():
 
     # output_tables action: skip
     output_dir = inject.get_injectable('output_dir')
-    assert not os.path.exists(os.path.join(output_dir, 'households.csv'))
-    assert os.path.exists(os.path.join(output_dir, 'summary_DISTRICT_1.csv'))
+    assert not (output_dir / 'households.csv').exists()
+    assert (output_dir / 'summary_DISTRICT_1.csv').exists()
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

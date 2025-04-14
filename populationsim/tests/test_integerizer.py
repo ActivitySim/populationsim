@@ -2,8 +2,7 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
-import os
-import numpy as np
+from pathlib import Path
 import pandas as pd
 
 from activitysim.core import inject
@@ -12,8 +11,10 @@ from populationsim import integerizer
 
 
 def test_integerizer():
+   
+    example_dir = Path(__file__).parent.parent.parent / 'examples'
 
-    configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
+    configs_dir = (example_dir / 'example_test' / 'configs').__str__()
     inject.add_injectable("configs_dir", configs_dir)
 
     # data_dir = os.path.join(os.path.dirname(__file__), 'data')

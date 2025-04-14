@@ -18,11 +18,11 @@ def teardown_function(func):
 def test_weighting():
 
     configs_dir = os.path.join(os.path.dirname(__file__), '..', '..',
-                               'example_survey_weighting', 'configs')
+                               'examples', 'example_survey_weighting', 'configs')
     inject.add_injectable("configs_dir", configs_dir)
 
     data_dir = os.path.join(os.path.dirname(__file__), '..', '..',
-                            'example_survey_weighting', 'data')
+                            'examples', 'example_survey_weighting', 'data')
     inject.add_injectable("data_dir", data_dir)
 
     output_dir = os.path.join(os.path.dirname(__file__), 'output')

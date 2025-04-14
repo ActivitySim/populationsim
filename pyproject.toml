@@ -26,6 +26,7 @@ dev = [
 python_paths = [
     "populationsim",
     "tests",
+    "examples",
 ]
 
 [tool.setuptools]

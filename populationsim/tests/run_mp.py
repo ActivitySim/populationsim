@@ -1,5 +1,4 @@
-import os
-
+from pathlib import Path
 import pandas as pd
 
 from activitysim.core import config
@@ -17,14 +16,16 @@ TAZ_100_HH_REPOP_COUNT = 26
 
 def setup_dirs():
 
-    configs_dir = os.path.join(os.path.dirname(__file__), "configs")
-    mp_configs_dir = os.path.join(os.path.dirname(__file__), "configs_mp")
-    inject.add_injectable("configs_dir", [mp_configs_dir, configs_dir])
+    example_dir = Path(__file__).parent.parent.parent / 'examples'
+    example_configs_dir = (example_dir / 'example_test' / 'configs').__str__()
+    configs_dir = (Path(__file__).parent / 'configs').__str__()    
+    mp_configs_dir = (example_dir / 'example_test' / 'configs_mp').__str__()
+    output_dir = Path(__file__).parent / 'output'
+    data_dir = (example_dir / 'example_test' / 'data').__str__()
+    
 
-    output_dir = os.path.join(os.path.dirname(__file__), "output")
+    inject.add_injectable("configs_dir", [mp_configs_dir, configs_dir, example_configs_dir])
     inject.add_injectable("output_dir", output_dir)
-
-    data_dir = os.path.join(os.path.dirname(__file__), "data")
     inject.add_injectable("data_dir", data_dir)
 
     tracing.config_logger()
@@ -44,8 +45,8 @@ def regress():
 
     # output_tables action: skip
     output_dir = inject.get_injectable("output_dir")
-    assert not os.path.exists(os.path.join(output_dir, "households.csv"))
-    assert os.path.exists(os.path.join(output_dir, "summary_DISTRICT_1.csv"))
+    assert not (output_dir / 'households.csv').exists()
+    assert (output_dir / 'summary_DISTRICT_1.csv').exists()
 
 
 def test_mp_run():

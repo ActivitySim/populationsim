@@ -1,5 +1,4 @@
-import os
-
+from pathlib import Path
 import pandas as pd
 
 from activitysim.core import config
@@ -15,15 +14,17 @@ def teardown_function(func):
     inject.clear_cache()
 
 
-def test_full_run2():
+def test_full_run_flex():
 
-    configs_dir = os.path.join(os.path.dirname(__file__), 'configs2')
+    example_dir = Path(__file__).parent.parent.parent / 'examples'
+
+    configs_dir = (example_dir / 'example_test' / 'configs_flex').__str__()
     inject.add_injectable("configs_dir", configs_dir)
 
-    data_dir = os.path.join(os.path.dirname(__file__), 'data2')
+    data_dir = (example_dir / 'example_test' / 'data_flex').__str__()
     inject.add_injectable("data_dir", data_dir)
 
-    output_dir = os.path.join(os.path.dirname(__file__), 'output')
+    output_dir = Path(__file__).parent / 'output'
     inject.add_injectable("output_dir", output_dir)
 
     inject.clear_cache()
@@ -54,9 +55,9 @@ def test_full_run2():
     assert isinstance(pipeline.get_table('expanded_household_ids'), pd.DataFrame)
 
     # output tables list action: include
-    assert os.path.exists(config.output_file_path('expanded_household_ids.csv'))
-    assert os.path.exists(config.output_file_path('summary_DISTRICT.csv'))
-    assert not os.path.exists(config.output_file_path('summary_TAZ.csv'))
+    assert Path(config.output_file_path('expanded_household_ids.csv')).exists()
+    assert Path(config.output_file_path('summary_DISTRICT.csv')).exists()
+    assert not Path(config.output_file_path('summary_TAZ.csv')).exists()
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

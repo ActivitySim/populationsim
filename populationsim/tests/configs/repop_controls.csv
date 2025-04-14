@@ -1,3 +1,0 @@
-target,geography,seed_table,importance,control_field,expression
-num_hh,TAZ,households,1000000000,HHBASE,(households.WGTP > 0) & (households.WGTP < np.inf)
-muggle,TAZ,households,1000,MUGGLE,households.wizard == 0
