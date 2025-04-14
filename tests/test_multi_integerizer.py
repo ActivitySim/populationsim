@@ -10,7 +10,7 @@ from activitysim.core import inject
 from populationsim.multi_integerizer import do_simul_integerizing
 from populationsim.multi_integerizer import do_sequential_integerizing
 
-example_dir = Path(__file__).parent.parent.parent / 'examples'
+example_dir = Path(__file__).parent.parent / 'examples'
 configs_dir = (example_dir / 'example_test' / 'configs').__str__()
 
 incidence_df = pd.DataFrame({

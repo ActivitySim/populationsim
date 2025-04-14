@@ -17,7 +17,7 @@ def teardown_function(func):
 
 def test_weighting():
 
-    example_dir = Path(__file__).parent.parent.parent / 'examples'
+    example_dir = Path(__file__).parent.parent / 'examples'
     
     configs_dir = (example_dir / 'example_survey_weighting' / 'configs')
     data_dir = (example_dir / 'example_survey_weighting' / 'data')

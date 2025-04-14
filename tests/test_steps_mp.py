@@ -1,6 +1,5 @@
 # ActivitySim
 # See full license in LICENSE.txt.
-import os
 import subprocess
 import hashlib
 from pathlib import Path

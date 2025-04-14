@@ -17,7 +17,7 @@ def teardown_function(func):
 
 def test_full_run_flex():
 
-    example_dir = Path(__file__).parent.parent.parent / 'examples'
+    example_dir = Path(__file__).parent.parent / 'examples'
 
     configs_dir = (example_dir / 'example_test' / 'configs_flex').__str__()
     inject.add_injectable("configs_dir", configs_dir)

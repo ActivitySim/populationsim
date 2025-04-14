@@ -15,7 +15,7 @@ from activitysim.core import inject
 
 def add_canonical_dirs():
 
-    example_dir = Path(__file__).parent.parent.parent / 'examples'
+    example_dir = Path(__file__).parent.parent / 'examples'
     example_configs_dir = (example_dir / 'example_test' / 'configs').__str__()
     configs_dir = (Path(__file__).parent / 'configs').__str__()
     inject.add_injectable("configs_dir", [configs_dir, example_configs_dir])

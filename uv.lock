@@ -244,41 +244,6 @@ wheels = [
 ]
 
 [[package]]
-name = "nick-populationsim"
-version = "0.6.3"
-source = { virtual = "." }
-dependencies = [
-    { name = "activitysim" },
-    { name = "numpy" },
-    { name = "ortools" },
-    { name = "pandas" },
-    { name = "setuptools" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "activitysim", specifier = ">=1.1.0" },
-    { name = "numpy", specifier = ">=1.16.1" },
-    { name = "ortools", specifier = ">=5.1.4045" },
-    { name = "pandas", specifier = ">=1.1.0,<1.5.0" },
-    { name = "setuptools", specifier = ">=75.3.2" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pytest", specifier = ">=8.3.5" },
-    { name = "pytest-cov", specifier = ">=5.0.0" },
-    { name = "ruff", specifier = ">=0.9.9" },
-]
-
-[[package]]
 name = "numba"
 version = "0.58.0"
 source = { registry = "https://pypi.org/simple" }
@@ -411,6 +376,41 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/96/2d/02d4312c973c6050a18b314a5ad0b3210edb65a906f868e31c111dede4a6/pluggy-1.5.0.tar.gz", hash = "sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1", size = 67955 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/88/5f/e351af9a41f866ac3f1fac4ca0613908d9a41741cfcf2228f4ad853b697d/pluggy-1.5.0-py3-none-any.whl", hash = "sha256:44e1ad92c8ca002de6377e165f3e0f1be63266ab4d554740532335b9d75ea669", size = 20556 },
+]
+
+[[package]]
+name = "populationsim"
+version = "0.6.3"
+source = { virtual = "." }
+dependencies = [
+    { name = "activitysim" },
+    { name = "numpy" },
+    { name = "ortools" },
+    { name = "pandas" },
+    { name = "setuptools" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "activitysim", specifier = ">=1.1.0" },
+    { name = "numpy", specifier = ">=1.16.1" },
+    { name = "ortools", specifier = ">=5.1.4045" },
+    { name = "pandas", specifier = ">=1.1.0,<1.5.0" },
+    { name = "setuptools", specifier = ">=75.3.2" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=8.3.5" },
+    { name = "pytest-cov", specifier = ">=5.0.0" },
+    { name = "ruff", specifier = ">=0.9.9" },
 ]
 
 [[package]]

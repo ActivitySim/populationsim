@@ -16,7 +16,7 @@ TAZ_100_HH_REPOP_COUNT = 26
 
 def setup_dirs():
 
-    example_dir = Path(__file__).parent.parent.parent / 'examples'
+    example_dir = Path(__file__).parent.parent / 'examples'
     example_configs_dir = (example_dir / 'example_test' / 'configs').__str__()
     configs_dir = (Path(__file__).parent / 'configs').__str__()    
     mp_configs_dir = (example_dir / 'example_test' / 'configs_mp').__str__()

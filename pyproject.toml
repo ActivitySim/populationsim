@@ -28,6 +28,9 @@ python_paths = [
     "tests",
     "examples",
 ]
+testpaths = [
+    "tests",
+]
 
 [tool.setuptools]
 packages = [

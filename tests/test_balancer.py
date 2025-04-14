@@ -7,8 +7,8 @@ import pandas as pd
 import numpy.testing as npt
 import pytest
 
-from ..balancer import ListBalancer
-from ..balancer import DEFAULT_MAX_ITERATIONS
+from populationsim.balancer import ListBalancer
+from populationsim.balancer import DEFAULT_MAX_ITERATIONS
 
 
 def test_Konduri():

@@ -12,7 +12,7 @@ from populationsim import integerizer
 
 def test_integerizer():
    
-    example_dir = Path(__file__).parent.parent.parent / 'examples'
+    example_dir = Path(__file__).parent.parent / 'examples'
 
     configs_dir = (example_dir / 'example_test' / 'configs').__str__()
     inject.add_injectable("configs_dir", configs_dir)
