@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+import hashlib
 
 from activitysim.core import config
 from activitysim.core import tracing
@@ -9,16 +10,16 @@ from activitysim.core import inject
 from populationsim import steps
 
 
+example_dir = Path(__file__).parent.parent.parent / 'examples'
+
+example_configs_dir = (example_dir / 'example_test' / 'configs').__str__()
+configs_dir = (Path(__file__).parent / 'configs').__str__()
+output_dir = Path(__file__).parent / 'output'
+data_dir = (example_dir / 'example_test' / 'data').__str__()
+
 def setup_function():
 
     inject.reinject_decorated_tables()
-
-    example_dir = Path(__file__).parent.parent.parent / 'examples'
-    
-    example_configs_dir = (example_dir / 'example_test' / 'configs').__str__()
-    configs_dir = (Path(__file__).parent / 'configs').__str__()
-    output_dir = Path(__file__).parent / 'output'
-    data_dir = (example_dir / 'example_test' / 'data').__str__()
     
     inject.add_injectable("configs_dir", [configs_dir, example_configs_dir])
     inject.add_injectable("output_dir", output_dir)
@@ -72,6 +73,19 @@ def test_full_run1():
     output_dir = inject.get_injectable('output_dir')
     assert not (output_dir / 'households.csv').exists()
     assert (output_dir / 'summary_DISTRICT_1.csv').exists()
+    
+    # This hash is the md5 of the json string of the synthetic_*.csv file previously generated
+    # by the pipeline. It is used to check that the pipeline is generating the same output.
+    expected_hash = {
+        'households': 'cb51c372272c3984ad4e8c43177b8737',
+        'persons': 'de854cabd4e5db51a3b45ae0f6c50f3f'
+    }
+    for (table, expected) in expected_hash.items():
+        result_df = pd.read_csv(output_dir / f"synthetic_{table}.csv")
+        result_bytes = result_df.to_json().encode('utf-8')
+        result_hash = hashlib.md5(result_bytes).hexdigest()
+
+        assert result_hash == expected
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -102,6 +116,19 @@ def test_full_run2_repop_replace():
     taz_hh_counts = expanded_household_ids.groupby('TAZ').size()
     assert len(taz_hh_counts) == TAZ_COUNT
     assert taz_hh_counts.loc[100] == TAZ_100_HH_REPOP_COUNT
+    
+    # This hash is the md5 of the json string of the synthetic_*.csv file previously generated
+    # by the pipeline. It is used to check that the pipeline is generating the same output.
+    expected_hash = {
+        'households': 'fd6fb614cd7a50711370909fa12e8cf1',
+        'persons': 'c020592fd528b82e7737d9362f114126'
+    }
+    for (table, expected) in expected_hash.items():
+        result_df = pd.read_csv(output_dir / f"synthetic_{table}.csv")
+        result_bytes = result_df.to_json().encode('utf-8')
+        result_hash = hashlib.md5(result_bytes).hexdigest()
+
+        assert result_hash == expected
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -128,6 +155,19 @@ def test_full_run2_repop_append():
     taz_hh_counts = expanded_household_ids.groupby('TAZ').size()
     assert len(taz_hh_counts) == TAZ_COUNT
     assert taz_hh_counts.loc[100] == TAZ_100_HH_COUNT + TAZ_100_HH_REPOP_COUNT
+
+    # This hash is the md5 of the json string of the synthetic_*.csv file previously generated
+    # by the pipeline. It is used to check that the pipeline is generating the same output.
+    expected_hash = {
+        'households': '7d892871e0e1830a0006afafef9f9e6b',
+        'persons': 'd3423ad80fd4845c0c7eb255843e5b66'
+    }
+    for (table, expected) in expected_hash.items():
+        result_df = pd.read_csv(output_dir / f"synthetic_{table}.csv")
+        result_bytes = result_df.to_json().encode('utf-8')
+        result_hash = hashlib.md5(result_bytes).hexdigest()
+
+        assert result_hash == expected
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

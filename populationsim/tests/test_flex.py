@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+import hashlib
 
 from activitysim.core import config
 from activitysim.core import tracing
@@ -58,6 +59,14 @@ def test_full_run_flex():
     assert Path(config.output_file_path('expanded_household_ids.csv')).exists()
     assert Path(config.output_file_path('summary_DISTRICT.csv')).exists()
     assert not Path(config.output_file_path('summary_TAZ.csv')).exists()
+
+    # This hash is the md5 of the json string of the expanded_household_ids.csv file previously generated
+    # by the pipeline. It is used to check that the pipeline is generating the same output.
+    result_df = pd.read_csv(output_dir / "expanded_household_ids.csv")
+    result_bytes = result_df.to_json().encode('utf-8')
+    result_hash = hashlib.md5(result_bytes).hexdigest()
+
+    assert result_hash == '9d8aa6c90da612f4af669ca7bc4b74a5'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

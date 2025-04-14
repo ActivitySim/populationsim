@@ -1,6 +1,6 @@
-import os
-
 import pandas as pd
+import hashlib
+from pathlib import Path
 
 from activitysim.core import config
 from activitysim.core import tracing
@@ -17,16 +17,15 @@ def teardown_function(func):
 
 def test_weighting():
 
-    configs_dir = os.path.join(os.path.dirname(__file__), '..', '..',
-                               'examples', 'example_survey_weighting', 'configs')
-    inject.add_injectable("configs_dir", configs_dir)
-
-    data_dir = os.path.join(os.path.dirname(__file__), '..', '..',
-                            'examples', 'example_survey_weighting', 'data')
-    inject.add_injectable("data_dir", data_dir)
-
-    output_dir = os.path.join(os.path.dirname(__file__), 'output')
-    inject.add_injectable("output_dir", output_dir)
+    example_dir = Path(__file__).parent.parent.parent / 'examples'
+    
+    configs_dir = (example_dir / 'example_survey_weighting' / 'configs')
+    data_dir = (example_dir / 'example_survey_weighting' / 'data')
+    output_dir = Path(__file__).parent / 'output'
+    
+    inject.add_injectable("data_dir", data_dir.__str__())
+    inject.add_injectable("configs_dir", configs_dir.__str__())
+    inject.add_injectable("output_dir", output_dir.__str__())
 
     inject.clear_cache()
 
@@ -47,10 +46,19 @@ def test_weighting():
     summary_hh_weights = pipeline.get_table('summary_hh_weights')
     total_summary_hh_weights = summary_hh_weights['SUBREGCluster_balanced_weight'].sum()
 
-    seed_households = pd.read_csv(os.path.join(data_dir, 'seed_households.csv'))
+    seed_households = pd.read_csv(data_dir / 'seed_households.csv')
     total_seed_households_weights = seed_households['HHweight'].sum()
 
     assert abs(total_summary_hh_weights - total_seed_households_weights) < 1
+    
+    
+    # This hash is the md5 of the json string of the expanded_household_ids.csv file previously generated
+    # by the pipeline. It is used to check that the pipeline is generating the same output.
+    result_df = pd.read_csv(output_dir / "summary_hh_weights.csv")
+    result_bytes = result_df.to_json().encode('utf-8')
+    result_hash = hashlib.md5(result_bytes).hexdigest()
+
+    assert result_hash == '819696b931810698482bc854fb7b841e'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
