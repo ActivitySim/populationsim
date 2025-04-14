@@ -1,5 +1,5 @@
 [project]
-name = "nick-populationsim"
+name = "populationsim"
 version = "0.6.3"
 description = "Population Synthesis (for ActivitySim)"
 authors = [
