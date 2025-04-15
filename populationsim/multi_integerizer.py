@@ -87,11 +87,7 @@ class SimulIntegerizer(object):
 
         # print "sub_float_weights\n", sub_float_weights
         # print "sub_int_weights\n", sub_int_weights
-        # print "sub_resid_weights\n", sub_resid_weights
-        
-        if 103 in self.sub_weights.index and 'TAZ_200' in self.sub_weights.columns:
-            print('sub_float_weights:', sub_float_weights)
-            print('sub_int_weights:', sub_int_weights)            
+        # print "sub_resid_weights\n", sub_resid_weights          
 
         sub_control_totals = np.asanyarray(self.sub_controls_df).astype(np.int64)
         sub_countrol_importance = np.asanyarray(self.sub_countrol_importance).astype(np.float64)
