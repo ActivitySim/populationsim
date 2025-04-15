@@ -61,17 +61,23 @@ def np_integerizer_ortools(
 
     # - Instantiate a mixed-integer solver
     solver = pywraplp.Solver('IntegerizeCbc', pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
+    solver.SetNumThreads(1)
+    solver.SetSolverSpecificParametersAsString("randomSeed=123")
+
+    # Safe variable construction
+    x = [None] * sample_count
+    relax_le = [None] * control_count
+    relax_ge = [None] * control_count
+    hh_constraint_le = [None] * control_count
+    hh_constraint_ge = [None] * control_count
 
     # - Create binary integer variables
-    x = [[]] * sample_count
     for hh in range(0, sample_count):
         # max_x == 0.0 if float_weights is an int, otherwise 1.0
         max_x = 1.0 - (resid_weights[hh] == 0.0)
         x[hh] = solver.NumVar(0.0, max_x, 'x_' + str(hh))
 
     # - Create positive continuous constraint relaxation variables
-    relax_le = [[]] * control_count
-    relax_ge = [[]] * control_count
     for c in range(0, control_count):
         # no relaxation for total households control
         if c != total_hh_control_index:
@@ -88,18 +94,21 @@ def np_integerizer_ortools(
     #         objective.SetCoefficient(relax_le[c], control_importance_weights[c])
     #         objective.SetCoefficient(relax_ge[c], control_importance_weights[c])
 
-    z = solver.Sum(x[hh] * log_resid_weights[hh]
-                   for hh in range(sample_count)) - \
-        solver.Sum(relax_le[c] * control_importance_weights[c]
-                   for c in range(control_count) if c != total_hh_control_index) - \
-        solver.Sum(relax_ge[c] * control_importance_weights[c]
-                   for c in range(control_count) if c != total_hh_control_index)
+    epsilon = 1e-6  # Tiny weight tweak to break symmetry in non-unique cases
+    z = solver.Sum(
+        x[hh] * (log_resid_weights[hh] + epsilon * hh)  # forces unique preference
+        for hh in range(sample_count)
+    ) - solver.Sum(
+        relax_le[c] * control_importance_weights[c]
+        for c in range(control_count) if c != total_hh_control_index
+    ) - solver.Sum(
+        relax_ge[c] * control_importance_weights[c]
+        for c in range(control_count) if c != total_hh_control_index
+    )
 
     objective = solver.Maximize(z)
 
     # - inequality constraints
-    hh_constraint_ge = [[]] * control_count
-    hh_constraint_le = [[]] * control_count
     for c in range(0, control_count):
         # don't add inequality constraints for total households control
         if c == total_hh_control_index:
