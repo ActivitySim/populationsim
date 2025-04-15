@@ -185,6 +185,12 @@ class Integerizer(object):
 
             integerized_weights = \
                 smart_round(int_weights, resid_weights, self.total_hh_control_value)
+            
+            print("Float weights:", float_weights)
+            print("Int weights:", int_weights)
+            print("Resid weights:", resid_weights)
+            print("Integerized weights:", integerized_weights)
+            print("HH control value:", self.total_hh_control_value)            
 
         self.weights = pd.DataFrame(index=self.incidence_table.index)
         self.weights['integerized_weight'] = integerized_weights
