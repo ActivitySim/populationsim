@@ -76,7 +76,7 @@ def test_full_run1():
     
     # This hash is the md5 of the json string of the expanded_household_ids file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    assert hash_dataframe(expanded_household_ids) == '48a303029b69f61803baeddb65d11371'
+    assert hash_dataframe(expanded_household_ids, debug = True) == '48a303029b69f61803baeddb65d11371'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
