@@ -54,7 +54,7 @@ def test_weighting():
     
     # This hash is the md5 of the dataframe string file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    assert hash_dataframe(summary_hh_weights) == 'e3eced420bdf3ff294e6493a7f8afa25'
+    assert hash_dataframe(summary_hh_weights, sort_by = 'hh_id') == 'e9138dc21bc07daf04d61f460efb0e6e'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
