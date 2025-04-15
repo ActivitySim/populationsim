@@ -189,11 +189,6 @@ def balance_and_integerize(
         parent_id=parent_id,
         sub_geography=sub_geography,
         sub_control_zones=sub_control_zones)
-    
-    if 103 in incidence_df.index and sub_geography == 'TAZ':
-        print('sub_float_weights:', integerized_sub_zone_weights_df)
-        print("parent weights:", parent_weights)
-
 
     assert isinstance(integerized_sub_zone_weights_df, pd.DataFrame), "multi_integerize did not return a DataFrame"
     
