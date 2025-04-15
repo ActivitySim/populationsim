@@ -2,7 +2,7 @@ import pandas as pd
 import hashlib
 from io import StringIO
     
-def df_to_hash(df: pd.DataFrame) -> str:
+def hash_dataframe(df: pd.DataFrame) -> str:
     """Converts dataframe to a normalized hash string for comparison."""
     
     # Sort to ensure consistent row and column order and normalize dtypes

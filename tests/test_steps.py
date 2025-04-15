@@ -1,7 +1,7 @@
 from pathlib import Path
 import pandas as pd
 
-from tests.data_hash import df_to_hash
+from tests.data_hash import hash_dataframe
 from activitysim.core import config
 from activitysim.core import tracing
 from activitysim.core import pipeline
@@ -76,7 +76,7 @@ def test_full_run1():
     
     # This hash is the md5 of the json string of the expanded_household_ids file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    assert df_to_hash(expanded_household_ids) == '48a303029b69f61803baeddb65d11371'
+    assert hash_dataframe(expanded_household_ids) == '48a303029b69f61803baeddb65d11371'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -110,7 +110,7 @@ def test_full_run2_repop_replace():
     
     # This hash is the md5 of the json string of the expanded_household_ids file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    assert df_to_hash(expanded_household_ids) == 'c7b8a428cf7ccef1d9755fa15d6dd377'
+    assert hash_dataframe(expanded_household_ids) == 'c7b8a428cf7ccef1d9755fa15d6dd377'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -138,9 +138,9 @@ def test_full_run2_repop_append():
     assert len(taz_hh_counts) == TAZ_COUNT
     assert taz_hh_counts.loc[100] == TAZ_100_HH_COUNT + TAZ_100_HH_REPOP_COUNT
 
-    # This hash is the md5 of the json string of the expanded_household_ids file previously generated
+    # This hash is the md5 of the dataframe string file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    assert df_to_hash(expanded_household_ids) == '7c0493702d95286a6648b395624b07df'
+    assert hash_dataframe(expanded_household_ids) == '7c0493702d95286a6648b395624b07df'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

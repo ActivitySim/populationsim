@@ -4,9 +4,6 @@
 
 import logging
 from pathlib import Path
-import pytest
-
-import pandas as pd
 
 import activitysim.core.tracing as tracing
 

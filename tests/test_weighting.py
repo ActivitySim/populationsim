@@ -1,5 +1,5 @@
 import pandas as pd
-from tests.data_hash import df_to_hash
+from tests.data_hash import hash_dataframe
 from pathlib import Path
 
 from activitysim.core import config
@@ -52,9 +52,9 @@ def test_weighting():
     assert abs(total_summary_hh_weights - total_seed_households_weights) < 1
     
     
-    # This hash is the md5 of the json string of the summary_hh_weights.csv file previously generated
+    # This hash is the md5 of the dataframe string file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    assert df_to_hash(summary_hh_weights) == '55ee10a9fb0a64cd1b230f3c8690576c'
+    assert hash_dataframe(summary_hh_weights) == 'e3eced420bdf3ff294e6493a7f8afa25'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

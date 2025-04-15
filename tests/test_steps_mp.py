@@ -1,7 +1,7 @@
 # ActivitySim
 # See full license in LICENSE.txt.
 import subprocess
-from tests.data_hash import df_to_hash
+from tests.data_hash import hash_dataframe
 from pathlib import Path
 import pandas as pd
 
@@ -20,10 +20,10 @@ def test_mp_run():
 
     subprocess.check_call(['coverage', 'run', file_path])
     
-    # This hash is the md5 of the json string of the expanded_household_ids file previously generated
+    # This hash is the md5 of the dataframe string file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
     expanded_household_ids = pd.read_csv(output_dir / 'expanded_household_ids.csv')
-    assert df_to_hash(expanded_household_ids) == '48a303029b69f61803baeddb65d11371'
+    assert hash_dataframe(expanded_household_ids) == '48a303029b69f61803baeddb65d11371'
 
 if __name__ == '__main__':
 

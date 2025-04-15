@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 
 import numpy.testing as npt
-import pytest
 
 from populationsim.balancer import ListBalancer
 from populationsim.balancer import DEFAULT_MAX_ITERATIONS
