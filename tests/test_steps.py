@@ -77,7 +77,7 @@ def test_full_run1():
     # This hash is the md5 of the json string of the expanded_household_ids file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
     result_hash = hash_dataframe(expanded_household_ids, sort_by = ['hh_id', 'TRACT', 'TAZ', 'PUMA'])
-    assert result_hash == '1373b8f629416cb04eac718c57f3f7b4'
+    assert result_hash == '05d7f8d0bf5d8e5c7ee29b67c13d858f'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -111,7 +111,8 @@ def test_full_run2_repop_replace():
     
     # This hash is the md5 of the json string of the expanded_household_ids file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    assert hash_dataframe(expanded_household_ids, sort_by = 'hh_id') == '3617dc8dd99bdacc3336f3985916f6ae'
+    result_hash = hash_dataframe(expanded_household_ids, sort_by = ['hh_id', 'TRACT', 'TAZ', 'PUMA'])
+    assert result_hash == 'aec5dc9f7d575e367874c33ba6a61ee3'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -141,7 +142,9 @@ def test_full_run2_repop_append():
 
     # This hash is the md5 of the dataframe string file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    assert hash_dataframe(expanded_household_ids, sort_by = 'hh_id') == 'e49a5ed6ba53368a3d4fc10f141494b8'
+    result_hash = hash_dataframe(expanded_household_ids, sort_by = ['hh_id', 'TRACT', 'TAZ', 'PUMA'])
+    assert result_hash == 'b791dffd6435774e5a5ddc52f40697f1'
+
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

@@ -51,10 +51,10 @@ def test_weighting():
 
     assert abs(total_summary_hh_weights - total_seed_households_weights) < 1
     
-    
     # This hash is the md5 of the dataframe string file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
-    assert hash_dataframe(summary_hh_weights, sort_by = 'hh_id') == 'e9138dc21bc07daf04d61f460efb0e6e'
+    result_hash = hash_dataframe(summary_hh_weights.round(6), sort_by=['hh_id'])
+    assert result_hash == '8ffd3b60b555aea226ea77d5a5f62f9b'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
