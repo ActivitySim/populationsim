@@ -106,5 +106,7 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
     # bulk concat all seed level results
     final_seed_weights = pd.concat(weight_list)
+    
+    print(final_seed_weights)
 
     inject.add_column(seed_weight_table_name, 'balanced_weight', final_seed_weights)
