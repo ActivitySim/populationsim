@@ -37,5 +37,6 @@ def hash_dataframe(
         # Print the CSV string for debugging purposes
         print("CSV String:")
         print(buffer.getvalue())
+        print(df.shape[0])
     
     return hashlib.md5(buffer.getvalue().encode('utf-8')).hexdigest()
