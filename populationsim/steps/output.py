@@ -64,7 +64,6 @@ def previous_write_data_dictionary(output_dir):
 
     model_settings = config.read_model_settings("write_data_dictionary")
     txt_format = model_settings.get("txt_format", "data_dict.txt")
-    csv_format = model_settings.get("csv_format", "data_dict.csv")
 
     if txt_format:
 
@@ -114,7 +113,7 @@ def write_data_dictionary(output_dir):
 
     if not (csv_format or txt_format):
         logger.warning(
-            f"write_data_dictionary step invoked but neither 'txt_format' nor 'csv_format' specified"
+            "write_data_dictionary step invoked but neither 'txt_format' nor 'csv_format' specified"
         )
         return
 
@@ -353,7 +352,7 @@ def write_tables(output_dir):
                 if decode_filter:
                     if decode_filter == "nonnegative":
 
-                        def map_func(x):
+                        def map_func(x, map_col=map_col):
                             return x if x < 0 else map_col[x]
 
                     else:

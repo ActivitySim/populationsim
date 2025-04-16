@@ -380,7 +380,7 @@ def load_checkpoint(checkpoint_name):
         msg = "Couldn't find checkpoint '%s' in checkpoints" % (checkpoint_name,)
         print(checkpoints[CHECKPOINT_NAME])
         logger.error(msg)
-        raise RuntimeError(msg)
+        raise RuntimeError(msg) from None
 
     # convert pandas dataframe back to array of checkpoint dicts
     checkpoints = checkpoints.to_dict(orient="records")

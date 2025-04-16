@@ -361,7 +361,7 @@ def setup_data_structures(settings, households, persons):
         slice_table = crosswalk_df[slice_geographies].groupby(slice_geography).max()
         # it is convenient to have slice_geography column in table as well as index
         slice_table[slice_geography] = slice_table.index
-        inject.add_table(f"slice_crosswalk", slice_table)
+        inject.add_table("slice_crosswalk", slice_table)
 
     control_spec = read_control_spec(setting('control_file_name', 'controls.csv'))
     inject.add_table('control_spec', control_spec)

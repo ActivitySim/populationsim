@@ -40,7 +40,7 @@ def record_memory_usage(
             child_info = child.memory_info()
             full_rss += child_info.rss
             num_children += 1
-        except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
     timestamp = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S.%f")  # sortable

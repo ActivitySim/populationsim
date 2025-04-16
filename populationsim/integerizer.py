@@ -160,7 +160,11 @@ class Integerizer(object):
                 # not sure this matters...
                 logger.warning("Integerizer: %s zero weights out of %s" %
                                ((float_weights == 0).sum(), sample_count))
-                assert False
+            
+                raise AssertionError(
+                    "Integerizer: %s zero weights out of %s" %
+                    ((float_weights == 0).sum(), sample_count)
+                    )
 
             if (resid_weights == 0.0).any():
                 # not sure this matters...

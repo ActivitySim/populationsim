@@ -6,7 +6,6 @@ from populationsim.core import tracing
 from populationsim.core import pipeline
 from populationsim.core import inject
 
-from populationsim import steps
 
 
 def teardown_function(func):

@@ -148,6 +148,7 @@ def read_from_table_info(table_info):
             "table_inf option 'column_map' renamed 'rename_columns'"
             "Support for 'column_map' will be removed in future versions.",
             FutureWarning,
+            stacklevel=2,
         )
         logger.debug("renaming columns: %s" % column_map)
         df.rename(columns=column_map, inplace=True)

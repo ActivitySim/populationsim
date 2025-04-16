@@ -29,7 +29,8 @@ def step():
         )
         if _DECORATED_STEPS.get(name, False):
             warnings.warn(
-                f"step {name!r} already exists, ignoring default implementation."
+                f"step {name!r} already exists, ignoring default implementation.",
+                stacklevel=2,
             )
         else:
             _DECORATED_STEPS[name] = func
@@ -51,7 +52,10 @@ def custom_step():
         logger.debug("inject step %s" % name)
 
         if _DECORATED_STEPS.get(name, False):
-            warnings.warn(f"step {name!r} already exists, overwriting it.")
+            warnings.warn(
+                f"step {name!r} already exists, overwriting it.",
+                stacklevel=2,
+                )
         _DECORATED_STEPS[name] = func
 
         orca.add_step(name, func)
@@ -118,7 +122,9 @@ def add_table(table_name, table, replace=False):
         and orca.table_type(table_name) == "dataframe"
     ):
         logger.warning("inject add_table replacing existing table %s" % table_name)
-        assert False
+        raise AssertionError(
+            "table '%s' already exists. not replaced" % table_name
+        )
 
     # FIXME - should add table.copy() instead, so it can't be modified behind our back?
     return orca.add_table(table_name, table, cache=False)

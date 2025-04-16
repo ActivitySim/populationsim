@@ -277,7 +277,7 @@ def run(args):
 
     # register steps and other injectables
     if not inject.is_injectable("preload_injectables"):
-        from populationsim import steps
+        pass
 
     tracing.config_logger(basic=True)
     handle_standard_args(args)  # possibly update injectables
@@ -305,6 +305,7 @@ def run(args):
             "The run_list.resume_after setting is renamed 'resume_after'.\n"
             "Specify both 'models' and 'resume_after' directly in settings config file.",
             FutureWarning,
+            stacklevel=2,
         )
         run_list = config.setting("run_list")
         if "steps" in run_list:

@@ -85,7 +85,6 @@ def write_synthetic_population(expanded_household_ids, households, persons, outp
     if synthetic_tables_settings is None:
         raise RuntimeError("'%s' not found in settings" % SETTINGS_NAME)
 
-    hh_col = setting('household_id_col')
     synthetic_hh_col = synthetic_tables_settings.get('household_id', 'HH_ID')
 
     # - assign household_ids to synthetic population

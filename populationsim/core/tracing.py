@@ -518,7 +518,7 @@ def slice_ids(df, ids, column=None):
     except KeyError:
         # this happens if specified slicer column is not in df
         # df = df[0:0]
-        raise RuntimeError("slice_ids slicer column '%s' not in dataframe" % column)
+        raise RuntimeError("slice_ids slicer column '%s' not in dataframe" % column) from None
 
     return df
 
@@ -819,7 +819,10 @@ def interaction_trace_rows(interaction_df, choosers, sample_size=None):
             trace_rows = np.in1d(choosers["household_id"], targets)
             trace_ids = np.asanyarray(choosers[trace_rows].household_id)
         else:
-            assert False
+            raise AssertionError(
+                "interaction_trace_rows don't know how to slice index '%s'"
+                % slicer_column_name
+            )
 
         # simply repeat if sample size is constant across choosers
         assert sample_size == len(interaction_df.index) / len(choosers.index)

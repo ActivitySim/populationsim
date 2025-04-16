@@ -66,7 +66,7 @@ def delete_files(file_list, trace_label):
             if os.path.isfile(file_path):
                 logger.debug(f"{trace_label} deleting {file_path}")
                 os.unlink(file_path)
-        except Exception as e:
+        except Exception:
             logger.warning(f"{trace_label} exception (e) trying to delete {file_path}")
 
 
@@ -421,16 +421,32 @@ def recursive_replace(obj, search, replace):
 def suffix_tables_in_settings(
     model_settings,
     suffix="proto_",
-    tables=["persons", "households", "tours", "persons_merged"],
+    tables=None,
 ):
+    if tables is None:
+        tables = [
+            "persons",
+            "households",
+            "tours",
+            "persons_merged",
+        ]
     for k in tables:
         model_settings = recursive_replace(model_settings, k, suffix + k)
     return model_settings
 
 
 def suffix_expressions_df_str(
-    df, suffix="proto_", tables=["persons", "households", "tours", "persons_merged"]
+    df,
+    suffix="proto_",
+    tables=None,
 ):
+    if tables is None:
+        tables = [
+            "persons",
+            "households",
+            "tours",
+            "persons_merged",
+        ]
     for k in tables:
         df["expression"] = df.expression.str.replace(k, suffix + k)
     return df

@@ -82,7 +82,8 @@ def settings(settings_file_name):
     recode_pipeline_columns = settings_dict.get("recode_pipeline_columns", True)
     if sharrow_enabled and not recode_pipeline_columns:
         warnings.warn(
-            "use of `sharrow` setting generally requires `recode_pipeline_columns`"
+            "use of `sharrow` setting generally requires `recode_pipeline_columns`",
+            stacklevel=2
         )
 
     return settings_dict
@@ -194,6 +195,7 @@ def future_model_settings(model_name, model_settings, future_settings):
                 f"Replacing with default value: {setting}."
                 f"This setting will be required in future versions",
                 FutureWarning,
+                stacklevel=2,
             )
             model_settings[key] = setting
 
@@ -767,6 +769,7 @@ def handle_standard_args(parser=None):
         "config.handle_standard_args() has been moved to the command line "
         "module and will be removed in future versions.",
         FutureWarning,
+        stacklevel=2,
     )
 
     if parser is None:

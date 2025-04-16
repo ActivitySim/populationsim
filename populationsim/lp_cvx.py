@@ -5,7 +5,6 @@
 import logging
 
 import numpy as np
-from populationsim.core.config import setting
 
 logger = logging.getLogger(__name__)
 

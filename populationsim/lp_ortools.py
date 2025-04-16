@@ -102,7 +102,8 @@ def np_integerizer_ortools(
         for c in range(control_count) if c != total_hh_control_index
     )
 
-    objective = solver.Maximize(z)
+    # - Set objective function
+    objective = solver.Maximize(z)  # noqa: F841
 
     # - inequality constraints
     for c in range(0, control_count):
@@ -319,7 +320,8 @@ def np_simul_integerizer_ortools(
         solver.Sum(parent_relax_ge[c] * parent_countrol_importance[c]
                    for c in range(parent_control_count))
 
-    objective = solver.Maximize(z)
+    # - Set objective function
+    objective = solver.Maximize(z)  # noqa: F841
 
     # constraints = [
     #     # - sub inequality constraints

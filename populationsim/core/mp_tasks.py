@@ -731,7 +731,7 @@ def setup_injectables_and_logging(injectables, locutor=True):
 
     # register steps and other injectables
     if not inject.is_injectable("preload_injectables"):
-        from populationsim import steps
+        pass
 
     try:
 
@@ -1175,7 +1175,7 @@ def run_sub_simulations(
         queues.append(q)
 
     # - start processes
-    for i, p in zip(list(range(num_simulations)), procs):
+    for _, p in zip(list(range(num_simulations)), procs):
         info(f"start process {p.name}")
         p.start()
 
