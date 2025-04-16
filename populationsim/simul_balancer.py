@@ -2,7 +2,6 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
-from builtins import zip
 from builtins import range
 from builtins import object
 import logging
@@ -10,7 +9,7 @@ import numpy as np
 
 import pandas as pd
 
-from activitysim.core.config import setting
+from populationsim.core.config import setting
 
 logger = logging.getLogger(__name__)
 

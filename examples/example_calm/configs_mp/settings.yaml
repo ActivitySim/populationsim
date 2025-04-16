@@ -50,7 +50,7 @@ multiprocess_steps:
     begin: expand_households
 
 # Rather than using the 'except: True' wildcard, we could explicitly list the tables that shold not be sliced
-# and let activitysim.mp_tasks deduce which created tables should be coalesced, but that requires a pathalogical
+# and let populationsim.mp_tasks deduce which created tables should be coalesced, but that requires a pathalogical
 # knowledge of the names of esisting internal tables, whereas the coalesce directive allows us to simply specify
 # the names of the new tables we expect mp_sub_balancing_TAZ to create, which seems less error-prone
 # (especially since mp_tasks.coalesce_pipelines will complain if the tables int het coalesce list are not found.)

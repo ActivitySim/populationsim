@@ -5,16 +5,16 @@
 import logging
 from pathlib import Path
 
-import activitysim.core.tracing as tracing
+import populationsim.core.tracing as tracing
 
-from activitysim.core import inject
+from populationsim.core import inject
 
 
 def add_canonical_dirs():
 
     example_dir = Path(__file__).parent.parent / 'examples'
-    example_configs_dir = (example_dir / 'example_test' / 'configs').__str__()
-    configs_dir = (Path(__file__).parent / 'configs').__str__()
+    example_configs_dir = (example_dir / 'example_test' / 'configs')
+    configs_dir = (Path(__file__).parent / 'configs')
     inject.add_injectable("configs_dir", [configs_dir, example_configs_dir])
 
     output_dir = Path(__file__).parent / 'output'
@@ -27,7 +27,7 @@ def test_config_logger(capsys):
 
     tracing.config_logger()
 
-    logger = logging.getLogger('popsim')
+    logger = logging.getLogger('populationsim')
 
     file_handlers = [h for h in logger.handlers if type(h) is logging.FileHandler]
     assert len(file_handlers) == 1

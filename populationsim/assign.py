@@ -4,12 +4,11 @@
 
 from builtins import str
 import logging
-import os
 
 import pandas as pd
 import numpy as np
 
-from activitysim.core import assign
+from populationsim.core import assign
 
 logger = logging.getLogger(__name__)
 

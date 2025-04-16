@@ -5,7 +5,7 @@
 from pathlib import Path
 import pandas as pd
 
-from activitysim.core import inject
+from populationsim.core import inject
 
 from populationsim import integerizer
 
@@ -14,7 +14,7 @@ def test_integerizer():
    
     example_dir = Path(__file__).parent.parent / 'examples'
 
-    configs_dir = (example_dir / 'example_test' / 'configs').__str__()
+    configs_dir = (example_dir / 'example_test' / 'configs')
     inject.add_injectable("configs_dir", configs_dir)
 
     # data_dir = os.path.join(os.path.dirname(__file__), 'data')

@@ -7,11 +7,8 @@ import argparse
 from pathlib import Path
 import shutil
 
-from activitysim.core.config import setting
-from activitysim.core import inject
-
-from activitysim.cli.run import add_run_args, run
-from populationsim import steps
+from populationsim.core import inject
+import populationsim
 
 
 @inject.injectable()
@@ -54,8 +51,8 @@ if __name__ == '__main__':
         )
 
     parser = argparse.ArgumentParser()
-    add_run_args(parser)
+    populationsim.add_run_args(parser)
     args = parser.parse_args()
     args.working_dir = os.path.dirname(__file__)
     
-    sys.exit(run(args))
+    sys.exit(populationsim.run(args))

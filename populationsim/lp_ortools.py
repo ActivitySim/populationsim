@@ -3,8 +3,6 @@
 
 # from builtins import str
 from builtins import range
-import logging
-import os
 
 import numpy as np
 
@@ -61,8 +59,6 @@ def np_integerizer_ortools(
 
     # - Instantiate a mixed-integer solver
     solver = pywraplp.Solver('IntegerizeCbc', pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
-    solver.SetNumThreads(1)
-    solver.SetSolverSpecificParametersAsString("randomSeed=123")
 
     # Safe variable construction
     x = [None] * sample_count

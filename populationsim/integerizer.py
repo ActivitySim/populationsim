@@ -5,15 +5,13 @@
 from builtins import object
 import logging
 
-import os
-
 import numpy as np
 import pandas as pd
-from activitysim.core.config import setting
+from populationsim.core.config import setting
 
-from .lp import get_single_integerizer
-from .lp import STATUS_SUCCESS
-from .lp import STATUS_OPTIMAL
+from populationsim.lp import get_single_integerizer
+from populationsim.lp import STATUS_SUCCESS
+from populationsim.lp import STATUS_OPTIMAL
 
 
 logger = logging.getLogger(__name__)

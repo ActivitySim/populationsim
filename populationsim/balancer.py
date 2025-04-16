@@ -9,7 +9,7 @@ import numpy as np
 
 import pandas as pd
 
-from activitysim.core.config import setting
+from populationsim.core.config import setting
 
 
 logger = logging.getLogger(__name__)

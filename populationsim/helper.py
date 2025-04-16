@@ -1,10 +1,8 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
-import logging
-
-from activitysim.core import pipeline
-from activitysim.core import inject
+from populationsim.core import pipeline
+from populationsim.core import inject
 
 
 def control_table_name(geography):

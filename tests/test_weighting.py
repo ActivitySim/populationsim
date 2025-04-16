@@ -2,10 +2,9 @@ import pandas as pd
 from tests.data_hash import hash_dataframe
 from pathlib import Path
 
-from activitysim.core import config
-from activitysim.core import tracing
-from activitysim.core import pipeline
-from activitysim.core import inject
+from populationsim.core import tracing
+from populationsim.core import pipeline
+from populationsim.core import inject
 
 from populationsim import steps
 
@@ -23,9 +22,9 @@ def test_weighting():
     data_dir = (example_dir / 'example_survey_weighting' / 'data')
     output_dir = Path(__file__).parent / 'output'
     
-    inject.add_injectable("data_dir", data_dir.__str__())
-    inject.add_injectable("configs_dir", configs_dir.__str__())
-    inject.add_injectable("output_dir", output_dir.__str__())
+    inject.add_injectable("data_dir", data_dir)
+    inject.add_injectable("configs_dir", configs_dir)
+    inject.add_injectable("output_dir", output_dir)
 
     inject.clear_cache()
 

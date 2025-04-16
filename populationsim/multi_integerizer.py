@@ -5,19 +5,18 @@
 from builtins import range
 from builtins import object
 import logging
-import os
 
 import numpy as np
 import pandas as pd
 
 
-from activitysim.core.config import setting
+from populationsim.core.config import setting
 
-from .lp import get_simul_integerizer
-from .lp import STATUS_SUCCESS
+from populationsim.lp import get_simul_integerizer
+from populationsim.lp import STATUS_SUCCESS
 
-from .integerizer import smart_round
-from .integerizer import do_integerizing
+from populationsim.integerizer import smart_round
+from populationsim.integerizer import do_integerizing
 
 logger = logging.getLogger(__name__)
 

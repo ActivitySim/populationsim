@@ -2,11 +2,9 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
-import logging
-
-from activitysim.core.config import setting
-from . import lp_cvx
-from . import lp_ortools
+from populationsim.core.config import setting
+from populationsim import lp_cvx
+from populationsim import lp_ortools
 
 
 STATUS_OPTIMAL = 'OPTIMAL'

@@ -10,16 +10,14 @@ import os
 import pandas as pd
 import numpy as np
 
-from activitysim.core import inject
-from activitysim.core import pipeline
-from activitysim.core import config
+from populationsim.core import inject
+from populationsim.core import pipeline
+from populationsim.core import config
+from populationsim.core.config import setting
 
-from ..assign import assign_variable
-from .helper import control_table_name
-from .helper import get_control_table
-from .helper import get_control_data_table
-
-from activitysim.core.config import setting
+from populationsim.assign import assign_variable
+from populationsim.helper import control_table_name
+from populationsim.helper import get_control_data_table
 
 logger = logging.getLogger(__name__)
 

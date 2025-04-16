@@ -7,11 +7,11 @@ import os
 import pandas as pd
 import numpy as np
 
-from activitysim.core import inject
+from populationsim.core import inject
+from populationsim.core.config import setting
 
-from .helper import get_control_table
-from .helper import get_weight_table
-from activitysim.core.config import setting
+from populationsim.helper import get_control_table
+from populationsim.helper import get_weight_table
 
 logger = logging.getLogger(__name__)
 

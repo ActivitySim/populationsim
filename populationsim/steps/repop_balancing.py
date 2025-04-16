@@ -5,16 +5,15 @@
 import logging
 import pandas as pd
 
-from activitysim.core import inject
+from populationsim.core import inject
+from populationsim.core.config import setting
 
-from activitysim.core.config import setting
+from populationsim.helper import get_control_table
+from populationsim.helper import weight_table_name
+from populationsim.helper import get_weight_table
 
-from .helper import get_control_table
-from .helper import weight_table_name
-from .helper import get_weight_table
-
-from ..balancer import do_balancing
-from ..integerizer import do_integerizing
+from populationsim.balancer import do_balancing
+from populationsim.integerizer import do_integerizing
 
 
 logger = logging.getLogger(__name__)

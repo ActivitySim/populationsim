@@ -5,10 +5,8 @@ import logging
 import os
 import pandas as pd
 
-from activitysim.core import pipeline
-from activitysim.core import inject
-
-from activitysim.core.config import setting
+from populationsim.core import inject
+from populationsim.core.config import setting
 
 logger = logging.getLogger(__name__)
 

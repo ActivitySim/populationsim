@@ -7,14 +7,11 @@ import logging
 import pandas as pd
 import numpy as np
 
-from activitysim.core import pipeline
-from activitysim.core import inject
+from populationsim.core import pipeline
+from populationsim.core import inject
 
-from activitysim.core.config import setting
-from .helper import get_control_table
-from .helper import get_weight_table
-
-from .helper import weight_table_name
+from populationsim.core.config import setting
+from populationsim.helper import get_weight_table
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +82,7 @@ def expand_households():
             hh_ids = group_hh_probs[group_id][HH_IDS]
             hh_probs = group_hh_probs[group_id][HH_PROBS]
             return prng.choice(hh_ids, p=hh_probs)
+
         expanded_weights[household_id_col] = \
             expanded_weights.group_id.apply(chooser, convert_dtype=True,)
 

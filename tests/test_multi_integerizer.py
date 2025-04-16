@@ -5,13 +5,13 @@
 from pathlib import Path
 import pandas as pd
 
-from activitysim.core import inject
+from populationsim.core import inject
 
 from populationsim.multi_integerizer import do_simul_integerizing
 from populationsim.multi_integerizer import do_sequential_integerizing
 
 example_dir = Path(__file__).parent.parent / 'examples'
-configs_dir = (example_dir / 'example_test' / 'configs').__str__()
+configs_dir = (example_dir / 'example_test' / 'configs')
 
 incidence_df = pd.DataFrame({
     'hh_id': [0, 6, 12, 18, 24, 30],

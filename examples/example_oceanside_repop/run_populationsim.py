@@ -2,11 +2,8 @@ import sys
 import argparse
 from pathlib import Path
 
-from activitysim.core.config import setting
-from activitysim.core import inject
-
-from activitysim.cli.run import add_run_args, run
-from populationsim import steps
+import populationsim
+from populationsim.core import inject
 from construct_pipe import ConstructPipe
 
 @inject.injectable()
@@ -28,14 +25,12 @@ def log_settings():
 
 if __name__ == '__main__':
 
-    assert inject.get_injectable('preload_injectables', None)
-
     parser = argparse.ArgumentParser()
-    add_run_args(parser)
+    populationsim.add_run_args(parser)
     args = parser.parse_args()
     args.working_dir = Path(__file__).parent.resolve()
     
     # Set up the pipeline
     ConstructPipe(args.working_dir)
     
-    sys.exit(run(args))
+    sys.exit(populationsim.run(args))

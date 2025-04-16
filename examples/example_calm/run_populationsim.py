@@ -5,11 +5,8 @@ import os
 import sys
 import argparse
 
-from activitysim.core.config import setting
-from activitysim.core import inject
-
-from activitysim.cli.run import add_run_args, run
-from populationsim import steps
+from populationsim.core import inject
+import populationsim
 
 
 @inject.injectable()
@@ -34,8 +31,8 @@ if __name__ == '__main__':
     assert inject.get_injectable('preload_injectables', None)
 
     parser = argparse.ArgumentParser()
-    add_run_args(parser)
+    populationsim.add_run_args(parser)
     args = parser.parse_args()
     args.working_dir = os.path.dirname(__file__)
 
-    sys.exit(run(args))
+    sys.exit(populationsim.run(args))

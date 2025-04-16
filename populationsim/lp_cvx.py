@@ -5,7 +5,7 @@
 import logging
 
 import numpy as np
-from activitysim.core.config import setting
+from populationsim.core.config import setting
 
 logger = logging.getLogger(__name__)
 

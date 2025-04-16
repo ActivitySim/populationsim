@@ -14,12 +14,7 @@ logging:
 
   loggers:
 
-    popsim:
-      level: DEBUG
-      handlers: [console, logfile]
-      propagate: false
-
-    activitysim:
+    populationsim:
       level: DEBUG
       handlers: [console, logfile]
       propagate: false
@@ -33,7 +28,7 @@ logging:
 
     logfile:
       class: logging.FileHandler
-      filename: !!python/object/apply:activitysim.core.config.log_file_path ['popsim.log']
+      filename: !!python/object/apply:populationsim.core.config.log_file_path ['populationsim.log']
       mode: w
       formatter: simpleFormatter
       level: NOTSET

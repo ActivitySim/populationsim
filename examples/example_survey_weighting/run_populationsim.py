@@ -2,11 +2,8 @@ import os
 import sys
 import argparse
 
-from activitysim.core.config import setting
-from activitysim.core import inject
-
-from activitysim.cli.run import add_run_args, run
-from populationsim import steps
+from populationsim.core import inject
+from populationsim import add_run_args, run
 
 
 @inject.injectable()
@@ -27,8 +24,6 @@ def log_settings():
 
 
 if __name__ == '__main__':
-
-    assert inject.get_injectable('preload_injectables', None)
 
     parser = argparse.ArgumentParser()
     add_run_args(parser)

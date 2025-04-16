@@ -2,14 +2,10 @@
 # See full license in LICENSE.txt.
 
 import logging
-import os
 
-import pandas as pd
-import numpy as np
-
-from activitysim.core import inject
-from activitysim.core import config
-from activitysim.core import input
+from populationsim.core import inject
+from populationsim.core import config
+from populationsim.core import input
 
 logger = logging.getLogger(__name__)
 
