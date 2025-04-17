@@ -20,8 +20,6 @@ logger = logging.getLogger(__name__)
 
 LAST_CHECKPOINT = "_"
 
-MEM_TRACE_TICKS = 5
-
 """
 mp_tasks - activitysim multiprocessing overview
 
@@ -957,38 +955,6 @@ def mp_apportion_pipeline(injectables, sub_proc_names, step_info):
         raise e
 
 
-def mp_setup_skims(injectables, **kwargs):
-    """
-    Sub process to load skim data into shared_data
-
-    There is no particular necessity to perform this in a sub process instead of the parent
-    except to ensure that this heavyweight task has no side-effects (e.g. loading injectables)
-
-    Parameters
-    ----------
-    injectables : dict
-        injectables from parent
-    kwargs : dict
-        shared_data_buffers passed as kwargs to avoid picking dict
-    """
-
-    setup_injectables_and_logging(injectables)
-
-    info("mp_setup_skims")
-
-    try:
-        shared_data_buffer = kwargs
-
-        network_los_preload = inject.get_injectable("network_los_preload", None)
-
-        if network_los_preload is not None:
-            network_los_preload.load_shared_data(shared_data_buffer)
-
-    except Exception as e:
-        exception(f"{type(e).__name__} exception caught in mp_setup_skims: {str(e)}")
-        raise e
-
-
 def mp_coalesce_pipelines(injectables, sub_proc_names, slice_info):
     """
     mp entry point for coalesce_pipeline
@@ -1856,27 +1822,3 @@ def write_breadcrumbs(breadcrumbs):
         breadcrumbs = [step for step in list(breadcrumbs.values())]
         yaml.dump(breadcrumbs, f)
 
-
-def if_sub_task(if_is, if_isnt):
-    """
-    select one of two values depending whether current process is primary process or subtask
-
-    This is primarily intended for use in yaml files to select between (e.g.) logging levels
-    so main log file can display only warnings and errors from subtasks
-
-    In yaml file, it can be used like this:
-
-    level: !!python/object/apply:populationsim.core.mp_tasks.if_sub_task [WARNING, NOTSET]
-
-
-    Parameters
-    ----------
-    if_is : (any type) value to return if process is a subtask
-    if_isnt : (any type) value to return if process is not a subtask
-
-    Returns
-    -------
-    (any type) (one of parameters if_is or if_isnt)
-    """
-
-    return if_is if inject.get_injectable("is_sub_task", False) else if_isnt

@@ -8,9 +8,19 @@ import logging
 import pandas as pd
 import numpy as np
 
-from populationsim.core import assign
-
 logger = logging.getLogger(__name__)
+
+class NumpyLogger:
+    def __init__(self, logger):
+        self.logger = logger
+        self.target = ""
+        self.expression = ""
+
+    def write(self, msg):
+        self.logger.warning(
+            "numpy: %s expression: %s = %s"
+            % (msg.rstrip(), str(self.target), str(self.expression))
+        )
 
 
 def assign_variable(target, expression, df, locals_dict, df_alias=None, trace_rows=None):
@@ -45,7 +55,7 @@ def assign_variable(target, expression, df, locals_dict, df_alias=None, trace_ro
         a series containing the eval result values for the assignment expression
     """
 
-    np_logger = assign.NumpyLogger(logger)
+    np_logger = NumpyLogger(logger)
 
     def to_series(x, target=None):
         if x is None or np.isscalar(x):

@@ -137,18 +137,6 @@ def override_setting(key, value):
     inject.add_injectable("settings", new_settings)
 
 
-def get_global_constants():
-    """
-    Read global constants from settings file
-
-    Returns
-    -------
-    constants : dict
-        dictionary of constants to add to locals for use by expressions in model spec
-    """
-    return read_settings_file("constants.yaml", mandatory=False)
-
-
 def read_model_settings(file_name, mandatory=False):
     """
 
@@ -167,83 +155,6 @@ def read_model_settings(file_name, mandatory=False):
 
     return model_settings
 
-
-def future_model_settings(model_name, model_settings, future_settings):
-    """
-    Warn users of new required model settings, and substitute default values
-
-    Parameters
-    ----------
-    model_name: str
-        name of model
-    model_settings: dict
-        model_settings from settigns file
-    future_settings: dict
-        default values for new required settings
-
-    Returns
-    -------
-        dict
-            model_settings with any missing future_settings added
-
-    """
-    model_settings = model_settings.copy()
-    for key, setting in future_settings.items():
-        if key not in model_settings.keys():
-            warnings.warn(
-                f"Setting '{key}' not found in {model_name} model settings."
-                f"Replacing with default value: {setting}."
-                f"This setting will be required in future versions",
-                FutureWarning,
-                stacklevel=2,
-            )
-            model_settings[key] = setting
-
-    return model_settings
-
-
-def get_model_constants(model_settings):
-    """
-    Read constants from model settings file
-
-    Returns
-    -------
-    constants : dict
-        dictionary of constants to add to locals for use by expressions in model spec
-    """
-    return model_settings.get("CONSTANTS", {})
-
-
-def get_logit_model_settings(model_settings):
-    """
-    Read nest spec (for nested logit) from model settings file
-
-    Returns
-    -------
-    nests : dict
-        dictionary specifying nesting structure and nesting coefficients
-
-    constants : dict
-        dictionary of constants to add to locals for use by expressions in model spec
-    """
-    nests = None
-
-    if model_settings is not None:
-
-        # default to MNL
-        logit_type = model_settings.get("LOGIT_TYPE", "MNL")
-
-        if logit_type not in ["NL", "MNL"]:
-            logger.error("Unrecognized logit type '%s'" % logit_type)
-            raise RuntimeError("Unrecognized logit type '%s'" % logit_type)
-
-        if logit_type == "NL":
-            nests = model_settings.get("NESTS", None)
-            if nests is None:
-                logger.error("No NEST found in model spec for NL model type")
-                raise RuntimeError("No NEST found in model spec for NL model type")
-
-    return nests
 
 
 def build_output_file_path(file_name, use_prefix=None):
@@ -290,58 +201,6 @@ def data_file_path(file_name, mandatory=True, allow_glob=False):
     return cascading_input_file_path(
         file_name, "data_dir", mandatory=mandatory, allow_glob=allow_glob
     )
-
-
-def expand_input_file_list(input_files):
-    """
-    expand list by unglobbing globs globs
-    """
-
-    # be nice and accept a string as well as a list of strings
-    if isinstance(input_files, str):
-        input_files = [input_files]
-
-    expanded_files = []
-    ungroked_files = 0
-
-    for file_name in input_files:
-
-        file_name = data_file_path(file_name, allow_glob=True)
-
-        if os.path.isfile(file_name):
-            expanded_files.append(file_name)
-            continue
-
-        if os.path.isdir(file_name):
-            logger.warning(
-                "WARNING: expand_input_file_list skipping directory: "
-                "(use glob instead): %s",
-                file_name,
-            )
-            ungroked_files += 1
-            continue
-
-        # - glob
-        logger.debug(f"expand_input_file_list trying {file_name} as glob")
-        globbed_files = glob.glob(file_name)
-        for globbed_file in globbed_files:
-            if os.path.isfile(globbed_file):
-                expanded_files.append(globbed_file)
-            else:
-                logger.warning(
-                    "WARNING: expand_input_file_list skipping: " "(does not grok) %s",
-                    file_name,
-                )
-                ungroked_files += 1
-
-        if len(globbed_files) == 0:
-            logger.warning(
-                "WARNING: expand_input_file_list file/glob not found: %s", file_name
-            )
-
-    assert ungroked_files == 0, f"{ungroked_files} ungroked file names"
-
-    return sorted(expanded_files)
 
 
 def config_file_path(file_name, mandatory=True):
@@ -640,32 +499,6 @@ def read_settings_file(
 
     else:
         return settings
-
-
-def base_settings_file_path(file_name):
-    """
-
-    Parameters
-    ----------
-    file_name
-
-    Returns
-    -------
-        path to base settings file or None if not found
-    """
-
-    if not file_name.lower().endswith(".yaml"):
-        file_name = "%s.yaml" % (file_name,)
-
-    configs_dir = inject.get_injectable("configs_dir")
-    configs_dir = [configs_dir] if isinstance(configs_dir, str) else configs_dir
-
-    for dir in configs_dir:
-        file_path = os.path.join(dir, file_name)
-        if os.path.exists(file_path):
-            return file_path
-
-    raise RuntimeError("base_settings_file %s not found" % file_name)
 
 
 def filter_warnings():

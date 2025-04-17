@@ -3,7 +3,7 @@
 
 import hashlib
 import logging
-from builtins import object, range
+from builtins import range
 
 import numpy as np
 import pandas as pd
@@ -35,7 +35,7 @@ def hash32(s):
     return int(h, base=16) & _SEED_MASK
 
 
-class SimpleChannel(object):
+class SimpleChannel:
     """
 
     We need to ensure that we generate the same random streams (when re-run or even across

@@ -3,7 +3,6 @@
 # See full license in LICENSE.txt.
 
 from builtins import range
-from builtins import object
 import logging
 
 import numpy as np
@@ -27,7 +26,7 @@ def use_simul_integerizer():
     return setting('USE_SIMUL_INTEGERIZER', True)
 
 
-class SimulIntegerizer(object):
+class SimulIntegerizer:
 
     def __init__(self,
                  incidence_df,

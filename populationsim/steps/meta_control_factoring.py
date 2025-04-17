@@ -20,8 +20,6 @@ def dump_table(table_name, table):
 
     return
 
-    print("\n%s\n" % table_name, table)
-
 
 @inject.step()
 def meta_control_factoring(settings, control_spec, incidence_table):

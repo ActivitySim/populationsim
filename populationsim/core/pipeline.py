@@ -3,7 +3,7 @@
 import datetime as dt
 import logging
 import os
-from builtins import map, next, object
+from builtins import map, next
 
 import pandas as pd
 from orca import orca
@@ -33,7 +33,7 @@ LAST_CHECKPOINT = "_"
 NO_CHECKPOINT_PREFIX = "_"
 
 
-class Pipeline(object):
+class Pipeline:
     def __init__(self):
         self.init_state()
 
@@ -83,11 +83,6 @@ def pipeline_table_key(table_name, checkpoint_name):
     else:
         key = f"/{table_name}"
     return key
-
-
-def close_on_exit(file, name):
-    assert name not in _PIPELINE.open_files
-    _PIPELINE.open_files[name] = file
 
 
 def close_open_files():

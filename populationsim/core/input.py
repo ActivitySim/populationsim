@@ -17,38 +17,6 @@ def canonical_table_index_name(table_name):
     return table_index_names and table_index_names.get(table_name, None)
 
 
-def read_input_table(tablename, required=True):
-    """Reads input table name and returns cleaned DataFrame.
-
-    Uses settings found in input_table_list in global settings file
-
-    Parameters
-    ----------
-    tablename : string
-
-    Returns
-    -------
-    pandas DataFrame
-    """
-    table_list = config.setting("input_table_list")
-    assert table_list is not None, "no input_table_list found in settings"
-
-    table_info = None
-    for info in table_list:
-        if info["tablename"] == tablename:
-            table_info = info
-
-    if table_info is not None:
-        df = read_from_table_info(table_info)
-    else:
-        if required:
-            raise RuntimeError(
-                f"could not find info for for tablename {tablename} in settings file"
-            )
-        df = None
-
-    return df
-
 
 def read_from_table_info(table_info):
     """

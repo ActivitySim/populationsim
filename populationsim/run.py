@@ -33,30 +33,6 @@ class TimeLogger:
         self._time_log = []
         self._tag1 = tag1
 
-    def mark(self, tag, ping=True, logger=None, suffix=""):
-        if ping:
-            now = time.time()
-            elapsed = now - self._time_point
-            self._time_log.append((tag, timedelta(seconds=elapsed)))
-            self._time_point = now
-            if logger is not None:
-                logger.info(
-                    "elapsed time {0} {1} {2}".format(
-                        tag,
-                        timedelta(seconds=elapsed),
-                        suffix,
-                    )
-                )
-        else:
-            self._time_log.append((tag, "skipped"))
-            elapsed = 0
-        if self._tag1:
-            tag = f"{self._tag1}.{tag}"
-        if tag not in self.aggregate_timing:
-            self.aggregate_timing[tag] = elapsed
-        else:
-            self.aggregate_timing[tag] += elapsed
-
     def summary(self, logger, tag, level=20, suffix=None):
         gross_elaspsed = time.time() - self._time_start
         if suffix:

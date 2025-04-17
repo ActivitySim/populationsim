@@ -22,9 +22,7 @@ USS = True
 
 GLOBAL_HWM = {}  # to avoid confusion with chunk local hwm
 
-MEM_TRACE_TICK_LEN = 5
 MEM_PARENT_TRACE_TICK_LEN = 15
-MEM_SNOOP_TICK_LEN = 5
 MEM_TICK = 0
 
 MEM_LOG_FILE_NAME = "mem.csv"
@@ -252,28 +250,6 @@ def trace_memory_info(event, trace_ticks=0, force_garbage_collect=False):
 
     # return rss and uss for optional use by interested callers
     return full_rss or rss, uss
-
-
-def get_rss(force_garbage_collect=False, uss=False):
-
-    if force_garbage_collect:
-        was_disabled = not gc.isenabled()
-        if was_disabled:
-            gc.enable()
-        gc.collect()
-        if was_disabled:
-            gc.disable()
-
-    if uss:
-        try:
-            info = psutil.Process().memory_full_info()
-            return info.rss, info.uss
-        except (PermissionError, psutil.AccessDenied, RuntimeError):
-            info = psutil.Process().memory_info()
-            return info.rss, 0
-    else:
-        info = psutil.Process().memory_info()
-        return info.rss, 0
 
 
 def shared_memory_size(data_buffers=None):

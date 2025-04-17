@@ -2,7 +2,6 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
-from builtins import object
 import logging
 
 import numpy as np
@@ -57,7 +56,7 @@ def smart_round(int_weights, resid_weights, target_sum):
     return rounded_weights
 
 
-class Integerizer(object):
+class Integerizer:
     def __init__(self,
                  incidence_table,
                  control_importance_weights,

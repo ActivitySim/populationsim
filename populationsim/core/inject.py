@@ -41,30 +41,6 @@ def step():
     return decorator
 
 
-def custom_step():
-    """
-    This decorator allows custom steps to potentially overload existing steps.
-    """
-
-    def decorator(func):
-        name = func.__name__
-
-        logger.debug("inject step %s" % name)
-
-        if _DECORATED_STEPS.get(name, False):
-            warnings.warn(
-                f"step {name!r} already exists, overwriting it.",
-                stacklevel=2,
-                )
-        _DECORATED_STEPS[name] = func
-
-        orca.add_step(name, func)
-
-        return func
-
-    return decorator
-
-
 def table():
     def decorator(func):
         name = func.__name__

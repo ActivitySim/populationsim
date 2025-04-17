@@ -3,7 +3,6 @@
 # See full license in LICENSE.txt.
 
 from builtins import range
-from builtins import object
 import logging
 import numpy as np
 
@@ -29,7 +28,7 @@ MIN_CONTROL_VALUE = 0.1
 MAX_INT = (1 << 31)
 
 
-class SimultaneousListBalancer(object):
+class SimultaneousListBalancer:
     """
     Dual-zone simultaneous list balancer using Newton-Raphson method with control relaxation.
 

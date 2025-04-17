@@ -12,45 +12,6 @@ from populationsim.core.config import setting
 logger = logging.getLogger(__name__)
 
 
-def track_skim_usage(output_dir):
-    """
-    write statistics on skim usage (diagnostic to detect loading of un-needed skims)
-
-    FIXME - have not yet implemented a facility to avoid loading of unused skims
-
-    FIXME - if resume_after, this will only reflect skims used after resume
-
-    Parameters
-    ----------
-    output_dir: str
-
-    """
-    pd.options.display.max_columns = 500
-    pd.options.display.max_rows = 100
-
-    skim_dict = inject.get_injectable("skim_dict")
-
-    mode = "wb" if sys.version_info < (3,) else "w"
-    with open(config.output_file_path("skim_usage.txt"), mode) as output_file:
-
-        print("\n### skim_dict usage", file=output_file)
-        for key in skim_dict.get_skim_usage():
-            print(key, file=output_file)
-
-        try:
-            unused = set(k for k in skim_dict.skim_info.base_keys) - set(
-                k for k in skim_dict.get_skim_usage()
-            )
-        except AttributeError:
-            base_keys = set(skim_dict.dataset.variables.keys()) - set(
-                skim_dict.dataset.coords.keys()
-            )
-            # using dataset
-            unused = base_keys - set(k for k in skim_dict.get_skim_usage())
-
-        for key in unused:
-            print(key, file=output_file)
-
 
 def previous_write_data_dictionary(output_dir):
     """
