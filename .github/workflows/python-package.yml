@@ -16,8 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #python-version: ["3.9", "3.10", "3.11", "3.12"]
-        python-version: ["3.8"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v4
@@ -31,8 +30,8 @@ jobs:
     - name: Install the project
       run: uv sync --all-extras --dev
 
-    # - name: Lint with ruff
-    #   uses: astral-sh/ruff-action@v3
+    - name: Lint with ruff
+      uses: astral-sh/ruff-action@v3
 
     - name: Run tests
       run: uv run pytest

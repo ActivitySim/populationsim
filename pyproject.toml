@@ -6,17 +6,15 @@ authors = [
     { name = "Ben Stabler", email = "ben.stabler@rsginc.com" }
     ]
 readme = "README.md"
-requires-python = ">=3.8,<3.9"
+requires-python = ">=3.9,<3.13"
 dependencies = [
     "ortools>=5.1.4045",
-    "numpy>=1.16.1",
-    "pandas>=1.1.0,<1.5.0",
-    "setuptools>=75.3.2",
     "pyinstrument>=5.0.1",
     "orca>=1.8",
     "pyyaml>=6.0.2",
     "psutil>=7.0.0",
-    "cytoolz>=1.0.1",
+    "pandas>=2.2",
+    "numpy>=1.16.1,<2",
 ]
 
 [dependency-groups]
