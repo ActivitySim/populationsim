@@ -1,8 +1,7 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
-from populationsim.core import pipeline
-from populationsim.core import inject
+from populationsim.core import pipeline, inject
 
 
 def control_table_name(geography):

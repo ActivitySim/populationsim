@@ -6,12 +6,8 @@ import logging
 
 import pandas as pd
 
-from populationsim.core import pipeline
-from populationsim.core import inject
-
-from populationsim.helper import get_control_table
-from populationsim.helper import control_table_name
-from populationsim.helper import get_weight_table
+from populationsim.core import pipeline, inject
+from populationsim.helper import get_control_table, control_table_name, get_weight_table
 
 logger = logging.getLogger(__name__)
 

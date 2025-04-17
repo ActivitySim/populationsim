@@ -2,7 +2,6 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
-from builtins import range
 import logging
 
 import numpy as np
@@ -14,8 +13,7 @@ from populationsim.core.config import setting
 from populationsim.lp import get_simul_integerizer
 from populationsim.lp import STATUS_SUCCESS
 
-from populationsim.integerizer import smart_round
-from populationsim.integerizer import do_integerizing
+from populationsim.integerizer import smart_round, do_integerizing
 
 logger = logging.getLogger(__name__)
 

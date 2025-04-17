@@ -7,11 +7,9 @@ import os
 import pandas as pd
 import numpy as np
 
-from populationsim.core import inject
-from populationsim.core.config import setting
+from populationsim.core import inject, config
 
-from populationsim.helper import get_control_table
-from populationsim.helper import get_weight_table
+from populationsim.helper import get_control_table, get_weight_table
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +110,7 @@ def meta_summary(
     hh_id_col
     ):
 
-    if setting('NO_INTEGERIZATION_EVER', False):
+    if config.setting('NO_INTEGERIZATION_EVER', False):
         seed_weight_cols = ['preliminary_balanced_weight', 'balanced_weight']
         sub_weight_cols = ['balanced_weight']
     else:
@@ -136,7 +134,7 @@ def meta_summary(
 
     summary['control_value'] = controls
 
-    seed_geography = setting('seed_geography')
+    seed_geography = config.setting('seed_geography')
     seed_weights_df = get_weight_table(seed_geography)
 
     for c in seed_weight_cols:
@@ -179,18 +177,18 @@ def summarize(crosswalk, incidence_table, control_spec):
 
     """
 
-    include_integer_colums = not setting('NO_INTEGERIZATION_EVER', False)
+    include_integer_colums = not config.setting('NO_INTEGERIZATION_EVER', False)
 
     crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()
 
-    geographies = setting('geographies')
-    seed_geography = setting('seed_geography')
+    geographies = config.setting('geographies')
+    seed_geography = config.setting('seed_geography')
     meta_geography = geographies[0]
     sub_geographies = geographies[geographies.index(seed_geography) + 1:]
     super_geographies = geographies[:geographies.index(seed_geography)]
     
-    hh_id_col = setting('household_id_col')
+    hh_id_col = config.setting('household_id_col')
 
     meta_ids = crosswalk_df[meta_geography].unique()
     for meta_id in meta_ids:

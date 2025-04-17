@@ -5,16 +5,15 @@ import logging
 import os
 import pandas as pd
 
-from populationsim.core import inject
-from populationsim.core.config import setting
+from populationsim.core import inject, config
 
 logger = logging.getLogger(__name__)
 
 
 def merge_seed_data(expanded_household_ids, seed_data_df, seed_columns, trace_label):
 
-    seed_geography = setting('seed_geography')
-    hh_col = setting('household_id_col')
+    seed_geography = config.setting('seed_geography')
+    hh_col = config.setting('household_id_col')
 
     df_columns = seed_data_df.columns.values
 
@@ -72,7 +71,7 @@ def write_synthetic_population(expanded_household_ids, households, persons, outp
 
     """
 
-    if setting('NO_INTEGERIZATION_EVER', False):
+    if config.setting('NO_INTEGERIZATION_EVER', False):
         logger.warning("skipping write_synthetic_population: NO_INTEGERIZATION_EVER")
         return
 
@@ -81,7 +80,7 @@ def write_synthetic_population(expanded_household_ids, households, persons, outp
     persons = persons.to_frame()
 
     SETTINGS_NAME = 'output_synthetic_population'
-    synthetic_tables_settings = setting(SETTINGS_NAME)
+    synthetic_tables_settings = config.setting(SETTINGS_NAME)
     if synthetic_tables_settings is None:
         raise RuntimeError("'%s' not found in settings" % SETTINGS_NAME)
 

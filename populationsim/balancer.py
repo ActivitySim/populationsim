@@ -2,7 +2,6 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
-from builtins import range
 import logging
 import numpy as np
 

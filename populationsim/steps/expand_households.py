@@ -7,10 +7,7 @@ import logging
 import pandas as pd
 import numpy as np
 
-from populationsim.core import pipeline
-from populationsim.core import inject
-
-from populationsim.core.config import setting
+from populationsim.core import pipeline, inject, config
 from populationsim.helper import get_weight_table
 
 logger = logging.getLogger(__name__)
@@ -27,18 +24,18 @@ def expand_households():
     Creates pipeline table expanded_household_ids
     """
 
-    if setting('NO_INTEGERIZATION_EVER', False):
+    if config.setting('NO_INTEGERIZATION_EVER', False):
         logger.warning("skipping expand_households: NO_INTEGERIZATION_EVER")
         inject.add_table('expanded_household_ids', pd.DataFrame())
         return
 
-    geographies = setting('geographies')
-    household_id_col = setting('household_id_col')
+    geographies = config.setting('geographies')
+    household_id_col = config.setting('household_id_col')
 
     low_geography = geographies[-1]
 
     # only one we really need is low_geography
-    seed_geography = setting('seed_geography')
+    seed_geography = config.setting('seed_geography')
     geography_cols = geographies[geographies.index(seed_geography):]
 
     weights = get_weight_table(low_geography, sparse=True)
@@ -49,7 +46,7 @@ def expand_households():
     weights_np = np.repeat(weights.values, weights.integer_weight.values, axis=0)
     expanded_weights = pd.DataFrame(data=weights_np, columns=weight_cols)
 
-    if setting('GROUP_BY_INCIDENCE_SIGNATURE'):
+    if config.setting('GROUP_BY_INCIDENCE_SIGNATURE'):
 
         # get these in a repeatable order so np.random.choice behaves the same regardless of weight table order
         # i.e. which could vary depending on whether we ran single or multi process due to apportioned/coalesce

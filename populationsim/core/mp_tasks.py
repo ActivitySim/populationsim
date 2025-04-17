@@ -14,7 +14,6 @@ import pandas as pd
 import yaml
 
 from populationsim.core import config, inject, mem, pipeline, tracing, util
-from populationsim.core.config import setting
 
 logger = logging.getLogger(__name__)
 
@@ -1302,7 +1301,7 @@ def run_multiprocess(injectables):
     old_breadcrumbs = run_list.get("breadcrumbs", {})
 
     # raise error if any sub-process fails without waiting for others to complete
-    fail_fast = setting("fail_fast")
+    fail_fast = config.setting("fail_fast")
     info(f"run_multiprocess fail_fast: {fail_fast}")
 
     def skip_phase(phase):
@@ -1525,19 +1524,19 @@ def get_run_list():
         validated and annotated run_list
     """
 
-    models = setting("models", [])
-    multiprocess_steps = setting("multiprocess_steps", [])
+    models = config.setting("models", [])
+    multiprocess_steps = config.setting("multiprocess_steps", [])
 
-    resume_after = inject.get_injectable("resume_after", None) or setting(
+    resume_after = inject.get_injectable("resume_after", None) or config.setting(
         "resume_after", None
     )
-    multiprocess = inject.get_injectable("multiprocess", False) or setting(
+    multiprocess = inject.get_injectable("multiprocess", False) or config.setting(
         "multiprocess", False
     )
 
     # default settings that can be overridden by settings in individual steps
-    global_chunk_size = setting("chunk_size", 0) or 0
-    default_mp_processes = setting("num_processes", 0) or int(
+    global_chunk_size = config.setting("chunk_size", 0) or 0
+    default_mp_processes = config.setting("num_processes", 0) or int(
         1 + multiprocessing.cpu_count() / 2.0
     )
 

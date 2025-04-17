@@ -1,9 +1,6 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
-# from builtins import str
-from builtins import range
-
 import numpy as np
 
 STATUS_OPTIMAL = 'OPTIMAL'

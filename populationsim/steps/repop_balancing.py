@@ -5,13 +5,9 @@
 import logging
 import pandas as pd
 
-from populationsim.core import inject
-from populationsim.core.config import setting
+from populationsim.core import inject, config
 
-from populationsim.helper import get_control_table
-from populationsim.helper import weight_table_name
-from populationsim.helper import get_weight_table
-
+from populationsim.helper import get_control_table, weight_table_name, get_weight_table
 from populationsim.balancer import do_balancing
 from populationsim.integerizer import do_integerizing
 
@@ -54,8 +50,8 @@ def repop_balancing(settings, crosswalk, control_spec, incidence_table):
     low_control_spec = control_spec[control_spec['geography'] == low_geography]
     low_controls_df = get_control_table(low_geography)
 
-    household_id_col = setting('household_id_col')
-    total_hh_control_col = setting('total_hh_control')
+    household_id_col = config.setting('household_id_col')
+    total_hh_control_col = config.setting('total_hh_control')
 
     max_expansion_factor = settings.get('max_expansion_factor', None)
     min_expansion_factor = settings.get('min_expansion_factor', None)

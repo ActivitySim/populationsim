@@ -10,14 +10,9 @@ import os
 import pandas as pd
 import numpy as np
 
-from populationsim.core import inject
-from populationsim.core import pipeline
-from populationsim.core import config
-from populationsim.core.config import setting
-
+from populationsim.core import inject, pipeline, config
 from populationsim.assign import assign_variable
-from populationsim.helper import control_table_name
-from populationsim.helper import get_control_data_table
+from populationsim.helper import control_table_name, get_control_data_table
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +28,7 @@ def read_control_spec(data_filename):
     logger.info("Reading control file %s" % data_file_path)
     control_spec = pd.read_csv(data_file_path, comment='#')
 
-    geographies = setting('geographies')
+    geographies = config.setting('geographies')
 
     if 'geography' not in control_spec.columns:
         raise RuntimeError("missing geography column in controls file")
@@ -47,7 +42,7 @@ def read_control_spec(data_filename):
 
 def build_incidence_table(control_spec, households_df, persons_df, crosswalk_df):
 
-    hh_col = setting('household_id_col')
+    hh_col = config.setting('household_id_col')
 
     incidence_table = pd.DataFrame(index=households_df.index)
 
@@ -87,7 +82,7 @@ def build_incidence_table(control_spec, households_df, persons_df, crosswalk_df)
     # Check the control group sums
     if 'control_group' in control_spec.columns:
         for (control_group, table), fields in control_spec.groupby(['control_group', 'seed_table'])['target']:                        
-            total_col = setting('total_per_control') if table == 'persons' else setting('total_hh_control')
+            total_col = config.setting('total_per_control') if table == 'persons' else config.setting('total_hh_control')
             is_equal = incidence_table[fields].sum(axis=1) == incidence_table[total_col]
 
             if not is_equal.all():
@@ -112,9 +107,9 @@ def add_geography_columns(incidence_table, households_df, crosswalk_df):
 
     """
 
-    geographies = setting('geographies')
+    geographies = config.setting('geographies')
     meta_geography = geographies[0]
-    seed_geography = setting('seed_geography')
+    seed_geography = config.setting('seed_geography')
 
     # add seed_geography col to incidence table
     incidence_table[seed_geography] = households_df[seed_geography]
@@ -131,7 +126,7 @@ def add_geography_columns(incidence_table, households_df, crosswalk_df):
 def build_control_table(geo, control_spec, crosswalk_df):
 
     # control_geographies is list with target geography and the geographies beneath it
-    control_geographies = setting('geographies')
+    control_geographies = config.setting('geographies')
     assert geo in control_geographies
     control_geographies = control_geographies[control_geographies.index(geo):]
 
@@ -185,7 +180,7 @@ def build_control_table(geo, control_spec, crosswalk_df):
     controls = controls[control_spec.target]
 
     # drop controls for zero-household geographies
-    total_hh_control_col = setting('total_hh_control')
+    total_hh_control_col = config.setting('total_hh_control')
     empty = (controls[total_hh_control_col] == 0)
     if empty.any():
         controls = controls[~empty]
@@ -199,7 +194,7 @@ def build_crosswalk_table():
     build crosswalk table filtered to include only zones in lowest geography
     """
 
-    geographies = setting('geographies')
+    geographies = config.setting('geographies')
 
     crosswalk_data_table = inject.get_table('geo_cross_walk').to_frame()
 
@@ -214,8 +209,8 @@ def build_crosswalk_table():
     crosswalk = crosswalk[rows_in_low_controls]
     
     # Ensure consistent nesting of geography hierarchies. e.g., a tract cannot be in two PUMAS
-    geos = setting('geographies')
-    slice_geo = setting('slice_geography', geos[0])
+    geos = config.setting('geographies')
+    slice_geo = config.setting('slice_geography', geos[0])
     
     # Start from sliced geography.    
     slice_level = geos.index(slice_geo)
@@ -229,7 +224,7 @@ def build_crosswalk_table():
             msg += "This will produce an error in multiprocessing if sliced at this level.\n"
                         
             # If multiprocess, consistent geography nesting is required.
-            if setting('multiprocess', False) and (slice_level <= i):
+            if config.setting('multiprocess', False) and (slice_level <= i):
                 raise RuntimeError(msg)
             # Otherwise it is ok but not ideal. Produce a warning.
             else:
@@ -243,7 +238,7 @@ def build_crosswalk_table():
 def build_grouped_incidence_table(incidence_table, control_spec, seed_geography):
 
     hh_incidence_table = incidence_table
-    household_id_col = setting('household_id_col')
+    household_id_col = config.setting('household_id_col')
 
     hh_groupby_cols = list(control_spec.target) + [seed_geography]
     hh_grouper = hh_incidence_table.groupby(hh_groupby_cols)
@@ -289,11 +284,11 @@ def filter_households(households_df, persons_df, crosswalk_df):
     """
 
     # drop any zero weight households (there are some in calm data)
-    hh_weight_col = setting('household_weight_col')
+    hh_weight_col = config.setting('household_weight_col')
     households_df = households_df[households_df[hh_weight_col] > 0]
 
     # remove any households not in seed zones
-    seed_geography = setting('seed_geography')
+    seed_geography = config.setting('seed_geography')
     seed_ids = crosswalk_df[seed_geography].unique()
 
     rows_in_seed_zones = households_df[seed_geography].isin(seed_ids)
@@ -342,7 +337,7 @@ def setup_data_structures(settings, households, persons):
 
     """
 
-    seed_geography = setting('seed_geography')
+    seed_geography = config.setting('seed_geography')
     geographies = settings['geographies']
 
     households_df = households.to_frame()
@@ -363,7 +358,7 @@ def setup_data_structures(settings, households, persons):
         slice_table[slice_geography] = slice_table.index
         inject.add_table("slice_crosswalk", slice_table)
 
-    control_spec = read_control_spec(setting('control_file_name', 'controls.csv'))
+    control_spec = read_control_spec(config.setting('control_file_name', 'controls.csv'))
     inject.add_table('control_spec', control_spec)
 
     for g in geographies:
@@ -385,10 +380,10 @@ def setup_data_structures(settings, households, persons):
     incidence_table = add_geography_columns(incidence_table, households_df, crosswalk_df)
 
     # add sample_weight col to incidence table
-    hh_weight_col = setting('household_weight_col')
+    hh_weight_col = config.setting('household_weight_col')
     incidence_table['sample_weight'] = households_df[hh_weight_col]
 
-    if setting('GROUP_BY_INCIDENCE_SIGNATURE') and not setting('NO_INTEGERIZATION_EVER', False):
+    if config.setting('GROUP_BY_INCIDENCE_SIGNATURE') and not config.setting('NO_INTEGERIZATION_EVER', False):
         group_incidence_table, household_groups \
             = build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
 
@@ -421,8 +416,8 @@ def repop_setup_data_structures(households, persons):
 
     """
 
-    seed_geography = setting('seed_geography')
-    geographies = setting('geographies')
+    seed_geography = config.setting('seed_geography')
+    geographies = config.setting('geographies')
     low_geography = geographies[-1]
 
     # replace crosswalk table
@@ -430,7 +425,7 @@ def repop_setup_data_structures(households, persons):
     pipeline.replace_table('crosswalk', crosswalk_df)
 
     # replace control_spec
-    control_file_name = setting('repop_control_file_name', 'repop_controls.csv')
+    control_file_name = config.setting('repop_control_file_name', 'repop_controls.csv')
     control_spec = read_control_spec(control_file_name)
 
     # repop control spec should only specify controls for lowest level geography
@@ -451,7 +446,7 @@ def repop_setup_data_structures(households, persons):
     incidence_table = build_incidence_table(control_spec, households_df, persons_df, crosswalk_df)
     incidence_table = add_geography_columns(incidence_table, households_df, crosswalk_df)
     # add sample_weight col to incidence table
-    hh_weight_col = setting('household_weight_col')
+    hh_weight_col = config.setting('household_weight_col')
     incidence_table['sample_weight'] = households_df[hh_weight_col]
 
     # rebuild control tables with only the low level controls (aggregated at higher levels)
@@ -459,7 +454,7 @@ def repop_setup_data_structures(households, persons):
         controls = build_control_table(g, control_spec, crosswalk_df)
         pipeline.replace_table(control_table_name(g), controls)
 
-    if setting('GROUP_BY_INCIDENCE_SIGNATURE') and not setting('NO_INTEGERIZATION_EVER', False):
+    if config.setting('GROUP_BY_INCIDENCE_SIGNATURE') and not config.setting('NO_INTEGERIZATION_EVER', False):
         group_incidence_table, household_groups \
             = build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
 

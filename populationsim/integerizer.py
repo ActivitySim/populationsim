@@ -9,8 +9,7 @@ import pandas as pd
 from populationsim.core.config import setting
 
 from populationsim.lp import get_single_integerizer
-from populationsim.lp import STATUS_SUCCESS
-from populationsim.lp import STATUS_OPTIMAL
+from populationsim.lp import STATUS_SUCCESS, STATUS_OPTIMAL
 
 
 logger = logging.getLogger(__name__)

@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 
 from populationsim.core.util import reindex
-
 from populationsim.core.tracing import print_elapsed_time
 
 logger = logging.getLogger(__name__)

@@ -5,14 +5,10 @@
 import logging
 import pandas as pd
 
-from populationsim.core import inject
+from populationsim.core import inject, config
 
-from populationsim.core.config import setting
-
-from ..balancer import do_balancing
-from ..helper import get_control_table
-from ..helper import weight_table_name
-from ..helper import get_weight_table
+from populationsim.helper import get_weight_table, get_control_table, weight_table_name
+from populationsim.balancer import do_balancing
 
 
 logger = logging.getLogger(__name__)
@@ -63,7 +59,7 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     assert (seed_controls_df.columns == control_spec.target).all()
 
     # determine master_control_index if specified in settings
-    total_hh_control_col = setting('total_hh_control')
+    total_hh_control_col = config.setting('total_hh_control')
 
     max_expansion_factor = settings.get('max_expansion_factor', None)
     min_expansion_factor = settings.get('min_expansion_factor', None)

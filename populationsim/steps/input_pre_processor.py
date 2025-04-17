@@ -3,9 +3,7 @@
 
 import logging
 
-from populationsim.core import inject
-from populationsim.core import config
-from populationsim.core import input
+from populationsim.core import inject, config, input
 
 logger = logging.getLogger(__name__)
 

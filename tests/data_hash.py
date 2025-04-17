@@ -28,7 +28,6 @@ def hash_dataframe(
     df.to_csv(
         buffer,
         index=True,
-        line_terminator="\n",
         float_format="%.10f",
         na_rep="NaN"
     )

@@ -7,12 +7,8 @@ import logging
 import pandas as pd
 
 from populationsim.simul_balancer import SimultaneousListBalancer
-
-from populationsim.core import inject
-from populationsim.core.config import setting
-from populationsim.helper import get_control_table
-from populationsim.helper import weight_table_name
-from populationsim.helper import get_weight_table
+from populationsim.core import inject, config
+from populationsim.helper import get_control_table, weight_table_name, get_weight_table
 from populationsim.multi_integerizer import multi_integerize
 
 
@@ -215,8 +211,8 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
     """
 
-    NO_INTEGERIZATION_EVER = setting('NO_INTEGERIZATION_EVER', False)
-    SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS = setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS', True)
+    NO_INTEGERIZATION_EVER = config.setting('NO_INTEGERIZATION_EVER', False)
+    SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS = config.setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS', True)
 
     # geography is an injected model step arg
     geography = inject.get_step_arg('geography')
@@ -233,7 +229,7 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
     sub_geographies = geographies[geographies.index(geography):]
     parent_geographies = geographies[:geographies.index(geography)]
 
-    total_hh_control_col = setting('total_hh_control')
+    total_hh_control_col = config.setting('total_hh_control')
 
     parent_controls_df = get_control_table(parent_geography)
     sub_controls_df = get_control_table(geography)

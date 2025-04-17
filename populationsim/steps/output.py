@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 
 from populationsim.core import config, inject, pipeline
-from populationsim.core.config import setting
 
 logger = logging.getLogger(__name__)
 
@@ -221,7 +220,7 @@ def write_tables(output_dir):
 
     output_tables_settings_name = "output_tables"
 
-    output_tables_settings = setting(output_tables_settings_name)
+    output_tables_settings = config.setting(output_tables_settings_name)
 
     if output_tables_settings is None:
         logger.info("No output_tables specified in settings file. Nothing to write.")

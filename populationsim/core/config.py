@@ -574,17 +574,6 @@ def filter_warnings():
         message=".*will attempt to set the values inplace instead of always setting a new array.*",
     )
 
-    # beginning in sharrow version 2.5, a CacheMissWarning is emitted when a sharrow
-    # flow cannot be loaded from cache and needs to be compiled.  These are performance
-    # warnings for production runs and totally expected when running test or on new
-    # machines
-    try:
-        from sharrow import CacheMissWarning
-    except ImportError:
-        pass
-    else:
-        warnings.filterwarnings("default", category=CacheMissWarning)
-
     # beginning from PR #660 (after 1.2.0), a FutureWarning is emitted when the trip
     # scheduling component lacks a logic_version setting
     warnings.filterwarnings(

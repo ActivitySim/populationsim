@@ -3,7 +3,6 @@
 import datetime as dt
 import logging
 import os
-from builtins import map, next
 
 import pandas as pd
 from orca import orca
