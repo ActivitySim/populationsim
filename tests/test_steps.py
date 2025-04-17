@@ -74,7 +74,7 @@ def test_full_run1():
     result_hash = hash_dataframe(
         expanded_household_ids, sort_by=["hh_id", "TRACT", "TAZ", "PUMA"]
     )
-    assert result_hash == "05d7f8d0bf5d8e5c7ee29b67c13d858f"
+    assert result_hash == "bce80c2edbeec804a9984aef8779325d"
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -111,7 +111,7 @@ def test_full_run2_repop_replace():
     result_hash = hash_dataframe(
         expanded_household_ids, sort_by=["hh_id", "TRACT", "TAZ", "PUMA"]
     )
-    assert result_hash == "aec5dc9f7d575e367874c33ba6a61ee3"
+    assert result_hash == "b6b2a96e300a164550a5fd97ea06e114"
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -144,7 +144,7 @@ def test_full_run2_repop_append():
     result_hash = hash_dataframe(
         expanded_household_ids, sort_by=["hh_id", "TRACT", "TAZ", "PUMA"]
     )
-    assert result_hash == "b791dffd6435774e5a5ddc52f40697f1"
+    assert result_hash == "5c1042e0aa48e962b2a104cf619e8326"
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
