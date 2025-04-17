@@ -62,7 +62,7 @@ def get_simul_integerizer():
             sub_int_weights,
             parent_countrol_importance,
             parent_relax_ge_upper_bound,
-            sub_countrol_importance,
+            sub_control_importance,
             sub_float_weights,
             sub_resid_weights,
             lp_right_hand_side,

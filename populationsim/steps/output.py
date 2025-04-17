@@ -10,40 +10,6 @@ from populationsim.core import config, inject, pipeline
 logger = logging.getLogger(__name__)
 
 
-
-def previous_write_data_dictionary(output_dir):
-    """
-    Write table_name, number of rows, columns, and bytes for each checkpointed table
-
-    Parameters
-    ----------
-    output_dir: str
-
-    """
-
-    model_settings = config.read_model_settings("write_data_dictionary")
-    txt_format = model_settings.get("txt_format", "data_dict.txt")
-
-    if txt_format:
-
-        output_file_path = config.output_file_path(txt_format)
-
-        pd.options.display.max_columns = 500
-        pd.options.display.max_rows = 100
-
-        output_tables = pipeline.checkpointed_tables()
-
-        # write data dictionary for all checkpointed_tables
-
-        with open(output_file_path, "w") as output_file:
-            for table_name in output_tables:
-                df = inject.get_table(table_name, None).to_frame()
-
-                print("\n### %s %s" % (table_name, df.shape), file=output_file)
-                print("index:", df.index.name, df.index.dtype, file=output_file)
-                print(df.dtypes, file=output_file)
-
-
 @inject.step()
 def write_data_dictionary(output_dir):
     """

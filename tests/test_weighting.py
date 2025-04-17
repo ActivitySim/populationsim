@@ -2,9 +2,7 @@ import pandas as pd
 from tests.data_hash import hash_dataframe
 from pathlib import Path
 
-from populationsim.core import tracing
-from populationsim.core import pipeline
-from populationsim.core import inject
+from populationsim.core import tracing, inject, pipeline
 
 
 
@@ -52,7 +50,7 @@ def test_weighting():
     # This hash is the md5 of the dataframe string file previously generated
     # by the pipeline. It is used to check that the pipeline is generating the same output.
     result_hash = hash_dataframe(summary_hh_weights.round(6), sort_by=['hh_id'])
-    assert result_hash == '8ffd3b60b555aea226ea77d5a5f62f9b'
+    assert result_hash == 'ee59e3c79732c12745240aadfe20f317'
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

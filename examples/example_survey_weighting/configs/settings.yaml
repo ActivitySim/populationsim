@@ -50,11 +50,13 @@ input_table_list:
   - tablename: households
     filename : seed_households.csv
     index_col: hh_id
-    column_map:
+    rename_columns:
       hhID: hh_id
   - tablename: persons
     filename : seed_persons.csv
-    column_map:
+    dtypes:
+      PComm: str
+    rename_columns:
       hhID: hh_id
       # personID: per_num
   - tablename: geo_cross_walk

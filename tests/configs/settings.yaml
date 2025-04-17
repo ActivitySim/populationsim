@@ -16,16 +16,16 @@ input_table_list:
   - tablename: households
     filename : seed_households.csv
     index_col: hh_id
-    column_map:
+    rename_columns:
       SERIALNO: hh_id
   - tablename: persons
     filename : seed_persons.csv
-    column_map:
+    rename_columns:
       SERIALNO: hh_id
       SPORDER: per_num
   - tablename: geo_cross_walk
     filename : geo_cross_walk.csv
-    column_map:
+    rename_columns:
       TRACTCE: TRACT
   - tablename: TAZ_control_data
     filename : taz_controls.csv

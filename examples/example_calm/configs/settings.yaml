@@ -62,7 +62,7 @@ input_table_list:
       - naicsp07
   - tablename: geo_cross_walk
     filename : geo_cross_walk.csv
-    column_map:
+    rename_columns:
       TRACTCE: TRACT
   - tablename: TAZ_control_data
     filename : control_totals_taz.csv

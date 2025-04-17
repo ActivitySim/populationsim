@@ -2,18 +2,20 @@ from pathlib import Path
 import pandas as pd
 
 from tests.data_hash import hash_dataframe
-from populationsim.core import tracing
-from populationsim.core import pipeline
-from populationsim.core import inject
+from populationsim.core import tracing, inject, pipeline
 
-example_dir = Path(__file__).parent.parent / 'examples'
-
-example_configs_dir = (example_dir / 'example_test' / 'configs')
-configs_dir = (Path(__file__).parent / 'configs')
-output_dir = Path(__file__).parent / 'output'
-data_dir = (example_dir / 'example_test' / 'data')
+TAZ_COUNT = 36
+TAZ_100_HH_COUNT = 33
+TAZ_100_HH_REPOP_COUNT = 26
 
 def setup_function():
+
+    example_dir = Path(__file__).parent.parent / 'examples'
+
+    example_configs_dir = (example_dir / 'example_test' / 'configs')
+    configs_dir = (Path(__file__).parent / 'configs')
+    output_dir = Path(__file__).parent / 'output'
+    data_dir = (example_dir / 'example_test' / 'data')
 
     inject.reinject_decorated_tables()
     
@@ -33,12 +35,6 @@ def setup_function():
 def teardown_function(func):
     inject.clear_cache()
     inject.reinject_decorated_tables()
-
-
-TAZ_COUNT = 36
-TAZ_100_HH_COUNT = 33
-TAZ_100_HH_REPOP_COUNT = 26
-
 
 def test_full_run1():
 
@@ -66,6 +62,8 @@ def test_full_run1():
     assert taz_hh_counts.loc[100] == TAZ_100_HH_COUNT
 
     # output_tables action: skip
+    output_dir = Path(__file__).parent / 'output'
+
     assert not (output_dir / 'households.csv').exists()
     assert (output_dir / 'summary_DISTRICT_1.csv').exists()
     

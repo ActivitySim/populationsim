@@ -52,7 +52,7 @@ class SimulIntegerizer:
         sub_countrol_cols = list(sub_controls_df.columns)
         sub_control_spec = control_spec[control_spec.target.isin(sub_countrol_cols)]
         self.sub_controls_df = sub_controls_df[sub_control_spec.target.values]
-        self.sub_countrol_importance = sub_control_spec.importance
+        self.sub_control_importance = sub_control_spec.importance
 
         # only care about parent control columns NOT in sub_controls
         # control spec rows and control_df columns should be same and in same order
@@ -86,7 +86,7 @@ class SimulIntegerizer:
         # print "sub_resid_weights\n", sub_resid_weights
 
         sub_control_totals = np.asanyarray(self.sub_controls_df).astype(np.int64)
-        sub_countrol_importance = np.asanyarray(self.sub_countrol_importance).astype(np.float64)
+        sub_control_importance = np.asanyarray(self.sub_control_importance).astype(np.float64)
 
         relaxed_sub_control_totals = np.dot(sub_float_weights, sub_incidence)
 
@@ -153,23 +153,25 @@ class SimulIntegerizer:
         integerizer_func = get_simul_integerizer()
 
         resid_weights_out, status_text = \
-            integerizer_func(sub_int_weights,
-                             parent_countrol_importance,
-                             parent_relax_ge_upper_bound,
-                             sub_countrol_importance,
-                             sub_float_weights,
-                             sub_resid_weights,
-                             lp_right_hand_side,
-                             parent_hh_constraint_ge_bound,
-                             sub_incidence,
-                             parent_incidence,
-                             total_hh_right_hand_side,
-                             relax_ge_upper_bound,
-                             parent_lp_right_hand_side,
-                             hh_constraint_ge_bound,
-                             parent_resid_weights,
-                             total_hh_sub_control_index,
-                             total_hh_parent_control_index)
+            integerizer_func(
+                sub_int_weights,
+                parent_countrol_importance,
+                parent_relax_ge_upper_bound,
+                sub_control_importance,
+                sub_float_weights,
+                sub_resid_weights,
+                lp_right_hand_side,
+                parent_hh_constraint_ge_bound,
+                sub_incidence,
+                parent_incidence,
+                total_hh_right_hand_side,
+                relax_ge_upper_bound,
+                parent_lp_right_hand_side,
+                hh_constraint_ge_bound,
+                parent_resid_weights,
+                total_hh_sub_control_index,
+                total_hh_parent_control_index
+            )
 
         # smart round resid_weights_out for each sub_zone
         total_household_controls = sub_control_totals[:, total_hh_sub_control_index].flatten()
@@ -347,13 +349,16 @@ def do_simul_integerizing(
     """
 
     # try simultaneous integerization of all subzones
-    status,  integerized_weights_df = try_simul_integerizing(
+    status, integerized_weights_df = try_simul_integerizing(
         trace_label,
         incidence_df,
-        sub_weights, sub_controls_df,
+        sub_weights,
+        sub_controls_df,
         sub_geography,
-        control_spec, total_hh_control_col,
-        sub_control_zones)
+        control_spec,
+        total_hh_control_col,
+        sub_control_zones
+        )
 
     if status in STATUS_SUCCESS:
         logger.info("do_simul_integerizing succeeded for %s status %s. " % (trace_label, status))
@@ -531,19 +536,33 @@ def do_sequential_integerizing(
 
 
 def do_no_integerizing(
-        trace_label,
-        incidence_df,
-        sub_weights, sub_controls_df,
-        control_spec, total_hh_control_col,
+        sub_weights,
         sub_control_zones,
-        sub_geography):
+        sub_geography,
+        **kwargs
+        ):
     """
-
+    Return a dataframe with the sub_weights as integerized weights
+    without any integerization, just to satisfy the interface.
+    Parameters
+    ----------
+    sub_weights : pandas.DataFrame
+        balanced subzone household sample weights to integerize
+    sub_controls_df : pandas.Dataframe
+        sub_geography controls (one row per zone indexed by sub_zone id)
+    sub_geography : str
+        subzone geography name (e.g. 'TAZ')
+    Returns
+    -------
+    integerized_weights_df : pandas.DataFrame
+        canonical form weight table, with columns for 'balanced_weight', 'integer_weight'
+        plus columns for household id, and sub_geography zone ids
     """
     integerized_weights_list = []
     rounded_weights_list = []
     integerized_zone_ids = []
-    for zone_id, zone_name in sub_control_zones.iteritems():
+    
+    for zone_id, zone_name in sub_control_zones.items():
 
         logger.info("sequential_integerizing zone_id %s zone_name %s" % (zone_id, zone_name))
 

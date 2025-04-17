@@ -17,6 +17,8 @@ from populationsim.core import config, inject, mem, pipeline, tracing, util
 
 logger = logging.getLogger(__name__)
 
+multiprocessing.set_start_method('spawn', force=True)
+
 LAST_CHECKPOINT = "_"
 
 """
@@ -860,8 +862,6 @@ def run_simulation(queue, step_info, resume_after, shared_data_buffer):
     if last_checkpoint in models:
         info(f"Resuming model run list after {last_checkpoint}")
         models = models[models.index(last_checkpoint) + 1 :]
-
-    assert inject.get_injectable("preload_injectables", None)
 
     t0 = tracing.print_elapsed_time()
     for model in models:

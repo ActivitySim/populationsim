@@ -1,7 +1,6 @@
 # ActivitySim
 # See full license in LICENSE.txt.
 
-import argparse
 import logging
 import os
 
@@ -106,52 +105,3 @@ def reindex(series1, series2):
     except AttributeError:
         pass
     return result
-
-
-def recursive_replace(obj, search, replace):
-    if isinstance(obj, dict):
-        for k, v in obj.items():
-            obj[k] = recursive_replace(v, search, replace)
-    if isinstance(obj, list):
-        obj = [replace if x == search else x for x in obj]
-    if search == obj:
-        obj = replace
-    return obj
-
-
-def suffix_tables_in_settings(
-    model_settings,
-    suffix="proto_",
-    tables=None,
-):
-    if tables is None:
-        tables = [
-            "persons",
-            "households",
-            "tours",
-            "persons_merged",
-        ]
-    for k in tables:
-        model_settings = recursive_replace(model_settings, k, suffix + k)
-    return model_settings
-
-
-
-def parse_suffix_args(args):
-    parser = argparse.ArgumentParser()
-    parser.add_argument("filename", help="file name")
-    parser.add_argument("-s", "--SUFFIX", "-s", help="suffix to replace root targets")
-    parser.add_argument(
-        "-r", "--ROOTS", nargs="*", help="roots be suffixed", default=[]
-    )
-    return parser.parse_args(args.split())
-
-
-def flatten(lst):
-    for sublist in lst:
-        if isinstance(sublist, list):
-            for item in sublist:
-                yield item
-        else:
-            yield sublist
-

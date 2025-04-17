@@ -5,9 +5,7 @@
 import logging
 from pathlib import Path
 
-import populationsim.core.tracing as tracing
-
-from populationsim.core import inject
+from populationsim.core import tracing, inject
 
 
 def add_canonical_dirs():

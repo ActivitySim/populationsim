@@ -672,7 +672,7 @@ def run(models, resume_after=None, memory_sidecar_process=None):
             models = models[models.index(resume_after) + 1 :]
 
     mem.trace_memory_info("pipeline.run before preload_injectables")
-
+    config.filter_warnings()
     # preload any bulky injectables (e.g. skims) not in pipeline
     if inject.get_injectable("preload_injectables", None):
         if memory_sidecar_process:

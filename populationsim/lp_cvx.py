@@ -15,6 +15,10 @@ STATUS_SUCCESS = [STATUS_OPTIMAL, STATUS_FEASIBLE]
 # 'CBC', 'GLPK_MI', 'ECOS_BB'
 CVX_SOLVER = 'GLPK_MI'
 
+# Order of vectorization for cvxpy
+# 'C' for C-style row-major order, 'F' for Fortran-style column-major order
+# Note: cvxpy is deprecating 'F' order, so we use 'C' order.
+ORDER = 'C'
 
 def np_integerizer_cvx(
         incidence,
@@ -48,6 +52,10 @@ def np_integerizer_cvx(
     """
 
     import cvxpy as cvx
+    
+    def vec(x, order='C'):
+        """Set the order of the vector to C or F Once."""
+        return cvx.vec(x, order=order)
 
     STATUS_TEXT = {
         cvx.OPTIMAL: STATUS_OPTIMAL,
@@ -64,7 +72,7 @@ def np_integerizer_cvx(
     sample_count, control_count = incidence.shape
 
     # - Decision variables for optimization
-    x = cvx.Variable(1, sample_count)
+    x = cvx.Variable((1, sample_count))
 
     # - Create positive continuous constraint relaxation variables
     relax_le = cvx.Variable(control_count)
@@ -76,9 +84,9 @@ def np_integerizer_cvx(
     # - Set objective
 
     objective = cvx.Maximize(
-        cvx.sum_entries(cvx.mul_elemwise(log_resid_weights, cvx.vec(x))) -
-        cvx.sum_entries(cvx.mul_elemwise(control_importance_weights, relax_le)) -
-        cvx.sum_entries(cvx.mul_elemwise(control_importance_weights, relax_ge))
+        cvx.sum(cvx.multiply(log_resid_weights, vec(x))) -
+        cvx.sum(cvx.multiply(control_importance_weights, relax_le)) -
+        cvx.sum(cvx.multiply(control_importance_weights, relax_ge))
     )
 
     total_hh_constraint = lp_right_hand_side[total_hh_control_index]
@@ -88,10 +96,10 @@ def np_integerizer_cvx(
 
     constraints = [
         # - inequality constraints
-        cvx.vec(x * incidence) - relax_le >= 0,
-        cvx.vec(x * incidence) - relax_le <= lp_right_hand_side,
-        cvx.vec(x * incidence) + relax_ge >= lp_right_hand_side,
-        cvx.vec(x * incidence) + relax_ge <= hh_constraint_ge_bound,
+        vec(x @ incidence) - relax_le >= 0,
+        vec(x @ incidence) - relax_le <= lp_right_hand_side,
+        vec(x @ incidence) + relax_ge >= lp_right_hand_side,
+        vec(x @ incidence) + relax_ge <= hh_constraint_ge_bound,
 
         x >= 0.0,
         x <= max_x,
@@ -103,7 +111,7 @@ def np_integerizer_cvx(
         relax_ge <= relax_ge_upper_bound,
 
         # - equality constraint for the total households control
-        cvx.sum_entries(x) == total_hh_constraint,
+        cvx.sum(x) == total_hh_constraint,
     ]
 
     prob = cvx.Problem(objective, constraints)
@@ -134,7 +142,7 @@ def np_simul_integerizer_cvx(
         sub_int_weights,
         parent_countrol_importance,
         parent_relax_ge_upper_bound,
-        sub_countrol_importance,
+        sub_control_importance,
         sub_float_weights,
         sub_resid_weights,
         lp_right_hand_side,
@@ -146,9 +154,11 @@ def np_simul_integerizer_cvx(
         parent_lp_right_hand_side,
         hh_constraint_ge_bound,
         parent_resid_weights,
-        total_hh_sub_control_index):
+        total_hh_sub_control_index,
+        total_hh_parent_control_index
+    ):
     """
-    cvx-based siuml-integerizer function taking numpy data types and conforming to a
+    cvx-based simul-integerizer function taking numpy data types and conforming to a
     standard function signature that allows it to be swapped interchangeably with alternate
     LP implementations.
 
@@ -157,7 +167,7 @@ def np_simul_integerizer_cvx(
     sub_int_weights : numpy.ndarray(sub_zone_count, sample_count) int
     parent_countrol_importance : numpy.ndarray(parent_control_count,) float
     parent_relax_ge_upper_bound : numpy.ndarray(parent_control_count,) float
-    sub_countrol_importance : numpy.ndarray(sub_control_count,) float
+    sub_control_importance : numpy.ndarray(sub_control_count,) float
     sub_float_weights : numpy.ndarray(sub_zone_count, sample_count) float
     sub_resid_weights : numpy.ndarray(sub_zone_count, sample_count) float
     lp_right_hand_side : numpy.ndarray(sub_zone_count, sub_control_count) float
@@ -181,6 +191,10 @@ def np_simul_integerizer_cvx(
     """
 
     import cvxpy as cvx
+    
+    def vec(x, order='C'):
+        """Set the order of the vector to C or F Once."""
+        return cvx.vec(x, order=order)
 
     STATUS_TEXT = {
         cvx.OPTIMAL: 'OPTIMAL',
@@ -198,14 +212,14 @@ def np_simul_integerizer_cvx(
     sub_zone_count, _ = sub_float_weights.shape
 
     # - Decision variables for optimization
-    x = cvx.Variable(sub_zone_count, sample_count)
+    x = cvx.Variable((sub_zone_count, sample_count))
 
     # x range is 0.0 to 1.0 unless resid_weights is zero, in which case constrain x to 0.0
     x_max = (~(sub_float_weights == sub_int_weights)).astype(float)
 
     # - Create positive continuous constraint relaxation variables
-    relax_le = cvx.Variable(sub_zone_count, sub_control_count)
-    relax_ge = cvx.Variable(sub_zone_count, sub_control_count)
+    relax_le = cvx.Variable((sub_zone_count, sub_control_count))
+    relax_ge = cvx.Variable((sub_zone_count, sub_control_count))
 
     parent_relax_le = cvx.Variable(parent_control_count)
     parent_relax_ge = cvx.Variable(parent_control_count)
@@ -213,32 +227,37 @@ def np_simul_integerizer_cvx(
     # - Set objective
 
     # can probably ignore as handled by constraint
-    sub_countrol_importance[total_hh_sub_control_index] = 0
+    sub_control_importance[total_hh_sub_control_index] = 0
+
+    # FIXME total_hh_parent_control_index should not exist???
+    if total_hh_parent_control_index > 0:
+        parent_countrol_importance[total_hh_parent_control_index] = 0
+
 
     LOG_OVERFLOW = -725
-    log_resid_weights = np.log(np.maximum(sub_resid_weights, np.exp(LOG_OVERFLOW))).flatten('F')
+    log_resid_weights = np.log(np.maximum(sub_resid_weights, np.exp(LOG_OVERFLOW))).flatten(ORDER)
     assert not np.isnan(log_resid_weights).any()
 
     log_parent_resid_weights = \
-        np.log(np.maximum(parent_resid_weights, np.exp(LOG_OVERFLOW))).flatten('F')
+        np.log(np.maximum(parent_resid_weights, np.exp(LOG_OVERFLOW))).flatten(ORDER)
     assert not np.isnan(log_parent_resid_weights).any()
 
     # subzone and parent objective and relaxation penalties
     # note: cvxpy overloads * so * in following is matrix multiplication
     objective = cvx.Maximize(
-        cvx.sum_entries(cvx.mul_elemwise(log_resid_weights, cvx.vec(x))) +
-        cvx.sum_entries(cvx.mul_elemwise(log_parent_resid_weights, cvx.vec(cvx.sum_entries(x, axis=0)))) -  # nopep8
-        cvx.sum_entries(relax_le * sub_countrol_importance) -
-        cvx.sum_entries(relax_ge * sub_countrol_importance) -
-        cvx.sum_entries(cvx.mul_elemwise(parent_countrol_importance, parent_relax_le)) -
-        cvx.sum_entries(cvx.mul_elemwise(parent_countrol_importance, parent_relax_ge))
+        cvx.sum(cvx.multiply(log_resid_weights, vec(x))) +
+        cvx.sum(cvx.multiply(log_parent_resid_weights, vec(cvx.sum(x, axis=0)))) -
+        cvx.sum(relax_le @ sub_control_importance) -
+        cvx.sum(relax_ge @ sub_control_importance) -
+        cvx.sum(cvx.multiply(parent_countrol_importance, parent_relax_le)) -
+        cvx.sum(cvx.multiply(parent_countrol_importance, parent_relax_ge))
     )
 
     constraints = [
-        (x * sub_incidence) - relax_le >= 0,
-        (x * sub_incidence) - relax_le <= lp_right_hand_side,
-        (x * sub_incidence) + relax_ge >= lp_right_hand_side,
-        (x * sub_incidence) + relax_ge <= hh_constraint_ge_bound,
+        (x @ sub_incidence) - relax_le >= 0,
+        (x @ sub_incidence) - relax_le <= lp_right_hand_side,
+        (x @ sub_incidence) + relax_ge >= lp_right_hand_side,
+        (x @ sub_incidence) + relax_ge <= hh_constraint_ge_bound,
 
         x >= 0.0,
         x <= x_max,
@@ -250,12 +269,12 @@ def np_simul_integerizer_cvx(
         relax_ge <= relax_ge_upper_bound,
 
         # - equality constraint for the total households control
-        cvx.sum_entries(x, axis=1) == total_hh_right_hand_side,
+        cvx.sum(x, axis=1) == total_hh_right_hand_side,
 
-        cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) - parent_relax_le >= 0,                              # nopep8
-        cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) - parent_relax_le <= parent_lp_right_hand_side,      # nopep8
-        cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) + parent_relax_ge >= parent_lp_right_hand_side,      # nopep8
-        cvx.vec(cvx.sum_entries(x, axis=0) * parent_incidence) + parent_relax_ge <= parent_hh_constraint_ge_bound,  # nopep8
+        vec(cvx.sum(x, axis=0) @ parent_incidence) - parent_relax_le >= 0,
+        vec(cvx.sum(x, axis=0) @ parent_incidence) - parent_relax_le <= parent_lp_right_hand_side,
+        vec(cvx.sum(x, axis=0) @ parent_incidence) + parent_relax_ge >= parent_lp_right_hand_side,
+        vec(cvx.sum(x, axis=0) @ parent_incidence) + parent_relax_ge <= parent_hh_constraint_ge_bound,
 
         parent_relax_le >= 0.0,
         parent_relax_le <= parent_lp_right_hand_side,

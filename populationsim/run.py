@@ -5,7 +5,8 @@ import logging
 import os
 import sys
 import warnings
-
+import contextlib
+import io
 import numpy as np
 import time
 from datetime import timedelta
@@ -330,26 +331,10 @@ def run(args):
     ]:
         logger.info(f"ENV {env}: {os.getenv(env)}")
 
-    np_info_keys = [
-        "atlas_blas_info",
-        "atlas_blas_threads_info",
-        "atlas_info",
-        "atlas_threads_info",
-        "blas_info",
-        "blas_mkl_info",
-        "blas_opt_info",
-        "lapack_info",
-        "lapack_mkl_info",
-        "lapack_opt_info",
-        "mkl_info",
-    ]
-
-    for cfg_key in np_info_keys:
-        info = np.__config__.get_info(cfg_key)
-        if info:
-            for info_key in ["libraries"]:
-                if info_key in info:
-                    logger.info(f"NUMPY {cfg_key} {info_key}: {info[info_key]}")
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        np.show_config()
+    logger.info("NumPy build info:\n%s", buf.getvalue())
 
     t0 = tracing.print_elapsed_time()
 

@@ -40,7 +40,7 @@ input_table_list:
     index_col: hh_id
   - tablename: persons
     filename : persons.csv
-    column_map:
+    rename_columns:
       SPORDER: per_num
     # drop mixed type fields that appear to have been incorrectly generated
   - tablename: geo_cross_walk

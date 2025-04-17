@@ -395,11 +395,11 @@ Note that Seed-Households, Seed-Persons and Geographic CrossWalk are all require
 	- tablename: households
 		filename : seed_households.csv
 		index_col: hh_id
-		column_map:
+		rename_columns:
 		hhnum: hh_id
 	- tablename: persons
 		filename : seed_persons.csv
-		column_map:
+		rename_columns:
 		hhnum: hh_id
 		SPORDER: per_num
 		# drop mixed type fields that appear to have been incorrectly generated
@@ -414,7 +414,7 @@ Note that Seed-Households, Seed-Persons and Geographic CrossWalk are all require
 		- naicsp07
 	- tablename: geo_cross_walk
 		filename : geo_cross_walk.csv
-		column_map:
+		rename_columns:
 		TRACTCE: TRACT
 	- tablename: TAZ_control_data
 		filename : control_totals_taz.csv
@@ -454,7 +454,7 @@ Note that Seed-Households, Seed-Persons and Geographic CrossWalk are all require
 +--------------+---------------------------------------------------------------------------------------+
 | index_col    | Name of the unique ID field in the seed household data                                |
 +--------------+---------------------------------------------------------------------------------------+
-| column_map   | Column map of fields to be renamed. The format for the column map is as follows: |br| |
+| rename_columns   | Column map of fields to be renamed. The format for the column map is as follows: |br| |
 |              | ``Name in CSV: New Name``                                                             |
 +--------------+---------------------------------------------------------------------------------------+
 | drop_columns | List of columns to be dropped from the input data                                     |

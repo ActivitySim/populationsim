@@ -81,7 +81,7 @@ def expand_households():
             return prng.choice(hh_ids, p=hh_probs)
 
         expanded_weights[household_id_col] = \
-            expanded_weights.group_id.apply(chooser, convert_dtype=True,)
+            expanded_weights.group_id.apply(chooser)
 
         # FIXME - omit in production?
         del expanded_weights['group_id']
