@@ -17,7 +17,7 @@ from populationsim.core import config, inject, mem, pipeline, tracing, util
 
 logger = logging.getLogger(__name__)
 
-multiprocessing.set_start_method('spawn', force=True)
+multiprocessing.set_start_method("spawn", force=True)
 
 LAST_CHECKPOINT = "_"
 
@@ -1820,4 +1820,3 @@ def write_breadcrumbs(breadcrumbs):
         # write ordered dict as array
         breadcrumbs = [step for step in list(breadcrumbs.values())]
         yaml.dump(breadcrumbs, f)
-

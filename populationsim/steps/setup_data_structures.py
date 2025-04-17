@@ -1,5 +1,3 @@
-
-
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -23,14 +21,15 @@ def read_control_spec(data_filename):
     data_file_path = config.config_file_path(data_filename)
     if not os.path.exists(data_file_path):
         raise RuntimeError(
-            "initial_seed_balancing - control file not found: %s" % (data_file_path,))
+            "initial_seed_balancing - control file not found: %s" % (data_file_path,)
+        )
 
     logger.info("Reading control file %s" % data_file_path)
-    control_spec = pd.read_csv(data_file_path, comment='#')
+    control_spec = pd.read_csv(data_file_path, comment="#")
 
-    geographies = config.setting('geographies')
+    geographies = config.setting("geographies")
 
-    if 'geography' not in control_spec.columns:
+    if "geography" not in control_spec.columns:
         raise RuntimeError("missing geography column in controls file")
 
     for g in control_spec.geography.unique():
@@ -42,13 +41,13 @@ def read_control_spec(data_filename):
 
 def build_incidence_table(control_spec, households_df, persons_df, crosswalk_df):
 
-    hh_col = config.setting('household_id_col')
+    hh_col = config.setting("household_id_col")
 
     incidence_table = pd.DataFrame(index=households_df.index)
 
     seed_tables = {
-        'households': households_df,
-        'persons': persons_df,
+        "households": households_df,
+        "persons": persons_df,
     }
 
     for control_row in control_spec.itertuples():
@@ -61,33 +60,37 @@ def build_incidence_table(control_spec, households_df, persons_df, crosswalk_df)
             target=control_row.target,
             expression=control_row.expression,
             df=seed_tables[control_row.seed_table],
-            locals_dict={'np': np},
+            locals_dict={"np": np},
             df_alias=control_row.seed_table,
-            trace_rows=None
+            trace_rows=None,
         )
 
         # convert boolean True/False values to 1/0
         incidence = incidence * 1
 
         # aggregate person incidence counts to household
-        if control_row.seed_table == 'persons':
-            df = pd.DataFrame({
-                hh_col: persons_df[hh_col],
-                'incidence': incidence
-            })
+        if control_row.seed_table == "persons":
+            df = pd.DataFrame({hh_col: persons_df[hh_col], "incidence": incidence})
             incidence = df.groupby([hh_col], as_index=True).sum()
 
         incidence_table[control_row.target] = incidence
-    
+
     # Check the control group sums
-    if 'control_group' in control_spec.columns:
-        for (control_group, table), fields in control_spec.groupby(['control_group', 'seed_table'])['target']:                        
-            total_col = config.setting('total_per_control') if table == 'persons' else config.setting('total_hh_control')
+    if "control_group" in control_spec.columns:
+        for (control_group, table), fields in control_spec.groupby(
+            ["control_group", "seed_table"]
+        )["target"]:
+            total_col = (
+                config.setting("total_per_control")
+                if table == "persons"
+                else config.setting("total_hh_control")
+            )
             is_equal = incidence_table[fields].sum(axis=1) == incidence_table[total_col]
 
             if not is_equal.all():
-                print(f"Control group {control_group} does not sum to {total_col} for {is_equal.sum()} zones. Is this expected?")
-                  
+                print(
+                    f"Control group {control_group} does not sum to {total_col} for {is_equal.sum()} zones. Is this expected?"
+                )
 
     return incidence_table
 
@@ -107,9 +110,9 @@ def add_geography_columns(incidence_table, households_df, crosswalk_df):
 
     """
 
-    geographies = config.setting('geographies')
+    geographies = config.setting("geographies")
     meta_geography = geographies[0]
-    seed_geography = config.setting('seed_geography')
+    seed_geography = config.setting("seed_geography")
 
     # add seed_geography col to incidence table
     incidence_table[seed_geography] = households_df[seed_geography]
@@ -118,7 +121,9 @@ def add_geography_columns(incidence_table, households_df, crosswalk_df):
     if seed_geography != meta_geography:
         tmp = crosswalk_df[list({seed_geography, meta_geography})]
         seed_to_meta = tmp.groupby(seed_geography, as_index=True).min()[meta_geography]
-        incidence_table[meta_geography] = incidence_table[seed_geography].map(seed_to_meta)
+        incidence_table[meta_geography] = incidence_table[seed_geography].map(
+            seed_to_meta
+        )
 
     return incidence_table
 
@@ -126,19 +131,19 @@ def add_geography_columns(incidence_table, households_df, crosswalk_df):
 def build_control_table(geo, control_spec, crosswalk_df):
 
     # control_geographies is list with target geography and the geographies beneath it
-    control_geographies = config.setting('geographies')
+    control_geographies = config.setting("geographies")
     assert geo in control_geographies
-    control_geographies = control_geographies[control_geographies.index(geo):]
+    control_geographies = control_geographies[control_geographies.index(geo) :]
 
     # only want controls for control_geographies
-    control_spec = control_spec[control_spec['geography'].isin(control_geographies)]
+    control_spec = control_spec[control_spec["geography"].isin(control_geographies)]
     controls_list = []
 
     # for each geography at or beneath target geography
     for g in control_geographies:
 
         # control spec rows for this geography
-        spec = control_spec[control_spec['geography'] == g]
+        spec = control_spec[control_spec["geography"] == g]
 
         # are there any controls specified for this geography? (e.g. seed has none)
         if len(spec.index) == 0:
@@ -160,12 +165,16 @@ def build_control_table(geo, control_spec, crosswalk_df):
             # add geo_col to control_data table
             if geo not in control_data_df.columns:
                 # create series mapping sub_geo id to geo id
-                sub_to_geog = crosswalk_df[[g, geo]].groupby(g, as_index=True).min()[geo]
+                sub_to_geog = (
+                    crosswalk_df[[g, geo]].groupby(g, as_index=True).min()[geo]
+                )
 
                 control_data_df[geo] = control_data_df[g].map(sub_to_geog)
 
             # aggregate (sum) controls to geo level
-            controls = control_data_df[control_data_columns].groupby(geo, as_index=True).sum()
+            controls = (
+                control_data_df[control_data_columns].groupby(geo, as_index=True).sum()
+            )
 
         controls_list.append(controls)
 
@@ -180,11 +189,14 @@ def build_control_table(geo, control_spec, crosswalk_df):
     controls = controls[control_spec.target]
 
     # drop controls for zero-household geographies
-    total_hh_control_col = config.setting('total_hh_control')
-    empty = (controls[total_hh_control_col] == 0)
+    total_hh_control_col = config.setting("total_hh_control")
+    empty = controls[total_hh_control_col] == 0
     if empty.any():
         controls = controls[~empty]
-        logger.info("dropping %s %s control rows with empty total_hh_control" % (empty.sum(), geo))
+        logger.info(
+            "dropping %s %s control rows with empty total_hh_control"
+            % (empty.sum(), geo)
+        )
 
     return controls
 
@@ -194,9 +206,9 @@ def build_crosswalk_table():
     build crosswalk table filtered to include only zones in lowest geography
     """
 
-    geographies = config.setting('geographies')
+    geographies = config.setting("geographies")
 
-    crosswalk_data_table = inject.get_table('geo_cross_walk').to_frame()
+    crosswalk_data_table = inject.get_table("geo_cross_walk").to_frame()
 
     # dont need any other geographies
     crosswalk = crosswalk_data_table[geographies]
@@ -205,61 +217,71 @@ def build_crosswalk_table():
     # (just in case geo_cross_walk_df table contains rows for unused low zones)
     low_geography = geographies[-1]
     low_control_data_df = get_control_data_table(low_geography)
-    rows_in_low_controls = crosswalk[low_geography].isin(low_control_data_df[low_geography])
+    rows_in_low_controls = crosswalk[low_geography].isin(
+        low_control_data_df[low_geography]
+    )
     crosswalk = crosswalk[rows_in_low_controls]
-    
+
     # Ensure consistent nesting of geography hierarchies. e.g., a tract cannot be in two PUMAS
-    geos = config.setting('geographies')
-    slice_geo = config.setting('slice_geography', geos[0])
-    
-    # Start from sliced geography.    
+    geos = config.setting("geographies")
+    slice_geo = config.setting("slice_geography", geos[0])
+
+    # Start from sliced geography.
     slice_level = geos.index(slice_geo)
     for i, g in enumerate(geos[1:], start=0):
         count = crosswalk.groupby(g)[geos[i]].nunique()
-        
+
         if (count > 1).any():
-            dupes = crosswalk.loc[crosswalk[g].isin(count[count > 1].index)].groupby([geos[i], g]).size().to_frame('N')            
+            dupes = (
+                crosswalk.loc[crosswalk[g].isin(count[count > 1].index)]
+                .groupby([geos[i], g])
+                .size()
+                .to_frame("N")
+            )
             msg = f"{g} geography overlaps with {geos[i]} and does not exclusively nest within higher order geographies in crosswalk.\n"
             msg += "Check that the crosswalk table is correct,that the 'geographies' setting is in the correct order from largest to smallest, or slice at a lower level.\n"
             msg += "This will produce an error in multiprocessing if sliced at this level.\n"
-                        
+
             # If multiprocess, consistent geography nesting is required.
-            if config.setting('multiprocess', False) and (slice_level <= i):
+            if config.setting("multiprocess", False) and (slice_level <= i):
                 raise RuntimeError(msg)
             # Otherwise it is ok but not ideal. Produce a warning.
             else:
                 Warning(msg)
-                
+
             print(dupes)
-                
+
     return crosswalk
 
 
 def build_grouped_incidence_table(incidence_table, control_spec, seed_geography):
 
     hh_incidence_table = incidence_table
-    household_id_col = config.setting('household_id_col')
+    household_id_col = config.setting("household_id_col")
 
     hh_groupby_cols = list(control_spec.target) + [seed_geography]
     hh_grouper = hh_incidence_table.groupby(hh_groupby_cols)
     group_incidence_table = hh_grouper.max()
-    group_incidence_table['sample_weight'] = hh_grouper.sum()['sample_weight']
-    group_incidence_table['group_size'] = hh_grouper.count()['sample_weight']
+    group_incidence_table["sample_weight"] = hh_grouper.sum()["sample_weight"]
+    group_incidence_table["group_size"] = hh_grouper.count()["sample_weight"]
     group_incidence_table = group_incidence_table.reset_index()
-    
+
     # Enforce int64 to join large tables
     group_incidence_table = group_incidence_table.astype(np.int64)
 
-    logger.info("grouped incidence table has %s entries, ungrouped has %s"
-                % (len(group_incidence_table.index), len(hh_incidence_table.index)))
+    logger.info(
+        "grouped incidence table has %s entries, ungrouped has %s"
+        % (len(group_incidence_table.index), len(hh_incidence_table.index))
+    )
 
     # add group_id of each hh to hh_incidence_table
-    group_incidence_table['group_id'] = group_incidence_table.index.astype(np.int64)    
-    hh_incidence_table['group_id'] = pd.merge(
-        hh_incidence_table[hh_groupby_cols], 
-        group_incidence_table[hh_groupby_cols + ['group_id']],
+    group_incidence_table["group_id"] = group_incidence_table.index.astype(np.int64)
+    hh_incidence_table["group_id"] = pd.merge(
+        hh_incidence_table[hh_groupby_cols],
+        group_incidence_table[hh_groupby_cols + ["group_id"]],
         on=hh_groupby_cols,
-        how='left').group_id.values
+        how="left",
+    ).group_id.values
 
     # it doesn't really matter what the incidence_table index is until we create population
     # when we need to expand each group to constituent households
@@ -269,7 +291,7 @@ def build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
 
     # create table mapping household_groups to households and their sample_weights
     # explicitly provide hh_id as a column to make it easier for use when expanding population
-    household_groups = hh_incidence_table[['group_id', 'sample_weight']].copy()
+    household_groups = hh_incidence_table[["group_id", "sample_weight"]].copy()
     household_groups[household_id_col] = household_groups.index.astype(np.int64)
 
     return group_incidence_table, household_groups
@@ -284,17 +306,19 @@ def filter_households(households_df, persons_df, crosswalk_df):
     """
 
     # drop any zero weight households (there are some in calm data)
-    hh_weight_col = config.setting('household_weight_col')
+    hh_weight_col = config.setting("household_weight_col")
     households_df = households_df[households_df[hh_weight_col] > 0]
 
     # remove any households not in seed zones
-    seed_geography = config.setting('seed_geography')
+    seed_geography = config.setting("seed_geography")
     seed_ids = crosswalk_df[seed_geography].unique()
 
     rows_in_seed_zones = households_df[seed_geography].isin(seed_ids)
     if rows_in_seed_zones.any():
         households_df = households_df[rows_in_seed_zones]
-        logger.info("dropped %s households not in seed zones" % (~rows_in_seed_zones).sum())
+        logger.info(
+            "dropped %s households not in seed zones" % (~rows_in_seed_zones).sum()
+        )
         logger.info("kept %s households in seed zones" % len(households_df))
 
     return households_df, persons_df
@@ -337,60 +361,70 @@ def setup_data_structures(settings, households, persons):
 
     """
 
-    seed_geography = config.setting('seed_geography')
-    geographies = settings['geographies']
+    seed_geography = config.setting("seed_geography")
+    geographies = settings["geographies"]
 
     households_df = households.to_frame()
     persons_df = persons.to_frame()
 
     crosswalk_df = build_crosswalk_table()
-    inject.add_table('crosswalk', crosswalk_df)
+    inject.add_table("crosswalk", crosswalk_df)
 
-    slice_geography = settings.get('slice_geography', None)
+    slice_geography = settings.get("slice_geography", None)
     if slice_geography:
         assert slice_geography in geographies
         assert slice_geography in crosswalk_df.columns
 
         # only want rows for slice_geography and higher
-        slice_geographies = geographies[:geographies.index(slice_geography) + 1]
+        slice_geographies = geographies[: geographies.index(slice_geography) + 1]
         slice_table = crosswalk_df[slice_geographies].groupby(slice_geography).max()
         # it is convenient to have slice_geography column in table as well as index
         slice_table[slice_geography] = slice_table.index
         inject.add_table("slice_crosswalk", slice_table)
 
-    control_spec = read_control_spec(config.setting('control_file_name', 'controls.csv'))
-    inject.add_table('control_spec', control_spec)
+    control_spec = read_control_spec(
+        config.setting("control_file_name", "controls.csv")
+    )
+    inject.add_table("control_spec", control_spec)
 
     for g in geographies:
         controls = build_control_table(g, control_spec, crosswalk_df)
         # Remove zones from xwalk missing from controls (e.g. zones with zero households)
         crosswalk_df = crosswalk_df[crosswalk_df[g].isin(controls.index)]
         inject.add_table(control_table_name(g), controls)
-        
+
     # update xwalk object
-    pipeline.replace_table('crosswalk', crosswalk_df)        
+    pipeline.replace_table("crosswalk", crosswalk_df)
 
-    households_df, persons_df = filter_households(households_df, persons_df, crosswalk_df)
-    pipeline.replace_table('households', households_df)
-    pipeline.replace_table('persons', persons_df)
+    households_df, persons_df = filter_households(
+        households_df, persons_df, crosswalk_df
+    )
+    pipeline.replace_table("households", households_df)
+    pipeline.replace_table("persons", persons_df)
 
-    incidence_table = \
-        build_incidence_table(control_spec, households_df, persons_df, crosswalk_df)
+    incidence_table = build_incidence_table(
+        control_spec, households_df, persons_df, crosswalk_df
+    )
 
-    incidence_table = add_geography_columns(incidence_table, households_df, crosswalk_df)
+    incidence_table = add_geography_columns(
+        incidence_table, households_df, crosswalk_df
+    )
 
     # add sample_weight col to incidence table
-    hh_weight_col = config.setting('household_weight_col')
-    incidence_table['sample_weight'] = households_df[hh_weight_col]
+    hh_weight_col = config.setting("household_weight_col")
+    incidence_table["sample_weight"] = households_df[hh_weight_col]
 
-    if config.setting('GROUP_BY_INCIDENCE_SIGNATURE') and not config.setting('NO_INTEGERIZATION_EVER', False):
-        group_incidence_table, household_groups \
-            = build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
+    if config.setting("GROUP_BY_INCIDENCE_SIGNATURE") and not config.setting(
+        "NO_INTEGERIZATION_EVER", False
+    ):
+        group_incidence_table, household_groups = build_grouped_incidence_table(
+            incidence_table, control_spec, seed_geography
+        )
 
-        inject.add_table('household_groups', household_groups)
-        inject.add_table('incidence_table', group_incidence_table)
+        inject.add_table("household_groups", household_groups)
+        inject.add_table("incidence_table", group_incidence_table)
     else:
-        inject.add_table('incidence_table', incidence_table)
+        inject.add_table("incidence_table", incidence_table)
 
 
 @inject.step()
@@ -416,22 +450,22 @@ def repop_setup_data_structures(households, persons):
 
     """
 
-    seed_geography = config.setting('seed_geography')
-    geographies = config.setting('geographies')
+    seed_geography = config.setting("seed_geography")
+    geographies = config.setting("geographies")
     low_geography = geographies[-1]
 
     # replace crosswalk table
     crosswalk_df = build_crosswalk_table()
-    pipeline.replace_table('crosswalk', crosswalk_df)
+    pipeline.replace_table("crosswalk", crosswalk_df)
 
     # replace control_spec
-    control_file_name = config.setting('repop_control_file_name', 'repop_controls.csv')
+    control_file_name = config.setting("repop_control_file_name", "repop_controls.csv")
     control_spec = read_control_spec(control_file_name)
 
     # repop control spec should only specify controls for lowest level geography
     assert control_spec.geography.unique() == [low_geography]
 
-    pipeline.replace_table('control_spec', control_spec)
+    pipeline.replace_table("control_spec", control_spec)
 
     # build incidence_table with repop controls and households in repop zones
     # filter households (dropping any not in crosswalk) in order to build incidence_table
@@ -442,23 +476,32 @@ def repop_setup_data_structures(households, persons):
 
     households_df = households.to_frame()
     persons_df = persons.to_frame()
-    households_df, persons_df = filter_households(households_df, persons_df, crosswalk_df)
-    incidence_table = build_incidence_table(control_spec, households_df, persons_df, crosswalk_df)
-    incidence_table = add_geography_columns(incidence_table, households_df, crosswalk_df)
+    households_df, persons_df = filter_households(
+        households_df, persons_df, crosswalk_df
+    )
+    incidence_table = build_incidence_table(
+        control_spec, households_df, persons_df, crosswalk_df
+    )
+    incidence_table = add_geography_columns(
+        incidence_table, households_df, crosswalk_df
+    )
     # add sample_weight col to incidence table
-    hh_weight_col = config.setting('household_weight_col')
-    incidence_table['sample_weight'] = households_df[hh_weight_col]
+    hh_weight_col = config.setting("household_weight_col")
+    incidence_table["sample_weight"] = households_df[hh_weight_col]
 
     # rebuild control tables with only the low level controls (aggregated at higher levels)
     for g in geographies:
         controls = build_control_table(g, control_spec, crosswalk_df)
         pipeline.replace_table(control_table_name(g), controls)
 
-    if config.setting('GROUP_BY_INCIDENCE_SIGNATURE') and not config.setting('NO_INTEGERIZATION_EVER', False):
-        group_incidence_table, household_groups \
-            = build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
+    if config.setting("GROUP_BY_INCIDENCE_SIGNATURE") and not config.setting(
+        "NO_INTEGERIZATION_EVER", False
+    ):
+        group_incidence_table, household_groups = build_grouped_incidence_table(
+            incidence_table, control_spec, seed_geography
+        )
 
-        pipeline.replace_table('household_groups', household_groups)
-        pipeline.replace_table('incidence_table', group_incidence_table)
+        pipeline.replace_table("household_groups", household_groups)
+        pipeline.replace_table("incidence_table", group_incidence_table)
     else:
-        pipeline.replace_table('incidence_table', incidence_table)
+        pipeline.replace_table("incidence_table", incidence_table)

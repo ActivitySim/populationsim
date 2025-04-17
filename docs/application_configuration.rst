@@ -121,7 +121,7 @@ PopulationSim is configured using the settings.yaml file. PopulationSim can be c
 
 :regular mode:
 
-  The regular configuration runs PopulationSim from beginning to end and produces a new synthetic population.  This can run either single-process or multi-processed to save on runtime.  
+  The regular configuration runs PopulationSim from beginning to end and produces a new synthetic population.  This can run either single-process or multi-processed to save on runtime.
 
 :repop mode:
 
@@ -263,17 +263,17 @@ This sub-directory is populated at the end of the PopulationSim run. The table b
 Configuring Settings File
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-PopulationSim is configured using the *configs/settings.yaml* file. The user has the flexibility to specify algorithm functionality, list geographies, invoke tracing, provide inputs specifications, select outputs, list the steps to run, and specify multiprocess settings. 
+PopulationSim is configured using the *configs/settings.yaml* file. The user has the flexibility to specify algorithm functionality, list geographies, invoke tracing, provide inputs specifications, select outputs, list the steps to run, and specify multiprocess settings.
 
 .. note::
-   When running PopulationSim, multiple settings files can be specified so long as the ``inherit_settings: True`` setting is included in 
+   When running PopulationSim, multiple settings files can be specified so long as the ``inherit_settings: True`` setting is included in
    subsequent files.  This feature is used for the multi-processing configuration described below.  To utilize this feature, once can run PopulationSim
-   with the following command: ``python run_populationsim.py -c configs_mp -c configs``.  This command specifies two config folders, each with 
+   with the following command: ``python run_populationsim.py -c configs_mp -c configs``.  This command specifies two config folders, each with
    a settings file, and the ``configs_mp`` settings inherit from the earlier ``configs`` settings.
 
 The settings shown below are from the PopulationSim application for the CALM region as an example of how a run can be configured. The meta geography for CALM region is named as *Region*, the seed geography is *PUMA* and the two sub-seed geographies are *TRACT* and *TAZ*. The settings below are for this four geography application, but the user can configure PopulationSim for any number of geographies and use different geography names.
 
-Some of the setting are configured differently for the *repop* mode. The settings specific to the *repop* mode are described in the :ref:`settings_repop` section.  The settings specific to the *multiprocessing* setup are described in the :ref:`settings_mp` section.  
+Some of the setting are configured differently for the *repop* mode. The settings specific to the *repop* mode are described in the :ref:`settings_repop` section.  The settings specific to the *multiprocessing* setup are described in the :ref:`settings_mp` section.
 
 **Algorithm/Software Configuration**:
 
@@ -627,17 +627,17 @@ For detailed information on software implementation refer to :ref:`core_componen
 Configuring Settings File for Multiprocessing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This sections describes the settings that are additionally configured for running PopulationSim with 
-multiprocessing to reduce runtime.  PopulationSim uses ActivitySim's multiprocessing capabilities, which 
+This sections describes the settings that are additionally configured for running PopulationSim with
+multiprocessing to reduce runtime.  PopulationSim uses ActivitySim's multiprocessing capabilities, which
 are described in more detail `here <https://activitysim.github.io/activitysim/howitworks.html#multiprocessing>`_.
 
-The example below can be found in the ``example_calm\configs_mp\settings.yaml`` file.  The group of model steps 
-identified as ``mp_seed_balancing`` and starting with ``input_pre_processor`` 
-are run single process until the next group of model steps identified as ``mp_sub_balancing_TAZ`` and starting with 
+The example below can be found in the ``example_calm\configs_mp\settings.yaml`` file.  The group of model steps
+identified as ``mp_seed_balancing`` and starting with ``input_pre_processor``
+are run single process until the next group of model steps identified as ``mp_sub_balancing_TAZ`` and starting with
 ``sub_balancing.geography=TAZ`` is reached, at which time PopulationSim runs these steps in parallel using two processors
-by slicing the problem into separate geographic batches based on the ``slice_geography: TRACT`` setting.  It then 
-returns to single process with the final group of model steps identified as ``mp_summarize`` and 
-beginning with ``expand_households``.  
+by slicing the problem into separate geographic batches based on the ``slice_geography: TRACT`` setting.  It then
+returns to single process with the final group of model steps identified as ``mp_summarize`` and
+beginning with ``expand_households``.
 
 ::
 
@@ -666,8 +666,8 @@ beginning with ``expand_households``.
           - trace_TAZ_weights
     - name: mp_summarize
       begin: expand_households
-    
-    
+
+
 +-------------------------------+--------------------------------------------------------------------------------------------------------------+
 | Attribute                     | Description                                                                                                  |
 +===============================+==============================================================================================================+
@@ -859,7 +859,7 @@ Some conventions for writing expressions:
   * Expressions must be vectorized expressions and can use most numpy and pandas expressions.
   * When editing the CSV files in Excel, use single quote ' or space at the start of a cell to get Excel to accept the expression
 
-.. _importance: 
+.. _importance:
 
 What are importance weights
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -882,9 +882,9 @@ Where, :math:`z_{i}` are relaxation factors and :math:`a_{in}` are incidence val
 
 Where, :math:`u_{i}` are the penalties termed as importance factors or importance weights in PopulationSim.
 
-:math:`x_{n}` and :math:`z_{i}`  are the parameters solved by the optimization while importance weights (:math:`u_{i}`) are the hyperparameters that are exposed to the user and impact the optimization externally. The objective of the relative entropy optimization is to find a set of weights that are uniform and satisfy marginal controls. The importance weights allow the user to trade-off between these objectives. High importance weights (e.g., 1E10) on all controls result in a hard constrained optimization which gives a high preference to matching marginal controls. Low importance weights (e.g., <50) results in an almost unconstrained problem. The user may also specify different importance weights for each marginal control. In this case, the controls with higher importance weights are given preference over the ones with low importance weights. Therefore, both absolute and relative value of the importance weights impacts the optimization problem and the solution. 
+:math:`x_{n}` and :math:`z_{i}`  are the parameters solved by the optimization while importance weights (:math:`u_{i}`) are the hyperparameters that are exposed to the user and impact the optimization externally. The objective of the relative entropy optimization is to find a set of weights that are uniform and satisfy marginal controls. The importance weights allow the user to trade-off between these objectives. High importance weights (e.g., 1E10) on all controls result in a hard constrained optimization which gives a high preference to matching marginal controls. Low importance weights (e.g., <50) results in an almost unconstrained problem. The user may also specify different importance weights for each marginal control. In this case, the controls with higher importance weights are given preference over the ones with low importance weights. Therefore, both absolute and relative value of the importance weights impacts the optimization problem and the solution.
 
-.. _setting-importance: 
+.. _setting-importance:
 
 Setting importance weights
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -892,8 +892,8 @@ Setting importance weights
 Given the flexibility that importance weights offer to the user, they need to be tuned to get the desired optimality in the outputs for the given seed sample and marginal controls. The quality of the outputs is defined by a uniformity measure of the weights and goodness of fit across marginal controls. Here are general guidelines on setting importance weights:
 
    * Start with a reasonable importance factor value across all controls (e.g., 1000 has typically worked well for multiple regions). This excludes the control on the total number of households which should be set to very high importance to ensure that the right number of households is generated for each zone.
-   * After achieving reasonable goodness of fit across controls, the importance weights can be increased/decreased to favor one control over the other, or all importance weights can be reduced to improve the uniformity of the weights. Which controls to favor depends on the type of application and the quality of the marginal data. 
-   * The importance weights are generally updated in factors of 10. The user may need to run PopulationSim multiple times using various combinations of importance weights to reach the desired quality of outputs. 
+   * After achieving reasonable goodness of fit across controls, the importance weights can be increased/decreased to favor one control over the other, or all importance weights can be reduced to improve the uniformity of the weights. Which controls to favor depends on the type of application and the quality of the marginal data.
+   * The importance weights are generally updated in factors of 10. The user may need to run PopulationSim multiple times using various combinations of importance weights to reach the desired quality of outputs.
 
 
 

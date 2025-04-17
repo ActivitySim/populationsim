@@ -33,7 +33,7 @@ appropriate version of `Miniforge <https://github.com/conda-forge/miniforge#mini
 
 ::
 
-  conda create -n popsim python=3.8 
+  conda create -n popsim python=3.8
 
   # Windows
   activate popsim
@@ -74,15 +74,15 @@ ActivitySim
 Run Examples
 ------------
 
-There are four examples for running PopulationSim, three created using data from the 
-Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon and the other using data from 
-the Metro Vancouver region in British Columbia. 
+There are four examples for running PopulationSim, three created using data from the
+Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon and the other using data from
+the Metro Vancouver region in British Columbia.
 
-1. The `example_calm`_ set-up runs PopulationSim,  where a synthetic population is created single-processed for the entire modeling region. 
+1. The `example_calm`_ set-up runs PopulationSim,  where a synthetic population is created single-processed for the entire modeling region.
 
 2. The `example_calm_mp`_ set-up runs PopulationSim `multi-processed <http://docs.python.org/3/library/multiprocessing.html>`_, where a synthetic population is created for the entire modeling region by simultaneously balancing results using multiple processors on your computer, thereby reducing runtime.
 
-3. The `example_calm_repop`_ set-up runs PopulationSim in the *repop* mode, which updates the synthetic population for a small part of the region. 
+3. The `example_calm_repop`_ set-up runs PopulationSim in the *repop* mode, which updates the synthetic population for a small part of the region.
 
 4. The `example_survey_weighting`_ set-up runs PopulationSim for the case of developing final weights for a household travel survey. More information on the configuration of PopulationSim can be found in the **Application & Configuration** section.
 

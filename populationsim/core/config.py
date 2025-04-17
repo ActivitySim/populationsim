@@ -9,7 +9,7 @@ import time
 import warnings
 import yaml
 
-from populationsim.core import inject, util
+from populationsim.core import inject
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ def settings(settings_file_name):
     if sharrow_enabled and not recode_pipeline_columns:
         warnings.warn(
             "use of `sharrow` setting generally requires `recode_pipeline_columns`",
-            stacklevel=2
+            stacklevel=2,
         )
 
     return settings_dict
@@ -153,7 +153,6 @@ def read_model_settings(file_name, mandatory=False):
     model_settings = read_settings_file(file_name, mandatory=mandatory)
 
     return model_settings
-
 
 
 def build_output_file_path(file_name, use_prefix=None):
@@ -570,11 +569,9 @@ def filter_warnings():
     )
 
     from tables.exceptions import NaturalNameWarning
+
     # Filter NaturalNameWarning from tables
-    warnings.filterwarnings(
-        "ignore",
-        category=NaturalNameWarning
-    )
+    warnings.filterwarnings("ignore", category=NaturalNameWarning)
 
 
 def handle_standard_args(parser=None):

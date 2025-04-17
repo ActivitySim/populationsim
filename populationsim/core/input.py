@@ -17,7 +17,6 @@ def canonical_table_index_name(table_name):
     return table_index_names and table_index_names.get(table_name, None)
 
 
-
 def read_from_table_info(table_info):
     """
     Read input text files and return cleaned up DataFrame.

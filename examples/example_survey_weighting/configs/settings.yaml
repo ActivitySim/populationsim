@@ -18,14 +18,14 @@ USE_SIMUL_INTEGERIZER: True
 USE_CVXPY: False
 max_expansion_factor: 4 # Default is 30
 min_expansion_factor: 0.5
-absolute_upper_bounds: 20000 
+absolute_upper_bounds: 20000
 absolute_lower_bounds: 1
 
 # Geographic Settings
 # ------------------------------------------------------------------
 # geographies: [Region, SUBREG_GRP, SUBREG] #, TAZ] #1, 44, 58, 1700
 # seed_geography: SUBREG_GRP
-# geographies: [Region, SUBREG_GRP, SUBREG_GRPDummy] 
+# geographies: [Region, SUBREG_GRP, SUBREG_GRPDummy]
 # seed_geography: SUBREG_GRP
 geographies: [Region, SUBREGCluster]
 seed_geography: SUBREGCluster
@@ -37,7 +37,7 @@ seed_geography: SUBREGCluster
 #  TAZ: 100
 #  TRACT: 10200
 
-  
+
 # Data Directory
 # ------------------------------------------------------------------
 #data_dir: data

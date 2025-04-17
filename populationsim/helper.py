@@ -5,7 +5,7 @@ from populationsim.core import pipeline, inject
 
 
 def control_table_name(geography):
-    return '%s_controls' % geography
+    return "%s_controls" % geography
 
 
 def get_control_table(geography):
@@ -13,15 +13,15 @@ def get_control_table(geography):
 
 
 def get_control_data_table(geography):
-    control_data_table_name = '%s_control_data' % geography
+    control_data_table_name = "%s_control_data" % geography
     return pipeline.get_table(control_data_table_name)
 
 
 def weight_table_name(geography, sparse=False):
     if sparse:
-        return '%s_weights_sparse' % geography
+        return "%s_weights_sparse" % geography
     else:
-        return '%s_weights' % geography
+        return "%s_weights" % geography
 
 
 def get_weight_table(geography, sparse=False):

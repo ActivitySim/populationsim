@@ -1,4 +1,3 @@
-
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -6,14 +5,14 @@ from populationsim.core.config import setting
 from populationsim import lp_cvx, lp_ortools
 
 
-STATUS_OPTIMAL = 'OPTIMAL'
-STATUS_FEASIBLE = 'FEASIBLE'
+STATUS_OPTIMAL = "OPTIMAL"
+STATUS_FEASIBLE = "FEASIBLE"
 STATUS_SUCCESS = [STATUS_OPTIMAL, STATUS_FEASIBLE]
 
 
 def use_cvxpy():
 
-    return setting('USE_CVXPY', False)
+    return setting("USE_CVXPY", False)
 
 
 def get_single_integerizer():

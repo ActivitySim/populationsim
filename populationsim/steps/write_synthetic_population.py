@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 def merge_seed_data(expanded_household_ids, seed_data_df, seed_columns, trace_label):
 
-    seed_geography = config.setting('seed_geography')
-    hh_col = config.setting('household_id_col')
+    seed_geography = config.setting("seed_geography")
+    hh_col = config.setting("household_id_col")
 
     df_columns = seed_data_df.columns.values
 
@@ -30,7 +30,7 @@ def merge_seed_data(expanded_household_ids, seed_data_df, seed_columns, trace_la
         df_columns.remove(seed_geography)
 
     # join to seed_data on either index or hh_col (for persons)
-    right_index = (seed_data_df.index.name == hh_col)
+    right_index = seed_data_df.index.name == hh_col
     right_on = hh_col if hh_col in seed_data_df.columns and not right_index else None
     assert right_index or right_on
 
@@ -43,7 +43,7 @@ def merge_seed_data(expanded_household_ids, seed_data_df, seed_columns, trace_la
         right=seed_data_df[df_columns],
         left_on=hh_col,
         right_index=right_index,
-        right_on=right_on
+        right_on=right_on,
     )
 
     if hh_col not in seed_columns:
@@ -71,7 +71,7 @@ def write_synthetic_population(expanded_household_ids, households, persons, outp
 
     """
 
-    if config.setting('NO_INTEGERIZATION_EVER', False):
+    if config.setting("NO_INTEGERIZATION_EVER", False):
         logger.warning("skipping write_synthetic_population: NO_INTEGERIZATION_EVER")
         return
 
@@ -79,67 +79,77 @@ def write_synthetic_population(expanded_household_ids, households, persons, outp
     households = households.to_frame()
     persons = persons.to_frame()
 
-    SETTINGS_NAME = 'output_synthetic_population'
+    SETTINGS_NAME = "output_synthetic_population"
     synthetic_tables_settings = config.setting(SETTINGS_NAME)
     if synthetic_tables_settings is None:
         raise RuntimeError("'%s' not found in settings" % SETTINGS_NAME)
 
-    synthetic_hh_col = synthetic_tables_settings.get('household_id', 'HH_ID')
+    synthetic_hh_col = synthetic_tables_settings.get("household_id", "HH_ID")
 
     # - assign household_ids to synthetic population
     expanded_household_ids.reset_index(drop=True, inplace=True)
-    expanded_household_ids['synthetic_hh_id'] = expanded_household_ids.index + 1
+    expanded_household_ids["synthetic_hh_id"] = expanded_household_ids.index + 1
 
     # - households
 
-    TABLE_NAME = 'households'
+    TABLE_NAME = "households"
     options = synthetic_tables_settings.get(TABLE_NAME, None)
     if options is None:
-        raise RuntimeError("Options for '%s' not found in '%s' in settings" %
-                           (TABLE_NAME, SETTINGS_NAME))
+        raise RuntimeError(
+            "Options for '%s' not found in '%s' in settings"
+            % (TABLE_NAME, SETTINGS_NAME)
+        )
 
-    seed_columns = options.get('columns')
+    seed_columns = options.get("columns")
 
     if synthetic_hh_col.lower() in [c.lower() for c in seed_columns]:
-        raise RuntimeError("synthetic household_id column '%s' also appears in seed column list" %
-                           synthetic_hh_col)
+        raise RuntimeError(
+            "synthetic household_id column '%s' also appears in seed column list"
+            % synthetic_hh_col
+        )
 
     df = merge_seed_data(
         expanded_household_ids,
         households,
         seed_columns=seed_columns,
-        trace_label=TABLE_NAME)
+        trace_label=TABLE_NAME,
+    )
 
     # synthetic_hh_id is index
-    df.rename(columns={'synthetic_hh_id': synthetic_hh_col}, inplace=True)
+    df.rename(columns={"synthetic_hh_id": synthetic_hh_col}, inplace=True)
     df.set_index(synthetic_hh_col, inplace=True)
 
-    filename = options.get('filename', '%s.csv' % TABLE_NAME)
+    filename = options.get("filename", "%s.csv" % TABLE_NAME)
     file_path = os.path.join(output_dir, filename)
     df.to_csv(file_path, index=True)
 
     # - persons
 
-    TABLE_NAME = 'persons'
+    TABLE_NAME = "persons"
     options = synthetic_tables_settings.get(TABLE_NAME, None)
     if options is None:
-        raise RuntimeError("Options for '%s' not found in '%s' in settings" %
-                           (TABLE_NAME, SETTINGS_NAME))
+        raise RuntimeError(
+            "Options for '%s' not found in '%s' in settings"
+            % (TABLE_NAME, SETTINGS_NAME)
+        )
 
-    seed_columns = options.get('columns')
+    seed_columns = options.get("columns")
     if synthetic_hh_col.lower() in [c.lower() for c in seed_columns]:
-        raise RuntimeError("synthetic household_id column '%s' also appears in seed column list" %
-                           synthetic_hh_col)
+        raise RuntimeError(
+            "synthetic household_id column '%s' also appears in seed column list"
+            % synthetic_hh_col
+        )
 
     df = merge_seed_data(
         expanded_household_ids,
         persons,
         seed_columns=seed_columns,
-        trace_label=TABLE_NAME)
+        trace_label=TABLE_NAME,
+    )
 
     # FIXME drop or rename old seed hh_id column?
-    df.rename(columns={'synthetic_hh_id': synthetic_hh_col}, inplace=True)
+    df.rename(columns={"synthetic_hh_id": synthetic_hh_col}, inplace=True)
 
-    filename = options.get('filename', '%s.csv' % TABLE_NAME)
+    filename = options.get("filename", "%s.csv" % TABLE_NAME)
     file_path = os.path.join(output_dir, filename)
     df.to_csv(file_path, index=False)

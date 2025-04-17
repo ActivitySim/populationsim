@@ -58,6 +58,7 @@ class TimeLogger:
         msg += "\n".join(msgs)
         logger.log(level=level, msg=msg)
 
+
 def add_run_args(parser, multiprocess=True):
     """Run command args"""
     parser.add_argument(
@@ -383,4 +384,3 @@ def run(args):
         memory_sidecar_process.stop()
 
     return 0
-

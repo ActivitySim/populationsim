@@ -1,4 +1,3 @@
-
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -16,16 +15,16 @@ logger = logging.getLogger(__name__)
 
 
 def balance(
-        incidence_df,
-        parent_weights,
-        sub_controls_df,
-        control_spec,
-        total_hh_control_col,
-        parent_geography,
-        parent_id,
-        sub_geographies,
-        sub_control_zones
-        ):
+    incidence_df,
+    parent_weights,
+    sub_controls_df,
+    control_spec,
+    total_hh_control_col,
+    parent_geography,
+    parent_id,
+    sub_geographies,
+    sub_control_zones,
+):
     """
 
     Parameters
@@ -56,24 +55,24 @@ def balance(
         balanced subzone household float sample weights
     """
 
-    sub_control_spec = control_spec[control_spec['geography'].isin(sub_geographies)]
+    sub_control_spec = control_spec[control_spec["geography"].isin(sub_geographies)]
 
     assert (sub_controls_df.columns.values == sub_control_spec.target.values).all()
 
     # controls - organized in legible form
-    controls = pd.DataFrame({'name': sub_control_spec.target})
-    controls['importance'] = sub_control_spec.importance
-    controls['total'] = sub_controls_df.sum(axis=0).values
-    
+    controls = pd.DataFrame({"name": sub_control_spec.target})
+    controls["importance"] = sub_control_spec.importance
+    controls["total"] = sub_controls_df.sum(axis=0).values
+
     # Perform in bulk rather than slow loop over pandas
     new_controls = sub_controls_df.loc[sub_control_zones.index].transpose()
     new_controls.columns = sub_control_zones.values
 
     if len(set(controls.columns).intersection(new_controls.columns)) > 0:
-        controls.update(new_controls)               
+        controls.update(new_controls)
     else:
-        controls = controls.merge(new_controls, left_on='name', right_index=True)   
-    
+        controls = controls.merge(new_controls, left_on="name", right_index=True)
+
     # for zone, zone_name in sub_control_zones.items():
     #     controls[zone_name] = sub_controls_df.loc[zone].values
 
@@ -85,28 +84,30 @@ def balance(
         parent_weights=parent_weights,
         controls=controls,
         sub_control_zones=sub_control_zones,
-        total_hh_control_col=total_hh_control_col
+        total_hh_control_col=total_hh_control_col,
     )
 
     status = balancer.balance()
 
-    logger.debug("%s %s converged %s iter %s"
-                 % (parent_geography, parent_id, status['converged'], status['iter']))
+    logger.debug(
+        "%s %s converged %s iter %s"
+        % (parent_geography, parent_id, status["converged"], status["iter"])
+    )
 
     return balancer.sub_zone_weights
 
 
 def balance_and_integerize(
-        incidence_df,
-        parent_weights,
-        sub_controls_df,
-        control_spec,
-        total_hh_control_col,
-        parent_geography,
-        parent_id,
-        sub_geographies,
-        crosswalk_df,
-        ):
+    incidence_df,
+    parent_weights,
+    sub_controls_df,
+    control_spec,
+    total_hh_control_col,
+    parent_geography,
+    parent_id,
+    sub_geographies,
+    crosswalk_df,
+):
     """
 
     Parameters
@@ -139,7 +140,9 @@ def balance_and_integerize(
     sub_geography = sub_geographies[0]
 
     # only want subcontrol rows for current geography geo_id
-    sub_ids = crosswalk_df.loc[crosswalk_df[parent_geography] == parent_id, sub_geography].unique()
+    sub_ids = crosswalk_df.loc[
+        crosswalk_df[parent_geography] == parent_id, sub_geography
+    ].unique()
     # only want sub-control rows for this parent geography
     sub_controls_df = sub_controls_df[sub_controls_df.index.isin(sub_ids)]
 
@@ -147,14 +150,18 @@ def balance_and_integerize(
     incidence_df = incidence_df[control_spec.target]
 
     # FIXME - any reason not to just drop out any empty zones?
-    empty_sub_zones = (sub_controls_df[total_hh_control_col] == 0)
+    empty_sub_zones = sub_controls_df[total_hh_control_col] == 0
     if empty_sub_zones.any():
-        logger.info("dropping %s empty %s  in %s %s"
-                    % (empty_sub_zones.sum(), sub_geography, parent_geography, parent_id))
+        logger.info(
+            "dropping %s empty %s  in %s %s"
+            % (empty_sub_zones.sum(), sub_geography, parent_geography, parent_id)
+        )
         sub_controls_df = sub_controls_df[~empty_sub_zones]
 
     # standard names for sub_control zone columns in controls and weights
-    sub_control_zone_names = ['%s_%s' % (sub_geography, z) for z in sub_controls_df.index]
+    sub_control_zone_names = [
+        "%s_%s" % (sub_geography, z) for z in sub_controls_df.index
+    ]
     sub_control_zones = pd.Series(sub_control_zone_names, index=sub_controls_df.index)
 
     balanced_sub_zone_weights = balance(
@@ -166,8 +173,8 @@ def balance_and_integerize(
         parent_geography=parent_geography,
         parent_id=parent_id,
         sub_geographies=sub_geographies,
-        sub_control_zones=sub_control_zones
-        )
+        sub_control_zones=sub_control_zones,
+    )
 
     integerized_sub_zone_weights_df = multi_integerize(
         incidence_df=incidence_df,
@@ -178,10 +185,13 @@ def balance_and_integerize(
         parent_geography=parent_geography,
         parent_id=parent_id,
         sub_geography=sub_geography,
-        sub_control_zones=sub_control_zones)
+        sub_control_zones=sub_control_zones,
+    )
 
-    assert isinstance(integerized_sub_zone_weights_df, pd.DataFrame), "multi_integerize did not return a DataFrame"
-    
+    assert isinstance(
+        integerized_sub_zone_weights_df, pd.DataFrame
+    ), "multi_integerize did not return a DataFrame"
+
     integerized_sub_zone_weights_df[parent_geography] = parent_id
 
     return integerized_sub_zone_weights_df
@@ -211,25 +221,27 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
     """
 
-    NO_INTEGERIZATION_EVER = config.setting('NO_INTEGERIZATION_EVER', False)
-    SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS = config.setting('SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS', True)
+    NO_INTEGERIZATION_EVER = config.setting("NO_INTEGERIZATION_EVER", False)
+    SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS = config.setting(
+        "SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS", True
+    )
 
     # geography is an injected model step arg
-    geography = inject.get_step_arg('geography')
+    geography = inject.get_step_arg("geography")
 
     crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()
     control_spec = control_spec.to_frame()
 
-    geographies = settings.get('geographies')
-    seed_geography = settings.get('seed_geography')
+    geographies = settings.get("geographies")
+    seed_geography = settings.get("seed_geography")
     meta_geography = geographies[0]
     parent_geography = geographies[geographies.index(geography) - 1]
 
-    sub_geographies = geographies[geographies.index(geography):]
-    parent_geographies = geographies[:geographies.index(geography)]
+    sub_geographies = geographies[geographies.index(geography) :]
+    parent_geographies = geographies[: geographies.index(geography)]
 
-    total_hh_control_col = config.setting('total_hh_control')
+    total_hh_control_col = config.setting("total_hh_control")
 
     parent_controls_df = get_control_table(parent_geography)
     sub_controls_df = get_control_table(geography)
@@ -261,21 +273,26 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
         num_parent_ids = len(parent_ids)
         for idx, parent_id in enumerate(parent_ids, start=1):
 
-            logger.info(f"balancing {idx}/{num_parent_ids} seed {seed_id} in {seed_num}/{len(seed_ids)}, "
-                        f"{parent_geography} {parent_id}")
+            logger.info(
+                f"balancing {idx}/{num_parent_ids} seed {seed_id} in {seed_num}/{len(seed_ids)}, "
+                f"{parent_geography} {parent_id}"
+            )
 
             initial_weights = weights_df[weights_df[parent_geography] == parent_id]
-            initial_weights = initial_weights.set_index(settings.get('household_id_col'))
+            initial_weights = initial_weights.set_index(
+                settings.get("household_id_col")
+            )
 
             # using balanced_weight slows down simul and doesn't improve results
             # (float seeds means no zero-weight households to drop)
             if NO_INTEGERIZATION_EVER or SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS:
-                initial_weights = initial_weights['balanced_weight']
+                initial_weights = initial_weights["balanced_weight"]
             else:
-                initial_weights = initial_weights['integer_weight']
+                initial_weights = initial_weights["integer_weight"]
 
-            assert len(initial_weights.index) == len(seed_incidence_df.index), \
-                "seed table and initial weights table do not match, possibly due to overlapping zones in crosswalk."
+            assert len(initial_weights.index) == len(
+                seed_incidence_df.index
+            ), "seed table and initial weights table do not match, possibly due to overlapping zones in crosswalk."
 
             zone_weights_df = balance_and_integerize(
                 incidence_df=seed_incidence_df,
@@ -286,13 +303,13 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
                 parent_geography=parent_geography,
                 parent_id=parent_id,
                 sub_geographies=sub_geographies,
-                crosswalk_df=seed_crosswalk_df
-                )
+                crosswalk_df=seed_crosswalk_df,
+            )
 
             # add higher level geography id columns to facilitate summaries
-            parent_geography_ids = \
-                crosswalk_df.loc[crosswalk_df[parent_geography] == parent_id, parent_geographies]\
-                .max(axis=0)
+            parent_geography_ids = crosswalk_df.loc[
+                crosswalk_df[parent_geography] == parent_id, parent_geographies
+            ].max(axis=0)
             for z in parent_geography_ids.index:
                 zone_weights_df[z] = parent_geography_ids[z]
 
@@ -305,10 +322,12 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
 
     if not NO_INTEGERIZATION_EVER:
 
-        inject.add_table(weight_table_name(geography, sparse=True),
-                         integer_weights_df[integer_weights_df['integer_weight'] > 0])
+        inject.add_table(
+            weight_table_name(geography, sparse=True),
+            integer_weights_df[integer_weights_df["integer_weight"] > 0],
+        )
 
-    if 'trace_geography' in settings and geography in settings['trace_geography']:
-        trace_geography_id = settings.get('trace_geography')[geography]
+    if "trace_geography" in settings and geography in settings["trace_geography"]:
+        trace_geography_id = settings.get("trace_geography")[geography]
         df = integer_weights_df[integer_weights_df[geography] == trace_geography_id]
-        inject.add_table('trace_%s' % weight_table_name(geography), df)
+        inject.add_table("trace_%s" % weight_table_name(geography), df)

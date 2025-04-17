@@ -1,4 +1,3 @@
-
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -8,6 +7,7 @@ import pandas as pd
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
 
 class NumpyLogger:
     def __init__(self, logger):
@@ -22,7 +22,9 @@ class NumpyLogger:
         )
 
 
-def assign_variable(target, expression, df, locals_dict, df_alias=None, trace_rows=None):
+def assign_variable(
+    target, expression, df, locals_dict, df_alias=None, trace_rows=None
+):
     """
     Evaluate an expression of a given data table.
 
@@ -59,7 +61,9 @@ def assign_variable(target, expression, df, locals_dict, df_alias=None, trace_ro
     def to_series(x, target=None):
         if x is None or np.isscalar(x):
             if target:
-                logger.warning("WARNING: assign_variables promoting scalar %s to series" % target)
+                logger.warning(
+                    "WARNING: assign_variables promoting scalar %s to series" % target
+                )
             return pd.Series([x] * len(df.index), index=df.index)
         return x
 
@@ -70,7 +74,7 @@ def assign_variable(target, expression, df, locals_dict, df_alias=None, trace_ro
     if df_alias:
         locals_dict[df_alias] = df
     else:
-        locals_dict['df'] = df
+        locals_dict["df"] = df
 
     try:
 
@@ -78,7 +82,7 @@ def assign_variable(target, expression, df, locals_dict, df_alias=None, trace_ro
         np_logger.target = str(target)
         np_logger.expression = str(expression)
         saved_handler = np.seterrcall(np_logger)
-        save_err = np.seterr(all='log')
+        save_err = np.seterr(all="log")
 
         values = to_series(eval(expression, globals(), locals_dict), target=target)
 
@@ -92,8 +96,9 @@ def assign_variable(target, expression, df, locals_dict, df_alias=None, trace_ro
 
     except Exception as err:
         logger.error("assign_variables error: %s: %s" % (type(err).__name__, str(err)))
-        logger.error("assign_variables expression: %s = %s"
-                     % (str(target), str(expression)))
+        logger.error(
+            "assign_variables expression: %s = %s" % (str(target), str(expression))
+        )
 
         # values = to_series(None, target=target)
         raise err

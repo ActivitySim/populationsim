@@ -7,8 +7,8 @@ import importlib
 from populationsim.core import inject
 
 # Dynamically import all modules in the "steps" folder
-for filename in Path(__file__).parent.glob('*.py'):
-    if filename.suffix != '.py' or filename.name == '__init__.py':
+for filename in Path(__file__).parent.glob("*.py"):
+    if filename.suffix != ".py" or filename.name == "__init__.py":
         continue
 
     module_name = f"populationsim.steps.{filename.stem}"

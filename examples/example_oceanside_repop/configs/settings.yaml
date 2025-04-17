@@ -25,7 +25,7 @@ trace_geography:
   MAZ: 1
   TAZ: 310
 
-  
+
 # Data Directory
 # ------------------------------------------------------------------
 data_dir: data
@@ -49,14 +49,8 @@ input_table_list:
     filename : control_totals_maz.csv
   - tablename: TAZ_control_data
     filename : control_totals_taz.csv
-  - tablename: REGION_control_data 
+  - tablename: REGION_control_data
     filename : control_totals_region.csv
-
-# Input Data Tables for repop mode
-# (other required tables will already have been read into the
-# pipeline by the input_pre_processor step if the initial run)
-# ------------------------------------------------------------------
-input_table_list:
   - tablename: geo_cross_walk
     filename : geo_crosswalks.csv
   - filename : repop_control_totals_maz.csv

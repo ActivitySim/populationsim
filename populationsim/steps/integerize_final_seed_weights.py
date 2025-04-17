@@ -1,4 +1,3 @@
-
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -33,7 +32,7 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
 
     """
 
-    if config.setting('NO_INTEGERIZATION_EVER', False):
+    if config.setting("NO_INTEGERIZATION_EVER", False):
         logger.warning("skipping integerize_final_seed_weights: NO_INTEGERIZATION_EVER")
         return
 
@@ -41,7 +40,7 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
     incidence_df = incidence_table.to_frame()
     control_spec = control_spec.to_frame()
 
-    seed_geography = settings.get('seed_geography')
+    seed_geography = settings.get("seed_geography")
     seed_controls_df = get_control_table(seed_geography)
 
     seed_weights_df = get_weight_table(seed_geography)
@@ -51,7 +50,7 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
     assert (seed_controls_df.columns == control_cols).all()
 
     # determine master_control_index if specified in settings
-    total_hh_control_col = config.setting('total_hh_control')
+    total_hh_control_col = config.setting("total_hh_control")
 
     # run balancer for each seed geography
     weight_list = []
@@ -64,8 +63,9 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
         # slice incidence rows for this seed geography
         seed_incidence = incidence_df[incidence_df[seed_geography] == seed_id]
 
-        balanced_seed_weights = \
-            seed_weights_df.loc[seed_weights_df[seed_geography] == seed_id, 'balanced_weight']
+        balanced_seed_weights = seed_weights_df.loc[
+            seed_weights_df[seed_geography] == seed_id, "balanced_weight"
+        ]
 
         trace_label = "%s_%s" % (seed_geography, seed_id)
 
@@ -75,7 +75,7 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
             control_totals=seed_controls_df.loc[seed_id],
             incidence_table=seed_incidence[control_cols],
             float_weights=balanced_seed_weights,
-            total_hh_control_col=total_hh_control_col
+            total_hh_control_col=total_hh_control_col,
         )
 
         weight_list.append(integer_weights)
@@ -83,4 +83,6 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
     # bulk concat all seed level results
     integer_seed_weights = pd.concat(weight_list)
 
-    inject.add_column(weight_table_name(seed_geography), 'integer_weight', integer_seed_weights)
+    inject.add_column(
+        weight_table_name(seed_geography), "integer_weight", integer_seed_weights
+    )

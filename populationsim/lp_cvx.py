@@ -1,4 +1,3 @@
-
 # PopulationSim
 # See full license in LICENSE.txt.
 
@@ -8,27 +7,29 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-STATUS_OPTIMAL = 'OPTIMAL'
-STATUS_FEASIBLE = 'FEASIBLE'
+STATUS_OPTIMAL = "OPTIMAL"
+STATUS_FEASIBLE = "FEASIBLE"
 STATUS_SUCCESS = [STATUS_OPTIMAL, STATUS_FEASIBLE]
 
 # 'CBC', 'GLPK_MI', 'ECOS_BB'
-CVX_SOLVER = 'GLPK_MI'
+CVX_SOLVER = "GLPK_MI"
 
 # Order of vectorization for cvxpy
 # 'C' for C-style row-major order, 'F' for Fortran-style column-major order
 # Note: cvxpy is deprecating 'F' order, so we use 'C' order.
-ORDER = 'C'
+ORDER = "C"
+
 
 def np_integerizer_cvx(
-        incidence,
-        resid_weights,
-        log_resid_weights,
-        control_importance_weights,
-        total_hh_control_index,
-        lp_right_hand_side,
-        relax_ge_upper_bound,
-        hh_constraint_ge_bound):
+    incidence,
+    resid_weights,
+    log_resid_weights,
+    control_importance_weights,
+    total_hh_control_index,
+    lp_right_hand_side,
+    relax_ge_upper_bound,
+    hh_constraint_ge_bound,
+):
     """
     cvx-based single-integerizer function taking numpy data types and conforming to a
     standard function signature that allows it to be swapped interchangeably with alternate
@@ -52,19 +53,19 @@ def np_integerizer_cvx(
     """
 
     import cvxpy as cvx
-    
-    def vec(x, order='C'):
+
+    def vec(x, order="C"):
         """Set the order of the vector to C or F Once."""
         return cvx.vec(x, order=order)
 
     STATUS_TEXT = {
         cvx.OPTIMAL: STATUS_OPTIMAL,
-        cvx.INFEASIBLE: 'INFEASIBLE',
-        cvx.UNBOUNDED: 'UNBOUNDED',
+        cvx.INFEASIBLE: "INFEASIBLE",
+        cvx.UNBOUNDED: "UNBOUNDED",
         cvx.OPTIMAL_INACCURATE: STATUS_FEASIBLE,
-        cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
-        cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
-        None: 'FAILED'
+        cvx.INFEASIBLE_INACCURATE: "INFEASIBLE_INACCURATE",
+        cvx.UNBOUNDED_INACCURATE: "UNBOUNDED_INACCURATE",
+        None: "FAILED",
     }
     CVX_MAX_ITERS = 300
 
@@ -84,9 +85,9 @@ def np_integerizer_cvx(
     # - Set objective
 
     objective = cvx.Maximize(
-        cvx.sum(cvx.multiply(log_resid_weights, vec(x))) -
-        cvx.sum(cvx.multiply(control_importance_weights, relax_le)) -
-        cvx.sum(cvx.multiply(control_importance_weights, relax_ge))
+        cvx.sum(cvx.multiply(log_resid_weights, vec(x)))
+        - cvx.sum(cvx.multiply(control_importance_weights, relax_le))
+        - cvx.sum(cvx.multiply(control_importance_weights, relax_ge))
     )
 
     total_hh_constraint = lp_right_hand_side[total_hh_control_index]
@@ -100,31 +101,32 @@ def np_integerizer_cvx(
         vec(x @ incidence) - relax_le <= lp_right_hand_side,
         vec(x @ incidence) + relax_ge >= lp_right_hand_side,
         vec(x @ incidence) + relax_ge <= hh_constraint_ge_bound,
-
         x >= 0.0,
         x <= max_x,
-
         relax_le >= 0.0,
         relax_le <= lp_right_hand_side,
-
         relax_ge >= 0.0,
         relax_ge <= relax_ge_upper_bound,
-
         # - equality constraint for the total households control
         cvx.sum(x) == total_hh_constraint,
     ]
 
     prob = cvx.Problem(objective, constraints)
 
-    assert CVX_SOLVER in cvx.installed_solvers(), \
-        "CVX Solver '%s' not in installed solvers %s." % (CVX_SOLVER, cvx.installed_solvers())
+    assert (
+        CVX_SOLVER in cvx.installed_solvers()
+    ), "CVX Solver '%s' not in installed solvers %s." % (
+        CVX_SOLVER,
+        cvx.installed_solvers(),
+    )
     logger.info("integerizing with '%s' solver." % CVX_SOLVER)
 
     try:
         prob.solve(solver=CVX_SOLVER, verbose=True, max_iters=CVX_MAX_ITERS)
     except cvx.SolverError:
         logging.exception(
-            'Solver error encountered in weight discretization. Weights will be rounded.')
+            "Solver error encountered in weight discretization. Weights will be rounded."
+        )
 
     status_text = STATUS_TEXT[prob.status]
 
@@ -139,24 +141,24 @@ def np_integerizer_cvx(
 
 
 def np_simul_integerizer_cvx(
-        sub_int_weights,
-        parent_countrol_importance,
-        parent_relax_ge_upper_bound,
-        sub_control_importance,
-        sub_float_weights,
-        sub_resid_weights,
-        lp_right_hand_side,
-        parent_hh_constraint_ge_bound,
-        sub_incidence,
-        parent_incidence,
-        total_hh_right_hand_side,
-        relax_ge_upper_bound,
-        parent_lp_right_hand_side,
-        hh_constraint_ge_bound,
-        parent_resid_weights,
-        total_hh_sub_control_index,
-        total_hh_parent_control_index
-    ):
+    sub_int_weights,
+    parent_countrol_importance,
+    parent_relax_ge_upper_bound,
+    sub_control_importance,
+    sub_float_weights,
+    sub_resid_weights,
+    lp_right_hand_side,
+    parent_hh_constraint_ge_bound,
+    sub_incidence,
+    parent_incidence,
+    total_hh_right_hand_side,
+    relax_ge_upper_bound,
+    parent_lp_right_hand_side,
+    hh_constraint_ge_bound,
+    parent_resid_weights,
+    total_hh_sub_control_index,
+    total_hh_parent_control_index,
+):
     """
     cvx-based simul-integerizer function taking numpy data types and conforming to a
     standard function signature that allows it to be swapped interchangeably with alternate
@@ -191,19 +193,19 @@ def np_simul_integerizer_cvx(
     """
 
     import cvxpy as cvx
-    
-    def vec(x, order='C'):
+
+    def vec(x, order="C"):
         """Set the order of the vector to C or F Once."""
         return cvx.vec(x, order=order)
 
     STATUS_TEXT = {
-        cvx.OPTIMAL: 'OPTIMAL',
-        cvx.INFEASIBLE: 'INFEASIBLE',
-        cvx.UNBOUNDED: 'UNBOUNDED',
-        cvx.OPTIMAL_INACCURATE: 'FEASIBLE',  # for compatability with ortools
-        cvx.INFEASIBLE_INACCURATE: 'INFEASIBLE_INACCURATE',
-        cvx.UNBOUNDED_INACCURATE: 'UNBOUNDED_INACCURATE',
-        None: 'FAILED'
+        cvx.OPTIMAL: "OPTIMAL",
+        cvx.INFEASIBLE: "INFEASIBLE",
+        cvx.UNBOUNDED: "UNBOUNDED",
+        cvx.OPTIMAL_INACCURATE: "FEASIBLE",  # for compatability with ortools
+        cvx.INFEASIBLE_INACCURATE: "INFEASIBLE_INACCURATE",
+        cvx.UNBOUNDED_INACCURATE: "UNBOUNDED_INACCURATE",
+        None: "FAILED",
     }
     CVX_MAX_ITERS = 1000
 
@@ -233,24 +235,26 @@ def np_simul_integerizer_cvx(
     if total_hh_parent_control_index > 0:
         parent_countrol_importance[total_hh_parent_control_index] = 0
 
-
     LOG_OVERFLOW = -725
-    log_resid_weights = np.log(np.maximum(sub_resid_weights, np.exp(LOG_OVERFLOW))).flatten(ORDER)
+    log_resid_weights = np.log(
+        np.maximum(sub_resid_weights, np.exp(LOG_OVERFLOW))
+    ).flatten(ORDER)
     assert not np.isnan(log_resid_weights).any()
 
-    log_parent_resid_weights = \
-        np.log(np.maximum(parent_resid_weights, np.exp(LOG_OVERFLOW))).flatten(ORDER)
+    log_parent_resid_weights = np.log(
+        np.maximum(parent_resid_weights, np.exp(LOG_OVERFLOW))
+    ).flatten(ORDER)
     assert not np.isnan(log_parent_resid_weights).any()
 
     # subzone and parent objective and relaxation penalties
     # note: cvxpy overloads * so * in following is matrix multiplication
     objective = cvx.Maximize(
-        cvx.sum(cvx.multiply(log_resid_weights, vec(x))) +
-        cvx.sum(cvx.multiply(log_parent_resid_weights, vec(cvx.sum(x, axis=0)))) -
-        cvx.sum(relax_le @ sub_control_importance) -
-        cvx.sum(relax_ge @ sub_control_importance) -
-        cvx.sum(cvx.multiply(parent_countrol_importance, parent_relax_le)) -
-        cvx.sum(cvx.multiply(parent_countrol_importance, parent_relax_ge))
+        cvx.sum(cvx.multiply(log_resid_weights, vec(x)))
+        + cvx.sum(cvx.multiply(log_parent_resid_weights, vec(cvx.sum(x, axis=0))))
+        - cvx.sum(relax_le @ sub_control_importance)
+        - cvx.sum(relax_ge @ sub_control_importance)
+        - cvx.sum(cvx.multiply(parent_countrol_importance, parent_relax_le))
+        - cvx.sum(cvx.multiply(parent_countrol_importance, parent_relax_ge))
     )
 
     constraints = [
@@ -258,42 +262,41 @@ def np_simul_integerizer_cvx(
         (x @ sub_incidence) - relax_le <= lp_right_hand_side,
         (x @ sub_incidence) + relax_ge >= lp_right_hand_side,
         (x @ sub_incidence) + relax_ge <= hh_constraint_ge_bound,
-
         x >= 0.0,
         x <= x_max,
-
         relax_le >= 0.0,
         relax_le <= lp_right_hand_side,
-
         relax_ge >= 0.0,
         relax_ge <= relax_ge_upper_bound,
-
         # - equality constraint for the total households control
         cvx.sum(x, axis=1) == total_hh_right_hand_side,
-
         vec(cvx.sum(x, axis=0) @ parent_incidence) - parent_relax_le >= 0,
-        vec(cvx.sum(x, axis=0) @ parent_incidence) - parent_relax_le <= parent_lp_right_hand_side,
-        vec(cvx.sum(x, axis=0) @ parent_incidence) + parent_relax_ge >= parent_lp_right_hand_side,
-        vec(cvx.sum(x, axis=0) @ parent_incidence) + parent_relax_ge <= parent_hh_constraint_ge_bound,
-
+        vec(cvx.sum(x, axis=0) @ parent_incidence) - parent_relax_le
+        <= parent_lp_right_hand_side,
+        vec(cvx.sum(x, axis=0) @ parent_incidence) + parent_relax_ge
+        >= parent_lp_right_hand_side,
+        vec(cvx.sum(x, axis=0) @ parent_incidence) + parent_relax_ge
+        <= parent_hh_constraint_ge_bound,
         parent_relax_le >= 0.0,
         parent_relax_le <= parent_lp_right_hand_side,
-
         parent_relax_ge >= 0.0,
         parent_relax_ge <= parent_relax_ge_upper_bound,
     ]
 
     prob = cvx.Problem(objective, constraints)
 
-    assert CVX_SOLVER in cvx.installed_solvers(), \
-        "CVX Solver '%s' not in installed solvers %s." % (
-        CVX_SOLVER, cvx.installed_solvers())
+    assert (
+        CVX_SOLVER in cvx.installed_solvers()
+    ), "CVX Solver '%s' not in installed solvers %s." % (
+        CVX_SOLVER,
+        cvx.installed_solvers(),
+    )
     logger.info("simul_integerizing with '%s' solver." % CVX_SOLVER)
 
     try:
         prob.solve(solver=CVX_SOLVER, verbose=True, max_iters=CVX_MAX_ITERS)
     except cvx.SolverError as e:
-        logging.warning('Solver error in SimulIntegerizer: %s' % e)
+        logging.warning("Solver error in SimulIntegerizer: %s" % e)
 
     # if we got a result
     if np.any(x.value):

@@ -98,9 +98,7 @@ def add_table(table_name, table, replace=False):
         and orca.table_type(table_name) == "dataframe"
     ):
         logger.warning("inject add_table replacing existing table %s" % table_name)
-        raise AssertionError(
-            "table '%s' already exists. not replaced" % table_name
-        )
+        raise AssertionError("table '%s' already exists. not replaced" % table_name)
 
     # FIXME - should add table.copy() instead, so it can't be modified behind our back?
     return orca.add_table(table_name, table, cache=False)

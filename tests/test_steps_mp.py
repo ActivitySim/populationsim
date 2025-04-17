@@ -10,14 +10,16 @@ TAZ_100_HH_REPOP_COUNT = 26
 
 
 def setup_function(func):
-    example_dir = Path(__file__).parent.parent / 'examples'
-    example_configs_dir = (example_dir / 'example_test' / 'configs')
-    configs_dir = (Path(__file__).parent / 'configs')    
-    mp_configs_dir = (example_dir / 'example_test' / 'configs_mp')
-    output_dir = Path(__file__).parent / 'output'
-    data_dir = (example_dir / 'example_test' / 'data')
+    example_dir = Path(__file__).parent.parent / "examples"
+    example_configs_dir = example_dir / "example_test" / "configs"
+    configs_dir = Path(__file__).parent / "configs"
+    mp_configs_dir = example_dir / "example_test" / "configs_mp"
+    output_dir = Path(__file__).parent / "output"
+    data_dir = example_dir / "example_test" / "data"
 
-    inject.add_injectable("configs_dir", [mp_configs_dir, configs_dir, example_configs_dir])
+    inject.add_injectable(
+        "configs_dir", [mp_configs_dir, configs_dir, example_configs_dir]
+    )
     inject.add_injectable("output_dir", output_dir)
     inject.add_injectable("data_dir", data_dir)
 
@@ -26,6 +28,7 @@ def setup_function(func):
     tracing.delete_output_files("csv")
     tracing.delete_output_files("txt")
     tracing.delete_output_files("yaml")
+
 
 def regress():
 
@@ -36,13 +39,16 @@ def regress():
     assert taz_hh_counts.loc[100] == TAZ_100_HH_COUNT
 
     # output_tables action: skip
-    output_dir = Path(__file__).parent / 'output'
+    output_dir = Path(__file__).parent / "output"
 
-    assert not (output_dir / 'households.csv').exists()
-    assert (output_dir / 'summary_DISTRICT_1.csv').exists()
-    
-    result_hash = hash_dataframe(expanded_household_ids, sort_by = ['hh_id', 'TRACT', 'TAZ', 'PUMA'])
-    assert result_hash == '05d7f8d0bf5d8e5c7ee29b67c13d858f'
+    assert not (output_dir / "households.csv").exists()
+    assert (output_dir / "summary_DISTRICT_1.csv").exists()
+
+    result_hash = hash_dataframe(
+        expanded_household_ids, sort_by=["hh_id", "TRACT", "TAZ", "PUMA"]
+    )
+    assert result_hash == "05d7f8d0bf5d8e5c7ee29b67c13d858f"
+
 
 def teardown_function(func):
     inject.clear_cache()
@@ -66,7 +72,6 @@ def test_mp_run():
     pipeline.open_pipeline("_")
     regress()
     pipeline.close_pipeline()
-
 
 
 if __name__ == "__main__":
