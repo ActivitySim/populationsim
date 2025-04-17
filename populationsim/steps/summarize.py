@@ -35,8 +35,14 @@ def out_table(table_name, df):
         inject.add_table(table_name, df, replace=repop)
 
 
-def summarize_geography(geography, weight_col, hh_id_col,
-                        crosswalk_df, results_df, incidence_df):
+def summarize_geography(
+    geography,
+    weight_col,
+    hh_id_col,
+    crosswalk_df,
+    results_df,
+    incidence_df
+    ):
 
     # controls_table for current geography level
     controls_table = get_control_table(geography)
@@ -97,7 +103,14 @@ def summarize_geography(geography, weight_col, hh_id_col,
     return summary_df
 
 
-def meta_summary(incidence_df, control_spec, top_geography, top_id, sub_geographies, hh_id_col):
+def meta_summary(
+    incidence_df,
+    control_spec,
+    top_geography,
+    top_id,
+    sub_geographies,
+    hh_id_col
+    ):
 
     if setting('NO_INTEGERIZATION_EVER', False):
         seed_weight_cols = ['preliminary_balanced_weight', 'balanced_weight']
@@ -198,7 +211,13 @@ def summarize(crosswalk, incidence_table, control_spec):
 
         weights_df = get_weight_table(geography)
 
-        if weights_df is None:
+        # If repop mode, skip all other geography levels above the lowest.
+        # Repop mode can only control one geography, thus it must be the lowest
+        # and all others are now outdated and will throw errors downstream
+        if (
+            weights_df is None or
+            (inject.get_step_arg('repop', default=False) and geography != geographies[-1])
+        ):
             continue
 
         if include_integer_colums:
@@ -233,12 +252,24 @@ def summarize(crosswalk, incidence_table, control_spec):
         out_table('%s_aggregate' % (geography,), aggegrate_weights)
 
         summary_col = 'integer_weight' if include_integer_colums else 'balanced_weight'
-        df_seed = summarize_geography(seed_geography, summary_col, hh_id_col,
-                                 crosswalk_df, weights_df, incidence_df)
+        df_seed = summarize_geography(
+            seed_geography,
+            summary_col,
+            hh_id_col,
+            crosswalk_df,
+            weights_df,
+            incidence_df
+        )
         out_table('%s_%s' % (geography, seed_geography,), df_seed)
 
-        df_geo = summarize_geography(geography, summary_col, hh_id_col,
-                                 crosswalk_df, weights_df, incidence_df)
+        df_geo = summarize_geography(
+            geography,
+            summary_col,
+            hh_id_col,
+            crosswalk_df,
+            weights_df,
+            incidence_df
+        )
         out_table('%s' % (geography,), df_geo)
         
         # Aggregate super geographies

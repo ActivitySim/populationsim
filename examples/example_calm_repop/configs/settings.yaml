@@ -97,7 +97,7 @@ run_list:
     - repop_balancing
     # expand_households options are append or replace
     - expand_households.repop;append
-    # - summarize.repop
+    - summarize.repop
     - write_synthetic_population.repop
     - write_tables.repop
 

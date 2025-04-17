@@ -29,8 +29,6 @@ def log_settings():
 
 
 if __name__ == '__main__':
-
-    assert inject.get_injectable('preload_injectables', None)
     
     base_output = Path(__file__).parent.parent / 'example_calm' / 'output'
     repop_output = Path(__file__).parent / 'output'
