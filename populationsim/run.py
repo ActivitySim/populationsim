@@ -11,7 +11,7 @@ import numpy as np
 import time
 from datetime import timedelta
 
-from populationsim.core import config, inject, mem, pipeline, tracing
+from .core import config, inject, mem, pipeline, tracing
 
 logger = logging.getLogger(__name__)
 
