@@ -18,6 +18,8 @@ dependencies = [
     "orca>=1.8",
     "blosc2>=2.5.1",
     "cvxpy[glpk]>=1.6.5",
+    "numba>=0.60.0",
+    "pyarrow>=20.0.0",
 ]
 
 [dependency-groups]

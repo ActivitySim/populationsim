@@ -16,6 +16,9 @@ GROUP_BY_INCIDENCE_SIGNATURE: False
 USE_SIMUL_INTEGERIZER: True
 
 USE_CVXPY: False
+USE_NUMBA: True
+USE_HARD_CONSTRAINTS: False
+
 max_expansion_factor: 4 # Default is 30
 min_expansion_factor: 0.5
 absolute_upper_bounds: 20000

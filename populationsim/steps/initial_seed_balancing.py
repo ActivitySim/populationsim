@@ -60,7 +60,8 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     min_expansion_factor = settings.get("min_expansion_factor", None)
     absolute_upper_bound = settings.get("absolute_upper_bound", None)
     absolute_lower_bound = settings.get("absolute_lower_bound", None)
-    hard_constraints = settings.get("hard_constraints", None)
+    hard_constraints = settings.get("USE_HARD_CONSTRAINTS", False)
+    use_numba = settings.get("USE_NUMBA", False)
 
     # run balancer for each seed geography
     weight_list = []
@@ -84,6 +85,7 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
             control_totals=seed_controls_df.loc[seed_id],
             initial_weights=seed_incidence_df["sample_weight"],
             use_hard_constraints=hard_constraints,
+            use_numba=use_numba,
         )
 
         logger.info("seed_balancer status: %s" % status)
