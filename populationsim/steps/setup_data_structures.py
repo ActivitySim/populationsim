@@ -9,8 +9,8 @@ import pandas as pd
 import numpy as np
 
 from populationsim.core import inject, pipeline, config
-from populationsim.assign import assign_variable
-from populationsim.helper import control_table_name, get_control_data_table
+from populationsim.core.assign import assign_variable
+from populationsim.core.helper import control_table_name, get_control_data_table
 
 logger = logging.getLogger(__name__)
 

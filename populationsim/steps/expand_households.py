@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 
 from populationsim.core import pipeline, inject, config
-from populationsim.helper import get_weight_table
+from populationsim.core.helper import get_weight_table
 
 logger = logging.getLogger(__name__)
 

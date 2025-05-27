@@ -7,7 +7,11 @@ import pandas as pd
 
 from populationsim.core import inject, config
 from populationsim.integerizer import do_integerizing
-from populationsim.helper import get_control_table, weight_table_name, get_weight_table
+from populationsim.core.helper import (
+    get_control_table,
+    weight_table_name,
+    get_weight_table,
+)
 
 logger = logging.getLogger(__name__)
 

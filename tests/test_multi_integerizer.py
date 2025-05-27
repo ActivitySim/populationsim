@@ -6,7 +6,7 @@ import pandas as pd
 
 from populationsim.core import inject
 
-from populationsim.integerizer.multi_integerizer import (
+from populationsim.integerizer import (
     do_simul_integerizing,
     do_sequential_integerizing,
 )

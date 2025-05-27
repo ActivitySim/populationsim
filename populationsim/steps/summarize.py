@@ -8,7 +8,7 @@ import numpy as np
 
 from populationsim.core import inject, config
 
-from populationsim.helper import get_control_table, get_weight_table
+from populationsim.core.helper import get_control_table, get_weight_table
 
 logger = logging.getLogger(__name__)
 

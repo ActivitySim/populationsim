@@ -1,220 +1,13 @@
-# PopulationSim
-# See full license in LICENSE.txt.
-
 import logging
-
 import numpy as np
 import pandas as pd
-
-
 from populationsim.core.config import setting
+from .integerizer import Integerizer
+from .simul_integerizer import SimulIntegerizer
 
-from .lp import get_simul_integerizer
 from .lp import STATUS_SUCCESS
-from .integerizer import smart_round, do_integerizing
 
 logger = logging.getLogger(__name__)
-
-
-def use_simul_integerizer():
-
-    # use_simul_integerizer it if we can it unless told not to
-    return setting("USE_SIMUL_INTEGERIZER", True)
-
-
-class SimulIntegerizer:
-
-    def __init__(
-        self,
-        incidence_df,
-        sub_weights,
-        sub_controls_df,
-        control_spec,
-        total_hh_control_col,
-        trace_label="",
-    ):
-
-        sample_count = len(sub_weights.index)
-        sub_zone_count = len(sub_weights.columns)
-
-        assert len(sub_weights.index) == sample_count
-        assert len(incidence_df.index) == sample_count
-        assert len(sub_controls_df.index) == sub_zone_count
-        assert len(sub_weights.columns) == sub_zone_count
-        assert total_hh_control_col in sub_controls_df.columns
-        assert total_hh_control_col in incidence_df.columns
-        assert (incidence_df.columns == control_spec.target).all()
-
-        self.incidence_df = incidence_df
-        self.sub_weights = sub_weights
-        self.total_hh_control_col = total_hh_control_col
-
-        # control spec rows and control_df columns should be same and in same order
-        sub_countrol_cols = list(sub_controls_df.columns)
-        sub_control_spec = control_spec[control_spec.target.isin(sub_countrol_cols)]
-        self.sub_controls_df = sub_controls_df[sub_control_spec.target.values]
-        self.sub_control_importance = sub_control_spec.importance
-
-        # only care about parent control columns NOT in sub_controls
-        # control spec rows and control_df columns should be same and in same order
-        parent_control_spec = control_spec[
-            ~control_spec.target.isin(self.sub_controls_df.columns)
-        ]
-        self.parent_countrol_cols = parent_control_spec.target.values
-        self.parent_countrol_importance = parent_control_spec.importance
-
-        assert total_hh_control_col not in self.parent_countrol_cols
-
-        self.trace_label = trace_label
-
-    def integerize(self):
-
-        # - subzone
-
-        total_hh_sub_control_index = self.sub_controls_df.columns.get_loc(
-            self.total_hh_control_col
-        )
-
-        # FIXME - shouldn't need this?
-        total_hh_parent_control_index = -1
-
-        sub_incidence = self.incidence_df[self.sub_controls_df.columns]
-        sub_incidence = sub_incidence.values.astype(np.float64)
-
-        sub_float_weights = self.sub_weights.values.transpose().astype(np.float64)
-        sub_int_weights = sub_float_weights.astype(int)
-        sub_resid_weights = sub_float_weights % 1.0
-
-        # print "sub_float_weights\n", sub_float_weights
-        # print "sub_int_weights\n", sub_int_weights
-        # print "sub_resid_weights\n", sub_resid_weights
-
-        sub_control_totals = np.asanyarray(self.sub_controls_df).astype(np.int64)
-        sub_control_importance = np.asanyarray(self.sub_control_importance).astype(
-            np.float64
-        )
-
-        relaxed_sub_control_totals = np.dot(sub_float_weights, sub_incidence)
-
-        # lp_right_hand_side
-        lp_right_hand_side = np.round(relaxed_sub_control_totals) - np.dot(
-            sub_int_weights, sub_incidence
-        )
-        lp_right_hand_side = np.maximum(lp_right_hand_side, 0.0)
-
-        # inequality constraint upper bounds
-        sub_num_households = relaxed_sub_control_totals[
-            :, (total_hh_sub_control_index,)
-        ]
-        sub_max_control_values = np.amax(sub_incidence, axis=0) * sub_num_households
-        relax_ge_upper_bound = np.maximum(
-            sub_max_control_values - lp_right_hand_side, 0
-        )
-        hh_constraint_ge_bound = np.maximum(sub_max_control_values, lp_right_hand_side)
-
-        # equality constraint for the total households control
-        total_hh_right_hand_side = lp_right_hand_side[:, total_hh_sub_control_index]
-
-        # - parent
-        parent_incidence = self.incidence_df[self.parent_countrol_cols]
-        parent_incidence = parent_incidence.values.astype(np.float64)
-
-        # note:
-        # sum(sub_int_weights) might be different from parent_float_weights.astype(int)
-        # parent_resid_weights might be > 1.0, OK as we are using in objective, not for rounding
-        parent_float_weights = np.sum(sub_float_weights, axis=0)
-        parent_int_weights = np.sum(sub_int_weights, axis=0)
-        parent_resid_weights = np.sum(sub_resid_weights, axis=0)
-
-        # print "parent_float_weights\n", parent_float_weights
-        # print "parent_int_weights\n", parent_int_weights
-        # print "parent_resid_weights\n", parent_resid_weights
-
-        # - parent control totals based on sub_zone balanced weights
-        relaxed_parent_control_totals = np.dot(parent_float_weights, parent_incidence)
-
-        parent_countrol_importance = np.asanyarray(
-            self.parent_countrol_importance
-        ).astype(np.float64)
-
-        parent_lp_right_hand_side = np.round(relaxed_parent_control_totals) - np.dot(
-            parent_int_weights, parent_incidence
-        )
-        parent_lp_right_hand_side = np.maximum(parent_lp_right_hand_side, 0.0)
-
-        # - create the inequality constraint upper bounds
-        parent_num_households = np.sum(sub_num_households)
-
-        parent_max_possible_control_values = (
-            np.amax(parent_incidence, axis=0) * parent_num_households
-        )
-        parent_relax_ge_upper_bound = np.maximum(
-            parent_max_possible_control_values - parent_lp_right_hand_side, 0
-        )
-        parent_hh_constraint_ge_bound = np.maximum(
-            parent_max_possible_control_values, parent_lp_right_hand_side
-        )
-
-        # how could this not be the case?
-        if not (
-            parent_hh_constraint_ge_bound == parent_max_possible_control_values
-        ).all():
-            print("\nSimulIntegerizer integerizing", self.trace_label)
-            logger.warning(
-                "parent_hh_constraint_ge_bound != parent_max_possible_control_values"
-            )
-            logger.warning(
-                "parent_hh_constraint_ge_bound:      %s" % parent_hh_constraint_ge_bound
-            )
-            logger.warning(
-                "parent_max_possible_control_values: %s"
-                % parent_max_possible_control_values
-            )
-            print("\n")
-            # assert (parent_hh_constraint_ge_bound == parent_max_possible_control_values).all()
-
-        integerizer_func = get_simul_integerizer()
-
-        resid_weights_out, status_text = integerizer_func(
-            sub_int_weights,
-            parent_countrol_importance,
-            parent_relax_ge_upper_bound,
-            sub_control_importance,
-            sub_float_weights,
-            sub_resid_weights,
-            lp_right_hand_side,
-            parent_hh_constraint_ge_bound,
-            sub_incidence,
-            parent_incidence,
-            total_hh_right_hand_side,
-            relax_ge_upper_bound,
-            parent_lp_right_hand_side,
-            hh_constraint_ge_bound,
-            parent_resid_weights,
-            total_hh_sub_control_index,
-            total_hh_parent_control_index,
-        )
-
-        # smart round resid_weights_out for each sub_zone
-        total_household_controls = sub_control_totals[
-            :, total_hh_sub_control_index
-        ].flatten()
-        integerized_weights = np.empty_like(sub_int_weights)
-
-        sub_zone_count = len(self.sub_weights.columns)
-        for i in range(sub_zone_count):
-            integerized_weights[i] = smart_round(
-                sub_int_weights[i], resid_weights_out[i], total_household_controls[i]
-            )
-
-        # integerized_weights df: one column of integerized weights per sub_zone
-        self.integerized_weights = pd.DataFrame(
-            data=integerized_weights.T,
-            columns=self.sub_weights.columns,
-            index=self.incidence_df.index,
-        )
-
-        return status_text
 
 
 def try_simul_integerizing(
@@ -341,6 +134,218 @@ def reshape_result(
     integer_weights_df = pd.concat(integer_weights_list)
 
     return integer_weights_df
+
+
+def multi_integerize(
+    incidence_df,
+    sub_zone_weights,
+    sub_controls_df,
+    control_spec,
+    total_hh_control_col,
+    parent_geography,
+    parent_id,
+    sub_geography,
+    sub_control_zones,
+):
+    """
+
+    Parameters
+    ----------
+    incidence_df : pandas.Dataframe
+        full incidence_df for all hh samples in seed zone
+    sub_zone_weights : pandas.DataFame
+        balanced subzone household sample weights to integerize
+    sub_controls_df : pandas.Dataframe
+        sub_geography controls (one row per zone indexed by sub_zone id)
+    control_spec : pandas.Dataframe
+        full control spec with columns 'target', 'seed_table', 'importance', ...
+    total_hh_control_col : str
+        name of total_hh column (so we can preferentially match this control)
+    parent_geography : str
+        parent geography zone name
+    parent_id : int
+        parent geography zone id
+    sub_geography : str
+        subzone geography name (e.g. 'TAZ')
+    sub_control_zones : pandas.Series
+        index is zone id and value is zone label (e.g. TAZ_101)
+        for use in sub_controls_df column names
+
+    Returns
+    -------
+    integer_weights_df : pandas.DataFrame
+        canonical form weight table, with columns for 'balanced_weight', 'integer_weight'
+        plus columns for household id, parent and sub_geography zone ids
+    """
+
+    trace_label = "%s_%s" % (parent_geography, parent_id)
+
+    if setting("NO_INTEGERIZATION_EVER", False):
+        integerizer = do_no_integerizing
+    elif setting("USE_SIMUL_INTEGERIZER", True):
+        integerizer = do_simul_integerizing
+    else:
+        integerizer = do_sequential_integerizing
+
+    integer_weights_df = integerizer(
+        trace_label=trace_label,
+        incidence_df=incidence_df,
+        sub_weights=sub_zone_weights,
+        sub_controls_df=sub_controls_df,
+        control_spec=control_spec,
+        total_hh_control_col=total_hh_control_col,
+        sub_geography=sub_geography,
+        sub_control_zones=sub_control_zones,
+    )
+
+    return integer_weights_df
+
+
+def do_integerizing(
+    trace_label,
+    control_spec,
+    control_totals,
+    incidence_table,
+    float_weights,
+    total_hh_control_col,
+):
+    """
+
+    Parameters
+    ----------
+    trace_label : str
+        trace label indicating geography zone being integerized (e.g. PUMA_600)
+    control_spec : pandas.Dataframe
+        full control spec with columns 'target', 'seed_table', 'importance', ...
+    control_totals : pandas.Series
+        control totals explicitly specified for this zone
+    incidence_table : pandas.Dataframe
+    float_weights : pandas.Series
+        balanced float weights to integerize
+    total_hh_control_col : str
+        name of total_hh column (preferentially constrain to match this control)
+
+    Returns
+    -------
+    integerized_weights : pandas.Series
+    status : str
+        as defined in integerizer.STATUS_TEXT and STATUS_SUCCESS
+    """
+
+    # incidence table should only have control columns
+    incidence_table = incidence_table[control_spec.target]
+
+    if total_hh_control_col not in incidence_table.columns:
+        raise RuntimeError(
+            "total_hh_control column '%s' not found in incidence table"
+            % total_hh_control_col
+        )
+
+    zero_weight_rows = float_weights == 0
+    if zero_weight_rows.any():
+        logger.debug(
+            "omitting %s zero weight rows out of %s"
+            % (zero_weight_rows.sum(), len(incidence_table.index))
+        )
+        incidence_table = incidence_table[~zero_weight_rows]
+        float_weights = float_weights[~zero_weight_rows]
+
+    total_hh_control_value = control_totals[total_hh_control_col]
+
+    status = None
+    if setting("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS") and len(control_totals) < len(
+        incidence_table.columns
+    ):
+
+        ##########################################
+        # - backstopped control_totals
+        # Use balanced float weights to establish target values for all control values
+        # note: this more frequently results in infeasible solver results
+        ##########################################
+
+        relaxed_control_totals = np.round(
+            np.dot(np.asanyarray(float_weights), incidence_table.values)
+        )
+        relaxed_control_totals = pd.Series(
+            relaxed_control_totals, index=incidence_table.columns.values
+        )
+
+        # if the incidence table has only one record, then the final integer weights
+        # should be just an array with 1 element equal to the total number of households;
+        assert len(incidence_table.index) > 1
+
+        integerizer = Integerizer(
+            incidence_table=incidence_table,
+            control_importance_weights=control_spec.importance,
+            float_weights=float_weights,
+            relaxed_control_totals=relaxed_control_totals,
+            total_hh_control_value=total_hh_control_value,
+            total_hh_control_index=incidence_table.columns.get_loc(
+                total_hh_control_col
+            ),
+            control_is_hh_based=control_spec["seed_table"] == "households",
+            trace_label="backstopped_%s" % trace_label,
+        )
+
+        # otherwise, solve for the integer weights using the Mixed Integer Programming solver.
+        status = integerizer.integerize()
+
+        logger.debug(
+            "Integerizer status for backstopped %s: %s" % (trace_label, status)
+        )
+
+    # if we either tried backstopped controls or failed, or never tried at all
+    if status not in STATUS_SUCCESS:
+
+        ##########################################
+        # - unbackstopped partial control_totals
+        # Use balanced weights to establish control totals only for explicitly specified controls
+        # note: this usually results in feasible solver results, except for some single hh zones
+        ##########################################
+
+        balanced_control_cols = control_totals.index
+        incidence_table = incidence_table[balanced_control_cols]
+        control_spec = control_spec[control_spec.target.isin(balanced_control_cols)]
+
+        relaxed_control_totals = np.round(
+            np.dot(np.asanyarray(float_weights), incidence_table.values)
+        )
+        relaxed_control_totals = pd.Series(
+            relaxed_control_totals, index=incidence_table.columns.values
+        )
+
+        integerizer = Integerizer(
+            incidence_table=incidence_table,
+            control_importance_weights=control_spec.importance,
+            float_weights=float_weights,
+            relaxed_control_totals=relaxed_control_totals,
+            total_hh_control_value=total_hh_control_value,
+            total_hh_control_index=incidence_table.columns.get_loc(
+                total_hh_control_col
+            ),
+            control_is_hh_based=control_spec["seed_table"] == "households",
+            trace_label=trace_label,
+        )
+
+        status = integerizer.integerize()
+
+        logger.debug(
+            "Integerizer status for unbackstopped %s: %s" % (trace_label, status)
+        )
+
+    if status not in STATUS_SUCCESS:
+        logger.error(
+            "Integerizer failed for %s status %s. "
+            "Returning smart-rounded original weights" % (trace_label, status)
+        )
+    elif status != "OPTIMAL":
+        logger.warning(
+            "Integerizer status non-optimal for %s status %s." % (trace_label, status)
+        )
+
+    integerized_weights = pd.Series(0, index=zero_weight_rows.index)
+    integerized_weights.update(integerizer.weights["integerized_weight"])
+    return integerized_weights, status
 
 
 def do_simul_integerizing(
@@ -663,68 +668,3 @@ def do_no_integerizing(sub_weights, sub_control_zones, sub_geography, **kwargs):
 
     integerized_weights_df = pd.concat(integerized_weights_list + rounded_weights_list)
     return integerized_weights_df
-
-
-def multi_integerize(
-    incidence_df,
-    sub_zone_weights,
-    sub_controls_df,
-    control_spec,
-    total_hh_control_col,
-    parent_geography,
-    parent_id,
-    sub_geography,
-    sub_control_zones,
-):
-    """
-
-    Parameters
-    ----------
-    incidence_df : pandas.Dataframe
-        full incidence_df for all hh samples in seed zone
-    sub_zone_weights : pandas.DataFame
-        balanced subzone household sample weights to integerize
-    sub_controls_df : pandas.Dataframe
-        sub_geography controls (one row per zone indexed by sub_zone id)
-    control_spec : pandas.Dataframe
-        full control spec with columns 'target', 'seed_table', 'importance', ...
-    total_hh_control_col : str
-        name of total_hh column (so we can preferentially match this control)
-    parent_geography : str
-        parent geography zone name
-    parent_id : int
-        parent geography zone id
-    sub_geography : str
-        subzone geography name (e.g. 'TAZ')
-    sub_control_zones : pandas.Series
-        index is zone id and value is zone label (e.g. TAZ_101)
-        for use in sub_controls_df column names
-
-    Returns
-    -------
-    integer_weights_df : pandas.DataFrame
-        canonical form weight table, with columns for 'balanced_weight', 'integer_weight'
-        plus columns for household id, parent and sub_geography zone ids
-    """
-
-    trace_label = "%s_%s" % (parent_geography, parent_id)
-
-    if setting("NO_INTEGERIZATION_EVER", False):
-        integerizer = do_no_integerizing
-    elif use_simul_integerizer():
-        integerizer = do_simul_integerizing
-    else:
-        integerizer = do_sequential_integerizing
-
-    integer_weights_df = integerizer(
-        trace_label=trace_label,
-        incidence_df=incidence_df,
-        sub_weights=sub_zone_weights,
-        sub_controls_df=sub_controls_df,
-        control_spec=control_spec,
-        total_hh_control_col=total_hh_control_col,
-        sub_geography=sub_geography,
-        sub_control_zones=sub_control_zones,
-    )
-
-    return integer_weights_df

@@ -5,100 +5,17 @@ import logging
 
 import pandas as pd
 
-from populationsim.balancer import SimultaneousListBalancer
+from populationsim.balancer import do_simul_balancing
 from populationsim.core import inject, config
-from populationsim.helper import get_control_table, weight_table_name, get_weight_table
-from populationsim.integerizer.multi_integerizer import multi_integerize
+from populationsim.core.helper import (
+    get_control_table,
+    weight_table_name,
+    get_weight_table,
+)
+from populationsim.integerizer.wrappers import multi_integerize
 
 
 logger = logging.getLogger(__name__)
-
-
-def balance(
-    incidence_df,
-    parent_weights,
-    sub_controls_df,
-    control_spec,
-    total_hh_control_col,
-    parent_geography,
-    parent_id,
-    sub_geographies,
-    sub_control_zones,
-    use_numba,
-    numba_precision,
-):
-    """
-
-    Parameters
-    ----------
-    incidence_df : pandas.Dataframe
-        full incidence_df for all hh samples in seed zone
-    parent_weights : pandas.Series
-        parent zone balanced (possibly integerized) aggregate target weights
-    sub_controls_df : pandas.Dataframe
-        sub_geography controls (one row per zone indexed by sub_zone id)
-    control_spec : pandas.Dataframe
-        full control spec with columns 'target', 'seed_table', 'importance', ...
-    total_hh_control_col : str
-        name of total_hh column (so we can preferentially match this control)
-    parent_geography : str
-        parent geography zone name
-    parent_id : int
-        parent geography zone id
-    sub_geographies : list(str)
-        list of subgeographies in descending order
-    sub_control_zones : pandas.Series
-        index is zone id and value is zone label (e.g. TAZ_101)
-        for use in sub_controls_df column names
-
-    Returns
-    -------
-    sub_zone_weights : pandas.DataFrame
-        balanced subzone household float sample weights
-    """
-
-    sub_control_spec = control_spec[control_spec["geography"].isin(sub_geographies)]
-
-    assert (sub_controls_df.columns.values == sub_control_spec.target.values).all()
-
-    # controls - organized in legible form
-    controls = pd.DataFrame({"name": sub_control_spec.target})
-    controls["importance"] = sub_control_spec.importance
-    controls["total"] = sub_controls_df.sum(axis=0).values
-
-    # Perform in bulk rather than slow loop over pandas
-    new_controls = sub_controls_df.loc[sub_control_zones.index].transpose()
-    new_controls.columns = sub_control_zones.values
-
-    if len(set(controls.columns).intersection(new_controls.columns)) > 0:
-        controls.update(new_controls)
-    else:
-        controls = controls.merge(new_controls, left_on="name", right_index=True)
-
-    # for zone, zone_name in sub_control_zones.items():
-    #     controls[zone_name] = sub_controls_df.loc[zone].values
-
-    # incidence table should only have control columns
-    sub_incidence_df = incidence_df[sub_control_spec.target]
-
-    balancer = SimultaneousListBalancer(
-        incidence_table=sub_incidence_df,
-        parent_weights=parent_weights,
-        controls=controls,
-        sub_control_zones=sub_control_zones,
-        total_hh_control_col=total_hh_control_col,
-        use_numba=use_numba,
-        numba_precision=numba_precision,
-    )
-
-    status = balancer.balance()
-
-    logger.debug(
-        "%s %s converged %s iter %s"
-        % (parent_geography, parent_id, status["converged"], status["iter"])
-    )
-
-    return balancer.sub_zone_weights
 
 
 def balance_and_integerize(
@@ -170,7 +87,7 @@ def balance_and_integerize(
     ]
     sub_control_zones = pd.Series(sub_control_zone_names, index=sub_controls_df.index)
 
-    balanced_sub_zone_weights = balance(
+    balanced_sub_zone_weights, status = do_simul_balancing(
         incidence_df=incidence_df,
         parent_weights=parent_weights,
         sub_controls_df=sub_controls_df,
@@ -182,6 +99,11 @@ def balance_and_integerize(
         sub_control_zones=sub_control_zones,
         use_numba=use_numba,
         numba_precision=numba_precision,
+    )
+
+    logger.debug(
+        "%s %s converged %s iter %s"
+        % (parent_geography, parent_id, status["converged"], status["iter"])
     )
 
     integerized_sub_zone_weights_df = multi_integerize(

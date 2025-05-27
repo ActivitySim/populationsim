@@ -5,8 +5,8 @@ import logging
 import pandas as pd
 
 from populationsim.core import inject, config
-from populationsim.balancer.single import do_balancing
-from populationsim.helper import get_control_table, weight_table_name
+from populationsim.balancer import do_balancing
+from populationsim.core.helper import get_control_table, weight_table_name
 
 
 logger = logging.getLogger(__name__)
