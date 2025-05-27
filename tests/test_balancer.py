@@ -10,8 +10,10 @@ import time
 from populationsim.balancer import ListBalancer
 from populationsim.balancer.balancers import (
     np_balancer_py,
-    np_balancer_numba,
     np_simul_balancer_py,
+)
+from populationsim.balancer.balancers_numba import (
+    np_balancer_numba,
     np_simul_balancer_numba,
 )
 from populationsim.balancer.constants import (

@@ -1,7 +1,7 @@
 import logging
 import numpy as np
-from numba import njit
 from populationsim.balancer.constants import (
+    DEFAULT_MAX_ITERATIONS,
     MAX_DELTA,
     MAX_GAMMA,
     MIN_GAMMA,
@@ -16,7 +16,7 @@ from populationsim.balancer.constants import (
 logger = logging.getLogger(__name__)
 
 
-# Original unoptimized Python code for single list balancing weights
+# Original unoptimized balancer code
 def np_balancer_py(
     sample_count,
     control_count,
@@ -27,8 +27,8 @@ def np_balancer_py(
     weights_upper_bound,
     controls_constraint,
     controls_importance,
-    max_iterations,
-    max_delta,
+    max_iterations=DEFAULT_MAX_ITERATIONS,
+    max_delta=MAX_DELTA,
 ):
 
     # initial relaxation factors
@@ -119,252 +119,6 @@ def np_balancer_py(
     )
 
 
-@njit(fastmath=True, cache=True)
-def np_balancer_numba(
-    sample_count: int,
-    control_count: int,
-    master_control_index: int,
-    incidence: np.ndarray,
-    weights_initial: np.ndarray,
-    weights_lower_bound: np.ndarray,
-    weights_upper_bound: np.ndarray,
-    controls_constraint: np.ndarray,
-    controls_importance: np.ndarray,
-    max_iterations: int,
-    max_delta: float,
-) -> tuple[np.ndarray, np.ndarray, tuple[bool, int, float, float]]:
-    # Upcast key scalars to float64 for stability
-    weights_final = weights_initial.copy()
-    relaxation_factors = np.empty(control_count, dtype=np.float64)
-
-    for i in range(control_count):
-        relaxation_factors[i] = 1.0
-
-    # Precompute incidence squared
-    incidence2 = incidence * incidence
-    importance_adjustment = 1.0
-
-    # Manual control reordering
-    control_indexes = np.empty(control_count, dtype=np.int32)
-    k = 0
-    for i in range(control_count):
-        if i != master_control_index:
-            control_indexes[k] = i
-            k += 1
-    if master_control_index >= 0:
-        control_indexes[k] = master_control_index
-
-    for iter in range(max_iterations):
-        delta = 0.0  # float64
-        gamma = np.ones(control_count, dtype=np.float64)
-
-        if iter > 0 and iter % IMPORTANCE_ADJUST_COUNT == 0:
-            importance_adjustment /= IMPORTANCE_ADJUST
-
-        for i in range(control_count):
-            c = control_indexes[i]
-            xx = 0.0
-            yy = 0.0
-            for j in range(sample_count):
-                w = float(weights_final[j])
-                inc = float(incidence[c, j])
-                xx += w * inc
-                yy += w * float(incidence2[c, j])
-
-            imp = (
-                float(controls_importance[c])
-                if c == master_control_index
-                else max(
-                    float(controls_importance[c]) * importance_adjustment,
-                    MIN_IMPORTANCE,
-                )
-            )
-
-            if xx > 0.0:
-                relaxed = float(controls_constraint[c]) * relaxation_factors[c]
-                if relaxed < MIN_CONTROL_VALUE:
-                    relaxed = MIN_CONTROL_VALUE
-
-                gamma_val = 1.0 - (xx - relaxed) / (yy + relaxed / imp)
-                gamma_val = max(gamma_val, MIN_GAMMA)
-                gamma[c] = gamma_val
-                log_gamma = np.log(gamma_val)
-
-                for j in range(sample_count):
-                    w_old = float(weights_final[j])
-                    inc = float(incidence[c, j])
-                    new_w = w_old * np.exp(log_gamma * inc)
-
-                    lb = float(weights_lower_bound[j])
-                    ub = float(weights_upper_bound[j])
-                    new_w = min(max(new_w, lb), ub)
-
-                    delta += abs(new_w - w_old)
-                    weights_final[j] = new_w
-
-                relax_factor = relaxation_factors[c] * (1.0 / gamma_val) ** (1.0 / imp)
-                if relax_factor > MAX_RELAXATION_FACTOR:
-                    relax_factor = MAX_RELAXATION_FACTOR
-                relaxation_factors[c] = relax_factor
-
-        delta /= sample_count
-        max_gamma_dif = 0.0
-        for i in range(control_count):
-            g_dif = abs(gamma[i] - 1.0)
-            if g_dif > max_gamma_dif:
-                max_gamma_dif = g_dif
-
-        converged = delta < max_delta and max_gamma_dif < MAX_GAMMA
-        no_progress = delta < ALT_MAX_DELTA
-
-        if converged or no_progress:
-            return weights_final, relaxation_factors, (True, iter, delta, max_gamma_dif)
-
-    return (
-        weights_final,
-        relaxation_factors,
-        (False, max_iterations, delta, max_gamma_dif),
-    )
-
-
-# single list balancing wrapper function
-def np_balancer(
-    sample_count,
-    control_count,
-    master_control_index,
-    incidence,
-    weights_initial,
-    weights_lower_bound,
-    weights_upper_bound,
-    controls_constraint,
-    controls_importance,
-    max_iterations,
-    use_numba,
-    numba_precision="float32",
-):
-    """
-    Wrapper function for balancing weights using either Numba or pure Python.
-
-    Intent is to validate inputs and then call the appropriate implementation, which
-    balances weights using the Newton-Raphson method with control relaxation.
-
-    Parameters
-    ----------
-    sample_count : int
-        Number of samples (households).
-    control_count : int
-        Number of controls (variables to balance).
-    master_control_index : int
-        Index of the master control variable, or -1 if there is no master control.
-    incidence : np.ndarray
-        Incidence matrix of shape (control_count, sample_count) where each row corresponds to a control variable and each column corresponds to a sample.
-    weights_initial : np.ndarray
-        Initial weights for each sample, shape (sample_count,).
-    weights_lower_bound : np.ndarray
-        Lower bounds for the weights, shape (sample_count,).
-    weights_upper_bound : np.ndarray
-        Upper bounds for the weights, shape (sample_count,).
-    controls_constraint : np.ndarray
-        Constraints for each control variable, shape (control_count,).
-    controls_importance : np.ndarray
-        Importance weights for each control variable, shape (control_count,).
-    max_iterations : int
-        Maximum number of iterations for the balancing algorithm.
-    use_numba : bool
-        Whether to use Numba for performance optimization.
-        Numba is about ~4x faster than pure Python when using float64, and about ~11x faster when using float32.
-    numba_precision : str
-        Precision of the Numba calculations, either 'float64' or 'float32'. Default is 'float64'.
-
-    Returns
-    -------
-    tuple
-        A tuple containing:
-        - weights: Final balanced weights for each sample.
-        - relax: Relaxation factors for each control variable.
-        - result: A dictionary with convergence status, iteration count, delta, and max gamma difference.
-    """
-    # Argument Validation
-    if master_control_index is None:
-        master_control_index = -1
-    elif not (
-        (master_control_index == -1) or (0 <= master_control_index < control_count)
-    ):
-        raise ValueError(
-            f"master_control_index={master_control_index} is out of bounds"
-        )
-
-    if incidence.shape != (control_count, sample_count):
-        raise ValueError(
-            f"Expected incidence shape {(control_count, sample_count)}, got {incidence.shape}"
-        )
-
-    if weights_initial.shape[0] != sample_count:
-        raise ValueError(f"weights_initial must have length {sample_count}")
-
-    if controls_constraint.shape[0] != control_count:
-        raise ValueError(f"controls_constraint must have length {control_count}")
-    if controls_importance.shape[0] != control_count:
-        raise ValueError(f"controls_importance must have length {control_count}")
-
-    # Broadcast scalar bounds if needed
-    if np.isscalar(weights_lower_bound) or weights_lower_bound.size == 1:
-        weights_lower_bound = np.full(
-            sample_count, weights_lower_bound, dtype=np.float64
-        )
-    if np.isscalar(weights_upper_bound) or weights_upper_bound.size == 1:
-        weights_upper_bound = np.full(
-            sample_count, weights_upper_bound, dtype=np.float64
-        )
-
-    # Decide whether to use Numba or not
-    max_delta = MAX_DELTA
-
-    if use_numba:
-        _balancer = np_balancer_numba
-        # Cast to float32 for performance and memory efficiency
-        if numba_precision == "float32":
-            incidence = incidence.astype(np.float32)
-            weights_initial = weights_initial.astype(np.float32)
-            weights_lower_bound = weights_lower_bound.astype(np.float32)
-            weights_upper_bound = weights_upper_bound.astype(np.float32)
-            controls_constraint = controls_constraint.astype(np.float32)
-            controls_importance = controls_importance.astype(np.float32)
-            max_delta = 1e-5
-    else:
-        _balancer = np_balancer_py
-
-    logger.info("Balancing with Numba=%s, precision=%s", use_numba, numba_precision)
-
-    # Send to Numba for processing
-    weights, relax, result = _balancer(
-        sample_count,
-        control_count,
-        master_control_index,
-        incidence,
-        weights_initial,
-        weights_lower_bound,
-        weights_upper_bound,
-        controls_constraint,
-        controls_importance,
-        max_iterations,
-        max_delta,
-    )
-
-    converged, iter_, delta, max_gamma_dif = result
-    return (
-        weights,
-        relax,
-        {
-            "converged": converged,
-            "iter": iter_,
-            "delta": delta,
-            "max_gamma_dif": max_gamma_dif,
-        },
-    )
-
-
-# Original unoptimized Python code for simultaneous list balancing
 def np_simul_balancer_py(
     sample_count,
     control_count,
@@ -378,7 +132,8 @@ def np_simul_balancer_py(
     parent_controls,
     controls_importance,
     sub_controls,
-    max_iterations,
+    max_iterations=DEFAULT_MAX_ITERATIONS,
+    max_delta=MAX_DELTA,
 ) -> tuple[np.ndarray, np.ndarray, tuple[bool, int, float, float]]:
     """
     Simultaneous balancer using only numpy (no pandas) data types.
@@ -495,7 +250,7 @@ def np_simul_balancer_py(
         assert not np.isnan(delta)
 
         # standard convergence criteria
-        converged = delta < MAX_DELTA and max_gamma_dif < MAX_GAMMA
+        converged = delta < max_delta and max_gamma_dif < MAX_GAMMA
 
         # even if not converged, no point in further iteration if weights aren't changing
         no_progress = delta < ALT_MAX_DELTA
@@ -505,123 +260,6 @@ def np_simul_balancer_py(
                 "np_simul_balancer iteration %s delta %s max_gamma_dif %s"
                 % (iter, delta, max_gamma_dif)
             )
-
-        if converged or no_progress:
-            return (
-                sub_weights,
-                relaxation_factors,
-                (converged, iter, delta, max_gamma_dif),
-            )
-
-    return (
-        sub_weights,
-        relaxation_factors,
-        (False, max_iterations, delta, max_gamma_dif),
-    )
-
-
-@njit(fastmath=True, cache=True)
-def np_simul_balancer_numba(
-    sample_count: int,
-    control_count: int,
-    zone_count: int,
-    master_control_index: int,
-    incidence: np.ndarray,
-    parent_weights: np.ndarray,
-    weights_lower_bound: np.ndarray,
-    weights_upper_bound: np.ndarray,
-    sub_weights: np.ndarray,
-    parent_controls: np.ndarray,
-    controls_importance: np.ndarray,
-    sub_controls: np.ndarray,
-    max_iterations: int,
-    max_delta: float,
-) -> tuple[np.ndarray, np.ndarray, tuple[bool, int, float, float]]:
-    if parent_controls is not None:
-        # Normalize sub_controls to match parent_controls if provided
-        totals = sub_controls.sum(axis=0)
-        scale_factors = np.ones_like(totals, dtype=np.float64)
-        valid = totals > 0
-        scale_factors[valid] = parent_controls[valid] / totals[valid]
-        sub_controls *= scale_factors
-
-    relaxation_factors = np.ones((zone_count, control_count), dtype=np.float64)
-    incidence2 = incidence * incidence
-    importance_adjustment = 1.0
-
-    control_indexes = np.empty(control_count, dtype=np.int32)
-    k = 0
-    for i in range(control_count):
-        if i != master_control_index:
-            control_indexes[k] = i
-            k += 1
-    if master_control_index >= 0:
-        control_indexes[k] = master_control_index
-
-    for iter in range(max_iterations):
-        weights_previous = sub_weights.copy()
-        gamma = np.ones((zone_count, control_count), dtype=np.float64)
-
-        if iter > 0 and iter % IMPORTANCE_ADJUST_COUNT == 0:
-            importance_adjustment /= IMPORTANCE_ADJUST
-
-        for i in range(control_count):
-            c = control_indexes[i]
-
-            if c == master_control_index:
-                importance = float(controls_importance[c])
-            else:
-                importance = max(
-                    float(controls_importance[c]) * importance_adjustment,
-                    MIN_IMPORTANCE,
-                )
-
-            for z in range(zone_count):
-                xx = 0.0
-                yy = 0.0
-                for j in range(sample_count):
-                    w = float(sub_weights[z, j])
-                    inc = float(incidence[c, j])
-                    xx += w * inc
-                    yy += w * float(incidence2[c, j])
-
-                if xx > 0.0:
-                    relaxed = float(sub_controls[z, c]) * relaxation_factors[z, c]
-                    if relaxed < MIN_CONTROL_VALUE:
-                        relaxed = MIN_CONTROL_VALUE
-
-                    gamma_val = 1.0 - (xx - relaxed) / (yy + relaxed / importance)
-                    gamma_val = max(gamma_val, MIN_GAMMA)
-                    gamma[z, c] = gamma_val
-                    log_gamma = np.log(gamma_val)
-
-                    for j in range(sample_count):
-                        w_old = float(sub_weights[z, j])
-                        inc = float(incidence[c, j])
-                        new_w = w_old * np.exp(log_gamma * inc)
-
-                        lb = float(weights_lower_bound[j])
-                        ub = float(weights_upper_bound[j])
-                        new_w = min(max(new_w, lb), ub)
-                        sub_weights[z, j] = new_w
-
-                    relax_factor = relaxation_factors[z, c] * (1.0 / gamma_val) ** (
-                        1.0 / importance
-                    )
-                    relaxation_factors[z, c] = min(relax_factor, MAX_RELAXATION_FACTOR)
-
-        # Rescale
-        zone_sums = np.sum(sub_weights, axis=0)
-        for j in range(sample_count):
-            scale = parent_weights[j] / zone_sums[j] if zone_sums[j] > 0 else 1.0
-            for z in range(zone_count):
-                sub_weights[z, j] *= scale
-
-        max_gamma_dif = np.abs(gamma - 1).max()
-        delta = np.abs(sub_weights - weights_previous).sum() / float(sample_count)
-
-        converged = delta < max_delta and max_gamma_dif < MAX_GAMMA
-        no_progress = delta < ALT_MAX_DELTA
 
         if converged or no_progress:
             return (

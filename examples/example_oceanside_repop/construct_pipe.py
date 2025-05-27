@@ -1,5 +1,5 @@
 """Script to convert existing population and household files to a pipeline hdf5 file
-   to be used for the repop feature of PopulationSim"""
+to be used for the repop feature of PopulationSim"""
 
 import pandas as pd
 import warnings

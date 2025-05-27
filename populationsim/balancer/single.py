@@ -6,7 +6,8 @@ import numpy as np
 import pandas as pd
 
 from populationsim.core.config import setting
-from .balancers import np_balancer_py, np_balancer_numba
+from .balancers import np_balancer_py
+from .balancers_numba import np_balancer_numba
 from .constants import (
     DEFAULT_MAX_ITERATIONS,
     MAX_INT,

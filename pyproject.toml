@@ -24,6 +24,8 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "black>=25.1.0",
+    "populationsim",
     "pre-commit>=4.2.0",
     "pytest>=8.3.5",
     "pytest-cov>=5.0.0",
@@ -45,3 +47,6 @@ testpaths = [
 packages = [
     "populationsim",
 ]
+
+[tool.uv.sources]
+populationsim = { workspace = true }
