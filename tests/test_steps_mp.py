@@ -1,6 +1,5 @@
 from pathlib import Path
 import pandas as pd
-from tests.data_hash import hash_dataframe
 
 from populationsim.core import tracing, inject, pipeline, mp_tasks
 
@@ -44,10 +43,12 @@ def regress():
     assert not (output_dir / "households.csv").exists()
     assert (output_dir / "summary_DISTRICT_1.csv").exists()
 
-    result_hash = hash_dataframe(
-        expanded_household_ids, sort_by=["hh_id", "TRACT", "TAZ", "PUMA"]
+    expected_hh_ids = pd.read_parquet(
+        Path(__file__).parent / "expected" / "expanded_mp.parquet"
     )
-    assert result_hash == "05d7f8d0bf5d8e5c7ee29b67c13d858f"
+
+    # Compare the two dataframes
+    assert expanded_household_ids.equals(expected_hh_ids)
 
 
 def teardown_function(func):

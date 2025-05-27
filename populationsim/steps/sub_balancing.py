@@ -5,7 +5,7 @@ import logging
 
 import pandas as pd
 
-from populationsim.simul_balancer import SimultaneousListBalancer
+from populationsim.balancer import SimultaneousListBalancer
 from populationsim.core import inject, config
 from populationsim.helper import get_control_table, weight_table_name, get_weight_table
 from populationsim.multi_integerizer import multi_integerize
@@ -24,6 +24,8 @@ def balance(
     parent_id,
     sub_geographies,
     sub_control_zones,
+    use_numba,
+    numba_precision,
 ):
     """
 
@@ -85,6 +87,8 @@ def balance(
         controls=controls,
         sub_control_zones=sub_control_zones,
         total_hh_control_col=total_hh_control_col,
+        use_numba=use_numba,
+        numba_precision=numba_precision,
     )
 
     status = balancer.balance()
@@ -107,6 +111,8 @@ def balance_and_integerize(
     parent_id,
     sub_geographies,
     crosswalk_df,
+    use_numba,
+    numba_precision,
 ):
     """
 
@@ -174,6 +180,8 @@ def balance_and_integerize(
         parent_id=parent_id,
         sub_geographies=sub_geographies,
         sub_control_zones=sub_control_zones,
+        use_numba=use_numba,
+        numba_precision=numba_precision,
     )
 
     integerized_sub_zone_weights_df = multi_integerize(
@@ -232,6 +240,9 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
     crosswalk_df = crosswalk.to_frame()
     incidence_df = incidence_table.to_frame()
     control_spec = control_spec.to_frame()
+
+    use_numba = settings.get("USE_NUMBA", False)
+    numba_precision = settings.get("NUMBA_PRECISION", "float64")
 
     geographies = settings.get("geographies")
     seed_geography = settings.get("seed_geography")
@@ -304,6 +315,8 @@ def sub_balancing(settings, crosswalk, control_spec, incidence_table):
                 parent_id=parent_id,
                 sub_geographies=sub_geographies,
                 crosswalk_df=seed_crosswalk_df,
+                use_numba=use_numba,
+                numba_precision=numba_precision,
             )
 
             # add higher level geography id columns to facilitate summaries

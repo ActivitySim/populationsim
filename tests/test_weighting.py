@@ -16,7 +16,7 @@ def test_weighting():
     configs_dir = example_dir / "configs"
     data_dir = example_dir / "data"
     output_dir = Path(__file__).parent / "output"
-    expect_dir = Path(__file__).parent / "expected_data"
+    expect_dir = Path(__file__).parent / "expected"
 
     inject.add_injectable("data_dir", data_dir)
     inject.add_injectable("configs_dir", configs_dir)

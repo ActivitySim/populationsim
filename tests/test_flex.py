@@ -2,7 +2,6 @@ import pytest
 import pandas as pd
 from pathlib import Path
 
-from tests.data_hash import hash_dataframe
 from populationsim.core import config, tracing, inject, pipeline
 
 _MODELS = [
@@ -56,21 +55,21 @@ settings_params = [
         "name": "No Integerization",
         "NO_INTEGERIZATION_EVER": True,
         "USE_CVXPY": False,
-        "expected_expanded_household_ids_hash": "a227d42afbcc590b4e949075cde4a5b6",
+        "expected_fname": "expanded_no_int.parquet",
     },
     # Test using ortools integerization
     {
         "name": "ortools Integerization",
         "NO_INTEGERIZATION_EVER": False,
         "USE_CVXPY": False,
-        "expected_expanded_household_ids_hash": "55ee10a9fb0a64cd1b230f3c8690576c",
+        "expected_fname": "expanded_ortools.parquet",
     },
     # Test using CVXPY integerization
     {
         "name": "CVXPY Integerization",
         "NO_INTEGERIZATION_EVER": False,
         "USE_CVXPY": True,
-        "expected_expanded_household_ids_hash": "55ee10a9fb0a64cd1b230f3c8690576c",
+        "expected_fname": "expanded_cvxpy.parquet",
     },
 ]
 
@@ -96,8 +95,12 @@ def test_full_run_flex(params):
     # by the pipeline. It is used to check that the pipeline is generating the same output.
     expanded_household_ids = pipeline.get_table("expanded_household_ids")
 
-    result_hash = hash_dataframe(expanded_household_ids)
-    expected_hash = params["expected_expanded_household_ids_hash"]
-    assert (
-        result_hash == expected_hash
-    ), f"Expected hash {expected_hash}, but got {result_hash}"
+    if params["NO_INTEGERIZATION_EVER"]:
+        expected_hh_ids = pd.DataFrame()
+    else:
+        expected_hh_ids = pd.read_parquet(
+            Path(__file__).parent / "expected" / params["expected_fname"]
+        )
+
+    # Compare the two dataframes
+    assert expanded_household_ids.equals(expected_hh_ids)

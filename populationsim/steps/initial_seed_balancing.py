@@ -5,7 +5,7 @@ import logging
 import pandas as pd
 
 from populationsim.core import inject, config
-from populationsim.balancer import do_balancing
+from populationsim.balancer.single import do_balancing
 from populationsim.helper import get_control_table, weight_table_name
 
 
@@ -62,6 +62,7 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     absolute_lower_bound = settings.get("absolute_lower_bound", None)
     hard_constraints = settings.get("USE_HARD_CONSTRAINTS", False)
     use_numba = settings.get("USE_NUMBA", False)
+    numba_precision = settings.get("NUMBA_PRECISION", "float64")
 
     # run balancer for each seed geography
     weight_list = []
@@ -86,6 +87,7 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
             initial_weights=seed_incidence_df["sample_weight"],
             use_hard_constraints=hard_constraints,
             use_numba=use_numba,
+            numba_precision=numba_precision,
         )
 
         logger.info("seed_balancer status: %s" % status)

@@ -8,8 +8,17 @@ import pytest
 import time
 
 from populationsim.balancer import ListBalancer
-from populationsim.balancer import np_balancer
-from populationsim.balancer import DEFAULT_MAX_ITERATIONS, MIN_CONTROL_VALUE
+from populationsim.balancer.balancers import (
+    np_balancer_py,
+    np_balancer_numba,
+    np_simul_balancer_py,
+    np_simul_balancer_numba,
+)
+from populationsim.balancer.constants import (
+    DEFAULT_MAX_ITERATIONS,
+    MIN_CONTROL_VALUE,
+    MAX_DELTA,
+)
 
 
 @pytest.mark.parametrize("use_numba", [True, False])
@@ -48,6 +57,7 @@ def test_Konduri(use_numba):
         master_control_index=None,
         max_iterations=DEFAULT_MAX_ITERATIONS,
         use_numba=use_numba,
+        numba_precision="float32",
     )
 
     status, weights, controls = balancer.balance()
@@ -68,43 +78,28 @@ def test_Konduri(use_numba):
     assert status["converged"]
 
 
-def test_balancer_compare_numba_vs_py():
+@pytest.mark.parametrize("dtype", [np.float32, np.float64])
+def test_balancer_compare_numba_vs_py(dtype):
     np.random.seed(42)
 
     sample_count = 1000
     control_count = 100
     iterations = DEFAULT_MAX_ITERATIONS
+    status_labs = ("converged", "iter", "delta", "max_gamma_dif")
+    # Must be significantly less than float32 epsilon
+    max_delta = MAX_DELTA if dtype == np.float64 else 1e-5
 
     incidence = np.random.rand(control_count, sample_count)
     weights_initial = np.ones(sample_count)
-    weights_lower_bound = MIN_CONTROL_VALUE
-    weights_upper_bound = 1 / MIN_CONTROL_VALUE
+    weights_lower_bound = np.full(sample_count, MIN_CONTROL_VALUE)
+    weights_upper_bound = np.full(sample_count, 1 / MIN_CONTROL_VALUE)
     controls_constraint = np.random.uniform(1000, 5000, control_count)
     controls_importance = np.random.uniform(0.5, 2.0, control_count)
     master_control_index = -1
 
-    # --- Run Python version ---
-    start_py = time.perf_counter()
-    w_py, r_py, s_py = np_balancer(
-        sample_count,
-        control_count,
-        master_control_index,
-        incidence,
-        weights_initial,
-        weights_lower_bound,
-        weights_upper_bound,
-        controls_constraint,
-        controls_importance,
-        iterations,
-        use_numba=False,
-    )
-    duration_py = time.perf_counter() - start_py
-    print(
-        f"\nPython: {duration_py:.4f}s, Iter: {s_py['iter']}, Converged: {s_py['converged']}"
-    )
-
     # Warm up Numba to exclude compilation time from the first run
-    np_balancer(
+    print("\nWarming up Numba...")
+    np_balancer_numba(
         sample_count,
         control_count,
         master_control_index,
@@ -115,12 +110,34 @@ def test_balancer_compare_numba_vs_py():
         controls_constraint,
         controls_importance,
         2,
-        use_numba=True,
+        max_delta,
     )
 
+    print("Running Numba version...")
     # --- Run Numba version ---
     start_numba = time.perf_counter()
-    w_numba, r_numba, s_numba = np_balancer(
+    w_numba, r_numba, s_numba = np_balancer_numba(
+        sample_count,
+        control_count,
+        master_control_index,
+        incidence.astype(dtype),
+        weights_initial.astype(dtype),
+        weights_lower_bound.astype(dtype),
+        weights_upper_bound.astype(dtype),
+        controls_constraint.astype(dtype),
+        controls_importance.astype(dtype),
+        iterations,
+        max_delta,
+    )
+    duration_numba = time.perf_counter() - start_numba
+    s_numba = dict(zip(status_labs, s_numba))
+    print(
+        f"Numba: {duration_numba:.4f}s, Iter: {s_numba['iter']}, Converged: {s_numba['converged']}"
+    )
+
+    # --- Run Python version ---
+    start_py = time.perf_counter()
+    w_py, r_py, s_py = np_balancer_py(
         sample_count,
         control_count,
         master_control_index,
@@ -131,17 +148,117 @@ def test_balancer_compare_numba_vs_py():
         controls_constraint,
         controls_importance,
         iterations,
-        use_numba=True,
+        MAX_DELTA,
     )
-    duration_numba = time.perf_counter() - start_numba
+    duration_py = time.perf_counter() - start_py
+    s_py = dict(zip(status_labs, s_py))
     print(
-        f"Numba: {duration_numba:.4f}s, Iter: {s_numba['iter']}, Converged: {s_numba['converged']}"
+        f"Python: {duration_py:.4f}s, Iter: {s_py['iter']}, Converged: {s_py['converged']}"
     )
 
     print(f"Speedup: {(duration_py / duration_numba):.2f}x")
 
     # --- Assertions ---
-    assert np.allclose(w_numba, w_py, rtol=1e-4, atol=1e-4), "Weights mismatch"
+    assert np.allclose(w_numba, w_py, rtol=1e-4, atol=1e-6), "Weights mismatch"
+    assert s_numba["converged"], "Numba version did not converge"
+    assert s_py["converged"], "Python version did not converge"
+    assert duration_numba < duration_py * 0.5, "Numba version not at least 2x faster"
+
+
+@pytest.mark.parametrize("dtype", [np.float32, np.float64])
+def test_simul_balancer_compare_numba_vs_py(dtype):
+
+    np.random.seed(42)
+
+    sample_count = 100
+    control_count = 9
+    zone_count = 3
+    iterations = DEFAULT_MAX_ITERATIONS
+    status_labs = ("converged", "iter", "delta", "max_gamma_dif")
+
+    # Must be signif less than float32 epsilon
+    max_delta = MAX_DELTA if dtype == np.float64 else 1e-5
+
+    # Simul data
+    incidence = np.random.rand(control_count, sample_count)
+    sub_weights = np.random.rand(zone_count, sample_count)
+    weights_lower_bound = np.full(sample_count, MIN_CONTROL_VALUE)
+    weights_upper_bound = np.full(sample_count, 1 / MIN_CONTROL_VALUE)
+    controls_importance = np.random.uniform(0.5, 2.0, control_count)
+    sub_controls = np.random.uniform(500, 2000, (zone_count, control_count))
+    parent_weights = np.random.uniform(5000, 10000, sample_count)
+    parent_controls = np.random.uniform(1000, 5000, control_count)
+    master_control_index = -1
+
+    print("\nWarming up Numba...")
+    np_simul_balancer_numba(
+        sample_count,
+        control_count,
+        zone_count,
+        master_control_index,
+        incidence,
+        parent_weights,
+        weights_lower_bound,
+        weights_upper_bound,
+        sub_weights,
+        parent_controls,
+        controls_importance,
+        sub_controls,
+        2,
+        max_delta,
+    )
+
+    print("Running Numba version...")
+    start_numba = time.perf_counter()
+    w_numba, r_numba, s_numba = np_simul_balancer_numba(
+        sample_count,
+        control_count,
+        zone_count,
+        master_control_index,
+        incidence.astype(dtype),
+        parent_weights.astype(dtype),
+        weights_lower_bound.astype(dtype),
+        weights_upper_bound.astype(dtype),
+        sub_weights.astype(dtype),
+        parent_controls.astype(dtype),
+        controls_importance.astype(dtype),
+        sub_controls.astype(dtype),
+        iterations,
+        max_delta,
+    )
+    duration_numba = time.perf_counter() - start_numba
+    s_numba = dict(zip(status_labs, s_numba))
+    print(
+        f"Numba: {duration_numba:.4f}s, Iter: {s_numba['iter']}, Converged: {s_numba['converged']}"
+    )
+
+    print("Running Python version...")
+    start_py = time.perf_counter()
+    w_py, r_py, s_py = np_simul_balancer_py(
+        sample_count,
+        control_count,
+        zone_count,
+        master_control_index,
+        incidence,
+        parent_weights,
+        weights_lower_bound,
+        weights_upper_bound,
+        sub_weights,
+        parent_controls,
+        controls_importance,
+        sub_controls,
+        iterations,
+    )
+    duration_py = time.perf_counter() - start_py
+    s_py = dict(zip(status_labs, s_py))
+    print(
+        f"Python: {duration_py:.4f}s, Iter: {s_py['iter']}, Converged: {s_py['converged']}"
+    )
+
+    print(f"Speedup: {duration_py / duration_numba:.2f}x")
+
+    # --- Assertions ---
+    assert np.allclose(w_numba, w_py, rtol=1e-4, atol=1e-6), "Weights mismatch"
     assert s_numba["converged"], "Numba version did not converge"
     assert s_py["converged"], "Python version did not converge"
     assert duration_numba < duration_py * 0.5, "Numba version not at least 2x faster"

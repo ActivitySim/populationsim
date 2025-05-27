@@ -1,7 +1,6 @@
 from pathlib import Path
 import pandas as pd
 
-from tests.data_hash import hash_dataframe
 from populationsim.core import tracing, inject, pipeline
 
 TAZ_COUNT = 36
@@ -66,15 +65,16 @@ def test_full_run1():
     # output_tables action: skip
     output_dir = Path(__file__).parent / "output"
 
+    # Check that the output files are created as expected
     assert not (output_dir / "households.csv").exists()
     assert (output_dir / "summary_DISTRICT_1.csv").exists()
 
-    # This hash is the md5 of the json string of the expanded_household_ids file previously generated
-    # by the pipeline. It is used to check that the pipeline is generating the same output.
-    result_hash = hash_dataframe(
-        expanded_household_ids, sort_by=["hh_id", "TRACT", "TAZ", "PUMA"]
+    expected_hh_ids = pd.read_parquet(
+        Path(__file__).parent / "expected" / "expanded.parquet"
     )
-    assert result_hash == "bce80c2edbeec804a9984aef8779325d"
+
+    # Compare the two dataframes
+    assert expanded_household_ids.equals(expected_hh_ids)
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -106,12 +106,12 @@ def test_full_run2_repop_replace():
     assert len(taz_hh_counts) == TAZ_COUNT
     assert taz_hh_counts.loc[100] == TAZ_100_HH_REPOP_COUNT
 
-    # This hash is the md5 of the json string of the expanded_household_ids file previously generated
-    # by the pipeline. It is used to check that the pipeline is generating the same output.
-    result_hash = hash_dataframe(
-        expanded_household_ids, sort_by=["hh_id", "TRACT", "TAZ", "PUMA"]
+    expected_hh_ids = pd.read_parquet(
+        Path(__file__).parent / "expected" / "expanded_repop_replace.parquet"
     )
-    assert result_hash == "b6b2a96e300a164550a5fd97ea06e114"
+
+    # Compare the two dataframes
+    assert expanded_household_ids.equals(expected_hh_ids)
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -139,12 +139,12 @@ def test_full_run2_repop_append():
     assert len(taz_hh_counts) == TAZ_COUNT
     assert taz_hh_counts.loc[100] == TAZ_100_HH_COUNT + TAZ_100_HH_REPOP_COUNT
 
-    # This hash is the md5 of the dataframe string file previously generated
-    # by the pipeline. It is used to check that the pipeline is generating the same output.
-    result_hash = hash_dataframe(
-        expanded_household_ids, sort_by=["hh_id", "TRACT", "TAZ", "PUMA"]
+    expected_hh_ids = pd.read_parquet(
+        Path(__file__).parent / "expected" / "expanded_repop_append.parquet"
     )
-    assert result_hash == "5c1042e0aa48e962b2a104cf619e8326"
+
+    # Compare the two dataframes
+    assert expanded_household_ids.equals(expected_hh_ids)
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

@@ -3,27 +3,17 @@
 
 import logging
 import numpy as np
-
 import pandas as pd
 
 from populationsim.core.config import setting
+from .balancers import np_simul_balancer_py, np_simul_balancer_numba
+from .constants import (
+    MIN_CONTROL_VALUE,
+    MIN_IMPORTANCE,
+    DEFAULT_MAX_ITERATIONS,
+)
 
 logger = logging.getLogger(__name__)
-
-DEFAULT_MAX_ITERATIONS = 1000
-
-MAX_DELTA = 1.0e-9
-MAX_GAMMA = 1.0e-7
-
-# delta to check for non-convergence without progress
-ALT_MAX_DELTA = 1.0e-10
-
-IMPORTANCE_ADJUST = 2
-IMPORTANCE_ADJUST_COUNT = 100
-MIN_IMPORTANCE = 1.0
-MAX_RELAXATION_FACTOR = 1000000
-MIN_CONTROL_VALUE = 0.1
-MAX_INT = 1 << 31
 
 
 class SimultaneousListBalancer:
@@ -43,6 +33,8 @@ class SimultaneousListBalancer:
         controls,
         sub_control_zones,
         total_hh_control_col,
+        use_numba,
+        numba_precision,
     ):
         """
 
@@ -89,6 +81,9 @@ class SimultaneousListBalancer:
         self.master_control_index = self.incidence_table.columns.get_loc(
             total_hh_control_col
         )
+
+        self.balancer = np_simul_balancer_numba if use_numba else np_simul_balancer_py
+        self.numba_precision = numba_precision
 
     def balance(self):
 
@@ -156,8 +151,12 @@ class SimultaneousListBalancer:
             self.weights[self.sub_control_zones].values.astype("float").transpose()
         )
 
+        max_iterations = (
+            setting("MAX_BALANCE_ITERATIONS_SIMULTANEOUS", DEFAULT_MAX_ITERATIONS) // 10
+        )
+
         # balance
-        weights_final, relaxation_factors, status = np_simul_balancer(
+        weights_final, relaxation_factors, status = self.balancer(
             sample_count,
             control_count,
             zone_count,
@@ -170,7 +169,11 @@ class SimultaneousListBalancer:
             parent_controls,
             controls_importance,
             sub_controls,
+            max_iterations,
+            # max_delta=
         )
+
+        status = dict(zip(("converged", "iter", "delta", "max_gamma_dif"), status))
 
         # dataframe with sub_zone_weights in columns, and zero weight rows restored
         self.sub_zone_weights = pd.DataFrame(
@@ -196,140 +199,3 @@ class SimultaneousListBalancer:
         self.status = status
 
         return self.status
-
-
-def np_simul_balancer(
-    sample_count,
-    control_count,
-    zone_count,
-    master_control_index,
-    incidence,
-    parent_weights,
-    weights_lower_bound,
-    weights_upper_bound,
-    sub_weights,
-    parent_controls,
-    controls_importance,
-    sub_controls,
-):
-    """
-    Simultaneous balancer using only numpy (no pandas) data types.
-    Separate function to ensure that no pandas data types leak in from object instance variables
-    since they are often silently accepted as numpy arguments but slow things down
-    """
-
-    logger.debug(
-        "np_simul_balancer sample_count %s control_count %s zone_count %s"
-        % (sample_count, control_count, zone_count)
-    )
-
-    # initial relaxation factors
-    relaxation_factors = np.ones((zone_count, control_count))
-
-    # Note: importance_adjustment must always be a float to ensure
-    # correct "true division" in both Python 2 and 3
-    importance_adjustment = 1.0
-
-    # FIXME - make a copy as we change this (not really necessary as caller doesn't use it...)
-    sub_weights = sub_weights.copy()
-
-    # array of control indexes for iterating over controls
-    control_indexes = list(range(control_count))
-    if master_control_index is not None:
-        # reorder indexes so we handle master_control_index last
-        control_indexes.append(control_indexes.pop(master_control_index))
-
-    # precompute incidence squared
-    incidence2 = incidence * incidence
-
-    max_iterations = setting(
-        "MAX_BALANCE_ITERATIONS_SIMULTANEOUS", DEFAULT_MAX_ITERATIONS
-    )
-    for iter in range(max_iterations):
-
-        weights_previous = sub_weights.copy()
-
-        # reset gamma every iteration
-        gamma = np.ones((zone_count, control_count))
-
-        # importance adjustment as number of iterations progress
-        if iter > 0 and iter % IMPORTANCE_ADJUST_COUNT == 0:
-            importance_adjustment = importance_adjustment / IMPORTANCE_ADJUST
-
-        # for each control
-        for c in control_indexes:
-
-            # adjust importance (unless this is master_control)
-            if c == master_control_index:
-                importance = controls_importance[c]
-            else:
-                importance = max(
-                    controls_importance[c] * importance_adjustment, MIN_IMPORTANCE
-                )
-
-            for z in range(zone_count):
-
-                xx = (sub_weights[z] * incidence[c]).sum()
-
-                # calculate constraint balancing factors, gamma
-                if xx > 0:
-                    yy = (sub_weights[z] * incidence2[c]).sum()
-                    relaxed_constraint = sub_controls[z, c] * relaxation_factors[z, c]
-                    relaxed_constraint = max(relaxed_constraint, MIN_CONTROL_VALUE)
-                    gamma[z, c] = 1.0 - float(xx - relaxed_constraint) / (
-                        yy + (relaxed_constraint / float(importance))
-                    )
-
-                # update HH weights
-                sub_weights[z] *= pow(gamma[z, c], incidence[c])
-
-                # clip weights to upper and lower bounds
-                sub_weights[z] = np.clip(
-                    sub_weights[z], weights_lower_bound, weights_upper_bound
-                )
-
-                relaxation_factors[z, c] *= pow(1.0 / gamma[z, c], 1.0 / importance)
-
-                # clip relaxation_factors
-                relaxation_factors[z] = np.minimum(
-                    relaxation_factors[z], MAX_RELAXATION_FACTOR
-                )
-
-        # FIXME - can't rescale weights and expect to converge
-        # FIXME - also zero weight hh should have been sliced out?
-        # rescale sub_weights so weight of each hh across sub zones sums to parent_weight
-        scale = parent_weights / np.sum(sub_weights, axis=0)
-        # FIXME - what to do for rows where sum(sub_weights) are zero?
-        scale = np.nan_to_num(scale)
-        sub_weights *= scale
-
-        max_gamma_dif = np.absolute(gamma - 1).max()
-        assert not np.isnan(max_gamma_dif)
-
-        # ensure float division
-        delta = np.absolute(sub_weights - weights_previous).sum() / float(sample_count)
-        assert not np.isnan(delta)
-
-        # standard convergence criteria
-        converged = delta < MAX_DELTA and max_gamma_dif < MAX_GAMMA
-
-        # even if not converged, no point in further iteration if weights aren't changing
-        no_progress = delta < ALT_MAX_DELTA
-
-        if (iter % 100) == 0:
-            logger.debug(
-                "np_simul_balancer iteration %s delta %s max_gamma_dif %s"
-                % (iter, delta, max_gamma_dif)
-            )
-
-        if converged or no_progress:
-            break
-
-    status = {
-        "converged": converged,
-        "iter": iter,
-        "delta": delta,
-        "max_gamma_dif": max_gamma_dif,
-    }
-
-    return sub_weights, relaxation_factors, status
