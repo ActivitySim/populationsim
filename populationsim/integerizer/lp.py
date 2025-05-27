@@ -2,7 +2,8 @@
 # See full license in LICENSE.txt.
 
 from populationsim.core.config import setting
-from populationsim import lp_cvx, lp_ortools
+
+from . import lp_ortools, lp_cvx
 
 
 STATUS_OPTIMAL = "OPTIMAL"

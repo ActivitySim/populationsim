@@ -8,7 +8,7 @@ import pandas as pd
 from populationsim.balancer import SimultaneousListBalancer
 from populationsim.core import inject, config
 from populationsim.helper import get_control_table, weight_table_name, get_weight_table
-from populationsim.multi_integerizer import multi_integerize
+from populationsim.integerizer.multi_integerizer import multi_integerize
 
 
 logger = logging.getLogger(__name__)

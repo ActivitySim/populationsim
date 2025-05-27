@@ -9,10 +9,9 @@ import pandas as pd
 
 from populationsim.core.config import setting
 
-from populationsim.lp import get_simul_integerizer
-from populationsim.lp import STATUS_SUCCESS
-
-from populationsim.integerizer import smart_round, do_integerizing
+from .lp import get_simul_integerizer
+from .lp import STATUS_SUCCESS
+from .integerizer import smart_round, do_integerizing
 
 logger = logging.getLogger(__name__)
 

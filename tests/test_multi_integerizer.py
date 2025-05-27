@@ -6,8 +6,10 @@ import pandas as pd
 
 from populationsim.core import inject
 
-from populationsim.multi_integerizer import do_simul_integerizing
-from populationsim.multi_integerizer import do_sequential_integerizing
+from populationsim.integerizer.multi_integerizer import (
+    do_simul_integerizing,
+    do_sequential_integerizing,
+)
 
 example_dir = Path(__file__).parent.parent / "examples"
 configs_dir = example_dir / "example_test" / "configs"
