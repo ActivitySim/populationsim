@@ -73,8 +73,3 @@ def test_mp_run():
     pipeline.open_pipeline("_")
     regress()
     pipeline.close_pipeline()
-
-
-if __name__ == "__main__":
-
-    test_mp_run()
