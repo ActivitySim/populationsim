@@ -6,9 +6,10 @@ import logging
 import numpy as np
 import pandas as pd
 
-from .lp import get_single_integerizer
-from .lp import STATUS_OPTIMAL
-from .smart_round import smart_round
+from populationsim.core import config
+from populationsim.integerizing.constants import STATUS_OPTIMAL
+from populationsim.integerizing.smart_round import smart_round
+from populationsim.integerizing import lp_cvx, lp_ortools
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +53,14 @@ class Integerizer:
         self.control_is_hh_based = control_is_hh_based
 
         self.trace_label = trace_label
+
+        # Choose the integerizer function based on configuration
+        if config.setting("USE_CVXPY", False):
+            self.integerizer_func = lp_cvx.np_integerizer_cvx
+        else:
+            self.integerizer_func = lp_ortools.np_integerizer_ortools
+
+        self.timeout_in_seconds = config.setting("INTEGIZER_TIMEOUT", 60)
 
     def integerize(self):
 
@@ -143,9 +152,7 @@ class Integerizer:
                 )
                 # assert False
 
-            integerizer_func = get_single_integerizer()
-
-            resid_weights, status = integerizer_func(
+            resid_weights, status = self.integerizer_func(
                 incidence=incidence,
                 resid_weights=resid_weights,
                 log_resid_weights=log_resid_weights,
@@ -154,6 +161,7 @@ class Integerizer:
                 lp_right_hand_side=lp_right_hand_side,
                 relax_ge_upper_bound=relax_ge_upper_bound,
                 hh_constraint_ge_bound=hh_constraint_ge_bound,
+                timeout_in_seconds=self.timeout_in_seconds,
             )
 
             integerized_weights = smart_round(

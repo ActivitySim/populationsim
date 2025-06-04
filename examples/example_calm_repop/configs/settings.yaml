@@ -11,7 +11,7 @@ GROUP_BY_INCIDENCE_SIGNATURE: True
 USE_SIMUL_INTEGERIZER: True
 USE_CVXPY: False
 max_expansion_factor: 30
-
+INTEGERIZER_TIMEOUT: 300 # seconds
 
 # Geographic Settings
 # ------------------------------------------------------------------

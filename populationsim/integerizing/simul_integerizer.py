@@ -6,9 +6,9 @@ import logging
 import numpy as np
 import pandas as pd
 
-
-from .lp import get_simul_integerizer
-from .integerizer import smart_round
+from populationsim.core import config
+from populationsim.integerizing.smart_round import smart_round
+from populationsim.integerizing import lp_ortools, lp_cvx
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +57,14 @@ class SimulIntegerizer:
         assert total_hh_control_col not in self.parent_countrol_cols
 
         self.trace_label = trace_label
+
+        # Choose the integerizer function based on configuration
+        if config.setting("USE_CVXPY", False):
+            self.integerizer_func = lp_cvx.np_simul_integerizer_cvx
+        else:
+            self.integerizer_func = lp_ortools.np_simul_integerizer_ortools
+
+        self.timeout_in_seconds = config.setting("INTEGIZER_TIMEOUT", 60)
 
     def integerize(self):
 
@@ -164,9 +172,7 @@ class SimulIntegerizer:
             print("\n")
             # assert (parent_hh_constraint_ge_bound == parent_max_possible_control_values).all()
 
-        integerizer_func = get_simul_integerizer()
-
-        resid_weights_out, status_text = integerizer_func(
+        resid_weights_out, status_text = self.integerizer_func(
             sub_int_weights,
             parent_countrol_importance,
             parent_relax_ge_upper_bound,
@@ -184,6 +190,7 @@ class SimulIntegerizer:
             parent_resid_weights,
             total_hh_sub_control_index,
             total_hh_parent_control_index,
+            timeout_in_seconds=self.timeout_in_seconds,
         )
 
         # smart round resid_weights_out for each sub_zone

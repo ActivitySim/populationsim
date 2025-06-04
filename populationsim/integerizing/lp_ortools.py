@@ -2,10 +2,11 @@
 # See full license in LICENSE.txt.
 
 import numpy as np
-
-STATUS_OPTIMAL = "OPTIMAL"
-STATUS_FEASIBLE = "FEASIBLE"
-STATUS_SUCCESS = [STATUS_OPTIMAL, STATUS_FEASIBLE]
+from populationsim.integerizing.constants import (
+    STATUS_OPTIMAL,
+    STATUS_FEASIBLE,
+    STATUS_SUCCESS,
+)
 
 
 def np_integerizer_ortools(
@@ -17,6 +18,7 @@ def np_integerizer_ortools(
     lp_right_hand_side,
     relax_ge_upper_bound,
     hh_constraint_ge_bound,
+    timeout_in_seconds,
 ):
     """
     ortools single-integerizer function taking numpy data types and conforming to a
@@ -34,6 +36,7 @@ def np_integerizer_ortools(
     lp_right_hand_side : numpy.ndarray(control_count,) float
     relax_ge_upper_bound : numpy.ndarray(control_count,) float
     hh_constraint_ge_bound : numpy.ndarray(control_count,) float
+    timeout_in_seconds : int
 
     Returns
     -------
@@ -51,7 +54,6 @@ def np_integerizer_ortools(
         pywraplp.Solver.ABNORMAL: "ABNORMAL",
         pywraplp.Solver.NOT_SOLVED: "NOT_SOLVED",
     }
-    CBC_TIMEOUT_IN_SECONDS = 60
 
     control_count, sample_count = incidence.shape
 
@@ -153,7 +155,7 @@ def np_integerizer_ortools(
     for hh in range(0, sample_count):
         constraint_eq.SetCoefficient(x[hh], 1.0)
 
-    solver.set_time_limit(CBC_TIMEOUT_IN_SECONDS * 1000)
+    solver.set_time_limit(timeout_in_seconds * 1000)
 
     solver.EnableOutput()
 
@@ -189,6 +191,7 @@ def np_simul_integerizer_ortools(
     parent_resid_weights,
     total_hh_sub_control_index,
     total_hh_parent_control_index,
+    timeout_in_seconds,
 ):
     """
     ortools-based siuml-integerizer function taking numpy data types and conforming to a
@@ -214,6 +217,7 @@ def np_simul_integerizer_ortools(
     parent_resid_weights : numpy.ndarray(sample_count,) float
     total_hh_sub_control_index : int
     total_hh_parent_control_index : int
+    timeout_in_seconds : int
 
     Returns
     -------
@@ -234,7 +238,6 @@ def np_simul_integerizer_ortools(
         pywraplp.Solver.ABNORMAL: "ABNORMAL",
         pywraplp.Solver.NOT_SOLVED: "NOT_SOLVED",
     }
-    CBC_TIMEOUT_IN_SECONDS = 60
 
     sample_count, sub_control_count = sub_incidence.shape
     _, parent_control_count = parent_incidence.shape
@@ -255,7 +258,7 @@ def np_simul_integerizer_ortools(
         "SimulIntegerizeCbc", pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING
     )
     solver.EnableOutput()
-    solver.set_time_limit(CBC_TIMEOUT_IN_SECONDS * 1000)
+    solver.set_time_limit(timeout_in_seconds * 1000)
 
     # x_max is 1.0 unless resid_weights is zero, in which case constrain x to 0.0
     x_max = (~(sub_float_weights == sub_int_weights)).astype(float)

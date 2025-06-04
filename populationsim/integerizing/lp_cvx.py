@@ -2,22 +2,16 @@
 # See full license in LICENSE.txt.
 
 import logging
-
+from populationsim.integerizing.constants import (
+    STATUS_SUCCESS,
+    STATUS_FEASIBLE,
+    STATUS_OPTIMAL,
+    CVX_SOLVER,
+    ORDER,
+)
 import numpy as np
 
 logger = logging.getLogger(__name__)
-
-STATUS_OPTIMAL = "OPTIMAL"
-STATUS_FEASIBLE = "FEASIBLE"
-STATUS_SUCCESS = [STATUS_OPTIMAL, STATUS_FEASIBLE]
-
-# 'CBC', 'GLPK_MI', 'ECOS_BB'
-CVX_SOLVER = "GLPK_MI"
-
-# Order of vectorization for cvxpy
-# 'C' for C-style row-major order, 'F' for Fortran-style column-major order
-# Note: cvxpy is deprecating 'F' order, so we use 'C' order.
-ORDER = "C"
 
 
 def np_integerizer_cvx(
@@ -29,6 +23,7 @@ def np_integerizer_cvx(
     lp_right_hand_side,
     relax_ge_upper_bound,
     hh_constraint_ge_bound,
+    timeout_in_seconds,
 ):
     """
     cvx-based single-integerizer function taking numpy data types and conforming to a
@@ -45,6 +40,7 @@ def np_integerizer_cvx(
     lp_right_hand_side : numpy.ndarray(control_count,) float
     relax_ge_upper_bound : numpy.ndarray(control_count,) float
     hh_constraint_ge_bound : numpy.ndarray(control_count,) float
+    timeout_in_seconds : int
 
     Returns
     -------
@@ -122,7 +118,12 @@ def np_integerizer_cvx(
     logger.info("integerizing with '%s' solver." % CVX_SOLVER)
 
     try:
-        prob.solve(solver=CVX_SOLVER, verbose=True, max_iters=CVX_MAX_ITERS)
+        prob.solve(
+            solver=CVX_SOLVER,
+            verbose=True,
+            max_iters=CVX_MAX_ITERS,
+            cplex_params={"timelimit": timeout_in_seconds},
+        )
     except cvx.SolverError:
         logging.exception(
             "Solver error encountered in weight discretization. Weights will be rounded."
@@ -158,6 +159,7 @@ def np_simul_integerizer_cvx(
     parent_resid_weights,
     total_hh_sub_control_index,
     total_hh_parent_control_index,
+    timeout_in_seconds,
 ):
     """
     cvx-based simul-integerizer function taking numpy data types and conforming to a
@@ -182,6 +184,7 @@ def np_simul_integerizer_cvx(
     hh_constraint_ge_bound : numpy.ndarray(sub_zone_count, sub_control_count) float
     parent_resid_weights : numpy.ndarray(sample_count,) float
     total_hh_sub_control_index : int
+    timeout_in_seconds : int
 
     Returns
     -------
@@ -294,7 +297,12 @@ def np_simul_integerizer_cvx(
     logger.info("simul_integerizing with '%s' solver." % CVX_SOLVER)
 
     try:
-        prob.solve(solver=CVX_SOLVER, verbose=True, max_iters=CVX_MAX_ITERS)
+        prob.solve(
+            solver=CVX_SOLVER,
+            verbose=True,
+            max_iters=CVX_MAX_ITERS,
+            cplex_params={"timelimit": timeout_in_seconds},
+        )
     except cvx.SolverError as e:
         logging.warning("Solver error in SimulIntegerizer: %s" % e)
 

@@ -1,26 +1,21 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
+import pytest
 from pathlib import Path
 import pandas as pd
 
-from populationsim.core import inject
+from populationsim.core import inject, config
 
-from populationsim import integerizer
+from populationsim.integerizing import do_integerizing
 
 
-def test_integerizer():
-
+@pytest.mark.parametrize("use_cvpxy", [True, False], ids=["cvxpy", "ortools"])
+def test_integerizer(use_cvpxy):
     example_dir = Path(__file__).parent.parent / "examples"
 
     configs_dir = example_dir / "example_test" / "configs"
     inject.add_injectable("configs_dir", configs_dir)
-
-    # data_dir = os.path.join(os.path.dirname(__file__), 'data')
-    # inject.add_injectable("data_dir", data_dir)
-    #
-    # output_dir = os.path.join(os.path.dirname(__file__), 'output')
-    # inject.add_injectable("output_dir", output_dir)
 
     # rows are elements for which factors are calculated, columns are constraints to be satisfied
     incidence_table = pd.DataFrame(
@@ -66,7 +61,10 @@ def test_integerizer():
         [100, 35, 65, 91, 65, 104], index=control_spec.target.values
     )
 
-    integerized_weights, status = integerizer.do_integerizing(
+    config.override_setting(
+        "USE_CVXPY", use_cvpxy  # use ortools integerizer instead of cvxpy
+    )
+    integerized_weights, status = do_integerizing(
         trace_label="label",
         control_spec=control_spec,
         control_totals=control_totals,

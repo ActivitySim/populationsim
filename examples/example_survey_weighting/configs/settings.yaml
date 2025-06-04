@@ -12,12 +12,12 @@ NO_INTEGERIZATION_EVER: True
 INTEGERIZE_WITH_BACKSTOPPED_CONTROLS: True
 SUB_BALANCE_WITH_FLOAT_SEED_WEIGHTS: False
 GROUP_BY_INCIDENCE_SIGNATURE: False
-
+INTEGERIZER_TIMEOUT: 300 # seconds
 USE_SIMUL_INTEGERIZER: True
 
 USE_CVXPY: False
-USE_NUMBA: True
-NUMBA_PRECISION: "float32" # "float64" or "float32"
+# USE_NUMBA: True
+# NUMBA_PRECISION: "float32" # "float64" or "float32"
 USE_HARD_CONSTRAINTS: False
 
 max_expansion_factor: 4 # Default is 30
@@ -132,10 +132,10 @@ run_list:
     - initial_seed_balancing
     - meta_control_factoring
     - final_seed_balancing
-#    - integerize_final_seed_weights
-    - expand_households
-    - summarize
+    # - integerize_final_seed_weights
+    # - expand_households
+    # - summarize
     - write_tables
-  #  - write_synthetic_population
+    # - write_synthetic_population
 
   #resume_after: expand_households

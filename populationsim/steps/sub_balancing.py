@@ -5,14 +5,18 @@ import logging
 
 import pandas as pd
 
-from populationsim.balancer import do_simul_balancing
+from populationsim.balancing import do_simul_balancing
+from populationsim.integerizing import (
+    do_no_integerizing,
+    do_simul_integerizing,
+    do_sequential_integerizing,
+)
 from populationsim.core import inject, config
 from populationsim.core.helper import (
     get_control_table,
     weight_table_name,
     get_weight_table,
 )
-from populationsim.integerizer.wrappers import multi_integerize
 
 
 logger = logging.getLogger(__name__)
@@ -106,21 +110,32 @@ def balance_and_integerize(
         % (parent_geography, parent_id, status["converged"], status["iter"])
     )
 
-    integerized_sub_zone_weights_df = multi_integerize(
+    trace_label = "%s_%s" % (parent_geography, parent_id)
+
+    if config.setting("NO_INTEGERIZATION_EVER", False):
+        integerizer = do_no_integerizing
+        int_method = "no_integerizing"
+    elif config.setting("USE_SIMUL_INTEGERIZER", True):
+        integerizer = do_simul_integerizing
+        int_method = "simul_integerizing"
+    else:
+        integerizer = do_sequential_integerizing
+        int_method = "sequential_integerizing"
+
+    integerized_sub_zone_weights_df = integerizer(
+        trace_label=trace_label,
         incidence_df=incidence_df,
-        sub_zone_weights=balanced_sub_zone_weights,
+        sub_weights=balanced_sub_zone_weights,
         sub_controls_df=sub_controls_df,
         control_spec=control_spec,
         total_hh_control_col=total_hh_control_col,
-        parent_geography=parent_geography,
-        parent_id=parent_id,
         sub_geography=sub_geography,
         sub_control_zones=sub_control_zones,
     )
 
     assert isinstance(
         integerized_sub_zone_weights_df, pd.DataFrame
-    ), "multi_integerize did not return a DataFrame"
+    ), f"{int_method} did not return a DataFrame"
 
     integerized_sub_zone_weights_df[parent_geography] = parent_id
 

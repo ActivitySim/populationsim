@@ -5,9 +5,9 @@ import logging
 import numpy as np
 import pandas as pd
 
-from .balancers import np_balancer_py
-from .balancers_numba import np_balancer_numba
-from .constants import (
+from populationsim.balancing.balancers import np_balancer_py
+from populationsim.balancing.balancers_numba import np_balancer_numba
+from populationsim.balancing.constants import (
     MAX_INT,
     MIN_IMPORTANCE,
     MIN_CONTROL_VALUE,

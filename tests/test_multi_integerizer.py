@@ -1,12 +1,13 @@
 # PopulationSim
 # See full license in LICENSE.txt.
 
+import pytest
 from pathlib import Path
 import pandas as pd
 
-from populationsim.core import inject
+from populationsim.core import inject, config
 
-from populationsim.integerizer import (
+from populationsim.integerizing import (
     do_simul_integerizing,
     do_sequential_integerizing,
 )
@@ -135,16 +136,17 @@ control_spec = pd.DataFrame(
 sub_control_zones = pd.Series(["TRACT_1", "TRACT_2"], index=[1, 2])
 
 
-def test_simul_integerizer():
-
+@pytest.mark.parametrize(
+    "use_cvpxy",
+    [True, False],
+    ids=["use_cvpxy", "use_ortools"],
+)
+def test_simul_integerizer(use_cvpxy):
     inject.add_injectable("configs_dir", configs_dir)
 
-    # data_dir = os.path.join(os.path.dirname(__file__), 'data')
-    # inject.add_injectable("data_dir", data_dir)
-    #
-    # output_dir = os.path.join(os.path.dirname(__file__), 'output')
-    # inject.add_injectable("output_dir", output_dir)
-
+    config.override_setting(
+        "USE_CVXPY", use_cvpxy  # use ortools integerizer instead of cvxpy
+    )
     integer_weights_df = do_simul_integerizing(
         trace_label="label",
         incidence_df=incidence_df,
@@ -164,15 +166,17 @@ def test_simul_integerizer():
     print("\ntest_simul_integerizer integer_weights_df\n", integer_weights_df)
 
 
-def test_sequential_integerizer():
+@pytest.mark.parametrize(
+    "use_cvpxy",
+    [True, False],
+    ids=["use_cvpxy", "use_ortools"],
+)
+def test_sequential_integerizer(use_cvpxy):
     inject.add_injectable("configs_dir", configs_dir)
 
-    # data_dir = os.path.join(os.path.dirname(__file__), 'data')
-    # inject.add_injectable("data_dir", data_dir)
-    #
-    # output_dir = os.path.join(os.path.dirname(__file__), 'output')
-    # inject.add_injectable("output_dir", output_dir)
-
+    config.override_setting(
+        "USE_CVXPY", use_cvpxy  # use ortools integerizer instead of cvxpy
+    )
     integer_weights_df = do_sequential_integerizing(
         trace_label="label",
         incidence_df=incidence_df,

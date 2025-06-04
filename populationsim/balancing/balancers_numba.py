@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 from numba import njit
-from populationsim.balancer.constants import (
+from populationsim.balancing.constants import (
     DEFAULT_MAX_ITERATIONS,
     MAX_DELTA,
     MAX_GAMMA,

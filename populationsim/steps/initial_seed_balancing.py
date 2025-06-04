@@ -4,8 +4,8 @@
 import logging
 import pandas as pd
 
-from populationsim.core import inject, config
-from populationsim.balancer import do_balancing
+from populationsim.core import inject
+from populationsim.balancing import do_balancing
 from populationsim.core.helper import get_control_table, weight_table_name
 
 
@@ -54,8 +54,7 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     seed_control_spec = control_spec[control_spec["geography"].isin(seed_geographies)]
 
     # determine master_control_index if specified in settings
-    total_hh_control_col = config.setting("total_hh_control")
-
+    total_hh_control_col = settings.get("total_hh_control", None)
     max_expansion_factor = settings.get("max_expansion_factor", None)
     min_expansion_factor = settings.get("min_expansion_factor", None)
     absolute_upper_bound = settings.get("absolute_upper_bound", None)
@@ -117,7 +116,7 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     seed_weights_df["sample_weight"] = sample_weights
 
     # copy household_id_col index to named column
-    seed_weights_df[config.setting("household_id_col")] = seed_weights_df.index
+    seed_weights_df[settings.get("household_id_col", "hh_id")] = seed_weights_df.index
 
     # this is just a convenience if there are no meta controls
     if inject.get_step_arg("final", default=False):

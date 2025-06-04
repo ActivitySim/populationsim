@@ -7,16 +7,16 @@ import numpy.testing as npt
 import pytest
 import time
 
-from populationsim.balancer import ListBalancer
-from populationsim.balancer.balancers import (
+from populationsim.balancing import ListBalancer
+from populationsim.balancing.balancers import (
     np_balancer_py,
     np_simul_balancer_py,
 )
-from populationsim.balancer.balancers_numba import (
+from populationsim.balancing.balancers_numba import (
     np_balancer_numba,
     np_simul_balancer_numba,
 )
-from populationsim.balancer.constants import (
+from populationsim.balancing.constants import (
     DEFAULT_MAX_ITERATIONS,
     MIN_CONTROL_VALUE,
     MAX_DELTA,

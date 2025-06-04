@@ -5,8 +5,8 @@ import logging
 
 import pandas as pd
 
-from populationsim.core import inject, config
-from populationsim.integerizer import do_integerizing
+from populationsim.core import inject
+from populationsim.integerizing import do_integerizing
 from populationsim.core.helper import (
     get_control_table,
     weight_table_name,
@@ -36,7 +36,7 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
 
     """
 
-    if config.setting("NO_INTEGERIZATION_EVER", False):
+    if settings.get("NO_INTEGERIZATION_EVER", False):
         logger.warning("skipping integerize_final_seed_weights: NO_INTEGERIZATION_EVER")
         return
 
@@ -54,7 +54,7 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
     assert (seed_controls_df.columns == control_cols).all()
 
     # determine master_control_index if specified in settings
-    total_hh_control_col = config.setting("total_hh_control")
+    total_hh_control_col = settings.get("total_hh_control")
 
     # run balancer for each seed geography
     weight_list = []

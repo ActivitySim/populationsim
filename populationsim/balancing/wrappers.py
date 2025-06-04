@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 from populationsim.core.config import setting
-from .single_balancer import ListBalancer
-from .simul_balancer import SimultaneousListBalancer
-from .constants import DEFAULT_MAX_ITERATIONS
+from populationsim.balancing.single_balancer import ListBalancer
+from populationsim.balancing.simul_balancer import SimultaneousListBalancer
+from populationsim.balancing.constants import DEFAULT_MAX_ITERATIONS
 
 
 def do_balancing(

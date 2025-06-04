@@ -1,13 +1,16 @@
 import logging
 import numpy as np
 import pandas as pd
-from populationsim.core.config import setting
-from .integerizer import Integerizer
-from .simul_integerizer import SimulIntegerizer
 
-from .lp import STATUS_SUCCESS
+from populationsim.core import config
+from populationsim.integerizing.single_integerizer import Integerizer
+from populationsim.integerizing.simul_integerizer import SimulIntegerizer
 
 logger = logging.getLogger(__name__)
+
+STATUS_OPTIMAL = "OPTIMAL"
+STATUS_FEASIBLE = "FEASIBLE"
+STATUS_SUCCESS = [STATUS_OPTIMAL, STATUS_FEASIBLE]
 
 
 def try_simul_integerizing(
@@ -136,71 +139,6 @@ def reshape_result(
     return integer_weights_df
 
 
-def multi_integerize(
-    incidence_df,
-    sub_zone_weights,
-    sub_controls_df,
-    control_spec,
-    total_hh_control_col,
-    parent_geography,
-    parent_id,
-    sub_geography,
-    sub_control_zones,
-):
-    """
-
-    Parameters
-    ----------
-    incidence_df : pandas.Dataframe
-        full incidence_df for all hh samples in seed zone
-    sub_zone_weights : pandas.DataFame
-        balanced subzone household sample weights to integerize
-    sub_controls_df : pandas.Dataframe
-        sub_geography controls (one row per zone indexed by sub_zone id)
-    control_spec : pandas.Dataframe
-        full control spec with columns 'target', 'seed_table', 'importance', ...
-    total_hh_control_col : str
-        name of total_hh column (so we can preferentially match this control)
-    parent_geography : str
-        parent geography zone name
-    parent_id : int
-        parent geography zone id
-    sub_geography : str
-        subzone geography name (e.g. 'TAZ')
-    sub_control_zones : pandas.Series
-        index is zone id and value is zone label (e.g. TAZ_101)
-        for use in sub_controls_df column names
-
-    Returns
-    -------
-    integer_weights_df : pandas.DataFrame
-        canonical form weight table, with columns for 'balanced_weight', 'integer_weight'
-        plus columns for household id, parent and sub_geography zone ids
-    """
-
-    trace_label = "%s_%s" % (parent_geography, parent_id)
-
-    if setting("NO_INTEGERIZATION_EVER", False):
-        integerizer = do_no_integerizing
-    elif setting("USE_SIMUL_INTEGERIZER", True):
-        integerizer = do_simul_integerizing
-    else:
-        integerizer = do_sequential_integerizing
-
-    integer_weights_df = integerizer(
-        trace_label=trace_label,
-        incidence_df=incidence_df,
-        sub_weights=sub_zone_weights,
-        sub_controls_df=sub_controls_df,
-        control_spec=control_spec,
-        total_hh_control_col=total_hh_control_col,
-        sub_geography=sub_geography,
-        sub_control_zones=sub_control_zones,
-    )
-
-    return integer_weights_df
-
-
 def do_integerizing(
     trace_label,
     control_spec,
@@ -253,9 +191,9 @@ def do_integerizing(
     total_hh_control_value = control_totals[total_hh_control_col]
 
     status = None
-    if setting("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS") and len(control_totals) < len(
-        incidence_table.columns
-    ):
+    if config.setting("INTEGERIZE_WITH_BACKSTOPPED_CONTROLS") and len(
+        control_totals
+    ) < len(incidence_table.columns):
 
         ##########################################
         # - backstopped control_totals
