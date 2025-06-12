@@ -1,7 +1,4 @@
-sandbox/
 regress/
-example_test_no_integerizing/
-example_mtc/
 .idea
 .ipynb_checkpoints
 

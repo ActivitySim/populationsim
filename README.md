@@ -10,6 +10,16 @@ easily adapted for statewide, regional, and urban transportation planning
 needs.  PopulationSim is implemented in the
 [ActivitySim](https://github.com/activitysim/activitysim) framework.
 
+## Command-Line Interface
+
+PopulationSim can be run directly from the command line:
+
+```bash
+populationsim -c /path/to/configs -d /path/to/data -o /path/to/output
+```
+
+See the [examples directory](examples/) for more information on using the command-line interface.
+
 ## Documentation
 
 https://activitysim.github.io/populationsim/

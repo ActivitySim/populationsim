@@ -49,3 +49,6 @@ packages = [
 
 [tool.uv.sources]
 populationsim = { workspace = true }
+
+[project.scripts]
+populationsim = "populationsim.__main__:main"
