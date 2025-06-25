@@ -1,6 +1,6 @@
 [project]
 name = "populationsim"
-version = "0.9.0"
+version = "0.9.1"
 description = "Population Synthesis (for ActivitySim)"
 authors = [
     { name = "Ben Stabler", email = "ben.stabler@rsginc.com" }
@@ -42,10 +42,8 @@ testpaths = [
     "tests",
 ]
 
-[tool.setuptools]
-packages = [
-    "populationsim",
-]
+[tool.setuptools.packages.find]
+where = ["."]
 
 [tool.uv.sources]
 populationsim = { workspace = true }

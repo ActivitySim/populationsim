@@ -3,6 +3,50 @@ import subprocess
 from pathlib import Path
 import importlib
 import pytest
+import tempfile
+
+
+def test_fresh_venv_install_and_cli():
+    # Create a temporary directory for the virtual environment
+    with tempfile.TemporaryDirectory() as tmpdir:
+        venv_dir = Path(tmpdir) / "venv"
+        # Create the virtual environment
+        subprocess.run([sys.executable, "-m", "venv", str(venv_dir)], check=True)
+
+        # Path to the pip and python executables in the venv
+        if sys.platform == "win32":
+            pip_path = venv_dir / "Scripts" / "pip"
+            python_path = venv_dir / "Scripts" / "python"
+            cli_path = venv_dir / "Scripts" / "populationsim"
+        else:
+            pip_path = venv_dir / "bin" / "pip"
+            python_path = venv_dir / "bin" / "python"
+            cli_path = venv_dir / "bin" / "populationsim"
+
+        # Install the current package into the venv
+        subprocess.run(
+            [str(pip_path), "install", "."],
+            cwd=Path(__file__).parent.parent,
+            check=True,
+        )
+
+        # Test that the package can be imported
+        subprocess.run([str(python_path), "-c", "import populationsim"], check=True)
+
+        # Test that the CLI entry point works (shows help)
+        result = subprocess.run(
+            [str(cli_path), "--help"], capture_output=True, text=True, check=True
+        )
+        assert "usage" in result.stdout.lower() or "help" in result.stdout.lower()
+
+        # Test that the module can be run as a module
+        result = subprocess.run(
+            [str(python_path), "-m", "populationsim", "--help"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        assert "usage" in result.stdout.lower() or "help" in result.stdout.lower()
 
 
 def test_main_module_exists():
@@ -48,7 +92,7 @@ def test_cli_execution():
         result = subprocess.run(
             command,
             check=True,
-            capture_output=True,
+            capture_output=False,
             text=True,
             timeout=30,  # 30 seconds timeout
         )
