@@ -85,10 +85,6 @@ def repop_balancing(settings, crosswalk, control_spec, incidence_table):
         low_ids = seed_crosswalk_df[low_geography].unique()
         for low_id in low_ids:
 
-            # skip low_id if not in low_controls_df, which means it has a 0 target number of households
-            if low_id in low_controls_df[total_hh_control_col]:
-                continue
-
             trace_label = "%s_%s_%s_%s" % (
                 seed_geography,
                 seed_id,
