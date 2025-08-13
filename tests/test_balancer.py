@@ -19,7 +19,6 @@ from populationsim.balancing.balancers_numba import (
 from populationsim.balancing.constants import (
     DEFAULT_MAX_ITERATIONS,
     MIN_CONTROL_VALUE,
-    MAX_DELTA,
 )
 
 
@@ -88,8 +87,6 @@ def test_balancer_compare_numba_vs_py(dtype):
     control_count = 100
     iterations = DEFAULT_MAX_ITERATIONS
     status_labs = ("converged", "iter", "delta", "max_gamma_dif")
-    # Must be significantly less than float32 epsilon
-    max_delta = MAX_DELTA if dtype == np.float64 else 1e-5
 
     incidence = np.random.rand(control_count, sample_count)
     weights_initial = np.ones(sample_count)
@@ -112,7 +109,6 @@ def test_balancer_compare_numba_vs_py(dtype):
         controls_constraint,
         controls_importance,
         2,
-        max_delta,
     )
 
     print("Running Numba version...")
@@ -129,7 +125,6 @@ def test_balancer_compare_numba_vs_py(dtype):
         controls_constraint.astype(dtype),
         controls_importance.astype(dtype),
         iterations,
-        max_delta,
     )
     duration_numba = time.perf_counter() - start_numba
     s_numba = dict(zip(status_labs, s_numba))
@@ -150,7 +145,6 @@ def test_balancer_compare_numba_vs_py(dtype):
         controls_constraint,
         controls_importance,
         iterations,
-        MAX_DELTA,
     )
     duration_py = time.perf_counter() - start_py
     s_py = dict(zip(status_labs, s_py))
@@ -178,9 +172,6 @@ def test_simul_balancer_compare_numba_vs_py(dtype):
     iterations = DEFAULT_MAX_ITERATIONS
     status_labs = ("converged", "iter", "delta", "max_gamma_dif")
 
-    # Must be signif less than float32 epsilon
-    max_delta = MAX_DELTA if dtype == np.float64 else 1e-5
-
     # Simul data
     incidence = np.random.rand(control_count, sample_count)
     sub_weights = np.random.rand(zone_count, sample_count)
@@ -207,7 +198,6 @@ def test_simul_balancer_compare_numba_vs_py(dtype):
         controls_importance,
         sub_controls,
         2,
-        max_delta,
     )
 
     print("Running Numba version...")
@@ -226,7 +216,6 @@ def test_simul_balancer_compare_numba_vs_py(dtype):
         controls_importance.astype(dtype),
         sub_controls.astype(dtype),
         iterations,
-        max_delta,
     )
     duration_numba = time.perf_counter() - start_numba
     s_numba = dict(zip(status_labs, s_numba))

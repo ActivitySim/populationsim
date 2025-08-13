@@ -28,7 +28,6 @@ def np_balancer_py(
     controls_constraint,
     controls_importance,
     max_iterations=DEFAULT_MAX_ITERATIONS,
-    max_delta=MAX_DELTA,
 ):
 
     # initial relaxation factors
@@ -106,7 +105,7 @@ def np_balancer_py(
             sample_count
         )
 
-        converged = delta < max_delta and max_gamma_dif < MAX_GAMMA
+        converged = delta < MAX_DELTA and max_gamma_dif < MAX_GAMMA
         no_progress = delta < ALT_MAX_DELTA
 
         if converged or no_progress:

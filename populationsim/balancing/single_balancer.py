@@ -11,7 +11,6 @@ from populationsim.balancing.constants import (
     MAX_INT,
     MIN_IMPORTANCE,
     MIN_CONTROL_VALUE,
-    MAX_DELTA,
 )
 
 logger = logging.getLogger(__name__)
@@ -136,9 +135,6 @@ class ListBalancer:
             self.weights_upper_bound = self.weights_upper_bound.astype(np.float32)
             self.controls_constraint = self.controls_constraint.astype(np.float32)
             self.controls_importance = self.controls_importance.astype(np.float32)
-            self.max_delta = 1e-5
-        else:
-            self.max_delta = MAX_DELTA
 
         # Balancer function
         self.balancer = np_balancer_numba if self.use_numba else np_balancer_py
@@ -162,7 +158,6 @@ class ListBalancer:
             self.controls_constraint,
             self.controls_importance,
             self.max_iterations,
-            self.max_delta,
         )
 
         # Label the status

@@ -3,6 +3,7 @@
 # Convergence constants
 DEFAULT_MAX_ITERATIONS = 10000
 MAX_DELTA = 1.0e-9
+MAX_DELTA32 = 1.0e-5
 MAX_GAMMA = 1.0e-5
 
 

@@ -3,7 +3,7 @@ import numpy as np
 from numba import njit
 from populationsim.balancing.constants import (
     DEFAULT_MAX_ITERATIONS,
-    MAX_DELTA,
+    MAX_DELTA32,
     MAX_GAMMA,
     MIN_GAMMA,
     IMPORTANCE_ADJUST,
@@ -29,7 +29,6 @@ def np_balancer_numba(
     controls_constraint: np.ndarray,
     controls_importance: np.ndarray,
     max_iterations: int = DEFAULT_MAX_ITERATIONS,
-    max_delta: float = MAX_DELTA,
 ) -> tuple[np.ndarray, np.ndarray, tuple[bool, int, float, float]]:
     # Upcast key scalars to float64 for stability
     weights_final = weights_initial.copy()
@@ -112,7 +111,7 @@ def np_balancer_numba(
             if g_dif > max_gamma_dif:
                 max_gamma_dif = g_dif
 
-        converged = delta < max_delta and max_gamma_dif < MAX_GAMMA
+        converged = delta < MAX_DELTA32 and max_gamma_dif < MAX_GAMMA
         no_progress = delta < ALT_MAX_DELTA
 
         if converged or no_progress:
@@ -140,7 +139,6 @@ def np_simul_balancer_numba(
     controls_importance: np.ndarray,
     sub_controls: np.ndarray,
     max_iterations: int = DEFAULT_MAX_ITERATIONS,
-    max_delta: float = MAX_DELTA,
 ) -> tuple[np.ndarray, np.ndarray, tuple[bool, int, float, float]]:
     if parent_controls is not None:
         # Normalize sub_controls to match parent_controls if provided
@@ -225,7 +223,7 @@ def np_simul_balancer_numba(
         max_gamma_dif = np.abs(gamma - 1).max()
         delta = np.abs(sub_weights - weights_previous).sum() / float(sample_count)
 
-        converged = delta < max_delta and max_gamma_dif < MAX_GAMMA
+        converged = delta < MAX_DELTA32 and max_gamma_dif < MAX_GAMMA
         no_progress = delta < ALT_MAX_DELTA
 
         if converged or no_progress:
