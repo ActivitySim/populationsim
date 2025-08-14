@@ -1,6 +1,6 @@
 [project]
 name = "populationsim"
-version = "0.9.1"
+version = "0.9.2"
 description = "Population Synthesis (for ActivitySim)"
 authors = [
     { name = "Ben Stabler", email = "ben.stabler@rsginc.com" }
