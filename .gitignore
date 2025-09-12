@@ -1,3 +1,5 @@
+scripts/calm_validation_results/
+
 regress/
 .idea
 .ipynb_checkpoints
