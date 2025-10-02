@@ -2,14 +2,8 @@
 # See full license in LICENSE.txt.
 
 import logging
-import os
 
-import pandas as pd
-import numpy as np
-
-from activitysim.core import inject
-from activitysim.core import config
-from activitysim.core import input
+from populationsim.core import inject, config, input
 
 logger = logging.getLogger(__name__)
 
@@ -50,19 +44,21 @@ def input_pre_processor():
     """
 
     # alternate table list name may have been provided as a model argument
-    table_list_name = inject.get_step_arg('table_list', default='input_table_list')
+    table_list_name = inject.get_step_arg("table_list", default="input_table_list")
     table_list = config.setting(table_list_name)
 
-    assert table_list is not None, "no table list '%s' found in settings." % table_list_name
+    assert table_list is not None, (
+        "no table list '%s' found in settings." % table_list_name
+    )
 
-    logger.info('Using table list: %s' % table_list)
+    logger.info("Using table list: %s" % table_list)
 
     for table_info in table_list:
 
-        tablename = table_info.get('tablename')
+        tablename = table_info.get("tablename")
         df = input.read_from_table_info(table_info)
-        logger.info('registering table %s' % tablename)
+        logger.info("registering table %s" % tablename)
 
         # add (or replace) pipeline table
-        repop = inject.get_step_arg('repop', default=False)
+        repop = inject.get_step_arg("repop", default=False)
         inject.add_table(tablename, df, replace=repop)

@@ -1,5 +1,5 @@
 # directory of target run of PopulationSim, containing data/output directories
-popsim_dir: ../example_calm
+popsim_dir: ../examples/example_calm
 # folder to save outputs
 validation_dir: calm_validation_results
 scenario: Base
@@ -15,12 +15,12 @@ seed_cols:
     geog: PUMA
     geog_weight: WGTP
     hh_id: hhnum
-expanded_hhid: output/expanded_household_ids.csv
+expanded_hhid: output/final_expanded_household_ids.csv
 expanded_hhid_col: hh_id
 summaries:
-    - output/summary_TAZ_PUMA.csv
-    - output/summary_TRACT.csv
-    - output/summary_TAZ.csv
+    - output/final_summary_TAZ_PUMA.csv
+    - output/final_summary_TRACT.csv
+    - output/final_summary_TAZ.csv
 aggregate_summaries:
     - name: Total Households
       geography: TAZ

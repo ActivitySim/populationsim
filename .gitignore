@@ -1,10 +1,10 @@
-sandbox/
+scripts/calm_validation_results/
+
 regress/
-example_test_no_integerizing/
-example_mtc/
 .idea
 .ipynb_checkpoints
 
+.coverage.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

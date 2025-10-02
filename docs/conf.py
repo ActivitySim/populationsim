@@ -12,8 +12,6 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
-import os
 
 import sphinx_rtd_theme
 
@@ -39,29 +37,29 @@ with open("../setup.py") as file:
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.mathjax',
-    'numpydoc',
-    'sphinx.ext.autosummary'
+    "sphinx.ext.autodoc",
+    "sphinx.ext.mathjax",
+    "numpydoc",
+    "sphinx.ext.autosummary",
 ]
 
 numpydoc_show_class_members = False
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = u'PopulationSim'
-copyright = u'contributing authors'
+project = "PopulationSim"
+copyright = "contributing authors"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -84,7 +82,7 @@ release = VERSION
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ["_build"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -102,7 +100,7 @@ exclude_patterns = ['_build']
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -193,28 +191,31 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'PopulationSimdoc'
+htmlhelp_basename = "PopulationSimdoc"
 
 
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
- # The paper size ('letterpaper' or 'a4paper').
- # 'papersize': 'letterpaper',
-
- # The font size ('10pt', '11pt' or '12pt').
- # 'pointsize': '10pt',
-
- # Additional stuff for the LaTeX preamble.
- # 'preamble': '',
+    # The paper size ('letterpaper' or 'a4paper').
+    # 'papersize': 'letterpaper',
+    # The font size ('10pt', '11pt' or '12pt').
+    # 'pointsize': '10pt',
+    # Additional stuff for the LaTeX preamble.
+    # 'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'PopulationSim.tex', u'PopulationSim Documentation',
-   u'contributing authors', 'manual'),
+    (
+        "index",
+        "PopulationSim.tex",
+        "PopulationSim Documentation",
+        "contributing authors",
+        "manual",
+    ),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -243,8 +244,13 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'populationsim', u'PopulationSim Documentation',
-     [u'contributing authors'], 1)
+    (
+        "index",
+        "populationsim",
+        "PopulationSim Documentation",
+        ["contributing authors"],
+        1,
+    )
 ]
 
 # If true, show URL addresses after external links.
@@ -257,9 +263,15 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'PopulationSim', u'PopulationSim Documentation',
-   u'contributing authors', 'PopulationSim', 'One line description of project.',
-   'Miscellaneous'),
+    (
+        "index",
+        "PopulationSim",
+        "PopulationSim Documentation",
+        "contributing authors",
+        "PopulationSim",
+        "One line description of project.",
+        "Miscellaneous",
+    ),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -275,10 +287,10 @@ texinfo_documents = [
 # texinfo_no_detailmenu = False
 
 # -- Table width fix for Read the Docs Sphinx theme -----------------------
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 html_context = {
-    'css_files': [
-        '_static/theme_overrides.css',  # override wide tables in RTD theme
-        ],
-     }
+    "css_files": [
+        "_static/theme_overrides.css",  # override wide tables in RTD theme
+    ],
+}

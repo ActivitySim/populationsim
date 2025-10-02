@@ -1,0 +1,32 @@
+target,geography,seed_table,importance,control_field,expression
+num_hh,TAZ,households,1000000000,HHBASE,(households.WGTP > 0) & (households.WGTP < np.inf)
+hh_size_1,TAZ,households,5000,HHSIZE1,households.NP == 1
+hh_size_2,TAZ,households,5000,HHSIZE2,households.NP == 2
+hh_size_3,TAZ,households,5000,HHSIZE3,households.NP == 3
+hh_size_4_plus,TAZ,households,5000,HHSIZE4,households.NP >= 4
+hh_age_15_24,TAZ,households,500,HHAGE1,(households.AGEHOH > 15) & (households.AGEHOH <= 24)
+hh_age_25_54,TAZ,households,500,HHAGE2,(households.AGEHOH > 24) & (households.AGEHOH <= 54)
+hh_age_55_64,TAZ,households,500,HHAGE3,(households.AGEHOH > 54) & (households.AGEHOH <= 64)
+hh_age_65_plus,TAZ,households,500,HHAGE4,(households.AGEHOH > 64) & (households.AGEHOH <= np.inf)
+hh_inc_15,TAZ,households,500,HHINC1,(households.HHINCADJ > -999999999) & (households.HHINCADJ <= 21297)
+hh_inc_15_30,TAZ,households,500,HHINC2,(households.HHINCADJ >21297) & (households.HHINCADJ <= 42593)
+hh_inc_30_60,TAZ,households,500,HHINC3,(households.HHINCADJ > 42593) & (households.HHINCADJ <= 85185)
+hh_inc_60_plus,TAZ,households,500,HHINC4,(households.HHINCADJ > 85185) & (households.HHINCADJ <= 999999999)
+students_by_family_housing_type,TAZ,persons,500,OSUFAM,persons.OSUTAG == 1
+students_by_nonfamily_housing_type,TAZ,persons,500,OSUNFAM,persons.OSUTAG == 2
+hh_wrks_0,TRACT,households,1000,HHWORK0,households.NWESR == 0
+hh_wrks_1,TRACT,households,1000,HHWORK1,households.NWESR == 1
+hh_wrks_2,TRACT,households,1000,HHWORK2,households.NWESR == 2
+hh_wrks_3_plus,TRACT,households,1000,HHWORK3,households.NWESR >= 3
+hh_by_type_sf,TRACT,households,1000,SF,households.HTYPE == 1
+hh_by_type_mf,TRACT,households,1000,MF,households.HTYPE == 2
+hh_by_type_mh,TRACT,households,1000,MH,households.HTYPE == 3
+hh_by_type_dup,TRACT,households,1000,DUP,households.HTYPE == 4
+persons_occ_1,REGION,persons,1000,OCCP1,persons.OCCP == 1
+persons_occ_2,REGION,persons,1000,OCCP2,persons.OCCP == 2
+persons_occ_3,REGION,persons,1000,OCCP3,persons.OCCP == 3
+persons_occ_4,REGION,persons,1000,OCCP4,persons.OCCP == 4
+persons_occ_5,REGION,persons,1000,OCCP5,persons.OCCP == 5
+persons_occ_6,REGION,persons,1000,OCCP6,persons.OCCP == 6
+persons_occ_7,REGION,persons,1000,OCCP7,persons.OCCP == 7
+persons_occ_8,REGION,persons,1000,OCCP8,persons.OCCP == 8

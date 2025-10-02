@@ -1,19 +1,12 @@
-
 # PopulationSim
 # See full license in LICENSE.txt.
 
 import logging
 import pandas as pd
 
-from activitysim.core import inject
-from activitysim.core import pipeline
-
-from activitysim.core.config import setting
-
-from ..balancer import do_balancing
-
-from .helper import get_control_table
-from .helper import weight_table_name
+from populationsim.core import inject
+from populationsim.balancing import do_balancing
+from populationsim.core.helper import get_control_table, weight_table_name
 
 
 logger = logging.getLogger(__name__)
@@ -52,21 +45,23 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
     incidence_df = incidence_table.to_frame()
     control_spec = control_spec.to_frame()
 
-    seed_geography = settings.get('seed_geography')
+    seed_geography = settings.get("seed_geography")
     seed_controls_df = get_control_table(seed_geography)
 
     # only want control_spec rows for seed geography and below
-    geographies = settings['geographies']
-    seed_geographies = geographies[geographies.index(seed_geography):]
-    seed_control_spec = control_spec[control_spec['geography'].isin(seed_geographies)]
+    geographies = settings["geographies"]
+    seed_geographies = geographies[geographies.index(seed_geography) :]
+    seed_control_spec = control_spec[control_spec["geography"].isin(seed_geographies)]
 
     # determine master_control_index if specified in settings
-    total_hh_control_col = setting('total_hh_control')
-
-    max_expansion_factor = settings.get('max_expansion_factor', None)
-    min_expansion_factor = settings.get('min_expansion_factor', None)
-    absolute_upper_bound = settings.get('absolute_upper_bound', None)
-    absolute_lower_bound = settings.get('absolute_lower_bound', None)
+    total_hh_control_col = settings.get("total_hh_control", None)
+    max_expansion_factor = settings.get("max_expansion_factor", None)
+    min_expansion_factor = settings.get("min_expansion_factor", None)
+    absolute_upper_bound = settings.get("absolute_upper_bound", None)
+    absolute_lower_bound = settings.get("absolute_lower_bound", None)
+    hard_constraints = settings.get("USE_HARD_CONSTRAINTS", False)
+    use_numba = settings.get("USE_NUMBA", False)
+    numba_precision = settings.get("NUMBA_PRECISION", "float64")
 
     # run balancer for each seed geography
     weight_list = []
@@ -88,18 +83,27 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
             absolute_lower_bound=absolute_lower_bound,
             incidence_df=seed_incidence_df,
             control_totals=seed_controls_df.loc[seed_id],
-            initial_weights=seed_incidence_df['sample_weight'])
+            initial_weights=seed_incidence_df["sample_weight"],
+            use_hard_constraints=hard_constraints,
+            use_numba=use_numba,
+            numba_precision=numba_precision,
+        )
 
         logger.info("seed_balancer status: %s" % status)
-        if not status['converged']:
-            raise RuntimeError("initial_seed_balancing for seed_id %s did not converge" % seed_id)
+        if not status["converged"]:
+            raise RuntimeError(
+                "initial_seed_balancing for seed_id %s did not converge" % seed_id
+            )
 
-        balanced_weights = weights_df['final']
+        balanced_weights = weights_df["final"]
 
-        logger.info("Total balanced weights for seed %s = %s" % (seed_id, balanced_weights.sum()))
+        logger.info(
+            "Total balanced weights for seed %s = %s"
+            % (seed_id, balanced_weights.sum())
+        )
 
         weight_list.append(balanced_weights)
-        sample_weight_list.append(seed_incidence_df['sample_weight'])
+        sample_weight_list.append(seed_incidence_df["sample_weight"])
 
     # bulk concat all seed level results
     weights = pd.concat(weight_list)
@@ -107,16 +111,18 @@ def initial_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
     # build canonical weights table
     seed_weights_df = incidence_df[[seed_geography]].copy()
-    seed_weights_df['preliminary_balanced_weight'] = weights
+    seed_weights_df["preliminary_balanced_weight"] = weights
 
-    seed_weights_df['sample_weight'] = sample_weights
+    seed_weights_df["sample_weight"] = sample_weights
 
     # copy household_id_col index to named column
-    seed_weights_df[setting('household_id_col')] = seed_weights_df.index
+    seed_weights_df[settings.get("household_id_col", "hh_id")] = seed_weights_df.index
 
     # this is just a convenience if there are no meta controls
-    if inject.get_step_arg('final', default=False):
-        seed_weights_df['balanced_weight'] = seed_weights_df['preliminary_balanced_weight']
+    if inject.get_step_arg("final", default=False):
+        seed_weights_df["balanced_weight"] = seed_weights_df[
+            "preliminary_balanced_weight"
+        ]
 
-    repop = inject.get_step_arg('repop', default=False)
+    repop = inject.get_step_arg("repop", default=False)
     inject.add_table(weight_table_name(seed_geography), seed_weights_df, replace=repop)

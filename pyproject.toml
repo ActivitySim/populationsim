@@ -1,0 +1,52 @@
+[project]
+name = "populationsim"
+version = "0.9.2"
+description = "Population Synthesis (for ActivitySim)"
+authors = [
+    { name = "Ben Stabler", email = "ben.stabler@rsginc.com" }
+    ]
+readme = "README.md"
+requires-python = ">=3.9,<3.13"
+dependencies = [
+    "ortools>=5.1.4045",
+    "pyinstrument>=5.0.1",
+    "pyyaml>=6.0.2",
+    "psutil>=7.0.0",
+    "pandas>=2.2",
+    "numpy>=1.16.1,<2",
+    "tables>=3.9",
+    "orca>=1.8",
+    "blosc2>=2.5.1",
+    "cvxpy[glpk]>=1.6.5",
+    "numba>=0.60.0",
+    "pyarrow>=20.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "populationsim",
+    "pre-commit>=4.2.0",
+    "pytest>=8.3.5",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.9.9",
+]
+
+[pytest.ini]
+python_paths = [
+    "populationsim",
+    "tests",
+    "examples",
+]
+testpaths = [
+    "tests",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.uv.sources]
+populationsim = { workspace = true }
+
+[project.scripts]
+populationsim = "populationsim.__main__:main"

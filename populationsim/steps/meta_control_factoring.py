@@ -1,18 +1,16 @@
-
 # PopulationSim
 # See full license in LICENSE.txt.
 
 import logging
-import os
 
 import pandas as pd
 
-from activitysim.core import pipeline
-from activitysim.core import inject
-
-from .helper import get_control_table
-from .helper import control_table_name
-from .helper import get_weight_table
+from populationsim.core import pipeline, inject
+from populationsim.core.helper import (
+    get_control_table,
+    control_table_name,
+    get_weight_table,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +18,6 @@ logger = logging.getLogger(__name__)
 def dump_table(table_name, table):
 
     return
-
-    print("\n%s\n" % table_name, table)
 
 
 @inject.step()
@@ -49,8 +45,8 @@ def meta_control_factoring(settings, control_spec, incidence_table):
     incidence_df = incidence_table.to_frame()
     control_spec = control_spec.to_frame()
 
-    geographies = settings.get('geographies')
-    seed_geography = settings.get('seed_geography')
+    geographies = settings.get("geographies")
+    seed_geography = settings.get("seed_geography")
     meta_geography = geographies[0]
 
     # - if there are no meta controls, then we don't have to do anything
@@ -63,7 +59,7 @@ def meta_control_factoring(settings, control_spec, incidence_table):
 
     # slice control_spec to select only the rows for meta level controls
     meta_controls_spec = control_spec[control_spec.geography == meta_geography]
-    meta_control_targets = meta_controls_spec['target']
+    meta_control_targets = meta_controls_spec["target"]
 
     logger.info("meta_control_factoring %s targets" % len(meta_control_targets))
 
@@ -77,19 +73,23 @@ def meta_control_factoring(settings, control_spec, incidence_table):
     # expand person weights by incidence (incidnece will simply be 1 for household targets)
     hh_level_weights = incidence_df[[seed_geography, meta_geography]].copy()
     for target in meta_control_targets:
-        hh_level_weights[target] = \
-            incidence_df[target] * seed_weights_df['preliminary_balanced_weight']
+        hh_level_weights[target] = (
+            incidence_df[target] * seed_weights_df["preliminary_balanced_weight"]
+        )
 
     dump_table("hh_level_weights", hh_level_weights)
 
     # weights of meta targets at seed level
-    factored_seed_weights = \
-        hh_level_weights.groupby([seed_geography, meta_geography], as_index=False).sum()
+    factored_seed_weights = hh_level_weights.groupby(
+        [seed_geography, meta_geography], as_index=False
+    ).sum()
     factored_seed_weights.set_index(seed_geography, inplace=True)
     dump_table("factored_seed_weights", factored_seed_weights)
 
     # weights of meta targets summed from seed level to  meta level
-    factored_meta_weights = factored_seed_weights.groupby(meta_geography, as_index=True).sum()
+    factored_meta_weights = factored_seed_weights.groupby(
+        meta_geography, as_index=True
+    ).sum()
     dump_table("factored_meta_weights", factored_meta_weights)
 
     # only the meta level controls from meta_controls table
@@ -108,9 +108,13 @@ def meta_control_factoring(settings, control_spec, incidence_table):
         #  meta level scaling_factor for this meta_control
         scaling_factor = factored_seed_weights[meta_geography].map(meta_factors[target])
         # scale the seed_level_meta_controls by meta_level scaling_factor
-        seed_level_meta_controls[target] = factored_seed_weights[target] * scaling_factor
+        seed_level_meta_controls[target] = (
+            factored_seed_weights[target] * scaling_factor
+        )
         # FIXME - why round scaled factored seed_weights to int prior to final seed balancing?
-        seed_level_meta_controls[target] = seed_level_meta_controls[target].round().astype(int)
+        seed_level_meta_controls[target] = (
+            seed_level_meta_controls[target].round().astype(int)
+        )
     dump_table("seed_level_meta_controls", seed_level_meta_controls)
 
     # create final balancing controls

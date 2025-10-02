@@ -9,7 +9,7 @@ This page describes the PopulationSim software implementation and how to contrib
 
 The implementation starts with
 the ActivitySim framework, which serves as the foundation for the software.  The framework, as briefly described
-below, includes features for data pipeline management, expression handling, multiprocessing, testing, etc.  Built upon 
+below, includes features for data pipeline management, expression handling, multiprocessing, testing, etc.  Built upon
 the framework are additional core components for population synthesis such as balancers and integerizers.
 Built upon the population synthesis core components are the model steps that make up a PopulationSim run,
 such as the inputs pre-processor, setting up the data strucutres, doing the initial seed balancing, etc.
@@ -43,7 +43,7 @@ being implemented in the ActivitySim framework means:
 
   * `ORCA <https://github.com/UDST/orca>`__ is used for running the overall model system and for defining dynamic data tables, columns, and injectables (functions). ActivitySim wraps ORCA functionality to make a Data Pipeline tool, which allows for re-starting at any model step.
   * Support for `multiprocessing <http://docs.python.org/3/library/multiprocessing.html>`_ to reduce runtime
-  
+
 * Expressions
 
   * Model expressions are in CSV files and contain Python expressions, mainly pandas/numpy expression that operate on the input data tables. This helps to avoid modifying Python code when making changes to the model calculations.
@@ -223,4 +223,3 @@ Contribution Guidelines
 -----------------------
 
 PopulationSim development follows the same `development guidelines <https://activitysim.github.io/activitysim/development.html>`__ as ActivitySim.
-
