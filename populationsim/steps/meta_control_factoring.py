@@ -122,6 +122,10 @@ def meta_control_factoring(settings, control_spec, incidence_table):
 
     seed_controls_df = get_control_table(seed_geography)
 
+    # Remove controls for geographies between the seed and the meta geographies
+    intermediate_geographies = geographies[1:geographies.index(seed_geography)]
+    control_spec = control_spec[control_spec.geography.apply(lambda x: x not in intermediate_geographies)]
+
     assert len(seed_controls_df.index) == len(seed_level_meta_controls.index)
     seed_controls_df = pd.concat([seed_controls_df, seed_level_meta_controls], axis=1)
 

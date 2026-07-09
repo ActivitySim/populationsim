@@ -60,6 +60,8 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
 
     # we use all control_spec rows, so no need to filter on geography as for initial_seed_balancing
     seed_controls_df = get_control_table(seed_geography)
+    intermediate_geographies = geographies[1:geographies.index(seed_geography)]
+    control_spec = control_spec[control_spec.geography.apply(lambda x: x not in intermediate_geographies)]
     assert (seed_controls_df.columns == control_spec.target).all()
 
     # determine master_control_index if specified in settings

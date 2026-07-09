@@ -16,12 +16,12 @@
 import sphinx_rtd_theme
 
 # -- Get Package Version --------------------------------------------------
-with open("../setup.py") as file:
-    lines = file.readlines()
-    for line in lines:
-        if "version" in line:
-            VERSION = line.replace("version='", "").replace("',", "").replace(" ", "")
-            print("package version: " + VERSION)
+try:
+    from importlib.metadata import version as get_version
+    VERSION = get_version("populationsim")
+except Exception:
+    VERSION = "unknown"
+print("package version: " + VERSION)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

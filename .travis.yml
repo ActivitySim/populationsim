@@ -1,33 +1,21 @@
 language: python
 
-sudo: false
-
 python:
-- '3.7'
-- '3.8'
+- '3.9'
+- '3.10'
+- '3.11'
+- '3.12'
 
 install:
-- wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-- bash miniconda.sh -b -p $HOME/miniconda
-- source "$HOME/miniconda/etc/profile.d/conda.sh"
-- hash -r
-- conda config --set always_yes yes --set changeps1 no
-- conda update -q conda
-- conda info -a
-- conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
-- conda activate test-environment
-- conda install pytest pytest-cov coveralls pycodestyle cytoolz
-- pip install .
-- pip freeze
+- curl -LsSf https://astral.sh/uv/install.sh | sh
+- uv sync
+- uv run python -c "import populationsim"
 
 script:
-- pycodestyle populationsim
-- py.test --cov populationsim --cov-report term-missing
-
-after_success:
-- coveralls
+- uv run ruff check populationsim
+- uv run pytest --cov populationsim --cov-report term-missing
 # Build docs
-- pip install sphinx numpydoc sphinx_rtd_theme==0.5.2
+- uv pip install sphinx numpydoc sphinx_rtd_theme==0.5.2
 - cd docs
 - make clean
 - make html

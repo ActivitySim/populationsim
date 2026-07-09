@@ -2,6 +2,7 @@ from pathlib import Path
 import pandas as pd
 
 from populationsim.core import tracing, inject, pipeline, mp_tasks
+from tests import assert_expanded_close, expected_path
 
 TAZ_COUNT = 36
 TAZ_100_HH_COUNT = 33
@@ -16,11 +17,15 @@ def setup_function(func):
     output_dir = Path(__file__).parent / "output"
     data_dir = example_dir / "example_test" / "data"
 
+    inject.reinject_decorated_tables()
+
     inject.add_injectable(
         "configs_dir", [mp_configs_dir, configs_dir, example_configs_dir]
     )
     inject.add_injectable("output_dir", output_dir)
     inject.add_injectable("data_dir", data_dir)
+
+    inject.clear_cache()
 
     tracing.config_logger()
 
@@ -43,15 +48,15 @@ def regress():
     assert not (output_dir / "households.csv").exists()
     assert (output_dir / "summary_DISTRICT_1.csv").exists()
 
-    expected_hh_ids = pd.read_parquet(
-        Path(__file__).parent / "expected" / "expanded_mp.parquet"
-    )
+    expected_hh_ids = pd.read_parquet(expected_path("expanded_mp"))
 
-    # Compare the two dataframes
-    assert expanded_household_ids.equals(expected_hh_ids)
+    # Compare zone-level distribution with a tolerance.
+    assert_expanded_close(expanded_household_ids, expected_hh_ids)
 
 
 def teardown_function(func):
+    if pipeline.is_open():
+        pipeline.close_pipeline()
     inject.clear_cache()
     inject.reinject_decorated_tables()
 

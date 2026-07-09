@@ -50,6 +50,9 @@ def integerize_final_seed_weights(settings, crosswalk, control_spec, incidence_t
     seed_weights_df = get_weight_table(seed_geography)
 
     # FIXME - I assume we want to integerize using meta controls too?
+    geographies = settings["geographies"]
+    intermediate_geographies = geographies[1:geographies.index(seed_geography)]
+    control_spec = control_spec[control_spec.geography.apply(lambda x: x not in intermediate_geographies)]
     control_cols = control_spec.target
     assert (seed_controls_df.columns == control_cols).all()
 

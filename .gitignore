@@ -1,5 +1,7 @@
 scripts/calm_validation_results/
 
+.venv/
+
 regress/
 .idea
 .ipynb_checkpoints

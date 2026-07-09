@@ -70,7 +70,7 @@ def expand_households():
         grouper = household_groups.groupby("group_id")
         group_hh_probs = [0] * len(grouper)
         for group_id, df in grouper:
-            hh_ids = list(df[household_id_col])
+            hh_ids = df[household_id_col].values  # preserves int64 dtype as numpy array
             probs = list(df.sample_weight / df.sample_weight.sum())
             group_hh_probs[group_id] = [hh_ids, probs]
 

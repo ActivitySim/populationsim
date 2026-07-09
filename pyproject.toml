@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "populationsim"
 version = "0.10.0"
@@ -25,7 +29,6 @@ dependencies = [
 [dependency-groups]
 dev = [
     "black>=25.1.0",
-    "populationsim",
     "pre-commit>=4.2.0",
     "pytest>=8.3.5",
     "pytest-cov>=5.0.0",
@@ -41,12 +44,6 @@ python_paths = [
 testpaths = [
     "tests",
 ]
-
-[tool.setuptools.packages.find]
-where = ["."]
-
-[tool.uv.sources]
-populationsim = { workspace = true }
 
 [project.scripts]
 populationsim = "populationsim.__main__:main"

@@ -129,7 +129,7 @@ def reshape_result(
         zone_weights_df[sub_geography] = zone_id
         zone_weights_df["balanced_weight"] = float_weights[zone_name].values
         zone_weights_df["integer_weight"] = (
-            integerized_weights[zone_name].astype(int).values
+            integerized_weights[zone_name].astype(np.int64).values
         )
 
         integer_weights_list.append(zone_weights_df)
@@ -538,7 +538,7 @@ def do_sequential_integerizing(
         zone_weights_df[weights.index.name] = weights.index
         zone_weights_df[sub_geography] = zone_id
         zone_weights_df["balanced_weight"] = weights.values
-        zone_weights_df["integer_weight"] = integer_weights.astype(int).values
+        zone_weights_df["integer_weight"] = integer_weights.astype(np.int64).values
 
         if status in STATUS_SUCCESS:
             integerized_weights_list.append(zone_weights_df)
