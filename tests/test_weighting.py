@@ -49,7 +49,7 @@ def test_weighting():
 
     expected_wts = pd.read_parquet(expect_dir / "weights.parquet")
 
-    np.allclose(
+    assert np.allclose(
         summary_hh_weights["SUBREGCluster_balanced_weight"].values,
         expected_wts["SUBREGCluster_balanced_weight"].values,
     )
