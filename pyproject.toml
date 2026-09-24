@@ -6,7 +6,7 @@ authors = [
     { name = "Ben Stabler", email = "ben.stabler@rsginc.com" }
     ]
 readme = "README.md"
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.10,<3.15"
 dependencies = [
     "numpy>=2.0.0,<3",
     "ortools>=9.14.0",

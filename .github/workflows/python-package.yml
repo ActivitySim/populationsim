@@ -15,27 +15,20 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      # Deliberately not a square matrix, so the combinations are listed out
-      # rather than generated. Linux carries the full Python sweep; Windows and
-      # macOS get a single spot-check each. Those two exist to catch platform
-      # divergence rather than version divergence -- word size (`int` is int32
-      # on Windows) and differences in the compiled solver -- which one Python
-      # version exercises just as well as four. A square os x python matrix
-      # would double the job count to buy very little.
+      # Linux carries the full Python sweep; Windows and macOS are added as a
+      # single spot-check each via `include` (an include entry that would
+      # overwrite `os` becomes a new job rather than extending existing ones).
+      # Those two exist to catch platform divergence rather than version
+      # divergence -- word size (`int` is int32 on Windows) and differences in
+      # the compiled solver -- which one Python version exercises just as well
+      # as five. A square os x python matrix would triple the job count to buy
+      # very little.
       matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
         include:
-        - os: ubuntu-latest
-          python-version: "3.10"
-        - os: ubuntu-latest
-          python-version: "3.11"
-        - os: ubuntu-latest
-          python-version: "3.12"
-        - os: ubuntu-latest
-          python-version: "3.13"
-        - os: windows-latest
-          python-version: "3.12"
-        - os: macos-latest
-          python-version: "3.12"
+        - { os: windows-latest, python-version: "3.12" }
+        - { os: macos-latest, python-version: "3.12" }
 
     steps:
     - uses: actions/checkout@v4
@@ -44,7 +37,7 @@ jobs:
       uses: astral-sh/setup-uv@v5
       with:
         python-version: ${{ matrix.python-version }}
-        version: "0.6.14"
+        version: "0.11.8"
 
     - name: Install the project
       run: uv sync --all-extras --dev
