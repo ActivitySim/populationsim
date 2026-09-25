@@ -3,7 +3,6 @@ import pandas as pd
 from pathlib import Path
 
 from populationsim.core import config, tracing, inject, pipeline
-from tests.regression import assert_expanded_regression
 
 _MODELS = [
     "input_pre_processor",
@@ -45,8 +44,7 @@ def setup_function():
 
 def teardown_function():
     # tables will no longer be available after pipeline is closed
-    if pipeline.is_open():
-        pipeline.close_pipeline()
+    pipeline.close_pipeline()
     inject.clear_cache()
     inject.reinject_decorated_tables()
 
@@ -104,5 +102,5 @@ def test_full_run_flex(params):
             Path(__file__).parent / "expected" / params["expected_fname"]
         )
 
-    # see tests/regression.py for why this is not an exact frame comparison
-    assert_expanded_regression(expanded_household_ids, expected_hh_ids)
+    # Compare the two dataframes
+    assert expanded_household_ids.equals(expected_hh_ids)

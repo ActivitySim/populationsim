@@ -2,7 +2,6 @@ from pathlib import Path
 import pandas as pd
 
 from populationsim.core import tracing, inject, pipeline
-from tests.regression import assert_expanded_regression
 
 TAZ_COUNT = 36
 TAZ_100_HH_COUNT = 33
@@ -34,8 +33,6 @@ def setup_function():
 
 
 def teardown_function(func):
-    if pipeline.is_open():
-        pipeline.close_pipeline()
     inject.clear_cache()
     inject.reinject_decorated_tables()
 
@@ -76,9 +73,8 @@ def test_full_run1():
         Path(__file__).parent / "expected" / "expanded.parquet"
     )
 
-    # Compare against the baseline on the invariants that are portable across
-    # machines -- household identity is not one of them, see tests/regression.py
-    assert_expanded_regression(expanded_household_ids, expected_hh_ids)
+    # Compare the two dataframes
+    assert expanded_household_ids.equals(expected_hh_ids)
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -114,8 +110,8 @@ def test_full_run2_repop_replace():
         Path(__file__).parent / "expected" / "expanded_repop_replace.parquet"
     )
 
-    # see tests/regression.py for why this is not an exact frame comparison
-    assert_expanded_regression(expanded_household_ids, expected_hh_ids)
+    # Compare the two dataframes
+    assert expanded_household_ids.equals(expected_hh_ids)
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()
@@ -147,8 +143,8 @@ def test_full_run2_repop_append():
         Path(__file__).parent / "expected" / "expanded_repop_append.parquet"
     )
 
-    # see tests/regression.py for why this is not an exact frame comparison
-    assert_expanded_regression(expanded_household_ids, expected_hh_ids)
+    # Compare the two dataframes
+    assert expanded_household_ids.equals(expected_hh_ids)
 
     # tables will no longer be available after pipeline is closed
     pipeline.close_pipeline()

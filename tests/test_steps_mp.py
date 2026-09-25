@@ -2,7 +2,6 @@ from pathlib import Path
 import pandas as pd
 
 from populationsim.core import tracing, inject, pipeline, mp_tasks
-from tests.regression import assert_expanded_regression
 
 TAZ_COUNT = 36
 TAZ_100_HH_COUNT = 33
@@ -48,13 +47,11 @@ def regress():
         Path(__file__).parent / "expected" / "expanded_mp.parquet"
     )
 
-    # see tests/regression.py for why this is not an exact frame comparison
-    assert_expanded_regression(expanded_household_ids, expected_hh_ids)
+    # Compare the two dataframes
+    assert expanded_household_ids.equals(expected_hh_ids)
 
 
 def teardown_function(func):
-    if pipeline.is_open():
-        pipeline.close_pipeline()
     inject.clear_cache()
     inject.reinject_decorated_tables()
 
