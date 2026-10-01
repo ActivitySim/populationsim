@@ -15,20 +15,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      # Linux carries the full Python sweep; Windows and macOS are added as a
-      # single spot-check each via `include` (an include entry that would
-      # overwrite `os` becomes a new job rather than extending existing ones).
-      # Those two exist to catch platform divergence rather than version
-      # divergence -- word size (`int` is int32 on Windows) and differences in
-      # the compiled solver -- which one Python version exercises just as well
-      # as five. A square os x python matrix would triple the job count to buy
-      # very little.
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
-        include:
-        - { os: windows-latest, python-version: "3.12" }
-        - { os: macos-latest, python-version: "3.12" }
 
     steps:
     - uses: actions/checkout@v4
