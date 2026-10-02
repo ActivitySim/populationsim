@@ -8,6 +8,7 @@ import pandas as pd
 
 from populationsim.core import config
 from populationsim.integerizing.smart_round import smart_round
+from populationsim.integerizing.reproducibility import quantize_weights
 from populationsim.integerizing import lp_ortools, lp_cvx
 
 logger = logging.getLogger(__name__)
@@ -64,7 +65,11 @@ class SimulIntegerizer:
         else:
             self.integerizer_func = lp_ortools.np_simul_integerizer_ortools
 
-        self.timeout_in_seconds = config.setting("INTEGIZER_TIMEOUT", 60)
+        self.timeout_in_seconds = config.setting("INTEGERIZER_TIMEOUT", 60)
+        # Snapping weights to a grid before rounding makes household
+        # selection immune to sub-ULP cross-platform float noise, so this
+        # defaults to on -- see tests/test_reproducibility.py.
+        self.quantum = config.setting("INTEGERIZER_QUANTUM", 1e-6)
 
     def integerize(self):
 
@@ -80,7 +85,9 @@ class SimulIntegerizer:
         sub_incidence = self.incidence_df[self.sub_controls_df.columns]
         sub_incidence = sub_incidence.values.astype(np.float64)
 
-        sub_float_weights = self.sub_weights.values.transpose().astype(np.float64)
+        sub_float_weights = quantize_weights(
+            self.sub_weights.values.transpose(), self.quantum
+        )
         sub_int_weights = sub_float_weights.astype(int)
         sub_resid_weights = sub_float_weights % 1.0
 
@@ -202,7 +209,10 @@ class SimulIntegerizer:
         sub_zone_count = len(self.sub_weights.columns)
         for i in range(sub_zone_count):
             integerized_weights[i] = smart_round(
-                sub_int_weights[i], resid_weights_out[i], total_household_controls[i]
+                sub_int_weights[i],
+                resid_weights_out[i],
+                total_household_controls[i],
+                tie_break_by_position=bool(self.quantum),
             )
 
         # integerized_weights df: one column of integerized weights per sub_zone

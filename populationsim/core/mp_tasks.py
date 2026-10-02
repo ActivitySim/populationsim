@@ -1030,7 +1030,7 @@ def run_sub_simulations(
     """
 
     def log_queued_messages():
-        for process, queue in zip(procs, queues):
+        for process, queue in zip(procs, queues, strict=True):
             while not queue.empty():
                 msg = queue.get(block=False)
                 model_name = msg["model"]
@@ -1140,7 +1140,7 @@ def run_sub_simulations(
         queues.append(q)
 
     # - start processes
-    for _, p in zip(list(range(num_simulations)), procs):
+    for _, p in zip(list(range(num_simulations)), procs, strict=True):
         info(f"start process {p.name}")
         p.start()
 

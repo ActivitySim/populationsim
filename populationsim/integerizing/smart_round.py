@@ -1,7 +1,9 @@
 import numpy as np
 
 
-def smart_round(int_weights, resid_weights, target_sum):
+def smart_round(
+    int_weights, resid_weights, target_sum, tie_break_by_position=False
+):
     """
     Round weights while ensuring (as far as possible that result sums to target_sum)
 
@@ -32,8 +34,14 @@ def smart_round(int_weights, resid_weights, target_sum):
 
     # Order the residual weights and round at the tipping point where target_sum is achieved
     if int_shortfall > 0:
-        # indices of the int_shortfall highest resid_weights
-        i = np.argsort(resid_weights)[-int_shortfall:]
+        if tie_break_by_position:
+            # Sort by descending residual, breaking exact ties by original
+            # position. Unlike argsort, the tie behavior is explicit and stable.
+            positions = np.arange(len(resid_weights))
+            i = np.lexsort((positions, -resid_weights))[:int_shortfall]
+        else:
+            # Preserve historical output when reproducibility mode is disabled.
+            i = np.argsort(resid_weights)[-int_shortfall:]
 
         # add 1 to the integer weights that we want to round upwards
         rounded_weights[i] += 1

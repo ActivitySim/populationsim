@@ -9,6 +9,7 @@ import pandas as pd
 from populationsim.core import config
 from populationsim.integerizing.constants import STATUS_OPTIMAL
 from populationsim.integerizing.smart_round import smart_round
+from populationsim.integerizing.reproducibility import quantize_weights
 from populationsim.integerizing import lp_cvx, lp_ortools
 
 logger = logging.getLogger(__name__)
@@ -60,7 +61,11 @@ class Integerizer:
         else:
             self.integerizer_func = lp_ortools.np_integerizer_ortools
 
-        self.timeout_in_seconds = config.setting("INTEGIZER_TIMEOUT", 60)
+        self.timeout_in_seconds = config.setting("INTEGERIZER_TIMEOUT", 60)
+        # Snapping weights to a grid before rounding makes household
+        # selection immune to sub-ULP cross-platform float noise, so this
+        # defaults to on -- see tests/test_reproducibility.py.
+        self.quantum = config.setting("INTEGERIZER_QUANTUM", 1e-6)
 
     def integerize(self):
 
@@ -68,7 +73,7 @@ class Integerizer:
         control_count = len(self.incidence_table.columns)
 
         incidence = self.incidence_table.values.transpose().astype(np.float64)
-        float_weights = np.asanyarray(self.float_weights).astype(np.float64)
+        float_weights = quantize_weights(self.float_weights, self.quantum)
         relaxed_control_totals = np.asanyarray(self.relaxed_control_totals).astype(
             np.float64
         )
@@ -165,7 +170,10 @@ class Integerizer:
             )
 
             integerized_weights = smart_round(
-                int_weights, resid_weights, self.total_hh_control_value
+                int_weights,
+                resid_weights,
+                self.total_hh_control_value,
+                tie_break_by_position=bool(self.quantum),
             )
 
         self.weights = pd.DataFrame(index=self.incidence_table.index)

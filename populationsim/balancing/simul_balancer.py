@@ -174,7 +174,7 @@ class SimultaneousListBalancer:
             # max_delta=
         )
 
-        status = dict(zip(("converged", "iter", "delta", "max_gamma_dif"), status))
+        status = dict(zip(("converged", "iter", "delta", "max_gamma_dif"), status, strict=True))
 
         # dataframe with sub_zone_weights in columns, and zero weight rows restored
         self.sub_zone_weights = pd.DataFrame(

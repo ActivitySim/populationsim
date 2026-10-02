@@ -153,7 +153,7 @@ def read_from_table_info(table_info):
                     map_col = parent_table[f"_original_{lookup_col}"]
                 except KeyError:
                     map_col = parent_table[lookup_col]
-                remapper = dict(zip(map_col, parent_table.index))
+                remapper = dict(zip(map_col, parent_table.index, strict=True))
                 df[colname] = df[colname].apply(remapper.get)
 
     # set index
@@ -239,6 +239,15 @@ def _read_csv_with_fallback_encoding(filepath, dtypes=None):
     if dtypes:
         # although the dtype argument suppresses the DtypeWarning, it does not coerce recognized types (e.g. int)
         for c, dtype in dtypes.items():
-            df[c] = df[c].astype(dtype)
+            missing = df[c].isna()
+            converted = df[c].astype(dtype)
+            # pandas 2 casts missing values to the literal string "nan" under
+            # astype(str), while pandas 3's string dtype preserves NA. Control
+            # expressions such as `persons.PComm.isna()` then silently evaluate
+            # to all-False on pandas 2, dropping a whole control column, so
+            # restore NA explicitly for string casts.
+            if dtype in ("str", "string", str) and missing.any():
+                converted = converted.where(~missing)
+            df[c] = converted
 
     return df

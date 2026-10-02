@@ -10,8 +10,25 @@ from populationsim.core import inject, config
 from populationsim.integerizing import do_integerizing
 
 
+def teardown_function(func):
+    # This test pins `settings` via config.override_setting, which replaces the
+    # decorated injectable with a plain dict. clear_cache() does not restore a
+    # decorated injectable -- only reinject_decorated_tables() does. Without
+    # this teardown every later test in the session inherits this example's
+    # settings, including its `geographies` list, and fails for reasons that
+    # have nothing to do with what it is testing.
+    inject.clear_cache()
+    inject.reinject_decorated_tables()
+
+
 @pytest.mark.parametrize("use_cvpxy", [True, False], ids=["cvxpy", "ortools"])
-def test_integerizer(use_cvpxy):
+@pytest.mark.parametrize(
+    # None is an explicit opt-out; the integerizers default to 1e-6 on their
+    # own (see single_integerizer.py / simul_integerizer.py), so this override
+    # is what exercises the disabled path at all.
+    "integerizer_quantum", [None, 1e-6], ids=["unquantized", "quantized"]
+)
+def test_integerizer(use_cvpxy, integerizer_quantum):
     example_dir = Path(__file__).parent.parent / "examples"
 
     configs_dir = example_dir / "example_test" / "configs"
@@ -64,6 +81,7 @@ def test_integerizer(use_cvpxy):
     config.override_setting(
         "USE_CVXPY", use_cvpxy  # use ortools integerizer instead of cvxpy
     )
+    config.override_setting("INTEGERIZER_QUANTUM", integerizer_quantum)
     integerized_weights, status = do_integerizing(
         trace_label="label",
         control_spec=control_spec,

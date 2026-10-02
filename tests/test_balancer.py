@@ -127,7 +127,7 @@ def test_balancer_compare_numba_vs_py(dtype):
         iterations,
     )
     duration_numba = time.perf_counter() - start_numba
-    s_numba = dict(zip(status_labs, s_numba))
+    s_numba = dict(zip(status_labs, s_numba, strict=True))
     print(
         f"Numba: {duration_numba:.4f}s, Iter: {s_numba['iter']}, Converged: {s_numba['converged']}"
     )
@@ -147,7 +147,7 @@ def test_balancer_compare_numba_vs_py(dtype):
         iterations,
     )
     duration_py = time.perf_counter() - start_py
-    s_py = dict(zip(status_labs, s_py))
+    s_py = dict(zip(status_labs, s_py, strict=True))
     print(
         f"Python: {duration_py:.4f}s, Iter: {s_py['iter']}, Converged: {s_py['converged']}"
     )
@@ -218,7 +218,7 @@ def test_simul_balancer_compare_numba_vs_py(dtype):
         iterations,
     )
     duration_numba = time.perf_counter() - start_numba
-    s_numba = dict(zip(status_labs, s_numba))
+    s_numba = dict(zip(status_labs, s_numba, strict=True))
     print(
         f"Numba: {duration_numba:.4f}s, Iter: {s_numba['iter']}, Converged: {s_numba['converged']}"
     )
@@ -241,7 +241,7 @@ def test_simul_balancer_compare_numba_vs_py(dtype):
         iterations,
     )
     duration_py = time.perf_counter() - start_py
-    s_py = dict(zip(status_labs, s_py))
+    s_py = dict(zip(status_labs, s_py, strict=True))
     print(
         f"Python: {duration_py:.4f}s, Iter: {s_py['iter']}, Converged: {s_py['converged']}"
     )

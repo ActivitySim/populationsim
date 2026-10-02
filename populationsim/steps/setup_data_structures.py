@@ -182,7 +182,7 @@ def build_control_table(geo, control_spec, crosswalk_df):
     controls = pd.concat(controls_list, axis=1)
 
     # rename columns from seed_col to target
-    columns = {c: t for c, t in zip(control_spec.control_field, control_spec.target)}
+    columns = {c: t for c, t in zip(control_spec.control_field, control_spec.target, strict=True)}
     controls.rename(columns=columns, inplace=True)
 
     # reorder columns to match order of control_spec rows

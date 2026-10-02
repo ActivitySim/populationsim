@@ -161,7 +161,7 @@ class ListBalancer:
         )
 
         # Label the status
-        status = dict(zip(("converged", "iter", "delta", "max_gamma_dif"), status))
+        status = dict(zip(("converged", "iter", "delta", "max_gamma_dif"), status, strict=True))
 
         # weights dataframe
         weights = pd.DataFrame(index=self.incidence_table.index)

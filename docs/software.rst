@@ -57,7 +57,7 @@ being implemented in the ActivitySim framework means:
 
   * A protected master branch that can only be written to after tests have passed
   * `pytest <https://docs.pytest.org/en/latest/>`__ for tests
-  * `TravisCI <https://travis-ci.org>`__ for building and testing with each commit
+  * `GitHub Actions <https://github.com/ActivitySim/populationsim/actions>`__ for building and testing with each commit
 
 PopulationSim also requires an optimization library for balancing and integerizing.  The software makes
 use of the open source and easy to install `ortools <https://github.com/google/or-tools>`__ package.  The
