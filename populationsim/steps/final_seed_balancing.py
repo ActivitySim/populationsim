@@ -12,7 +12,6 @@ from populationsim.core.helper import (
 )
 from populationsim.balancing import do_balancing
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -58,8 +57,10 @@ def final_seed_balancing(settings, crosswalk, control_spec, incidence_table):
             )
         return
 
-    # we use all control_spec rows, so no need to filter on geography as for initial_seed_balancing
+    # Seed controls include factored meta targets, but no intermediate targets.
     seed_controls_df = get_control_table(seed_geography)
+    intermediate_geographies = geographies[1 : geographies.index(seed_geography)]
+    control_spec = control_spec[~control_spec.geography.isin(intermediate_geographies)]
     assert (seed_controls_df.columns == control_spec.target).all()
 
     # determine master_control_index if specified in settings

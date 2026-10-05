@@ -345,6 +345,15 @@ These settings control the functionality of the PopulationSim algorithm. The set
 | seed_geography | PUMA                | Seed geography name from the list of geographies                                |
 +----------------+---------------------+---------------------------------------------------------------------------------+
 
+The first geography is the meta geography. One or more intermediate geographies
+may appear between it and the seed geography, for example
+``geographies: [REGION, DISTRICT, PUMA, TRACT, TAZ]`` with
+``seed_geography: PUMA``. Include each level in the geographic crosswalk.
+Controls assigned to intermediate levels remain available in their control tables
+and aggregate summaries, but are not distributed to seed zones or enforced during
+seed balancing or integerization. Meta-level controls are still factored into the
+seed controls as usual.
+
 
 **Tracing**:
 
