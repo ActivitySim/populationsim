@@ -7,12 +7,12 @@ Software Implementation
 
 This page describes the PopulationSim software implementation and how to contribute to PopulationSim.
 
-The implementation starts with
-the ActivitySim framework, which serves as the foundation for the software.  The framework, as briefly described
-below, includes features for data pipeline management, expression handling, multiprocessing, testing, etc.  Built upon
-the framework are additional core components for population synthesis such as balancers and integerizers.
-Built upon the population synthesis core components are the model steps that make up a PopulationSim run,
-such as the inputs pre-processor, setting up the data strucutres, doing the initial seed balancing, etc.
+PopulationSim 0.10 includes its own modeling core in ``populationsim.core``,
+originally derived from ActivitySim. The ActivitySim package is no longer a
+runtime dependency. The core handles configuration, dependency injection,
+pipeline checkpoints, expression evaluation, tracing, and multiprocessing.
+Population synthesis algorithms live in ``populationsim.balancing`` and
+``populationsim.integerizing``, and the model steps live in ``populationsim.steps``.
 
 .. _development_and_builds:
 
@@ -21,7 +21,7 @@ Development and builds
 
 Install `uv <https://docs.astral.sh/uv/getting-started/installation/>`__, then run
 these commands from the repository root. ``.python-version`` selects the default
-development Python; the package supports Python 3.10–3.14.
+development Python; the source checkout supports Python 3.10–3.14.
 
 .. code-block:: bash
 
@@ -60,55 +60,36 @@ documentation publishing. Both workflows reject tags that do not match the
 package version. Pushing a tag or saving a draft release does not publish either
 the package or the documentation.
 
-ActivitySim Framework
----------------------
+Modeling core and dependencies
+------------------------------
 
-PopulationSim is implemented in the `ActivitySim <https://github.com/activitysim/activitysim>`__
-framework.  As summarized `here <https://activitysim.github.io/activitysim/#software-design>`__,
-being implemented in the ActivitySim framework means:
+The core is maintained within PopulationSim. ``populationsim.core.inject`` wraps
+`ORCA <https://github.com/UDST/orca>`__ to register model steps, tables, columns,
+and injectable values. ``populationsim.core.pipeline`` executes those steps and
+stores table checkpoints so that a run can resume after a completed step.
+ORCA remains a required runtime dependency.
 
-* Overall Design
+Inputs and control specifications are read from CSV files, and configuration is
+read from YAML. NumPy arrays and pandas DataFrames and Series hold the model
+inputs, weights, and results. Pipeline checkpoints are stored in HDF5 through
+pandas and PyTables. Output tables and synthetic populations are generally
+written as CSV files; output tables can also be written to HDF5.
 
-  * Implemented in Python, and makes heavy use of the vectorized backend C/C++ libraries in `pandas <http://pandas.pydata.org>`__ and `numpy <http://www.numpy.org>`__.
-  * Vectorization instead of for loops when possible
-  * Runs sub-models that solve Python expression files that operate on data tables
+``populationsim.balancing`` implements list balancing, including Numba-accelerated
+calculations selected with ``USE_NUMBA``. ``populationsim.integerizing`` converts
+balanced household weights to integer weights. It uses OR-Tools by default, or
+CVXPY when ``USE_CVXPY: True`` is configured. Both solver packages are declared
+runtime dependencies and are installed with PopulationSim.
 
-* Data Handling
+Integerization quantizes weights before rounding by default to reduce sensitivity
+to small floating-point differences. Solver versions, configuration, and platform
+can still affect solutions; results are not guaranteed to be identical across all
+platforms or dependency versions.
 
-  * Inputs are in CSV format, with the exception of settings
-  * CSVs are read-in as pandas tables and stored in an intermediate HDF5 binary file that is used for data I/O throughout the model run
-  * Key outputs are written to CSV files
-
-* Key Data Structures
-
-  * `pandas.DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`__ - A data table with rows and columns, similar to an R data frame, Excel worksheet, or database table
-  * `pandas.Series <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.html>`__ - a vector of data, a column in a DataFrame table or a 1D array
-  * `numpy.array <https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html>`__ - an N-dimensional array of items of the same type, such as a matrix
-
-* Model Orchestrator
-
-  * `ORCA <https://github.com/UDST/orca>`__ is used for running the overall model system and for defining dynamic data tables, columns, and injectables (functions). ActivitySim wraps ORCA functionality to make a Data Pipeline tool, which allows for re-starting at any model step.
-  * Support for `multiprocessing <http://docs.python.org/3/library/multiprocessing.html>`_ to reduce runtime
-
-* Expressions
-
-  * Model expressions are in CSV files and contain Python expressions, mainly pandas/numpy expression that operate on the input data tables. This helps to avoid modifying Python code when making changes to the model calculations.
-
-* `Code Documentation <https://activitysim.github.io/activitysim/development.html>`__
-
-  * Python code checked with `Ruff <https://docs.astral.sh/ruff/>`__
-  * Written in `reStructuredText <http://docutils.sourceforge.net/rst.html>`__ markup, built with `Sphinx <http://www.sphinx-doc.org/en/stable>`__ and docstrings written in `numpydoc <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`__
-
-* `Testing <https://activitysim.github.io/activitysim/development.html>`__
-
-  * A protected master branch that can only be written to after tests have passed
-  * `pytest <https://docs.pytest.org/en/latest/>`__ for tests
-  * `GitHub Actions <https://github.com/ActivitySim/populationsim/actions>`__ for building and testing with each commit
-
-PopulationSim also requires an optimization library for balancing and integerizing.  The software makes
-use of the open source and easy to install `ortools <https://github.com/google/or-tools>`__ package.  The
-ortools integerization results varies from platform to platform since edge case results depend on the
-exact ortools/cbc version.
+The full dependency list and supported Python versions are declared in
+`pyproject.toml <https://github.com/ActivitySim/populationsim/blob/master/pyproject.toml>`__.
+The repository's ``uv.lock`` records the versions used by its examples and CI.
+See :ref:`getting_started` for installation and example commands.
 
 .. _core_components :
 
@@ -121,20 +102,20 @@ assign
 .. automodule:: populationsim.core.assign
    :members:
 
-balancer
-^^^^^^^^
+single_balancer
+^^^^^^^^^^^^^^^
 
 .. automodule:: populationsim.balancing.single_balancer
    :members:
 
-integerizer
-^^^^^^^^^^^
+single_integerizer
+^^^^^^^^^^^^^^^^^^
 
 .. automodule:: populationsim.integerizing.single_integerizer
    :members:
 
-lp
-^^
+integerization wrappers
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: populationsim.integerizing.wrappers
    :members:
@@ -151,7 +132,7 @@ lp_ortools
 .. automodule:: populationsim.integerizing.lp_ortools
    :members:
 
-multi_integerizer
+simul_integerizer
 ^^^^^^^^^^^^^^^^^
 
 .. automodule:: populationsim.integerizing.simul_integerizer
@@ -268,4 +249,12 @@ repop_balancing
 Contribution Guidelines
 -----------------------
 
-PopulationSim development follows the same `development guidelines <https://activitysim.github.io/activitysim/development.html>`__ as ActivitySim.
+Create a feature or fix branch from ``master`` and open a pull request targeting
+``master``. Include documentation updates when behavior or configuration changes.
+Run Ruff, the relevant pytest tests, and the documentation build described in
+:ref:`development_and_builds` before submitting the change. CI checks lint,
+unit and integration tests, distribution builds, and documentation builds.
+
+When changing dependencies, update ``pyproject.toml`` and regenerate ``uv.lock``
+with ``uv lock``. Releases are published manually on GitHub after the changes are
+merged; the release workflows then publish the package and documentation.
