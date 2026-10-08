@@ -33,7 +33,7 @@ appropriate version of `Miniforge <https://github.com/conda-forge/miniforge#mini
 
 ::
 
-  conda create -n popsim python=3.8
+  conda create -n popsim python=3.12
 
   # Windows
   activate popsim

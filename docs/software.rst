@@ -14,6 +14,52 @@ the framework are additional core components for population synthesis such as ba
 Built upon the population synthesis core components are the model steps that make up a PopulationSim run,
 such as the inputs pre-processor, setting up the data strucutres, doing the initial seed balancing, etc.
 
+.. _development_and_builds:
+
+Development and builds
+----------------------
+
+Install `uv <https://docs.astral.sh/uv/getting-started/installation/>`__, then run
+these commands from the repository root. ``.python-version`` selects the default
+development Python; the package supports Python 3.10–3.14.
+
+.. code-block:: bash
+
+   uv sync --locked --dev
+   uv run --locked ruff check .
+   uv run --locked pytest --cov=populationsim --cov-report=term-missing
+   uv run --locked pre-commit install
+   uv build
+
+The Black and Ruff pre-commit hooks use the versions in ``uv.lock``. When changing
+dependencies, run ``uv lock`` and commit both ``pyproject.toml`` and ``uv.lock``.
+
+To build the documentation locally:
+
+.. code-block:: bash
+
+   uv sync --locked --group docs --no-dev
+   uv run --locked --group docs --no-dev sphinx-build -b html -W --keep-going docs docs/_build/html
+
+Open ``docs/_build/html/index.html`` to view the result.
+
+GitHub Actions runs lint, tests on Linux/macOS/Windows with Python 3.10–3.14,
+distribution smoke tests, and documentation builds for pushes and pull requests
+to ``master``. Coverage reports, tested distributions, and built HTML are available
+as workflow artifacts. A manual run of the Documentation workflow builds HTML for
+review. Documentation is published only when a GitHub release is published, and
+is built from that release's tagged commit.
+
+The Release workflow uses the same distribution build and smoke tests as CI,
+then publishes those artifacts through PyPI trusted publishing when a GitHub
+release is published. To release, update the version in ``pyproject.toml``, run
+``uv lock``, and merge the changes to ``master``. Manually create and publish a
+GitHub release for that commit with a matching ``v`` tag (for example,
+``v0.10.0``). Publishing the release automatically triggers both PyPI and
+documentation publishing. Both workflows reject tags that do not match the
+package version. Pushing a tag or saving a draft release does not publish either
+the package or the documentation.
+
 ActivitySim Framework
 ---------------------
 
@@ -50,7 +96,7 @@ being implemented in the ActivitySim framework means:
 
 * `Code Documentation <https://activitysim.github.io/activitysim/development.html>`__
 
-  * Python code according to `pycodestyle <https://pypi.python.org/pypi/pycodestyle>`__ style guide
+  * Python code checked with `Ruff <https://docs.astral.sh/ruff/>`__
   * Written in `reStructuredText <http://docutils.sourceforge.net/rst.html>`__ markup, built with `Sphinx <http://www.sphinx-doc.org/en/stable>`__ and docstrings written in `numpydoc <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`__
 
 * `Testing <https://activitysim.github.io/activitysim/development.html>`__
@@ -72,49 +118,49 @@ Core Components
 assign
 ^^^^^^
 
-.. automodule:: populationsim.assign
+.. automodule:: populationsim.core.assign
    :members:
 
 balancer
 ^^^^^^^^
 
-.. automodule:: populationsim.balancer
+.. automodule:: populationsim.balancing.single_balancer
    :members:
 
 integerizer
 ^^^^^^^^^^^
 
-.. automodule:: populationsim.integerizer
+.. automodule:: populationsim.integerizing.single_integerizer
    :members:
 
 lp
 ^^
 
-.. automodule:: populationsim.lp
+.. automodule:: populationsim.integerizing.wrappers
    :members:
 
 lp_cvx
 ^^^^^^
 
-.. automodule:: populationsim.lp_cvx
+.. automodule:: populationsim.integerizing.lp_cvx
    :members:
 
 lp_ortools
 ^^^^^^^^^^
 
-.. automodule:: populationsim.lp_ortools
+.. automodule:: populationsim.integerizing.lp_ortools
    :members:
 
 multi_integerizer
 ^^^^^^^^^^^^^^^^^
 
-.. automodule:: populationsim.multi_integerizer
+.. automodule:: populationsim.integerizing.simul_integerizer
    :members:
 
 simul_balancer
 ^^^^^^^^^^^^^^
 
-.. automodule:: populationsim.simul_balancer
+.. automodule:: populationsim.balancing.simul_balancer
    :members:
 
 .. _model_steps :
@@ -192,7 +238,7 @@ expand_households
 write_tables
 ^^^^^^^^^^^^
 
-.. automodule:: populationsim.steps.write_tables
+.. automodule:: populationsim.steps.output
    :members:
 
 .. _write_synthetic_population :
