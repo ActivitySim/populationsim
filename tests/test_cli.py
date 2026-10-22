@@ -1,3 +1,5 @@
+import os
+import shutil
 import sys
 import subprocess
 from pathlib import Path
@@ -7,25 +9,35 @@ import tempfile
 
 
 def test_fresh_venv_install_and_cli():
+    # `uv run` sets UV to the uv executable it is running under.
+    uv = os.environ.get("UV") or shutil.which("uv")
+    if uv is None:
+        pytest.skip("uv is needed to upgrade pip in the fresh environment")
+
     # Create a temporary directory for the virtual environment
     with tempfile.TemporaryDirectory() as tmpdir:
         venv_dir = Path(tmpdir) / "venv"
         # Create the virtual environment
         subprocess.run([sys.executable, "-m", "venv", str(venv_dir)], check=True)
 
-        # Path to the pip and python executables in the venv
+        # Path to the Python and CLI executables in the venv
         if sys.platform == "win32":
-            pip_path = venv_dir / "Scripts" / "pip"
             python_path = venv_dir / "Scripts" / "python"
             cli_path = venv_dir / "Scripts" / "populationsim"
         else:
-            pip_path = venv_dir / "bin" / "pip"
             python_path = venv_dir / "bin" / "python"
             cli_path = venv_dir / "bin" / "populationsim"
 
+        # Upgrade pip with uv, not with the pip that ensurepip seeds, which may
+        # trust the compromised eMudhra CA (see the eMudhra note in pyproject.toml).
+        subprocess.run(
+            [uv, "pip", "install", "--python", str(python_path), "pip>=26.2.2"],
+            check=True,
+        )
+
         # Install the current package into the venv
         subprocess.run(
-            [str(pip_path), "install", "."],
+            [str(python_path), "-m", "pip", "install", "."],
             cwd=Path(__file__).parent.parent,
             check=True,
         )

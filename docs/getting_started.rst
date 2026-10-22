@@ -15,6 +15,9 @@ Installation
 Install uv
 ~~~~~~~~~~
 
+PopulationSim requires uv 0.13.4 or newer. To update an existing installation,
+see :ref:`certificate_security_update`.
+
 On macOS or Linux:
 
 .. code-block:: bash
@@ -30,6 +33,63 @@ On Windows, run this command in PowerShell:
 Follow the installer's instructions to make ``uv`` available in your terminal.
 See the `uv installation guide <https://docs.astral.sh/uv/getting-started/installation/>`__
 for other installation methods.
+
+.. _certificate_security_update:
+
+Certificate security update
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The `October 2026 eMudhra/emSign certificate incident
+<https://discuss.python.org/t/information-for-python-users-regarding-emudhra-emsign-ca-certificate-security-incident/109576>`__
+requires uv 0.13.4 or newer, certifi 2026.10.19 or newer, and pip 26.2.2 or newer
+where pip is installed, because older versions trust a compromised certificate
+authority. Updating certifi alone does not update the certificate bundles
+embedded in pip or uv.
+
+With an older uv, commands in the source checkout report an error such as::
+
+   error: Required uv version `>=0.13.4` does not match the running version ...
+
+If you installed uv with the standalone installer, update it with:
+
+.. code-block:: bash
+
+   uv self update --system-certs
+
+``--system-certs`` makes uv check the download with your operating system's
+certificates instead of its own outdated list. Note this assumes your system's
+CA certificates are up to date. Use it instead of the plain ``uv self update``
+that the error message suggests. uv versions older than 0.11 report an error
+for this flag. In that case, or if you installed uv another way, rerun the
+installer above. Check ``uv --version`` afterwards.
+
+After updating uv and pulling the current checkout, update its environment:
+
+.. code-block:: bash
+
+   uv sync --locked --no-dev
+
+Contributors can use ``uv sync --locked --dev --group docs`` to update their
+development and documentation environment. The lockfile includes the fixed
+certifi release. For an existing ``uv tool`` installation instead, run:
+
+.. code-block:: bash
+
+   uv tool upgrade populationsim
+
+For pip-managed installations, first upgrade pip using the wheel URL and SHA256
+checksum from the Python announcement, then upgrade certifi. Run these commands
+with each environment's Python, including newly created virtual environments
+that seed an older pip:
+
+.. code-block:: bash
+
+   python -m pip install "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+   python -m pip install --upgrade "certifi>=2026.10.19"
+
+If uv was installed with pip, also upgrade it with
+``python -m pip install --upgrade "uv>=0.13.4"`` after upgrading pip. Rebuild
+container images to pick up the package and CA certificate updates.
 
 Install PopulationSim and the examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

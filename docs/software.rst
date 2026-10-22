@@ -19,9 +19,12 @@ Population synthesis algorithms live in ``populationsim.balancing`` and
 Development and builds
 ----------------------
 
-Install `uv <https://docs.astral.sh/uv/getting-started/installation/>`__, then run
+Install `uv <https://docs.astral.sh/uv/getting-started/installation/>`__ 0.13.4 or newer, then run
 these commands from the repository root. ``.python-version`` selects the default
 development Python; the source checkout supports Python 3.10–3.14.
+
+For an existing environment, apply the :ref:`certificate_security_update`
+before installing dependencies.
 
 .. code-block:: bash
 

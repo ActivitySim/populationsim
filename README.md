@@ -13,7 +13,7 @@ needs. PopulationSim includes its own modeling core, originally derived from
 ## Command-Line Interface
 
 Use Python 3.12 for the released application. Install
-[uv](https://docs.astral.sh/uv/getting-started/installation/), then install the
+[uv 0.13.4 or newer](https://docs.astral.sh/uv/getting-started/installation/), then install the
 released command-line application:
 
 ```bash
@@ -29,6 +29,9 @@ populationsim -c /path/to/configs -d /path/to/data -o /path/to/output
 
 See [Getting Started](https://activitysim.github.io/populationsim/getting_started.html)
 for the uv setup and example commands, or browse the [examples directory](examples/).
+For existing environments, follow the
+[certificate security update instructions](https://activitysim.github.io/populationsim/getting_started.html#certificate-security-update)
+for the October 2026 eMudhra/emSign incident before installing packages.
 
 ## Documentation
 
