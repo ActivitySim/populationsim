@@ -423,42 +423,42 @@ Note that Seed-Households, Seed-Persons and Geographic CrossWalk are all require
 	- tablename: REGION_control_data
 		filename : scaled_control_totals_meta.csv
 
-+--------------+---------------------------------------------------------------------------------------+
-| Attribute    | Description                                                                           |
-+==============+=======================================================================================+
-| tablename    | Name of the imported CSV file in the PopulationSim data pipeline. The input |br|      |
-|              | names in the PopulationSim data pipeline should be named as per the following |br|    |
-|              | standard: |br|                                                                        |
-|              | 1. Seed-Households - *households* |br|                                                |
-|              |                                                                                       |
-|              |    Households across all Seed geographies should be in one file. There should be |br| |
-|              |    a Seed geography field with name as specified in the settings file. The seed  |br| |
-|              |    geography identifies which Seed geography unit each household belongs to           |
-|              |                                                                                       |
-|              | 2. Seed-Persons - *persons* |br|                                                      |
-|              |                                                                                       |
-|              |    Persons across all Seed geographies should be in one file. There should be a |br|  |
-|              |    Seed geography field with name as specified in the settings file. The seed  |br|   |
-|              |    geography identifies which Seed geography unit each person belongs to              |
-|              |                                                                                       |
-|              | 3. Geographic CrossWalk - *geo_cross_walk* |br|                                       |
-|              |                                                                                       |
-|              |    The field names in the geographic cross-walk should be same as the geography |br|  |
-|              |    names specified in the settings file                                               |
-|              |                                                                                       |
-|              | 4. Control data at each control geography - *GEOG_NAME_control_data*, |br|            |
-|              |    where *GEOG_NAME*  is the name of the control geography (TAZ, TRACT and REGION)    |
-|              |                                                                                       |
-+--------------+---------------------------------------------------------------------------------------+
-| filename     | Name of the input CSV file in the data folder                                         |
-+--------------+---------------------------------------------------------------------------------------+
-| index_col    | Name of the unique ID field in the seed household data                                |
-+--------------+---------------------------------------------------------------------------------------+
-| rename_columns   | Column map of fields to be renamed. The format for the column map is as follows: |br| |
-|              | ``Name in CSV: New Name``                                                             |
-+--------------+---------------------------------------------------------------------------------------+
-| drop_columns | List of columns to be dropped from the input data                                     |
-+--------------+---------------------------------------------------------------------------------------+
++----------------+---------------------------------------------------------------------------------------+
+| Attribute      | Description                                                                           |
++================+=======================================================================================+
+| tablename      | Name of the imported CSV file in the PopulationSim data pipeline. The input |br|      |
+|                | names in the PopulationSim data pipeline should be named as per the following |br|    |
+|                | standard: |br|                                                                        |
+|                | 1. Seed-Households - *households* |br|                                                |
+|                |                                                                                       |
+|                | Households across all Seed geographies should be in one file. There should be |br|    |
+|                | a Seed geography field with name as specified in the settings file. The seed  |br|    |
+|                | geography identifies which Seed geography unit each household belongs to              |
+|                |                                                                                       |
+|                | 2. Seed-Persons - *persons* |br|                                                      |
+|                |                                                                                       |
+|                | Persons across all Seed geographies should be in one file. There should be a |br|     |
+|                | Seed geography field with name as specified in the settings file. The seed  |br|      |
+|                | geography identifies which Seed geography unit each person belongs to                 |
+|                |                                                                                       |
+|                | 3. Geographic CrossWalk - *geo_cross_walk* |br|                                       |
+|                |                                                                                       |
+|                | The field names in the geographic cross-walk should be same as the geography |br|     |
+|                | names specified in the settings file                                                  |
+|                |                                                                                       |
+|                | 4. Control data at each control geography - *GEOG_NAME_control_data*, |br|            |
+|                | where *GEOG_NAME*  is the name of the control geography (TAZ, TRACT and REGION)       |
+|                |                                                                                       |
++----------------+---------------------------------------------------------------------------------------+
+| filename       | Name of the input CSV file in the data folder                                         |
++----------------+---------------------------------------------------------------------------------------+
+| index_col      | Name of the unique ID field in the seed household data                                |
++----------------+---------------------------------------------------------------------------------------+
+| rename_columns | Column map of fields to be renamed. The format for the column map is as follows: |br| |
+|                | ``Name in CSV: New Name``                                                             |
++----------------+---------------------------------------------------------------------------------------+
+| drop_columns   | List of columns to be dropped from the input data                                     |
++----------------+---------------------------------------------------------------------------------------+
 
 PopulationSim requires that the column names must be unqiue across all the control files. In case there are duplicate column names in the raw control files, user can use the column map feature to rename the columns appropriately.
 

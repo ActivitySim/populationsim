@@ -1,149 +1,215 @@
-.. PopulationSim documentation master file
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 .. _getting_started:
 
 Getting Started
 ===============
 
-This page describes how to install and run PopulationSim with the provided example.
+The current source checkout supports Python 3.10–3.14. These instructions use
+`uv <https://docs.astral.sh/uv/>`__ to manage Python, environments, and dependencies.
+PopulationSim includes its own modeling core and runs independently of the
+ActivitySim package. Its runtime dependencies, including ORCA, are installed
+automatically.
 
 Installation
 ------------
 
-1. It is recommended that you install and use a *conda* package manager
-for your system. One easy way to do so is by using `Anaconda 64bit Python 3 <https://www.anaconda.com/distribution/>`__,
-although you should consult the `terms of service <https://www.anaconda.com/terms-of-service>`__
-for this product and ensure you qualify (as of summer 2021, businesses and
-governments with over 200 employees do not qualify for free usage).  If you prefer
-a completely free open source *conda* tool, you can download and install the
-appropriate version of `Miniforge <https://github.com/conda-forge/miniforge#miniforge3>`__.
+Install uv
+~~~~~~~~~~
 
-2. If you access the internet from behind a firewall, then you will need to configure your proxy server. To do so, create a .condarc file in your Anaconda installation folder (i.e. ``C:\ProgramData\Anaconda3``), such as:
+PopulationSim requires uv 0.13.4 or newer. To update an existing installation,
+see :ref:`certificate_security_update`.
 
-::
+On macOS or Linux:
 
-  proxy_servers:
-    http: http://myproxy.org:8080
-    https: https://myproxy.org:8080
-  ssl_verify: false
+.. code-block:: bash
 
-3. Create and activate an Anaconda environment (basically a Python install just for this project)
+   curl -LsSf https://astral.sh/uv/install.sh | sh
 
-::
+On Windows, run this command in PowerShell:
 
-  conda create -n popsim python=3.8
+.. code-block:: powershell
 
-  # Windows
-  activate popsim
+   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-  # Mac
-  conda activate popsim
+Follow the installer's instructions to make ``uv`` available in your terminal.
+See the `uv installation guide <https://docs.astral.sh/uv/getting-started/installation/>`__
+for other installation methods.
 
-4. Get and install the PopulationSim package on the activated conda Python environment:
+.. _certificate_security_update:
 
-::
+Certificate security update
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  # best to use the conda version of pytables for consistency with activitysim
-  conda install pytables
+The `October 2026 eMudhra/emSign certificate incident
+<https://discuss.python.org/t/information-for-python-users-regarding-emudhra-emsign-ca-certificate-security-incident/109576>`__
+requires uv 0.13.4 or newer, certifi 2026.10.19 or newer, and pip 26.2.2 or newer
+where pip is installed, because older versions trust a compromised certificate
+authority. Updating certifi alone does not update the certificate bundles
+embedded in pip or uv.
 
-  pip install populationsim
+With an older uv, commands in the source checkout report an error such as::
 
+   error: Required uv version `>=0.13.4` does not match the running version ...
 
-.. _activitysim :
+If you installed uv with the standalone installer, update it with:
 
-ActivitySim
-~~~~~~~~~~~
+.. code-block:: bash
 
-.. note::
+   uv self update --system-certs
 
-  PopulationSim is a 64bit Python 3 library that uses a number of packages from the
-  scientific Python ecosystem, most notably `pandas <http://pandas.pydata.org>`__
-  and `numpy <http://numpy.org>`__. It also relies heavily on the
-  `ActivitySim <https://activitysim.github.io>`__ package.
+``--system-certs`` makes uv check the download with your operating system's
+certificates instead of its own outdated list. Note this assumes your system's
+CA certificates are up to date. Use it instead of the plain ``uv self update``
+that the error message suggests. uv versions older than 0.11 report an error
+for this flag. In that case, or if you installed uv another way, rerun the
+installer above. Check ``uv --version`` afterwards.
 
-  The recommended way to get your own scientific Python installation is to
-  install 64 bit Anaconda, which contains many of the libraries upon which
-  ActivitySim depends + some handy Python installation management tools.
+After updating uv and pulling the current checkout, update its environment:
 
-  For more information on Anaconda and ActivitySim, see ActivitySim's `getting started
-  <https://activitysim.github.io/activitysim/gettingstarted.html>`__ guide.
+.. code-block:: bash
 
+   uv sync --locked --no-dev
+
+Contributors can use ``uv sync --locked --dev --group docs`` to update their
+development and documentation environment. The lockfile includes the fixed
+certifi release. For an existing ``uv tool`` installation instead, run:
+
+.. code-block:: bash
+
+   uv tool upgrade populationsim
+
+For pip-managed installations, first upgrade pip using the wheel URL and SHA256
+checksum from the Python announcement, then upgrade certifi. Run these commands
+with each environment's Python, including newly created virtual environments
+that seed an older pip:
+
+.. code-block:: bash
+
+   python -m pip install "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+   python -m pip install --upgrade "certifi>=2026.10.19"
+
+If uv was installed with pip, also upgrade it with
+``python -m pip install --upgrade "uv>=0.13.4"`` after upgrading pip. Rebuild
+container images to pick up the package and CA certificate updates.
+
+Install PopulationSim and the examples
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Install `Git <https://git-scm.com/downloads>`__, then clone the repository and
+install its runtime dependencies:
+
+.. code-block:: bash
+
+   git clone https://github.com/ActivitySim/populationsim.git
+   cd populationsim
+   uv sync --locked --no-dev
+   uv run --locked --no-dev populationsim --help
+
+uv creates ``.venv`` in the repository, uses the Python version selected by
+``.python-version``, and downloads Python if needed. ``--locked`` uses the committed
+dependency versions in ``uv.lock``; ``--no-dev`` omits development tools. Run the
+remaining example commands from this repository root. ``uv run`` uses the project
+environment, so you do not need to activate it.
+
+Cloning the default branch installs the current development version. For the
+published package, use the command-line installation below. For contributor
+setup, tests, and documentation builds, see
+:ref:`development_and_builds`.
+
+Install the released command-line application
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To run your own project with the package published on PyPI, you can install the
+command-line application in a separate environment managed by uv:
+
+.. code-block:: bash
+
+   uv tool install --python 3.12 populationsim
+   populationsim --help
+
+If uv reports that its executable directory is missing from ``PATH``, run
+``uv tool update-shell`` and reopen your terminal. This installation provides the
+``populationsim`` command; it does not download the repository's example data.
+
+With existing config, data, and output directories, run:
+
+.. code-block:: bash
+
+   populationsim -c /path/to/configs -d /path/to/data -o /path/to/output
 
 Run Examples
 ------------
 
-There are four examples for running PopulationSim, three created using data from the
-Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon and the other using data from
-the Metro Vancouver region in British Columbia.
+The examples below use the source checkout and ``uv run`` setup above. The bundled
+examples include ``output`` directories. When creating your own project, create
+its output directory before running: the application checks that config, data,
+and output directories exist. Review the generated CSV files, logs, and pipeline
+checkpoints in each example's ``output`` directory.
 
-1. The `example_calm`_ set-up runs PopulationSim,  where a synthetic population is created single-processed for the entire modeling region.
+.. _example_calm:
 
-2. The `example_calm_mp`_ set-up runs PopulationSim `multi-processed <http://docs.python.org/3/library/multiprocessing.html>`_, where a synthetic population is created for the entire modeling region by simultaneously balancing results using multiple processors on your computer, thereby reducing runtime.
+CALM: single process
+~~~~~~~~~~~~~~~~~~~~
 
-3. The `example_calm_repop`_ set-up runs PopulationSim in the *repop* mode, which updates the synthetic population for a small part of the region.
+``examples/example_calm`` synthesizes a population for the
+Corvallis-Albany-Lebanon Modeling (CALM) region in Oregon:
 
-4. The `example_survey_weighting`_ set-up runs PopulationSim for the case of developing final weights for a household travel survey. More information on the configuration of PopulationSim can be found in the **Application & Configuration** section.
+.. code-block:: bash
 
-Example_calm
-~~~~~~~~~~~~
+   uv run --locked --no-dev populationsim -w examples/example_calm
 
-Follow the steps below to run **example_calm** set up:
+This run creates the ``pipeline.h5`` checkpoint needed by the CALM repopulation
+example below.
 
-  * Open a command prompt in the example_calm folder
-  * Run the following commands:
+.. _example_calm_mp:
 
-  ::
+CALM: multiprocessing
+~~~~~~~~~~~~~~~~~~~~~
 
-   activate popsim
-   python run_populationsim.py
+The multiprocessing configuration is in ``examples/example_calm/configs_mp``;
+it uses the same data and output directory as the single-process example:
 
-  * Review the outputs in the *output* folder
+.. code-block:: bash
 
-Example_calm_mp
-~~~~~~~~~~~~~~~
+   uv run --locked --no-dev populationsim -w examples/example_calm -m 2
 
-Follow the steps below to run **example_calm_mp** multiprocessed set up:
+``-m 2`` enables multiprocessing and adds ``configs_mp`` before ``configs`` in
+the configuration search order. Review ``configs_mp/settings.yaml`` when adjusting
+the number of processes: it contains both the overall ``num_processes`` setting
+and a per-step override. This configuration keeps only the final checkpoint in
+``final_pipeline.h5`` and removes the working pipeline files. Run the
+single-process example again before preparing the repopulation example, which
+needs the earlier ``summarize`` checkpoint.
 
-  * Open a command prompt in the example_calm folder
-  * In ``configs_mp\setting.yaml``, set ``num_processes: 2`` to a reasonable number of processors for your machine
-  * Run the following commands:
+.. _example_calm_repop:
 
-  ::
-
-   activate popsim
-   python run_populationsim.py -c configs_mp -c configs
-
-  * Review the outputs in the *output* folder
-
-Example_calm_repop
+CALM: repopulation
 ~~~~~~~~~~~~~~~~~~
 
-The repop configuration requires outputs from a base run. Therefore, the base configuration must be run before running the repop configuration. Follow the steps below to run **example_calm_repop** set up:
+``examples/example_calm_repop`` updates part of an existing synthetic population.
+First complete the single-process CALM run above, then copy its checkpoint into
+the repopulation output directory:
 
-  * Copy the **pipeline.h5** file from the example_calm\\output directory to example_calm_repop\\output directory (all PopulationSim files are stored in pipeline.h5 file)
-  * Open a command prompt in the example_calm_repop folder
-  * Run the following commands:
+.. code-block:: bash
 
-  ::
+   uv run --locked --no-dev python -c "import shutil; shutil.copyfile('examples/example_calm/output/pipeline.h5', 'examples/example_calm_repop/output/pipeline.h5')"
+   uv run --locked --no-dev populationsim -w examples/example_calm_repop
 
-   activate popsim
-   python run_populationsim.py
+The configuration resumes from the base run's ``summarize`` checkpoint. Copy a
+fresh base checkpoint when you want to repeat the repopulation run from the
+original population.
 
-  * Review the outputs in the *output* folder
+.. _example_survey_weighting:
 
-Example_survey_weighting
-~~~~~~~~~~~~~~~~~~~~~~~~
+Survey weighting
+~~~~~~~~~~~~~~~~
 
-Follow the steps below to run **example_survey_weighting** set up:
+``examples/example_survey_weighting`` develops final household travel survey
+weights rather than expanding seed households into a synthetic population:
 
-  * Open a command prompt in the example_survey_weighting folder
-  * Run the following commands:
+.. code-block:: bash
 
-  ::
+   uv run --locked --no-dev populationsim -w examples/example_survey_weighting
 
-   activate popsim
-   python run_populationsim.py
-
-  * Review the outputs in the *output* folder
+See :doc:`application_configuration` for input files, controls, and model settings.
+The repository also includes ``example_oceanside_repop`` and ``example_test``;
+the latter provides a small dataset used by the test suite.

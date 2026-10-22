@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "populationsim"
 version = "0.10.0"
@@ -25,19 +29,25 @@ dependencies = [
 [dependency-groups]
 dev = [
     "black>=25.1.0",
-    "populationsim",
     "pre-commit>=4.2.0",
     "pytest>=8.3.5",
     "pytest-cov>=5.0.0",
     "ruff>=0.9.9",
 ]
-
-[pytest.ini]
-python_paths = [
-    "populationsim",
-    "tests",
-    "examples",
+docs = [
+    "sphinx>=8,<9",
+    "numpydoc>=1.8,<2",
+    "sphinx-rtd-theme>=3,<4",
 ]
+
+[tool.uv]
+# eMudhra incident, see https://discuss.python.org/t/information-for-python-users-regarding-emudhra-emsign-ca-certificate-security-incident/109576
+# Added virtualenv 21.14.12 because it embeds pip 26.2.2, which pre-commit uses to install hooks.
+required-version = ">=0.13.4"
+constraint-dependencies = ["certifi>=2026.10.19", "virtualenv>=21.14.12"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
 testpaths = [
     "tests",
 ]
@@ -45,9 +55,6 @@ testpaths = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["populationsim*"]
-
-[tool.uv.sources]
-populationsim = { workspace = true }
 
 [project.scripts]
 populationsim = "populationsim.__main__:main"
