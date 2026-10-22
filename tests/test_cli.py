@@ -16,13 +16,15 @@ def test_fresh_venv_install_and_cli():
 
     # Create a temporary directory for the virtual environment
     with tempfile.TemporaryDirectory() as tmpdir:
-        venv_dir = Path(tmpdir) / "venv"
+        # resolve() expands Windows short paths such as C:\Users\RUNNER~1.
+        venv_dir = Path(tmpdir).resolve() / "venv"
         # Create the virtual environment
         subprocess.run([sys.executable, "-m", "venv", str(venv_dir)], check=True)
 
-        # Path to the Python and CLI executables in the venv
+        # Path to the Python and CLI executables in the venv. uv needs the
+        # exact file name, so include .exe on Windows.
         if sys.platform == "win32":
-            python_path = venv_dir / "Scripts" / "python"
+            python_path = venv_dir / "Scripts" / "python.exe"
             cli_path = venv_dir / "Scripts" / "populationsim"
         else:
             python_path = venv_dir / "bin" / "python"
