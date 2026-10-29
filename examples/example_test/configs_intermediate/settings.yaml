@@ -1,0 +1,29 @@
+# Reuse the base example; only the geography hierarchy and input list differ.
+inherit_settings: True
+
+geographies: [REGION, DISTRICT, PUMA, TRACT, TAZ]
+seed_geography: PUMA
+
+input_table_list:
+  - tablename: households
+    filename: seed_households.csv
+    index_col: hh_id
+    rename_columns:
+      SERIALNO: hh_id
+  - tablename: persons
+    filename: seed_persons.csv
+    rename_columns:
+      SERIALNO: hh_id
+      SPORDER: per_num
+  - tablename: geo_cross_walk
+    filename: geo_cross_walk.csv
+    rename_columns:
+      TRACTCE: TRACT
+  - tablename: TAZ_control_data
+    filename: taz_controls.csv
+  - tablename: TRACT_control_data
+    filename: tract_controls.csv
+  - tablename: DISTRICT_control_data
+    filename: district_controls.csv
+  - tablename: REGION_control_data
+    filename: region_controls.csv
