@@ -13,15 +13,13 @@
 # serve to show the default.
 
 
-import sphinx_rtd_theme
+from importlib.metadata import PackageNotFoundError, version as get_version
 
 # -- Get Package Version --------------------------------------------------
 # the version lives in pyproject.toml now; setup.py was removed
 try:
-    from importlib.metadata import version as get_version
-
     VERSION = get_version("populationsim")
-except Exception:
+except PackageNotFoundError:
     VERSION = "unknown"
 print("package version: " + VERSION)
 
@@ -48,7 +46,7 @@ extensions = [
 numpydoc_show_class_members = False
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
+templates_path = []
 
 # The suffix of source filenames.
 source_suffix = ".rst"
@@ -123,7 +121,6 @@ html_theme = "sphinx_rtd_theme"
 # html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -291,8 +288,4 @@ texinfo_documents = [
 # -- Table width fix for Read the Docs Sphinx theme -----------------------
 html_static_path = ["_static"]
 
-html_context = {
-    "css_files": [
-        "_static/theme_overrides.css",  # override wide tables in RTD theme
-    ],
-}
+html_css_files = ["theme_overrides.css"]

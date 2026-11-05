@@ -7,18 +7,31 @@ PopulationSim
 PopulationSim is an open platform for population synthesis.  It emerged
 from Oregon DOT's desire to build a shared, open, platform that could be
 easily adapted for statewide, regional, and urban transportation planning
-needs.  PopulationSim is implemented in the
-[ActivitySim](https://github.com/activitysim/activitysim) framework.
+needs. PopulationSim includes its own modeling core, originally derived from
+[ActivitySim](https://github.com/ActivitySim/activitysim).
 
 ## Command-Line Interface
 
-PopulationSim can be run directly from the command line:
+Use Python 3.12 for the released application. Install
+[uv 0.13.4 or newer](https://docs.astral.sh/uv/getting-started/installation/), then install the
+released command-line application:
+
+```bash
+uv tool install --python 3.12 populationsim
+```
+
+PopulationSim can then be run directly from the command line. The config, data,
+and output directories must already exist:
 
 ```bash
 populationsim -c /path/to/configs -d /path/to/data -o /path/to/output
 ```
 
-See the [examples directory](examples/) for more information on using the command-line interface.
+See [Getting Started](https://activitysim.github.io/populationsim/getting_started.html)
+for the uv setup and example commands, or browse the [examples directory](examples/).
+For existing environments, follow the
+[certificate security update instructions](https://activitysim.github.io/populationsim/getting_started.html#certificate-security-update)
+for the October 2026 eMudhra/emSign incident before installing packages.
 
 ## Documentation
 

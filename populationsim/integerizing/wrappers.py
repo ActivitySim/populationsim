@@ -570,6 +570,7 @@ def do_no_integerizing(sub_weights, sub_control_zones, sub_geography, **kwargs):
     """
     Return a dataframe with the sub_weights as integerized weights
     without any integerization, just to satisfy the interface.
+
     Parameters
     ----------
     sub_weights : pandas.DataFrame
@@ -578,6 +579,7 @@ def do_no_integerizing(sub_weights, sub_control_zones, sub_geography, **kwargs):
         sub_geography controls (one row per zone indexed by sub_zone id)
     sub_geography : str
         subzone geography name (e.g. 'TAZ')
+
     Returns
     -------
     integerized_weights_df : pandas.DataFrame
