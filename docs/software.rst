@@ -79,7 +79,15 @@ pandas and PyTables. Output tables and synthetic populations are generally
 written as CSV files; output tables can also be written to HDF5.
 
 ``populationsim.balancing`` implements list balancing, including Numba-accelerated
-calculations selected with ``USE_NUMBA``. ``populationsim.integerizing`` converts
+calculations selected with ``USE_NUMBA``. The Numba balancers visit only the
+nonzero incidence entries of each control, which is most of their speed on
+seed tables of one-hot categories and person counts; they give the same
+weights as a loop over every entry, up to floating-point rounding. Large
+controls and sub-zone sets are spread across Numba threads (set the count
+with ``NUMBA_NUM_THREADS``); results are identical for any thread count.
+Multiprocess runs use one Numba thread per process unless
+``NUMBA_NUM_THREADS`` is set.
+``populationsim.integerizing`` converts
 balanced household weights to integer weights. It uses OR-Tools by default, or
 CVXPY when ``USE_CVXPY: True`` is configured. Both solver packages are declared
 runtime dependencies and are installed with PopulationSim.
