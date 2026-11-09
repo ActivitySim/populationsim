@@ -9,6 +9,7 @@ import time
 import traceback
 from collections import OrderedDict
 
+import numba
 import numpy as np
 import pandas as pd
 import yaml
@@ -918,6 +919,12 @@ def mp_run_simulation(locutor, queue, injectables, step_info, resume_after, **kw
             pipeline_prefix = multiprocessing.current_process().name
             logger.debug(f"injecting pipeline_file_prefix '{pipeline_prefix}'")
             inject.add_injectable("pipeline_file_prefix", pipeline_prefix)
+
+            # One Numba thread per process unless NUMBA_NUM_THREADS says
+            # otherwise, so parallel balancer loops do not oversubscribe the
+            # cores. Balancer results do not depend on the thread count.
+            if "NUMBA_NUM_THREADS" not in os.environ:
+                numba.set_num_threads(1)
 
         shared_data_buffer = kwargs
         run_simulation(queue, step_info, resume_after, shared_data_buffer)
