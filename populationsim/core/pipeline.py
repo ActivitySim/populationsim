@@ -180,7 +180,7 @@ def read_df(table_name, checkpoint_name=None):
     return df
 
 
-def write_df(df, table_name, checkpoint_name=None):
+def write_df(df, table_name, checkpoint_name=None, format="fixed"):
     """
     Write a pandas dataframe to the pipeline store.
 
@@ -197,6 +197,8 @@ def write_df(df, table_name, checkpoint_name=None):
         also conventionally the injected table name
     checkpoint_name : str
         the checkpoint at which the table was created/modified
+    format : str
+        PyTables storage format, "fixed" (default) or "table"
     """
 
     # coerce column names to str as unicode names will cause PyTables to pickle them
@@ -204,7 +206,7 @@ def write_df(df, table_name, checkpoint_name=None):
 
     store = get_pipeline_store()
 
-    store[pipeline_table_key(table_name, checkpoint_name)] = df
+    store.put(pipeline_table_key(table_name, checkpoint_name), df, format=format)
 
     store.flush()
 
@@ -313,12 +315,26 @@ def add_checkpoint(checkpoint_name):
     # create a pandas dataframe of the checkpoint history, one row per checkpoint
     checkpoints = pd.DataFrame(_PIPELINE.checkpoints)
 
-    # convert empty values to str so PyTables doesn't pickle object types
-    for c in checkpoints.columns:
-        checkpoints[c] = checkpoints[c].fillna("")
-
     # write it to the store, overwriting any previous version (no way to simply extend)
-    write_df(checkpoints, CHECKPOINT_TABLE_NAME)
+    write_checkpoints_df(checkpoints)
+
+
+def write_checkpoints_df(checkpoints):
+    """
+    Write the checkpoint history table to the pipeline store.
+
+    Empty values become "". The table is stored in PyTables "table" format:
+    in the default "fixed" format, each pandas 3 ``str`` column is written as
+    its own node of about 1 MB, which made a few-row checkpoint table tens of
+    megabytes. Both formats read back to the same DataFrame.
+
+    Parameters
+    ----------
+    checkpoints : pandas.DataFrame
+        one row per checkpoint, one column per table plus the checkpoint
+        name and timestamp
+    """
+    write_df(checkpoints.fillna(""), CHECKPOINT_TABLE_NAME, format="table")
 
 
 def registered_tables():
@@ -368,7 +384,7 @@ def load_checkpoint(checkpoint_name):
         # if the store is not open in read-only mode,
         # write it to the store to ensure so any subsequent checkpoints are forgotten
         if not is_readonly():
-            write_df(checkpoints, CHECKPOINT_TABLE_NAME)
+            write_checkpoints_df(checkpoints)
 
     except IndexError:
         msg = "Couldn't find checkpoint '%s' in checkpoints" % (checkpoint_name,)
