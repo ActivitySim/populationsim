@@ -39,6 +39,22 @@ def read_control_spec(data_filename):
     return control_spec
 
 
+def _bincount_sums_exactly(incidence, persons_index):
+    """
+    True if np.bincount gives the same household sums as the groupby: int64 incidence
+    aligned with persons_index, small enough that bincount's float64 accumulation is
+    exact (every partial sum below 2**53).
+    """
+    if incidence.dtype != np.int64:
+        return False
+    if isinstance(incidence, pd.Series) and not incidence.index.equals(persons_index):
+        return False
+    values = np.asarray(incidence)
+    if len(values) == 0:
+        return True
+    return max(-int(values.min()), int(values.max())) * len(values) < 2**53
+
+
 def build_incidence_table(control_spec, households_df, persons_df, crosswalk_df):
 
     hh_col = config.setting("household_id_col")
@@ -49,6 +65,13 @@ def build_incidence_table(control_spec, households_df, persons_df, crosswalk_df)
         "households": households_df,
         "persons": persons_df,
     }
+
+    # map persons to household rows once, so person incidence can be summed with
+    # np.bincount instead of a groupby per control; households without persons and
+    # persons without a household id keep the groupby (and its NaN handling)
+    person_hh_codes, person_hh_ids = pd.factorize(persons_df[hh_col])
+    hh_rows = pd.Index(person_hh_ids).get_indexer(households_df.index)
+    use_bincount = (person_hh_codes >= 0).all() and (hh_rows >= 0).all()
 
     for control_row in control_spec.itertuples():
 
@@ -70,8 +93,18 @@ def build_incidence_table(control_spec, households_df, persons_df, crosswalk_df)
 
         # aggregate person incidence counts to household
         if control_row.seed_table == "persons":
-            df = pd.DataFrame({hh_col: persons_df[hh_col], "incidence": incidence})
-            incidence = df.groupby([hh_col], as_index=True).sum()
+            if use_bincount and _bincount_sums_exactly(incidence, persons_df.index):
+                sums = np.bincount(
+                    person_hh_codes,
+                    weights=np.asarray(incidence),
+                    minlength=len(person_hh_ids),
+                )
+                incidence = pd.Series(
+                    sums[hh_rows].astype(np.int64), index=households_df.index
+                )
+            else:
+                df = pd.DataFrame({hh_col: persons_df[hh_col], "incidence": incidence})
+                incidence = df.groupby([hh_col], as_index=True).sum()
 
         incidence_table[control_row.target] = incidence
 
@@ -276,12 +309,8 @@ def build_grouped_incidence_table(incidence_table, control_spec, seed_geography)
 
     # add group_id of each hh to hh_incidence_table
     group_incidence_table["group_id"] = group_incidence_table.index.astype(np.int64)
-    hh_incidence_table["group_id"] = pd.merge(
-        hh_incidence_table[hh_groupby_cols],
-        group_incidence_table[hh_groupby_cols + ["group_id"]],
-        on=hh_groupby_cols,
-        how="left",
-    ).group_id.values
+    # (hh_grouper sorts its keys, so ngroup numbers groups in group_incidence_table order)
+    hh_incidence_table["group_id"] = hh_grouper.ngroup().values
 
     # it doesn't really matter what the incidence_table index is until we create population
     # when we need to expand each group to constituent households
