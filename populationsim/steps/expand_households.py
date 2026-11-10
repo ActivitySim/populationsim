@@ -12,6 +12,48 @@ from populationsim.core.helper import get_weight_table
 logger = logging.getLogger(__name__)
 
 
+def choose_group_households(group_ids, household_groups, household_id_col, prng):
+    """
+    Choose a seed household for each group_id, with probability proportional to sample_weight.
+
+    Parameters
+    ----------
+    group_ids : pandas.Series
+        group_id of each expanded household, in the order the choices are drawn
+    household_groups : pandas.DataFrame
+        one row per seed household, with household_id_col, group_id and sample_weight columns
+    household_id_col : str
+    prng : numpy.random.RandomState
+
+    Returns
+    -------
+    pandas.Series
+        chosen household_id_col value for each row of group_ids, with the same index
+    """
+
+    # only the groups that are drawn from need lists
+    household_groups = household_groups[
+        household_groups.group_id.isin(group_ids.unique())
+    ]
+
+    # for each group, lists of hh_ids and their sample_weights (as relative probabiliities)
+    # { <group_id>: [ [<group_hh_id_list>], [<group_hh_prob_list>] ], ... }
+    HH_IDS = 0
+    HH_PROBS = 1
+    group_hh_probs = {}
+    for group_id, df in household_groups.groupby("group_id"):
+        hh_ids = list(df[household_id_col])
+        probs = list(df.sample_weight / df.sample_weight.sum())
+        group_hh_probs[group_id] = [hh_ids, probs]
+
+    def chooser(group_id):
+        hh_ids = group_hh_probs[group_id][HH_IDS]
+        hh_probs = group_hh_probs[group_id][HH_PROBS]
+        return prng.choice(hh_ids, p=hh_probs)
+
+    return group_ids.apply(chooser)
+
+
 @inject.step()
 def expand_households():
     """
@@ -62,28 +104,13 @@ def expand_households():
             [household_id_col, "group_id", "sample_weight"]
         ]
 
-        # for each group, lists of hh_ids and their sample_weights (as relative probabiliities)
-        # [ [ [<group_0_hh_id_list>], [<group_0_hh_prob_list>] ],
-        #   [ [<group_1_hh_id_list>], [<group_1_hh_prob_list>] ], ... ]
-        HH_IDS = 0
-        HH_PROBS = 1
-        grouper = household_groups.groupby("group_id")
-        group_hh_probs = [0] * len(grouper)
-        for group_id, df in grouper:
-            hh_ids = list(df[household_id_col])
-            probs = list(df.sample_weight / df.sample_weight.sum())
-            group_hh_probs[group_id] = [hh_ids, probs]
-
         # get a repeatable random number sequence generator for consistent choice results
         prng = pipeline.get_rn_generator().get_external_rng("expand_households")
 
         # now make a hh_id choice for each group_id in expanded_weights
-        def chooser(group_id):
-            hh_ids = group_hh_probs[group_id][HH_IDS]
-            hh_probs = group_hh_probs[group_id][HH_PROBS]
-            return prng.choice(hh_ids, p=hh_probs)
-
-        expanded_weights[household_id_col] = expanded_weights.group_id.apply(chooser)
+        expanded_weights[household_id_col] = choose_group_households(
+            expanded_weights.group_id, household_groups, household_id_col, prng
+        )
 
         # FIXME - omit in production?
         del expanded_weights["group_id"]
